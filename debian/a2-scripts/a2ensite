@@ -1,6 +1,6 @@
 #!/bin/sh -e
 
-SYSCONFDIR='/etc/httpd2.1'
+SYSCONFDIR='/etc/apache2'
 
 if [ -z $1 ]; then
 	echo "Which site would you like to enable?"
@@ -35,4 +35,4 @@ else
 	ln -sf $SYSCONFDIR/sites-available/$SITENAME $SYSCONFDIR/sites-enabled/$SITENAME
 fi
 
-echo "Site $SITENAME installed; run /etc/init.d/httpd2.1 reload to enable."
+echo "Site $SITENAME installed; run /etc/init.d/apache2 reload to enable."

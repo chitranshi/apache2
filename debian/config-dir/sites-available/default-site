@@ -26,13 +26,13 @@ NameVirtualHost *
 		Allow from all
 	</Directory>
 
-	ErrorLog /var/log/httpd2.1/error.log
+	ErrorLog /var/log/apache2/error.log
 
 	# Possible values include: debug, info, notice, warn, error, crit,
 	# alert, emerg.
 	LogLevel warn
 
-	CustomLog /var/log/httpd2.1/access.log combined
+	CustomLog /var/log/apache2/access.log combined
 	ServerSignature On
 
     Alias /doc/ "/usr/share/doc/"

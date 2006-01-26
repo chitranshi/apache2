@@ -1,1 +1,1 @@
-LoadModule auth_dbm_module /usr/lib/httpd2.1/modules/mod_auth_dbm.so
+LoadModule auth_dbm_module /usr/lib/apache2/modules/mod_auth_dbm.so

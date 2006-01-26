@@ -1,6 +1,6 @@
 #!/bin/sh -e
 
-SYSCONFDIR='/etc/httpd2.1'
+SYSCONFDIR='/etc/apache2'
 
 if [ -z $1 ]; then
 	echo "Which module would you like to disable?"
@@ -19,4 +19,4 @@ if ! [ -e $SYSCONFDIR/mods-enabled/$MODNAME.load ]; then
 fi
 
 rm -f $SYSCONFDIR/mods-enabled/$MODNAME.*
-echo "Module $MODNAME disabled; run /etc/init.d/httpd2.1 force-reload to fully disable."
+echo "Module $MODNAME disabled; run /etc/init.d/apache2 force-reload to fully disable."

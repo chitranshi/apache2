@@ -5,7 +5,7 @@
 
 case "$1" in
         upgrade|remove)
-                /usr/sbin/invoke-rc.d httpd2.1 stop
+                /usr/sbin/invoke-rc.d apache2 stop
 		sleep 2
         ;;
         deconfigure|failed-upgrade)

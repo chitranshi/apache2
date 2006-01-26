@@ -1,11 +1,11 @@
 #!/bin/sh -e
 
-SYSCONFDIR='/etc/httpd2.1'
+SYSCONFDIR='/etc/apache2'
 
 if [ -z $1 ]; then
 	echo "Which module would you like to enable?"
 	echo -n "Your choices are: "
-	ls /etc/httpd2.1/mods-available/*.load | \
+	ls /etc/apache2/mods-available/*.load | \
 	sed -e "s,$SYSCONFDIR/mods-available/,,g" | sed -e 's/\.load$//g;' | xargs echo
 	echo -n "Module name? "
 	read MODNAME
@@ -14,8 +14,8 @@ else
 fi
 
 #figure out if we're on a prefork or threaded mpm
-if [ -x /usr/sbin/httpd2.1 ]; then
-	PREFORK=`/usr/sbin/httpd2.1 -l | grep prefork || true`
+if [ -x /usr/sbin/apache2 ]; then
+	PREFORK=`/usr/sbin/apache2 -l | grep prefork || true`
 fi
 
 if [ $MODNAME = "cgi" ] && [ -z $PREFORK ]; then
@@ -38,4 +38,4 @@ for i in conf load; do
         fi
 done
 
-echo "Module $MODNAME installed; run /etc/init.d/httpd2.1 force-reload to enable."
+echo "Module $MODNAME installed; run /etc/init.d/apache2 force-reload to enable."

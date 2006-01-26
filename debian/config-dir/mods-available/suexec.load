@@ -1,1 +1,1 @@
-LoadModule suexec_module /usr/lib/httpd2.1/modules/mod_suexec.so
+LoadModule suexec_module /usr/lib/apache2/modules/mod_suexec.so

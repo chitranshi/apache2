@@ -1,11 +1,11 @@
 #!/bin/sh -e
 
-SYSCONFDIR='/etc/httpd2.1'
+SYSCONFDIR='/etc/apache2'
 
 if [ -z $1 ]; then
 	echo "Which site would you like to disable?"
 	echo -n "Your choices are: "
-	ls /etc/httpd2.1/sites-enabled/* | \
+	ls /etc/apache2/sites-enabled/* | \
 	sed -e "s,$SYSCONFDIR/sites-enabled/,,g" | xargs echo
 	echo -n "Site name? "
 	read SITENAME
@@ -26,4 +26,4 @@ fi
 if ! rm $SYSCONFDIR/sites-enabled/$SITENAME 2>/dev/null; then
 	rm -f $SYSCONFDIR/sites-enabled/"$PRIORITY"-"$SITENAME"
 fi
-echo "Site $SITENAME disabled; run /etc/init.d/httpd2.1 reload to fully disable."
+echo "Site $SITENAME disabled; run /etc/init.d/apache2 reload to fully disable."

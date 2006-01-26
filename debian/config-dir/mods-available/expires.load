@@ -1,1 +1,1 @@
-LoadModule expires_module /usr/lib/httpd2.1/modules/mod_expires.so
+LoadModule expires_module /usr/lib/apache2/modules/mod_expires.so

@@ -1,5 +1,6 @@
-etc/httpd2.1/mods-enabled
-etc/httpd2.1/sites-enabled
-etc/httpd2.1/conf.d
-var/cache/httpd2.1
-var/run/httpd2.1
+etc/apache2/mods-enabled
+etc/apache2/sites-enabled
+etc/apache2/conf.d
+usr/share/apache2/build
+var/cache/apache2
+var/run/apache2

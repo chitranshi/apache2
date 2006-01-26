@@ -1,4 +1,4 @@
-/var/log/httpd2.1/*.log {
+/var/log/apache2/*.log {
 	weekly
 	missingok
 	rotate 52
@@ -8,8 +8,8 @@
 	create 640 root adm
 	sharedscripts
 	postrotate
-		if [ -f /var/run/httpd2.1.pid ]; then
-			/etc/init.d/httpd2.1 restart > /dev/null
+		if [ -f /var/run/apache2.pid ]; then
+			/etc/init.d/apache2 restart > /dev/null
 		fi
 	endscript
 }

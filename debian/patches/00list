@@ -1,2 +1,6 @@
 001_branding.dpatch
 010_fhs_compliance.dpatch
+032_suexec_is_shared.dpatch
+033_dbm_read_hash_or_btree.dpatch
+038_no_LD_LIBRARY_PATH
+042_htdigest_CAN-2005-1344

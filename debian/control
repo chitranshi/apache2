@@ -21,12 +21,12 @@ Description: Next generation, scalable, extendable web server
  However, it does *not* include the server itself; for this you need to
  install one of the apache2-mpm-* packages; such as worker or prefork.
 
-
 Package: apache2-mpm-worker
 Architecture: any
 Depends: ${shlibs:Depends}, apache2-common (= ${Source-Version})
-Provides: apache2-modules, apache2, httpd, httpd-cgi, apache2-mpm-worker
-Conflicts: apache2-mpm-threadpool, apache2-mpm-prefork, apache2-mpm-perchild
+Provides: apache2-modules, apache2, httpd, httpd-cgi
+Conflicts: apache2-mpm-prefork
+Replaces: apache2-mpm-threadpool (<< 2.0.53), apache2-mpm-perchild (<< 2.2.0)
 Description: High speed threaded model for Apache HTTPD 2.1
  The worker MPM provides a threaded implementation for Apache HTTPD 2.1. It is
  considerably faster than the traditional model, and is the recommended MPM.
@@ -37,8 +37,8 @@ Description: High speed threaded model for Apache HTTPD 2.1
 Package: apache2-mpm-prefork
 Architecture: any
 Depends: ${shlibs:Depends}, apache2-common (= ${Source-Version})
-Provides: apache2-modules, apache2, httpd, httpd-cgi, apache2-mpm-prefork
-Conflicts: apache2-mpm-worker, apache2-mpm-threadpool, apache2-mpm-perchild
+Provides: apache2-modules, apache2, httpd, httpd-cgi
+Conflicts: apache2-mpm-worker, apache2-mpm-perchild
 Description: Traditional model for Apache HTTPD 2.1
  This Multi-Processing Module (MPM) implements a non-threaded,
  pre-forking web server that handles requests in a manner similar to
@@ -53,7 +53,7 @@ Package: apache2-mpm-event
 Architecture: any
 Depends: ${shlibs:Depends}, apache2-common (= ${Source-Version})
 Provides: apache2-modules, apache2, httpd, httpd-cgi
-Conflicts: apache2-mpm-worker, apache2-mpm-threadpool, apache2-mpm-perchild
+Conflicts: apache2-mpm-worker, apache2-mpm-perchild
 Description: Event driven model for Apache HTTPD 2.1
  The event Multi-Processing Module (MPM) is designed to allow more 
  requests to be served simultaneously by passing off some processing 
@@ -62,6 +62,13 @@ Description: Event driven model for Apache HTTPD 2.1
  .
  This MPM is especially suitable for sites that see extensive KeepAlive traffic
  
+Package: apache2-mpm-perchild
+Architecture: all
+Depends: apache2-mpm-worker
+Description: Transitional package - please remove
+ This is a transitional package to upgrade apache2-mpm-perchild to
+ apache2-mpm-worker.
+
 Package: apache2-utils
 Architecture: any
 Replaces: apache2-common (<< 2.0.53), apache-utils (<< 1.3.33-4)

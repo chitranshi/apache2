@@ -1,4 +1,6 @@
 001_branding
+008_make_include_safe
+009_apache2_has_dso
 010_fhs_compliance
 017_fix_ipv6
 031_apxs2_sucks_more

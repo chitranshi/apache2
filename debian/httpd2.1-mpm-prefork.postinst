@@ -1,0 +1,23 @@
+#!/bin/sh
+set -e
+
+if [ "$1" != "configure" ]; then
+        exit 0
+fi
+
+#enable cgi, but only on new installs.
+if [ -z "$2" ]; then
+	a2dismod cgid >/dev/null || true
+        a2enmod cgi >/dev/null || echo "It looks like you've deleted /etc/apache2/mods-available/cgi.load, so cgi can not be enabled.  To fix this, please purge and reinstall apache2-common."
+fi
+
+if [ -x "/etc/init.d/apache2" ]; then
+        update-rc.d apache2 defaults 91 >/dev/null
+        if [ -x /usr/sbin/invoke-rc.d ]; then
+                invoke-rc.d apache2 start ||true
+        else
+                /etc/init.d/apache2 start ||true
+        fi
+fi
+
+exit 0

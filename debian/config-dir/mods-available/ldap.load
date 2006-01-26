@@ -1,0 +1,1 @@
+LoadModule ldap_module /usr/lib/httpd2.1/modules/mod_ldap.so

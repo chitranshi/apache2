@@ -1,0 +1,154 @@
+#!/usr/bin/env python
+# Copyright (C) Thom May 2002
+#All rights reserved.
+
+#Redistribution and use in source and binary forms, with or without
+#modification, are permitted provided that the following conditions
+#are met:
+#1. Redistributions of source code must retain the above copyright
+#   notice, this list of conditions and the following disclaimer.
+#2. Redistributions in binary form must reproduce the above copyright
+#   notice, this list of conditions and the following disclaimer in the
+#   documentation and/or other materials provided with the distribution.
+
+#THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+#IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+#OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+#IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
+#INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+#NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+#DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+#THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+#(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+#THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+import getopt, sys, os
+from modhandler import *
+
+versionnum = 0.8
+class A2ModHandler(ModHandler):
+    def switchon(self,module,seqnum):
+        if __debug__: print "switching on %s%s" % (seqnum,module)
+        availloadstring = "/etc/apache2/mods-available/"+module+".load"
+        enableloadstring = "/etc/apache2/mods-enabled/"+str(seqnum)+module+".load"
+        availconfstring = "/etc/apache2/mods-available/"+module+".conf"
+        enableconfstring = "/etc/apache2/mods-enabled/"+str(seqnum)+module+".conf"
+        if os.path.exists(availloadstring) and not os.path.exists(enableloadstring):
+            os.symlink(availloadstring,enableloadstring)
+        else:
+            return
+            
+        if os.path.exists(availconfstring) and not os.path.exists(enableconfstring):
+            os.symlink(availconfstring,enableconfstring)
+        else:
+            return
+        
+        
+    def switchoff(self,module,seqnum):
+        if __debug__: print "switching %s off" % (module,)
+
+        enableloadstring = "/etc/apache2/mods-enabled/"+str(seqnum)+module+".load"
+        enableconfstring = "/etc/apache2/mods-enabled/"+str(seqnum)+module+".conf"
+
+        if os.path.exists(enableloadstring):
+            os.unlink(enableloadstring)
+        else:
+            return
+        
+        if os.path.exists(enableconfstring):
+            os.unlink(enableconfstring)
+        else:
+            return
+    
+                
+def main():
+    if len(sys.argv) == 1:
+        usage()
+        sys.exit(2)
+
+    mh = A2ModHandler("/var/lib/apache2/modules")    
+
+    name = os.path.split(sys.argv[0])[1]
+    if name == 'a2enmod':
+        mh.enable(sys.argv[1])
+    if name == 'a2dismod':
+        mh.disable(sys.argv[1])
+    
+    try:
+        opts, args = getopt.getopt(sys.argv[1:],"hlv" ,["add","disable","enable","help","list","remove","version","force"])
+    except getopt.GetoptError:
+        usage()
+        sys.exit(2)
+
+    for o,a in opts:
+        if o in ("-h", "--help"):
+            usage()
+            sys.exit()
+        if o in ("-v", "--version"):
+            mh.version(versionnum)
+            sys.exit()
+        if o == "--add":
+            try:
+                mh.add(*args)
+            except ModuleAlreadyExists:
+                print "Module has already been registered"
+                sys.exit(1)
+            except (IndexError, TypeError):
+                usage()
+                sys.exit(2)
+        if o == "--remove":
+            try:
+                mh.remove(args[0])
+            except NoSuchModule:
+                print "No such module"
+                sys.exit(1)
+            except IndexError:
+                usage()
+                sys.exit(2)
+        if o == "--enable":
+            try:
+                mh.enable(args[0])
+            except NoSuchModule:
+                print "No Such Module"
+                sys.exit(1)
+            except IndexError:
+                usage()
+                sys.exit(2)
+        if o == "--disable":
+            try:
+                mh.disable(args[0])
+            except NoSuchModule:
+                print "No Such Module"
+                sys.exit(1)
+            except IndexError:
+                usage()
+                sys.exit(2)
+        if o in ("-l","--list"):
+            mh.dolist()
+
+def usage():
+    """Print the usage statement
+
+    Prints the correct list of arguments, and then exits.
+    """
+    print "Debian update-apache2-modules", versionnum
+    print "Copyright (C) 2002 Thom May, under the BSD license."
+    msg = """
+    
+usage: update-apache2-modules --add <module> [<sequence> <depends>]
+       update-apache2-modules --remove <module>
+       update-apache2-modules --enable <module>
+       update-apache2-modules --disable <module>
+       update-apache2-modules --list <module>
+
+<module>   is the name of the module
+<sequence> is used to decide the order the modules are loaded in.
+           The default if no sequence number is specified is 99
+<depends>  signifies any dependencies the module might have
+"""
+    sys.stderr.write(msg)
+    return(0)
+
+
+if __name__ == '__main__':
+    main()

@@ -1,0 +1,17 @@
+#!/bin/sh -e
+
+#Debian preinstall handling for httpd2.1
+# Thom May <thom@debian.org>
+
+case "$1" in
+	install)
+		rm -f /var/cache/httpd2.1/reload
+		;;
+	upgrade)
+		if [ -d /var/cache/httpd2.1 ]; then
+			touch /var/cache/httpd2.1/reload
+		fi
+		;;
+	*)
+		;;
+esac

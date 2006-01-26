@@ -1,0 +1,178 @@
+#! /usr/bin/make -f 
+
+# Code for httpd 2.1, based on apache2 and others.
+# Copyright (C) Canonical Ltd, 2005
+
+export DEB_BUILD_OPTIONS
+export DH_OPTIONS
+
+SHELL := sh -e
+
+#enable dpatch
+include /usr/share/dpatch/dpatch.make
+
+# These are used for cross-compiling and for saving the configure script
+# # from having to guess our platform (since we know it already)
+DEB_HOST_GNU_TYPE   ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
+DEB_BUILD_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
+
+CONFFLAGS += ac_cv_prog_AWK=mawk
+
+AP2_COMMON_CONFARGS = --enable-layout=Debian --enable-so \
+                      --with-program-name=httpd2.1  \
+		      --with-ldap=yes --with-ldap-include=/usr/include \
+		      --with-ldap-lib=/usr/lib \
+		      --with-suexec-caller=www-data \
+		      --with-suexec-bin=/usr/lib/httpd2.1/suexec \
+	  	      --with-suexec-docroot=/var/www \
+		      --with-suexec-userdir=public_html \
+		      --with-suexec-logfile=/var/log/httpd2.1/suexec.log \
+		      --enable-mods-shared=all --enable-modules=all \
+		      --enable-suexec=shared --enable-authn-alias=shared \
+		      --enable-authnz-ldap=shared  \
+		      --enable-disk-cache=shared --enable-cache=yes \
+		      --enable-mem-cache=shared --enable-file-cache=shared \
+		      --enable-charset-lite=shared --enable-cgi=shared \
+		      --enable-dav-lock=shared \
+		      --enable-ldap=shared --enable-proxy=shared \
+		      --enable-proxy-connect=shared --enable-proxy-ftp=shared \
+		      --enable-proxy-http=shared --enable-proxy-ajp=shared \
+		      --enable-proxy-balancer=shared --enable-ssl=shared \
+		--with-apr=/usr/bin/apr-1-config --with-apr-util=/usr/bin/apu-1-config
+
+AP2_CONFLAGS = $(CFLAGS) -pipe -I/usr/include/xmltok -I/usr/include/openssl -Wall
+#AP2_CONFLAGS += -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 
+AP2_LDFLAGS = -ldl -lexpat -lcrypt -ldb-4.2
+
+#support debug building
+ifneq (,$(findstring debug,$(DEB_BUILD_OPTIONS)))
+AP2_CONFLAGS += -g -O0
+else
+AP2_CONFLAGS += -O2
+endif
+
+BUILD=debian/build-tree
+REALCURDIR=$(CURDIR)
+LIBTOOL=/usr/bin/libtool
+INSTALL=/usr/bin/install
+PRIMARY_MPM=worker
+BUILD_DIST=$(shell lsb_release -i | cut -f2)
+
+clean: unpatch
+	dh_testdir
+	dh_clean
+	rm -rf $(BUILD) mpm-worker mpm-prefork mpm-event install
+	
+build: patch-stamp build-mpms 
+build-mpms: mpm-worker mpm-prefork mpm-event
+
+mpm-%:
+	dh_testdir
+	mkdir -p $(BUILD)/$*
+	cd $(BUILD)/$* ;\
+	CFLAGS="$(AP2_CONFLAGS)" LDFLAGS="$(AP2_LDFLAGS)" $(CONFFLAGS) $(REALCURDIR)/configure --host=$(DEB_HOST_GNU_TYPE) --build=$(DEB_BUILD_GNU_TYPE) --srcdir=$(REALCURDIR) $(AP2_COMMON_CONFARGS) $(AP2_CONFARGS) --with-mpm=$*  ;\
+	$(MAKE)  ;
+	touch $@
+	
+
+install-worker:
+	dh_testdir
+	dh_testroot
+	dh_installdirs
+	cd $(BUILD)/worker ;\
+	$(MAKE) DESTDIR=$(REALCURDIR)/debian/httpd2.1-common install 
+	rm -fr $(REALCURDIR)/debian/httpd2.1-common/usr/sbin/httpd2.1
+	$(LIBTOOL) --mode=install $(INSTALL) $(BUILD)/worker/httpd2.1 $(REALCURDIR)/debian/httpd2.1-mpm-worker/usr/sbin/
+	cd $(REALCURDIR)
+
+install-%:
+	dh_testdir
+	dh_testroot
+	dh_installdirs
+	$(LIBTOOL) --mode=install $(INSTALL) $(BUILD)/$*/httpd2.1 $(REALCURDIR)/debian/httpd2.1-mpm-$*/usr/sbin/ 
+
+install: build install-worker install-prefork install-event
+	dh_testroot
+	dh_testdir
+	dh_install -a --sourcedir=$(REALCURDIR)/debian/httpd2.1-common
+	
+#httpd2.1-utils extras
+	cp support/check_forensic debian/httpd2.1-utils/usr/sbin/check_forensic
+	cp debian/check_forensic.8 debian/httpd2.1-utils/usr/share/man/man8/check_forensic.8
+	cp debian/checkgid.8 debian/httpd2.1-utils/usr/share/man/man8/checkgid.8
+	cp $(BUILD)/worker/support/split-logfile debian/httpd2.1-utils/usr/sbin/split-logfile
+	chmod 755 debian/httpd2.1-utils/usr/sbin/split-logfile
+
+	#grotesque hack to get rid of stuff from httpd2.1-common
+	find debian/httpd2.1-utils/usr/ -type f |sed -e 's/utils/common/'|xargs rm -f
+#httpd2.1-utils backward compatibility symlinks
+	ln -s ab debian/httpd2.1-utils/usr/sbin/ab2
+	ln -s checkgid debian/httpd2.1-utils/usr/sbin/checkgid2
+	ln -s dbmmanage debian/httpd2.1-utils/usr/bin/dbmmanage2
+	ln -s htdigest debian/httpd2.1-utils/usr/bin/htdigest2
+	ln -s htpasswd debian/httpd2.1-utils/usr/bin/htpasswd2
+	ln -s logresolve debian/httpd2.1-utils/usr/sbin/logresolve2
+	ln -s rotatelogs debian/httpd2.1-utils/usr/sbin/rotatelogs2
+
+	mv debian/httpd2.1-common/usr/sbin/envvars debian/httpd2.1-common/etc/httpd2.1/
+	mv debian/httpd2.1-common/usr/sbin/envvars-std debian/httpd2.1-common/usr/share/httpd2.1/build/
+	mv debian/httpd2.1-common/usr/sbin/suexec debian/httpd2.1-common/usr/lib/httpd2.1/
+	rm debian/httpd2.1-common/usr/sbin/*
+	#reinstall apachectl after we clean up
+	install -m 755 $(BUILD)/worker/support/apachectl $(REALCURDIR)/debian/httpd2.1-common/usr/sbin/httpd2.1-ctl
+	
+	mv debian/httpd2.1-common/etc/httpd2.1 debian/httpd2.1-common/usr/share/httpd2.1/examples
+	cp -a debian/config-dir debian/httpd2.1-common/etc/httpd2.1
+	cp debian/init-script debian/httpd2.1-common.init.d
+	mkdir -p debian/httpd2.1-common/etc/logrotate.d
+	cp debian/logrotate debian/httpd2.1-common/etc/logrotate.d/httpd2.1
+	chmod 4755 debian/httpd2.1-common/usr/lib/httpd2.1/suexec 
+	for i in `find debian/a2-scripts -name .svn -prune -o -name .arch-ids -prune -o -type f -print`; \
+                do install -m755 $$i debian/httpd2.1-common/usr/sbin; \
+        done 
+	for i in worker event; do \
+		install -m755 debian/mpm-postinst-threaded debian/httpd2.1-mpm-$$i.postinst ;\
+		install -m755 debian/mpm-preinst-threaded debian/httpd2.1-mpm-$$i.preinst;\
+		install -m755 debian/mpms.prerm debian/httpd2.1-mpm-$$i.prerm ;\
+	done
+	install -m755 debian/mpms.prerm debian/httpd2.1-mpm-prefork.prerm
+	touch $@
+
+
+binary-indep:
+	dh_testdir -i
+	dh_testroot -i 
+	dh_installdirs -i
+	dh_installdocs -i
+	dh_installchangelogs -i
+	dh_compress -i
+	dh_fixperms -i -Xsuexec2
+	dh_installdeb -i
+	dh_gencontrol -i
+	dh_md5sums -i
+	dh_builddeb -i
+
+binary-arch: install
+	dh_testdir -a
+	dh_testroot -a 
+	dh_installdirs -a
+	dh_installdocs -a
+	dh_installman -a
+	dh_installchangelogs -a
+	dh_installinit -a -r --init-script=httpd2.1 debian/httpd2.1-common.init.d -- defaults 91
+ifeq (,$(findstring nostrip,$(DEB_BUILD_OPTIONS)))
+	dh_strip -a
+endif
+	dh_link -a
+	dh_compress -a
+	dh_fixperms -a -Xsuexec2
+	chown -R www-data:www-data debian/httpd2.1-common/var/cache/httpd2.1
+	chmod 644 debian/httpd2.1-common/usr/share/man/man8/suexec.8.gz
+	dh_makeshlibs -a -V
+	dh_installdeb -a
+	dh_shlibdeps -a
+	dh_gencontrol -a
+	dh_md5sums -a
+	dh_builddeb -a
+
+binary: binary-arch binary-indep

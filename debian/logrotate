@@ -1,0 +1,15 @@
+/var/log/httpd2.1/*.log {
+	weekly
+	missingok
+	rotate 52
+	compress
+	delaycompress
+	notifempty
+	create 640 root adm
+	sharedscripts
+	postrotate
+		if [ -f /var/run/httpd2.1.pid ]; then
+			/etc/init.d/httpd2.1 restart > /dev/null
+		fi
+	endscript
+}

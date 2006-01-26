@@ -1,0 +1,47 @@
+#!/bin/sh -e
+
+if [ "$1" != "configure" ]; then
+        exit 0
+fi
+
+NETSTAT=netstat
+
+if [ ! -f /etc/apache2/ports.conf ]; then
+        echo "# 0 = start on boot; 1 = don't start on boot" > /etc/default/apache2
+        NO_AF_INET=`$NETSTAT -lnt 2>&1 | grep 'no support for .AF INET (tcp)'` || true
+        NO_PORT_80=`$NETSTAT -lnt | awk '{print $4}' | grep ':80$'` || true
+        if [ -n "$NO_AF_INET" -o -n "$NO_PORT_80" ]; then
+                echo "NO_START=1" >> /etc/default/apache2
+                echo "Listen 80" >> /etc/apache2/ports.conf
+                if [ -n "$NO_AF_INET" ]; then
+                        echo "netstat is unable to query the state of your listening TCP ports.  This could be because you don't have TCP support in your kernel (unlikely), or because you do not have the /proc filesystem mounted.  To be on the safe side, we're assuming that port 80 is in use."
+                fi
+                echo "Setting Apache2 not to start, as something else appears to be using Port 80. To allow apache2 to start, set NO_START to 0 in /etc/default/apache2. Apache2 has been set to listen on port 80 by default, so please edit /etc/apache2/ports.conf as desired. Note that the Port directive no longer works."
+        else
+                echo "NO_START=0" >> /etc/default/apache2
+                echo "Listen 80" >> /etc/apache2/ports.conf
+                echo "Setting Apache2 to Listen on port 80. If this is not desired, please edit /etc/apache2/ports.conf as desired. Note that the Port directive no longer works."
+        fi
+fi
+
+
+#set up default site and dummy error and access logs
+if [ "$2" = "<unknown>" -o -z "$2" ]; then
+        if [ ! -L /etc/apache2/sites-enabled/000-default -a \
+             ! -f /etc/apache2/sites-enabled/000-default ]; then
+                ln -s /etc/apache2/sites-available/default /etc/apache2/sites-enabled/000-default
+        fi
+        touch /var/log/apache2/error.log /var/log/apache2/access.log
+        chown root:adm /var/log/apache2/error.log /var/log/apache2/access.log
+        chmod 0640 /var/log/apache2/error.log /var/log/apache2/access.log
+        if [ ! -f /etc/apache2/conf.d/charset ]; then
+                echo "AddDefaultCharset UTF-8" > /etc/apache2/conf.d/charset
+        fi
+fi
+
+# Make sure /var/lock/apache2 has the correct permissions
+if [ -d /var/lock/apache2 ]; then
+        chown www-data /var/lock/apache2
+fi
+
+exit 0

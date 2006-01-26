@@ -1,0 +1,1 @@
+LoadModule cern_meta_module /usr/lib/httpd2.1/modules/mod_cern_meta.so

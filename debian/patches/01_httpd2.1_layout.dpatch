@@ -1,0 +1,39 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## 01_httpd2.1_layout.dpatch by  <thom@debian.org>
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: No description.
+
+@DPATCH@
+diff -urNad httpd-2.1.2/config.layout /tmp/dpep.F8uycC/httpd-2.1.2/config.layout
+--- httpd-2.1.2/config.layout	2005-02-14 16:00:11.733050760 +0000
++++ /tmp/dpep.F8uycC/httpd-2.1.2/config.layout	2005-02-14 16:00:56.234285544 +0000
+@@ -305,20 +305,20 @@
+     bindir:        ${exec_prefix}/bin
+     sbindir:       ${exec_prefix}/sbin
+     libdir:        ${exec_prefix}/lib
+-    libexecdir:    ${exec_prefix}/lib/apache2/modules
++    libexecdir:    ${exec_prefix}/lib/httpd2.1/modules
+     mandir:        ${exec_prefix}/share/man
+-    sysconfdir:    ${prefix}/etc/apache2
+-    datadir:       ${exec_prefix}/share/apache2
++    sysconfdir:    ${prefix}/etc/httpd2.1
++    datadir:       ${exec_prefix}/share/httpd2.1
+     iconsdir:      ${datadir}/icons
+-    htdocsdir:     ${prefix}/usr/share/apache2/default-site/htdocs
++    htdocsdir:     ${prefix}/var/www
+     manualdir:     ${htdocsdir}/manual
+     cgidir:        ${prefix}/usr/lib/cgi-bin
+-    includedir:    ${exec_prefix}/include/apache2
++    includedir:    ${exec_prefix}/include/httpd2.1
+     localstatedir: ${prefix}/var/run
+     runtimedir:    ${prefix}/var/run
+-    logfiledir:    ${prefix}/var/log/apache2
+-    proxycachedir: ${prefix}/var/cache/apache2/proxy
++    logfiledir:    ${prefix}/var/log/httpd2.1
++    proxycachedir: ${prefix}/var/cache/httpd2.1/proxy
+     infodir:       ${exec_prefix}/share/info
+-    installbuilddir: ${prefix}/etc/apache2/build
++    installbuilddir: ${datadir}/build
+     errordir:      ${datadir}/error
+ </Layout>

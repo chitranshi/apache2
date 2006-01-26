@@ -1,0 +1,19 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## 02_branding.dpatch by  <thom@debian.org>
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: No description.
+
+@DPATCH@
+diff -urNad httpd-2.1.2/server/core.c /tmp/dpep.BxvY5o/httpd-2.1.2/server/core.c
+--- httpd-2.1.2/server/core.c	2004-12-02 13:28:04.000000000 +0000
++++ /tmp/dpep.BxvY5o/httpd-2.1.2/server/core.c	2005-02-15 14:12:52.337191240 +0000
+@@ -2626,7 +2626,7 @@
+         ap_add_version_component(pconf, AP_SERVER_BASEPRODUCT "/" AP_SERVER_MAJORVERSION);
+     }
+     else {
+-        ap_add_version_component(pconf, AP_SERVER_BASEVERSION " (" PLATFORM ")");
++        ap_add_version_component(pconf, AP_SERVER_BASEVERSION " (Ubuntu)");
+     }
+ 
+     /*

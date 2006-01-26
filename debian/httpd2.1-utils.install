@@ -1,0 +1,16 @@
+usr/sbin/ab usr/sbin/
+usr/share/man/man8/ab.8 usr/share/man/man8/
+usr/sbin/checkgid usr/sbin/
+usr/sbin/dbmmanage usr/bin/
+usr/share/man/man1/dbmmanage.1 usr/share/man/man1/
+usr/sbin/htdbm usr/bin/
+usr/sbin/htdigest usr/bin/
+usr/share/man/man1/htdigest.1 usr/share/man/man1/
+usr/sbin/htpasswd usr/bin/
+usr/share/man/man1/htpasswd.1 usr/share/man/man1/
+usr/sbin/logresolve usr/sbin/
+usr/share/man/man8/logresolve.8 usr/share/man/man8/
+usr/sbin/rotatelogs usr/sbin/
+usr/share/man/man8/rotatelogs.8 usr/share/man/man8/
+usr/sbin/htcacheclean usr/sbin/
+usr/share/man/man8/htcacheclean.8 usr/share/man/man8/

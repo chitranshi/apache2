@@ -1,0 +1,1 @@
+LoadModule speling_module /usr/lib/httpd2.1/modules/mod_speling.so

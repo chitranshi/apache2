@@ -118,7 +118,7 @@ install: build install-worker install-prefork install-event
 	mv debian/apache2-common/usr/sbin/suexec debian/apache2-common/usr/lib/apache2/
 	rm debian/apache2-common/usr/sbin/*
 	#reinstall apachectl after we clean up
-	install -m 755 $(BUILD)/worker/support/apachectl $(REALCURDIR)/debian/apache2-common/usr/sbin/apache2-ctl
+	install -m 755 $(BUILD)/worker/support/apachectl $(REALCURDIR)/debian/apache2-common/usr/sbin/apache2ctl
 	
 	mv debian/apache2-common/etc/apache2 debian/apache2-common/usr/share/apache2/examples
 	cp -a debian/config-dir debian/apache2-common/etc/apache2
@@ -135,6 +135,10 @@ install: build install-worker install-prefork install-event
 		install -m755 debian/mpms.prerm debian/apache2-mpm-$$i.prerm ;\
 	done
 	install -m755 debian/mpms.prerm debian/apache2-mpm-prefork.prerm
+
+#documentation
+	cp -R docs/* debian/apache2-doc/usr/share/doc/apache2-doc/
+	
 	touch $@
 
 
@@ -143,7 +147,7 @@ binary-indep:
 	dh_testroot -i 
 	dh_installdirs -i
 	dh_installdocs -i
-	dh_installchangelogs -i
+	dh_installchangelogs -i CHANGES
 	dh_compress -i
 	dh_fixperms -i -Xsuexec2
 	dh_installdeb -i
@@ -157,7 +161,7 @@ binary-arch: install
 	dh_installdirs -a
 	dh_installdocs -a
 	dh_installman -a
-	dh_installchangelogs -a
+	dh_installchangelogs -a CHANGES
 	dh_installinit -a -r --init-script=apache2 debian/apache2-common.init.d -- defaults 91
 ifeq (,$(findstring nostrip,$(DEB_BUILD_OPTIONS)))
 	dh_strip -a

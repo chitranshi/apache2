@@ -89,3 +89,10 @@ Description: Next generation, scalable, extendable web server
  Apache v2 is the next generation of the omnipresent Apache web server. This
  version - a total rewrite - introduces many new improvements, such as
  threading, a new API, IPv6 support, request/response filtering, and more.
+
+Package: apache2-doc
+Section: doc
+Architecture: all
+Description: documentation for apache2
+ This is the documentation for apache2, see the apache2 package description
+  for more details.

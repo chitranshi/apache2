@@ -74,14 +74,13 @@ mpm-%:
 	touch $@
 	
 
-install-worker:
+install-common:
 	dh_testdir
 	dh_testroot
 	dh_installdirs
 	cd $(BUILD)/worker ;\
 	$(MAKE) DESTDIR=$(REALCURDIR)/debian/apache2-common install 
 	rm -fr $(REALCURDIR)/debian/apache2-common/usr/sbin/apache2
-	$(LIBTOOL) --mode=install $(INSTALL) $(BUILD)/worker/apache2 $(REALCURDIR)/debian/apache2-mpm-worker/usr/sbin/
 	cd $(REALCURDIR)
 
 install-%:
@@ -90,7 +89,7 @@ install-%:
 	dh_installdirs
 	$(LIBTOOL) --mode=install $(INSTALL) $(BUILD)/$*/apache2 $(REALCURDIR)/debian/apache2-mpm-$*/usr/sbin/ 
 
-install: build install-worker install-prefork install-event
+install: build install-common install-worker install-prefork install-event
 	dh_testroot
 	dh_testdir
 	dh_install -a --sourcedir=$(REALCURDIR)/debian/apache2-common

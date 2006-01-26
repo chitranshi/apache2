@@ -1,1 +1,0 @@
-LoadModule proxy_connect_module /usr/lib/apache2/modules/mod_proxy_connect.so

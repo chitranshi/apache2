@@ -16,7 +16,7 @@ include /usr/share/dpatch/dpatch.make
 DEB_HOST_GNU_TYPE   ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
 DEB_BUILD_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
 
-CONFFLAGS += ac_cv_prog_AWK=mawk
+CONFFLAGS += ac_cv_prog_AWK=mawk ac_cv_prog_LYNX_PATH=www-browser
 
 AP2_COMMON_CONFARGS = --enable-layout=Debian --enable-so \
                       --with-program-name=apache2  \

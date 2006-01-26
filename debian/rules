@@ -42,7 +42,7 @@ AP2_COMMON_CONFARGS = --enable-layout=Debian --enable-so \
 
 AP2_CONFLAGS = $(CFLAGS) -pipe -I/usr/include/xmltok -I/usr/include/openssl -Wall
 #AP2_CONFLAGS += -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 
-AP2_LDFLAGS = -ldl -lexpat -lcrypt -ldb-4.2
+AP2_LDFLAGS = -ldl -lexpat -lcrypt -ldb-4.3
 
 #support debug building
 ifneq (,$(findstring debug,$(DEB_BUILD_OPTIONS)))

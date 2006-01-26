@@ -1,0 +1,1 @@
+LoadModule proxy_balancer_module /usr/lib/apache2/modules/mod_proxy_balancer.so

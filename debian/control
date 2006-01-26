@@ -1,7 +1,8 @@
 Source: apache2
 Section: web
 Priority: optional
-Maintainer: Thom May <thom@debian.org>
+Maintainer: Debian Apache Maintainers <debian-apache@lists.debian.org>
+Uploaders: Tollef Fog Heen <tfheen@debian.org>, Thom May <thom@debian.org>, Fabio M. Di Nitto <fabbione@fabbione.net>, Daniel Stone <daniels@debian.org>, Adam Conrad <adconrad@0c3.net>
 Build-Depends: debhelper (>=4.1.16), libaprutil1-dev, libssl-dev, openssl, bzip2, libpcre3-dev, dpatch, zlib1g-dev, libexpat-dev, libldap2-dev, libtool, lsb-release
 Build-Conflicts: libgdbm-dev
 Standards-Version: 3.6.1.0

@@ -2,7 +2,7 @@ Source: apache2
 Section: web
 Priority: optional
 Maintainer: Thom May <thom@debian.org>
-Build-Depends: debhelper (>=4.1.16), libapr1.0-dev, libaprutil1.0-dev, libssl-dev, openssl, bzip2, libpcre3-dev, dpatch, zlib1g-dev, libexpat-dev, libldap2-dev, libtool
+Build-Depends: debhelper (>=4.1.16), libapr1.0-dev, libaprutil1.0-dev, libssl-dev, openssl, bzip2, libpcre3-dev, dpatch, zlib1g-dev, libexpat-dev, libldap2-dev, libtool, lsb-release
 Build-Conflicts: libgdbm-dev
 Standards-Version: 3.6.1.0
 

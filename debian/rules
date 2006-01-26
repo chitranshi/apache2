@@ -56,7 +56,6 @@ REALCURDIR=$(CURDIR)
 LIBTOOL=/usr/bin/libtool
 INSTALL=/usr/bin/install
 PRIMARY_MPM=worker
-BUILD_DIST=$(shell lsb_release -i | cut -f2)
 
 clean: unpatch
 	dh_testdir

@@ -138,6 +138,7 @@ install: build install-worker install-prefork install-event
 
 #documentation
 	cp -R docs/* debian/apache2-doc/usr/share/doc/apache2-doc/
+	cp debian/apache2-doc.conf debian/apache2-doc/etc/apache2/conf.d/apache2-doc
 	
 	touch $@
 

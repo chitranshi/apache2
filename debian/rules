@@ -74,26 +74,21 @@ mpm-%:
 	touch $@
 	
 
-install-common:
-	dh_testdir
-	dh_testroot
-	dh_installdirs
-	cd $(BUILD)/worker ;\
-	$(MAKE) DESTDIR=$(REALCURDIR)/debian/apache2-common install 
-	rm -fr $(REALCURDIR)/debian/apache2-common/usr/sbin/apache2
-	cd $(REALCURDIR)
-
 install-%:
 	dh_testdir
 	dh_testroot
 	dh_installdirs
-	$(LIBTOOL) --mode=install $(INSTALL) $(BUILD)/$*/apache2 $(REALCURDIR)/debian/apache2-mpm-$*/usr/sbin/ 
+	cd $(BUILD)/worker ;\
+	$(MAKE) DESTDIR=$(REALCURDIR)/debian/apache2-mpm-$* install 
+	cd $(REALCURDIR)
 
 install-dev: 
 	dh_testdir
 	dh_testroot
 	dh_installdirs
 
+
+dummy:
 	for i in worker prefork; do \
 		if [ "$$i" = "prefork" ]; then \
 			TARGET=prefork ;\
@@ -111,7 +106,7 @@ install-dev:
 	rm -rf debian/apache2-common/usr/include/
 	rm -rf debian/apache2-common/usr/share/man/man8/apxs.8
 
-install: build install-common install-worker install-prefork install-event install-dev
+install: build install-worker install-prefork install-event install-dev
 	dh_testroot
 	dh_testdir
 	dh_install -a --sourcedir=$(REALCURDIR)/debian/apache2-common

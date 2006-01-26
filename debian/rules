@@ -19,14 +19,14 @@ DEB_BUILD_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
 CONFFLAGS += ac_cv_prog_AWK=mawk
 
 AP2_COMMON_CONFARGS = --enable-layout=Debian --enable-so \
-                      --with-program-name=httpd2.1  \
+                      --with-program-name=apache2  \
 		      --with-ldap=yes --with-ldap-include=/usr/include \
 		      --with-ldap-lib=/usr/lib \
 		      --with-suexec-caller=www-data \
-		      --with-suexec-bin=/usr/lib/httpd2.1/suexec \
+		      --with-suexec-bin=/usr/lib/apache2/suexec \
 	  	      --with-suexec-docroot=/var/www \
 		      --with-suexec-userdir=public_html \
-		      --with-suexec-logfile=/var/log/httpd2.1/suexec.log \
+		      --with-suexec-logfile=/var/log/apache2/suexec.log \
 		      --enable-mods-shared=all --enable-modules=all \
 		      --enable-suexec=shared --enable-authn-alias=shared \
 		      --enable-authnz-ldap=shared  \
@@ -80,62 +80,62 @@ install-worker:
 	dh_testroot
 	dh_installdirs
 	cd $(BUILD)/worker ;\
-	$(MAKE) DESTDIR=$(REALCURDIR)/debian/httpd2.1-common install 
-	rm -fr $(REALCURDIR)/debian/httpd2.1-common/usr/sbin/httpd2.1
-	$(LIBTOOL) --mode=install $(INSTALL) $(BUILD)/worker/httpd2.1 $(REALCURDIR)/debian/httpd2.1-mpm-worker/usr/sbin/
+	$(MAKE) DESTDIR=$(REALCURDIR)/debian/apache2-common install 
+	rm -fr $(REALCURDIR)/debian/apache2-common/usr/sbin/apache2
+	$(LIBTOOL) --mode=install $(INSTALL) $(BUILD)/worker/apache2 $(REALCURDIR)/debian/apache2-mpm-worker/usr/sbin/
 	cd $(REALCURDIR)
 
 install-%:
 	dh_testdir
 	dh_testroot
 	dh_installdirs
-	$(LIBTOOL) --mode=install $(INSTALL) $(BUILD)/$*/httpd2.1 $(REALCURDIR)/debian/httpd2.1-mpm-$*/usr/sbin/ 
+	$(LIBTOOL) --mode=install $(INSTALL) $(BUILD)/$*/apache2 $(REALCURDIR)/debian/apache2-mpm-$*/usr/sbin/ 
 
 install: build install-worker install-prefork install-event
 	dh_testroot
 	dh_testdir
-	dh_install -a --sourcedir=$(REALCURDIR)/debian/httpd2.1-common
+	dh_install -a --sourcedir=$(REALCURDIR)/debian/apache2-common
 	
-#httpd2.1-utils extras
-	cp support/check_forensic debian/httpd2.1-utils/usr/sbin/check_forensic
-	cp debian/check_forensic.8 debian/httpd2.1-utils/usr/share/man/man8/check_forensic.8
-	cp debian/checkgid.8 debian/httpd2.1-utils/usr/share/man/man8/checkgid.8
-	cp $(BUILD)/worker/support/split-logfile debian/httpd2.1-utils/usr/sbin/split-logfile
-	chmod 755 debian/httpd2.1-utils/usr/sbin/split-logfile
+#apache2-utils extras
+	cp support/check_forensic debian/apache2-utils/usr/sbin/check_forensic
+	cp debian/check_forensic.8 debian/apache2-utils/usr/share/man/man8/check_forensic.8
+	cp debian/checkgid.8 debian/apache2-utils/usr/share/man/man8/checkgid.8
+	cp $(BUILD)/worker/support/split-logfile debian/apache2-utils/usr/sbin/split-logfile
+	chmod 755 debian/apache2-utils/usr/sbin/split-logfile
 
-	#grotesque hack to get rid of stuff from httpd2.1-common
-	find debian/httpd2.1-utils/usr/ -type f |sed -e 's/utils/common/'|xargs rm -f
-#httpd2.1-utils backward compatibility symlinks
-	ln -s ab debian/httpd2.1-utils/usr/sbin/ab2
-	ln -s checkgid debian/httpd2.1-utils/usr/sbin/checkgid2
-	ln -s dbmmanage debian/httpd2.1-utils/usr/bin/dbmmanage2
-	ln -s htdigest debian/httpd2.1-utils/usr/bin/htdigest2
-	ln -s htpasswd debian/httpd2.1-utils/usr/bin/htpasswd2
-	ln -s logresolve debian/httpd2.1-utils/usr/sbin/logresolve2
-	ln -s rotatelogs debian/httpd2.1-utils/usr/sbin/rotatelogs2
+	#grotesque hack to get rid of stuff from apache2-common
+	find debian/apache2-utils/usr/ -type f |sed -e 's/utils/common/'|xargs rm -f
+#apache2-utils backward compatibility symlinks
+	ln -s ab debian/apache2-utils/usr/sbin/ab2
+	ln -s checkgid debian/apache2-utils/usr/sbin/checkgid2
+	ln -s dbmmanage debian/apache2-utils/usr/bin/dbmmanage2
+	ln -s htdigest debian/apache2-utils/usr/bin/htdigest2
+	ln -s htpasswd debian/apache2-utils/usr/bin/htpasswd2
+	ln -s logresolve debian/apache2-utils/usr/sbin/logresolve2
+	ln -s rotatelogs debian/apache2-utils/usr/sbin/rotatelogs2
 
-	mv debian/httpd2.1-common/usr/sbin/envvars debian/httpd2.1-common/etc/httpd2.1/
-	mv debian/httpd2.1-common/usr/sbin/envvars-std debian/httpd2.1-common/usr/share/httpd2.1/build/
-	mv debian/httpd2.1-common/usr/sbin/suexec debian/httpd2.1-common/usr/lib/httpd2.1/
-	rm debian/httpd2.1-common/usr/sbin/*
+	mv debian/apache2-common/usr/sbin/envvars debian/apache2-common/etc/apache2/
+	mv debian/apache2-common/usr/sbin/envvars-std debian/apache2-common/usr/share/apache2/build/
+	mv debian/apache2-common/usr/sbin/suexec debian/apache2-common/usr/lib/apache2/
+	rm debian/apache2-common/usr/sbin/*
 	#reinstall apachectl after we clean up
-	install -m 755 $(BUILD)/worker/support/apachectl $(REALCURDIR)/debian/httpd2.1-common/usr/sbin/httpd2.1-ctl
+	install -m 755 $(BUILD)/worker/support/apachectl $(REALCURDIR)/debian/apache2-common/usr/sbin/apache2-ctl
 	
-	mv debian/httpd2.1-common/etc/httpd2.1 debian/httpd2.1-common/usr/share/httpd2.1/examples
-	cp -a debian/config-dir debian/httpd2.1-common/etc/httpd2.1
-	cp debian/init-script debian/httpd2.1-common.init.d
-	mkdir -p debian/httpd2.1-common/etc/logrotate.d
-	cp debian/logrotate debian/httpd2.1-common/etc/logrotate.d/httpd2.1
-	chmod 4755 debian/httpd2.1-common/usr/lib/httpd2.1/suexec 
+	mv debian/apache2-common/etc/apache2 debian/apache2-common/usr/share/apache2/examples
+	cp -a debian/config-dir debian/apache2-common/etc/apache2
+	cp debian/init-script debian/apache2-common.init.d
+	mkdir -p debian/apache2-common/etc/logrotate.d
+	cp debian/logrotate debian/apache2-common/etc/logrotate.d/apache2
+	chmod 4755 debian/apache2-common/usr/lib/apache2/suexec 
 	for i in `find debian/a2-scripts -name .svn -prune -o -name .arch-ids -prune -o -type f -print`; \
-                do install -m755 $$i debian/httpd2.1-common/usr/sbin; \
+                do install -m755 $$i debian/apache2-common/usr/sbin; \
         done 
 	for i in worker event; do \
-		install -m755 debian/mpm-postinst-threaded debian/httpd2.1-mpm-$$i.postinst ;\
-		install -m755 debian/mpm-preinst-threaded debian/httpd2.1-mpm-$$i.preinst;\
-		install -m755 debian/mpms.prerm debian/httpd2.1-mpm-$$i.prerm ;\
+		install -m755 debian/mpm-postinst-threaded debian/apache2-mpm-$$i.postinst ;\
+		install -m755 debian/mpm-preinst-threaded debian/apache2-mpm-$$i.preinst;\
+		install -m755 debian/mpms.prerm debian/apache2-mpm-$$i.prerm ;\
 	done
-	install -m755 debian/mpms.prerm debian/httpd2.1-mpm-prefork.prerm
+	install -m755 debian/mpms.prerm debian/apache2-mpm-prefork.prerm
 	touch $@
 
 
@@ -159,15 +159,15 @@ binary-arch: install
 	dh_installdocs -a
 	dh_installman -a
 	dh_installchangelogs -a
-	dh_installinit -a -r --init-script=httpd2.1 debian/httpd2.1-common.init.d -- defaults 91
+	dh_installinit -a -r --init-script=apache2 debian/apache2-common.init.d -- defaults 91
 ifeq (,$(findstring nostrip,$(DEB_BUILD_OPTIONS)))
 	dh_strip -a
 endif
 	dh_link -a
 	dh_compress -a
 	dh_fixperms -a -Xsuexec2
-	chown -R www-data:www-data debian/httpd2.1-common/var/cache/httpd2.1
-	chmod 644 debian/httpd2.1-common/usr/share/man/man8/suexec.8.gz
+	chown -R www-data:www-data debian/apache2-common/var/cache/apache2
+	chmod 644 debian/apache2-common/usr/share/man/man8/suexec.8.gz
 	dh_makeshlibs -a -V
 	dh_installdeb -a
 	dh_shlibdeps -a

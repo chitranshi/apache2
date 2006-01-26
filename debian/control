@@ -1,4 +1,4 @@
-Source: httpd2.1
+Source: apache2
 Section: web
 Priority: optional
 Maintainer: Thom May <thom@debian.org>
@@ -6,15 +6,15 @@ Build-Depends: debhelper (>=4.1.16), libapr1.0-dev, libaprutil1.0-dev, libssl-de
 Build-Conflicts: libgdbm-dev
 Standards-Version: 3.6.1.0
 
-Package: httpd2.1-common
+Package: apache2-common
 Architecture: any
-Depends: ${misc:Depends}, httpd2.1-utils|apache2-utils
+Depends: ${misc:Depends}, apache2-utils
 Description: Next generation, scalable, extendable web server
  Foo.
 
-Package: httpd2.1-mpm-worker
+Package: apache2-mpm-worker
 Architecture: any
-Depends: ${shlibs:Depends}, httpd2.1-common (= ${Source-Version})
+Depends: ${shlibs:Depends}, apache2-common (= ${Source-Version})
 Provides: apache2-modules, apache2, httpd, httpd-cgi, apache2-mpm-worker
 Conflicts: apache2-mpm-threadpool, apache2-mpm-prefork, apache2-mpm-perchild
 Description: High speed threaded model for Apache HTTPD 2.1
@@ -24,9 +24,9 @@ Description: High speed threaded model for Apache HTTPD 2.1
  Worker generally is a good choice for high-traffic servers because it
  has a smaller memory footprint than the prefork MPM.
 
-Package: httpd2.1-mpm-prefork
+Package: apache2-mpm-prefork
 Architecture: any
-Depends: ${shlibs:Depends}, httpd2.1-common (= ${Source-Version})
+Depends: ${shlibs:Depends}, apache2-common (= ${Source-Version})
 Provides: apache2-modules, apache2, httpd, httpd-cgi, apache2-mpm-prefork
 Conflicts: apache2-mpm-worker, apache2-mpm-threadpool, apache2-mpm-perchild
 Description: Traditional model for Apache HTTPD 2.1
@@ -39,14 +39,14 @@ Description: Traditional model for Apache HTTPD 2.1
  .
  It is not as fast, but is considered to be more stable.
 
-Package: httpd2.1-mpm-event
+Package: apache2-mpm-event
 Architecture: any
-Depends: ${shlibs:Depends}, httpd2.1-common (= ${Source-Version})
+Depends: ${shlibs:Depends}, apache2-common (= ${Source-Version})
 Provides: apache2-modules, apache2, httpd, httpd-cgi
 Conflicts: apache2-mpm-worker, apache2-mpm-threadpool, apache2-mpm-perchild
 Description: Event driven model for Apache HTTPD 2.1
 
-Package: httpd2.1-utils
+Package: apache2-utils
 Architecture: any
 Replaces: apache2-common (<< 2.0.53), apache-utils (<< 1.3.33-4)
 Provides: apache-utils, apache2-utils
@@ -65,9 +65,9 @@ Description: utility programs for webservers
   - checkgid (Checks whether the caller can setgid to the specified group)
   - check_forensic (Extract mod_log_forensic output from apache log files)
 
-Package: httpd2.1
+Package: apache2
 Architecture: all
-Depends: httpd2.1-mpm-worker|httpd2.1-mpm-prefork
+Depends: apache2-mpm-worker|apache2-mpm-prefork
 Section: web
 Description: Next generation, scalable, extendable web server
  Apache v2 is the next generation of the omnipresent Apache web server. This

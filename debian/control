@@ -10,7 +10,17 @@ Package: apache2-common
 Architecture: any
 Depends: ${misc:Depends}, apache2-utils
 Description: Next generation, scalable, extendable web server
- Foo.
+ Apache v2 is the next generation of the omnipresent Apache web server. This
+ version - a total rewrite - introduces many new improvements, such as
+ threading, a new API, IPv6 support, request/response filtering, and more.
+ .
+ It is also considerably faster, and can be easily extended to provide services
+ other than http.
+ .
+ This package contains all the standard apache2 modules, including SSL support.
+ However, it does *not* include the server itself; for this you need to
+ install one of the apache2-mpm-* packages; such as worker or prefork.
+
 
 Package: apache2-mpm-worker
 Architecture: any
@@ -45,7 +55,13 @@ Depends: ${shlibs:Depends}, apache2-common (= ${Source-Version})
 Provides: apache2-modules, apache2, httpd, httpd-cgi
 Conflicts: apache2-mpm-worker, apache2-mpm-threadpool, apache2-mpm-perchild
 Description: Event driven model for Apache HTTPD 2.1
-
+ The event Multi-Processing Module (MPM) is designed to allow more 
+ requests to be served simultaneously by passing off some processing 
+ work to supporting threads, freeing up the main threads to work on 
+ new requests.
+ .
+ This MPM is especially suitable for sites that see extensive KeepAlive traffic
+ 
 Package: apache2-utils
 Architecture: any
 Replaces: apache2-common (<< 2.0.53), apache-utils (<< 1.3.33-4)

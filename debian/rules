@@ -89,7 +89,22 @@ install-%:
 	dh_installdirs
 	$(LIBTOOL) --mode=install $(INSTALL) $(BUILD)/$*/apache2 $(REALCURDIR)/debian/apache2-mpm-$*/usr/sbin/ 
 
-install: build install-common install-worker install-prefork install-event
+install-dev: 
+	dh_testdir
+	dh_testroot
+	dh_installdirs
+
+	for i in worker prefork; do \
+		if [ "$$i" = "prefork" ]; then \
+			TARGET=prefork ;\
+		else \
+			TARGET=threaded ;\
+		fi ;\
+		cp $(BUILD)/$$i/include/* $(REALCURDIR)/debian/apache2-$$TARGET-dev/usr/include/apache2/ ;\
+		cp $(REALCURDIR)/include/*.h $(REALCURDIR)/debian/apache2-$$TARGET-dev/usr/include/apache2/ ;\
+	done
+
+install: build install-common install-worker install-prefork install-event install-dev
 	dh_testroot
 	dh_testdir
 	dh_install -a --sourcedir=$(REALCURDIR)/debian/apache2-common

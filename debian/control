@@ -103,3 +103,26 @@ Architecture: all
 Description: documentation for apache2
  This is the documentation for apache2, see the apache2 package description
   for more details.
+
+Package: apache2-prefork-dev
+Section: devel
+Architecture: any
+Depends: apache2-common (= ${Source-Version}), openssl, libaprutil1-dev
+Conflicts: apache2-threaded-dev
+Description: development headers for apache2
+ This package provides the development headers and apxs2 binary for
+ apache2-mpm-prefork; see the apache2 package description for more details.
+ .
+ This should only be used when you absolutely *have* to have a non-threaded 
+ environment, ie for PHP4.
+
+Package: apache2-threaded-dev
+Section: devel
+Architecture: any
+Depends: apache2-common (= ${Source-Version}), openssl, libaprutil1-dev
+Conflicts: apache2-prefork-dev
+Provides: apache2-dev
+Description: development headers for apache2
+ This package provides the development headers and apxs2 binary for
+ threaded versions of apache2; see the apache2 package description
+ for more details.

@@ -32,9 +32,18 @@ if ! [ -e $SYSCONFDIR/mods-available/$MODNAME.load ]; then
 	exit 1
 fi
 
+DEPENDS=`grep \"# Depends:\" $SYSCONFDIR/mods-available/$MODNAME.load|cut -f2 -d:`
+if [ ! -z "$DEPENDS" ]; then
+        for i in $DEPENDS; do
+                echo "Enabling $i as a dependency"
+                /usr/sbin/a2enmod "$i";
+        done
+fi
+        
 for i in conf load; do 
         if [ -e $SYSCONFDIR/mods-available/$MODNAME.$i -a ! -e $SYSCONFDIR/mods-enabled/$MODNAME.$i ]; then
-        ln -sf $SYSCONFDIR/mods-available/$MODNAME.$i $SYSCONFDIR/mods-enabled/$MODNAME.$i;
+        cd $SYSCONFDIR/mods-enabled;
+        ln -sf ../mods-available/$MODNAME.$i $MODNAME.$i;
         fi
 done
 

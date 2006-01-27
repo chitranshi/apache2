@@ -201,7 +201,8 @@ binary-indep: install
 	dh_testroot -i 
 	dh_installdirs -i
 	dh_installdocs -i
-	dh_installchangelogs -i CHANGES
+	dh_installchangelogs -i CHANGES -Napache2
+	dh_installchangelogs -papache2
 	dh_compress -i
 	dh_fixperms -i -Xsuexec2
 	dh_installdeb -i

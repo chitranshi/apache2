@@ -1,0 +1,26 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## 003_logio_static by Adam Conrad <adconrad@0c3.net>
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: Patch to stop building log_config and logio as modules.
+
+@DPATCH@
+--- apache2-2.2.0/modules/loggers/config.m4.orig	2004-11-21 18:50:36.000000000 +0000
++++ apache2-2.2.0/modules/loggers/config.m4	2006-01-27 15:45:25.000000000 +0000
+@@ -4,7 +4,7 @@
+ 
+ APACHE_MODPATH_INIT(loggers)
+ 	
+-APACHE_MODULE(log_config, logging configuration, , , yes)
++APACHE_MODULE(log_config, logging configuration)
+ APACHE_MODULE(log_forensic, forensic logging)
+ 
+ if test "x$enable_log_forensic" != "xno"; then
+@@ -12,6 +12,6 @@
+     APR_ADDTO(INCLUDES, [-I\$(top_builddir)/server])
+ fi   
+ 
+-APACHE_MODULE(logio, input and output logging, , , most)
++APACHE_MODULE(logio, input and output logging)
+ 
+ APACHE_MODPATH_FINISH

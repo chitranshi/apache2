@@ -27,10 +27,9 @@ AP2_COMMON_CONFARGS = --enable-layout=Debian --enable-so \
 	  	      --with-suexec-docroot=/var/www \
 		      --with-suexec-userdir=public_html \
 		      --with-suexec-logfile=/var/log/apache2/suexec.log \
-		      --enable-mods-shared=all --enable-modules=all \
 		      --enable-suexec=shared --enable-authn-alias=shared \
 		      --enable-authnz-ldap=shared  \
-		      --enable-disk-cache=shared --enable-cache=yes \
+		      --enable-disk-cache=shared --enable-cache=shared \
 		      --enable-mem-cache=shared --enable-file-cache=shared \
 		      --enable-charset-lite=shared --enable-cgi=shared \
 		      --enable-dav-lock=shared --enable-log-forensic=shared \
@@ -39,9 +38,34 @@ AP2_COMMON_CONFARGS = --enable-layout=Debian --enable-so \
 		      --enable-proxy-connect=shared --enable-proxy-ftp=shared \
 		      --enable-proxy-http=shared --enable-proxy-ajp=shared \
 		      --enable-proxy-balancer=shared --enable-ssl=shared \
+		      --enable-authn-dbm=shared --enable-authn-anon=shared \
+		      --enable-authn-dbd=shared --enable-authn-file=shared \
+		      --enable-authn-default=shared --enable-authz-host=shared \
+		      --enable-authz-groupfile=shared --enable-authz-user=shared \
+		      --enable-authz-dbm=shared --enable-authz-owner=shared \
+		      --enable-authnz-ldap=shared --enable-authz-default=shared \
+		      --enable-auth-basic=shared --enable-auth-digest=shared \
+		      --enable-dbd=shared --enable-deflate=shared \
+		      --enable-include=shared --enable-filter=shared \
+		      --enable-env=shared --enable-mime-magic=shared \
+		      --enable-expires=shared --enable-headers=shared \
+		      --enable-ident=shared --enable-usertrack=shared \
+		      --enable-unique-id=shared --enable-setenvif=shared \
+		      --enable-version=shared --enable-status=shared \
+		      --enable-autoindex=shared --enable-asis=shared \
+		      --enable-info=shared --enable-cgid=shared \
+		      --enable-dav=shared --enable-dav-fs=shared \
+		      --enable-vhost-alias=shared --enable-negotiation=shared \
+		      --enable-dir=shared --enable-imagemap=shared \
+		      --enable-actions=shared --enable-speling=shared \
+		      --enable-userdir=shared --enable-alias=shared \
+		      --enable-rewrite=shared --enable-mime=shared \
 		      --with-apr=/usr/bin/apr-1-config \
 		      --with-apr-util=/usr/bin/apu-1-config \
 		      --with-pcre=yes
+#
+#		      This is insufficiently flexible.
+#		      --enable-mods-shared=all --enable-modules=all 
 
 AP2_CONFLAGS = $(CFLAGS) -pipe -I/usr/include/xmltok -I/usr/include/openssl -Wall
 AP2_LDFLAGS = -ldl -lexpat -lcrypt -ldb-4.3

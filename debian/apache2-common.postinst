@@ -41,9 +41,14 @@ fi
 
 if [ "$2" = "<unknown>" -o -z "$2" ] || dpkg --compare-versions "$2" lt 2.2.0; then
 	a2enmod alias
-	a2enmod mime
-	a2enmod log_config
 	a2enmod authz_host
+	a2enmod autoindex
+	a2enmod dir
+	a2enmod env
+	a2enmod mime
+	a2enmod negotiation
+	a2enmod setenvif
+	a2enmod status
 fi
 
 # Make sure /var/lock/apache2 has the correct permissions

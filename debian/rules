@@ -38,10 +38,10 @@ AP2_COMMON_CONFARGS = --enable-layout=Debian --enable-so \
 		      --enable-proxy-connect=shared --enable-proxy-ftp=shared \
 		      --enable-proxy-http=shared --enable-proxy-ajp=shared \
 		      --enable-proxy-balancer=shared --enable-ssl=shared \
-		--with-apr=/usr/bin/apr-1-config --with-apr-util=/usr/bin/apu-1-config
+		      --with-apr=/usr/bin/apr-1-config \
+		      --with-apr-util=/usr/bin/apu-1-config
 
 AP2_CONFLAGS = $(CFLAGS) -pipe -I/usr/include/xmltok -I/usr/include/openssl -Wall
-#AP2_CONFLAGS += -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 
 AP2_LDFLAGS = -ldl -lexpat -lcrypt -ldb-4.3
 
 #support debug building
@@ -55,13 +55,12 @@ BUILD=debian/build-tree
 REALCURDIR=$(CURDIR)
 LIBTOOL=/usr/bin/libtool
 INSTALL=/usr/bin/install
-PRIMARY_MPM=worker
 
 clean: unpatch
 	dh_testdir
 	dh_clean
 	rm -rf $(BUILD) mpm-worker mpm-prefork mpm-event install
-	
+
 build: patch-stamp build-mpms 
 build-mpms: mpm-worker mpm-prefork mpm-event
 
@@ -72,55 +71,54 @@ mpm-%:
 	CFLAGS="$(AP2_CONFLAGS)" LDFLAGS="$(AP2_LDFLAGS)" $(CONFFLAGS) $(REALCURDIR)/configure --host=$(DEB_HOST_GNU_TYPE) --build=$(DEB_BUILD_GNU_TYPE) --srcdir=$(REALCURDIR) $(AP2_COMMON_CONFARGS) $(AP2_CONFARGS) --with-mpm=$*  ;\
 	$(MAKE)  ;
 	touch $@
-	
 
 install-%:
 	dh_testdir
 	dh_testroot
 	dh_installdirs
+	cd $(BUILD)/$* ;\
+	$(MAKE) DESTDIR=$(REALCURDIR)/debian/apache2-mpm-$* install
+
+install-common:
+	dh_testdir
+	dh_testroot
+	dh_installdirs
 	cd $(BUILD)/worker ;\
-	$(MAKE) DESTDIR=$(REALCURDIR)/debian/apache2-mpm-$* install 
-	cd $(REALCURDIR)
+	$(MAKE) DESTDIR=$(REALCURDIR)/debian/apache2-common install
 
 install-dev: 
 	dh_testdir
 	dh_testroot
 	dh_installdirs
 
-
-dummy:
 	for i in worker prefork; do \
 		if [ "$$i" = "prefork" ]; then \
 			TARGET=prefork ;\
 		else \
 			TARGET=threaded ;\
 		fi ;\
-		cp debian/apache2-common/usr/include/apache2/* debian/apache2-$$TARGET-dev/usr/include/apache2/ ;\
-		cp $(BUILD)/$$i/include/*.h debian/apache2-$$TARGET-dev/usr/include/apache2/ ;\
-		cp debian/apache2-common/usr/share/apache2/build/* debian/apache2-$$TARGET-dev/usr/share/apache2/build/ ;\
-		cp $(BUILD)/$$i/config.nice debian/apache2-$$TARGET-dev/usr/share/apache2/build/ ;\
-		cp $(BUILD)/$$i/build/config_vars.mk debian/apache2-$$TARGET-dev/usr/share/apache2/build/ ;\
+		cp debian/apache2-mpm-$$i/usr/include/apache2/* debian/apache2-$$TARGET-dev/usr/include/apache2/ ;\
+		cp debian/apache2-mpm-$$i/usr/share/apache2/build/* debian/apache2-$$TARGET-dev/usr/share/apache2/build/ ;\
 		cp $(BUILD)/$$i/support/apxs debian/apache2-$$TARGET-dev/usr/bin/apxs2 ;\
-		cp debian/apache2-common/usr/share/man/man8/apxs.8 debian/apache2-$$TARGET-dev/usr/share/man/man8/apxs.8 ;\
+		cp debian/apache2-mpm-$$i/usr/share/man/man8/apxs.8 debian/apache2-$$TARGET-dev/usr/share/man/man8/apxs2.8 ;\
 	done
-	rm -rf debian/apache2-common/usr/include/
-	rm -rf debian/apache2-common/usr/share/man/man8/apxs.8
 
-install: build install-worker install-prefork install-event install-dev
+install: build install-worker install-prefork install-common install-dev
 	dh_testroot
 	dh_testdir
 	dh_install -a --sourcedir=$(REALCURDIR)/debian/apache2-common
-	
-#apache2-utils extras
+
+	#apache2-utils extras
 	cp support/check_forensic debian/apache2-utils/usr/sbin/check_forensic
 	cp debian/check_forensic.8 debian/apache2-utils/usr/share/man/man8/check_forensic.8
 	cp debian/checkgid.8 debian/apache2-utils/usr/share/man/man8/checkgid.8
 	cp $(BUILD)/worker/support/split-logfile debian/apache2-utils/usr/sbin/split-logfile
 	chmod 755 debian/apache2-utils/usr/sbin/split-logfile
 
-	#grotesque hack to get rid of stuff from apache2-common
-	find debian/apache2-utils/usr/ -type f |sed -e 's/utils/common/'|xargs rm -f
-#apache2-utils backward compatibility symlinks
+	#grotesque hack to get rid of stuff from apache-common
+	find debian/apache2-utils/usr/ -type f |sed -e 's/utils/common/'|xargs rm -f ;\
+
+	#apache2-utils backward compatibility symlinks
 	ln -s ab debian/apache2-utils/usr/sbin/ab2
 	ln -s checkgid debian/apache2-utils/usr/sbin/checkgid2
 	ln -s dbmmanage debian/apache2-utils/usr/bin/dbmmanage2
@@ -133,9 +131,10 @@ install: build install-worker install-prefork install-event install-dev
 	mv debian/apache2-common/usr/sbin/envvars-std debian/apache2-common/usr/share/apache2/build/
 	mv debian/apache2-common/usr/sbin/suexec debian/apache2-common/usr/lib/apache2/
 	rm debian/apache2-common/usr/sbin/*
+
 	#reinstall apachectl after we clean up
-	install -m 755 $(BUILD)/worker/support/apachectl $(REALCURDIR)/debian/apache2-common/usr/sbin/apache2ctl
-	
+	install -m 755 $(BUILD)/worker/support/apachectl debian/apache2-common/usr/sbin/apache2ctl
+
 	mv debian/apache2-common/etc/apache2 debian/apache2-common/usr/share/apache2/examples
 	cp -a debian/config-dir debian/apache2-common/etc/apache2
 	cp debian/init-script debian/apache2-common.init.d
@@ -152,14 +151,23 @@ install: build install-worker install-prefork install-event install-dev
 	done
 	install -m755 debian/mpms.prerm debian/apache2-mpm-prefork.prerm
 
-#documentation
+	#documentation
 	cp -R docs/* debian/apache2-doc/usr/share/doc/apache2-doc/
 	cp debian/apache2-doc.conf debian/apache2-doc/etc/apache2/conf.d/apache2-doc
-	
+
+	#cleanup of death
+	rm -rf debian/apache2-common/usr/include
+	rm -rf debian/apache2-common/usr/share/apache2/build
+
+	for i in worker prefork event; do \
+		rm -rf debian/apache2-mpm-$$i/ ;\
+		mkdir -p debian/apache2-mpm-$$i/usr/sbin ;\
+		install -m 755 $(BUILD)/$$i/apache2 debian/apache2-mpm-$$i/usr/sbin/apache2 ;\
+	done
+
 	touch $@
 
-
-binary-indep:
+binary-indep: install
 	dh_testdir -i
 	dh_testroot -i 
 	dh_installdirs -i

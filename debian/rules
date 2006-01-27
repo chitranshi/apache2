@@ -153,8 +153,8 @@ install: build install-worker install-prefork install-common install-dev
 
 	#documentation
 	cp -R docs/* debian/apache2-doc/usr/share/doc/apache2-doc/
-	rm -rf debian/apache2-doc/usr/share/doc/apache2-doc/usr/share/doc/apache2-doc/apache2-doc/conf/
-	rm -rf debian/apache2-doc/usr/share/doc/apache2-doc/usr/share/doc/apache2-doc/apache2-doc/examples/original
+	rm -rf debian/apache2-doc/usr/share/doc/apache2-doc/conf/
+	rm -rf debian/apache2-doc/usr/share/doc/apache2-doc/examples/original
 	cp debian/apache2-doc.conf debian/apache2-doc/etc/apache2/conf.d/apache2-doc
 	mv debian/apache2-common/usr/share/apache2/examples debian/apache2-doc/usr/share/doc/apache2-doc/
 

@@ -154,10 +154,12 @@ install: build install-worker install-prefork install-common install-dev
 	#documentation
 	cp -R docs/* debian/apache2-doc/usr/share/doc/apache2-doc/
 	cp debian/apache2-doc.conf debian/apache2-doc/etc/apache2/conf.d/apache2-doc
+	mv debian/apache2-common/usr/share/apache2/examples debian/apache2-doc/usr/share/doc/apache2-doc/
 
 	#cleanup of death
 	rm -rf debian/apache2-common/usr/include
 	rm -rf debian/apache2-common/usr/share/apache2/build
+	rm -rf debian/apache2-common/usr/share/apache2/default-site
 
 	for i in worker prefork event; do \
 		rm -rf debian/apache2-mpm-$$i/ ;\

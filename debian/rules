@@ -39,7 +39,8 @@ AP2_COMMON_CONFARGS = --enable-layout=Debian --enable-so \
 		      --enable-proxy-http=shared --enable-proxy-ajp=shared \
 		      --enable-proxy-balancer=shared --enable-ssl=shared \
 		      --with-apr=/usr/bin/apr-1-config \
-		      --with-apr-util=/usr/bin/apu-1-config
+		      --with-apr-util=/usr/bin/apu-1-config \
+		      --with-pcre=yes
 
 AP2_CONFLAGS = $(CFLAGS) -pipe -I/usr/include/xmltok -I/usr/include/openssl -Wall
 AP2_LDFLAGS = -ldl -lexpat -lcrypt -ldb-4.3
@@ -69,7 +70,7 @@ mpm-%:
 	mkdir -p $(BUILD)/$*
 	cd $(BUILD)/$* ;\
 	CFLAGS="$(AP2_CONFLAGS)" LDFLAGS="$(AP2_LDFLAGS)" $(CONFFLAGS) $(REALCURDIR)/configure --host=$(DEB_HOST_GNU_TYPE) --build=$(DEB_BUILD_GNU_TYPE) --srcdir=$(REALCURDIR) $(AP2_COMMON_CONFARGS) $(AP2_CONFARGS) --with-mpm=$*  ;\
-	$(MAKE)  ;
+	$(MAKE) CC=$(CC)
 	touch $@
 
 install-%:

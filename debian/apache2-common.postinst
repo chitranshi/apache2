@@ -51,6 +51,17 @@ if [ "$2" = "<unknown>" -o -z "$2" ] || dpkg --compare-versions "$2" lt 2.2.0; t
 	a2enmod status
 fi
 
+if [ -n "$2" ] && dpkg --compare-versions "$2" lt 2.2.0; then
+	if [ -L /etc/apache2/mods-enabled/imap.load ]; then
+		a2dismod imap
+		a2enmod imagemap
+	fi
+	if [ -L /etc/apache2/mods-enabled/auth_ldap.load ]; then
+		a2dismod auth_ldap
+		a2enmod authnz_ldap
+	fi
+fi
+
 # Make sure /var/lock/apache2 has the correct permissions
 if [ -d /var/lock/apache2 ]; then
         chown www-data /var/lock/apache2

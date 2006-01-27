@@ -138,7 +138,6 @@ install: build install-worker install-prefork install-common install-dev
 
 	mv debian/apache2-common/etc/apache2 debian/apache2-common/usr/share/apache2/examples
 	cp -a debian/config-dir debian/apache2-common/etc/apache2
-	cp debian/init-script debian/apache2-common.init.d
 	mkdir -p debian/apache2-common/etc/logrotate.d
 	cp debian/logrotate debian/apache2-common/etc/logrotate.d/apache2
 	chmod 4755 debian/apache2-common/usr/lib/apache2/suexec 

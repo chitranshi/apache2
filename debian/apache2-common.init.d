@@ -29,7 +29,7 @@ if [ "$NO_START" != "0" -a "$1" != "stop" ]; then
 fi
 
 APACHE2="$ENV /usr/sbin/apache2"
-APACHE2CTL="$ENV /usr/sbin/apache2-ctl"
+APACHE2CTL="$ENV /usr/sbin/apache2ctl"
 
 apache_stop() {
 	if `apache2 -t > /dev/null 2>&1`; then

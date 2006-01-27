@@ -5,8 +5,8 @@
 ## DP: Avoid including dpkg droppings in globbed includes.
 
 @DPATCH@
---- apache2/server/config.c.orig	2005-11-17 13:39:15.000000000 +0000
-+++ apache2/server/config.c	2006-01-26 17:41:07.000000000 +0000
+--- apache2-2.2.0/server/config.c	2005-11-17 13:39:15.000000000 +0000
++++ apache2-2.2.0/server/config.c	2006-01-27 17:06:19.000000000 +0000
 @@ -34,6 +34,7 @@
  #include "apr_portable.h"
  #include "apr_file_io.h"
@@ -15,8 +15,8 @@
  
  #define APR_WANT_STDIO
  #define APR_WANT_STRFUNC
-@@ -1621,6 +1622,30 @@
-     return NULL;
+@@ -1521,6 +1522,30 @@
+     return strcmp(f1->fname,f2->fname);
  }
  
 +static int fname_valid(const char *fname) {
@@ -43,10 +43,20 @@
 +    return 1;
 +}
 +
- AP_DECLARE(const char *) ap_process_resource_config(server_rec *s,
-                                                     const char *fname,
-                                                     ap_directive_t **conftree,
-@@ -1692,7 +1717,8 @@
+ static const char *process_resource_config_nofnmatch(server_rec *s,
+                                                      const char *fname,
+                                                      ap_directive_t **conftree,
+@@ -1564,7 +1589,8 @@
+         while (apr_dir_read(&dirent, APR_FINFO_DIRENT, dirp) == APR_SUCCESS) {
+             /* strip out '.' and '..' */
+             if (strcmp(dirent.name, ".")
+-                && strcmp(dirent.name, "..")) {
++                && strcmp(dirent.name, "..")
++                && fname_valid(dirent.name)) {
+                 fnew = (fnames *) apr_array_push(candidates);
+                 fnew->fname = ap_make_full_path(p, path, dirent.name);
+             }
+@@ -1692,7 +1718,8 @@
              if (strcmp(dirent.name, ".")
                  && strcmp(dirent.name, "..")
                  && (apr_fnmatch(pattern, dirent.name,

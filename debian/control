@@ -8,7 +8,7 @@ Standards-Version: 3.6.1.0
 
 Package: apache2-common
 Architecture: any
-Depends: ${misc:Depends}, apache2-utils, net-tools
+Depends: ${misc:Depends}, apache2-utils, net-tools, libmagic1, mime-support
 Description: Next generation, scalable, extendable web server
  Apache v2 is the next generation of the omnipresent Apache web server. This
  version - a total rewrite - introduces many new improvements, such as

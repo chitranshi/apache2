@@ -33,7 +33,8 @@ AP2_COMMON_CONFARGS = --enable-layout=Debian --enable-so \
 		      --enable-disk-cache=shared --enable-cache=yes \
 		      --enable-mem-cache=shared --enable-file-cache=shared \
 		      --enable-charset-lite=shared --enable-cgi=shared \
-		      --enable-dav-lock=shared \
+		      --enable-dav-lock=shared --enable-log-forensic=shared \
+		      --enable-log-config --enable-logio \
 		      --enable-ldap=shared --enable-proxy=shared \
 		      --enable-proxy-connect=shared --enable-proxy-ftp=shared \
 		      --enable-proxy-http=shared --enable-proxy-ajp=shared \
@@ -62,8 +63,11 @@ clean: unpatch
 	dh_clean
 	rm -rf $(BUILD) mpm-worker mpm-prefork mpm-event install
 
-build: patch-stamp build-mpms 
+build: patch-stamp buildconf build-mpms 
 build-mpms: mpm-worker mpm-prefork mpm-event
+
+buildconf:
+	$(REALCURDIR)/buildconf
 
 mpm-%:
 	dh_testdir

@@ -94,7 +94,7 @@ mpm-%:
 	dh_testdir
 	mkdir -p $(BUILD)/$*
 	cd $(BUILD)/$* ;\
-	CFLAGS="$(AP2_CONFLAGS)" LDFLAGS="$(AP2_LDFLAGS)" $(CONFFLAGS) $(REALCURDIR)/configure --host=$(DEB_HOST_GNU_TYPE) --build=$(DEB_BUILD_GNU_TYPE) --srcdir=$(REALCURDIR) $(AP2_COMMON_CONFARGS) $(AP2_CONFARGS) --with-mpm=$*  ;\
+	CFLAGS="$(AP2_CONFLAGS)" LDFLAGS="$(AP2_LDFLAGS)" $(CONFFLAGS) $(REALCURDIR)/configure --srcdir=$(REALCURDIR) $(AP2_COMMON_CONFARGS) $(AP2_CONFARGS) --with-mpm=$*  ;\
 	$(MAKE) CC=$(CC)
 	touch $@
 

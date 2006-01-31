@@ -91,6 +91,7 @@ apache_stop() {
 case $1 in
 	start)
 		[ -f /etc/apache2/httpd.conf ] || touch /etc/apache2/httpd.conf
+		[ -d /var/run/apache2 ] || mkdir -p /var/run/apache2
 		#ssl_scache shouldn't be here if we're just starting up.
 		[ -f /var/run/apache2/ssl_scache ] && rm -f /var/run/apache2/*ssl_scache*
 		log_begin_msg "Starting web server (apache2)..."

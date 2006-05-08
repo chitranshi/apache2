@@ -1,3 +1,9 @@
+apache2 (2.2.2-1) UNRELEASED; urgency=low
+
+  * New Upstream Release
+
+ -- Thom May <thom@debian.org>  Thu,  4 May 2006 14:55:01 +0100
+
 apache2 (2.2.0-1) UNRELEASED; urgency=low
 
   * New upstream release.

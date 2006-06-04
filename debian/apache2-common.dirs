@@ -4,3 +4,4 @@ etc/apache2/conf.d
 usr/share/apache2/build
 var/cache/apache2
 var/run/apache2
+var/www

@@ -30,6 +30,7 @@ apache2 (2.2.2-1) UNRELEASED; urgency=low
   * Cope with /var/run and /var/lock on tmpfs.
   * Remove all subdirs in srclib as we are using external libraries for
     those anyway.  Also remove test/zb.c.  Closes: 340538
+  * Make ssl.conf not block on /dev/random, but rather use /dev/urandom.
 
  -- Thom May <thom@debian.org>  Thu,  4 May 2006 14:55:01 +0100
 

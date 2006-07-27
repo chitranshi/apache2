@@ -1,8 +1,13 @@
 apache2 (2.2.2-1) UNRELEASED; urgency=low
 
-  * New Upstream Release.
+  * New Upstream Release.  Closes: #344072
     http://httpd.apache.org/docs/2.2/new_features_2_2.html has a list of
     new features and changes.
+    - Fixes LFS support. Closes: #341460, #285337, #241223
+    - Fixes XSS issue in mod_imap/mod_imagemap (CVE-2005-3352).  
+      Closes: #343467.
+    - mpm_perchild no longer exists, so closing bugs for perchild.
+      Closes: #236193, #238586
   * Build-depend on lsb-release and pick up the branding from there.
   * Build-depend on apr-util 1.0 which is now in a separate source
     package.
@@ -16,12 +21,15 @@ apache2 (2.2.2-1) UNRELEASED; urgency=low
     authz_host, autoindex, dir, env, negotiation, setenvif, status.
   * Mod imap has been renamed to imagemap, ditto for auth_ldap =>
     authnz_ldap.  Cope with that in postinst.
-  * Stop globbing in apache2.conf
+  * Stop globbing in apache2.conf.  
+    Closes: #337817, #340955, #348189, #379015, #368497
   * Don't install CHANGES into the apache2 package.  It's just a
     metapackage.
-  * Add rudimentary rdeps handling to a2dismod
+  * Add rudimentary rdeps handling to a2dismod.  Closes: #273929
   * Stop providing apache-utils.
   * Cope with /var/run and /var/lock on tmpfs.
+  * Remove all subdirs in srclib as we are using external libraries for
+    those anyway.  Also remove test/zb.c.  Closes: 340538
 
  -- Thom May <thom@debian.org>  Thu,  4 May 2006 14:55:01 +0100
 

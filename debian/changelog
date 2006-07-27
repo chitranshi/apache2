@@ -1,6 +1,27 @@
 apache2 (2.2.2-1) UNRELEASED; urgency=low
 
-  * New Upstream Release
+  * New Upstream Release.
+    http://httpd.apache.org/docs/2.2/new_features_2_2.html has a list of
+    new features and changes.
+  * Build-depend on lsb-release and pick up the branding from there.
+  * Build-depend on apr-util 1.0 which is now in a separate source
+    package.
+  * Mangle the Debian layout to be more FHS compatible
+  * No longer build-conflict with libgdbm-dev
+  * Use external PCRE  
+  * Make apache2-utils stop providing apache2-utils.  Also make it stop
+    conflicting with itself.
+  * Rename default site from default-site to just default.
+  * Try to migrate modules which used to be built-in:, alias, mime,
+    authz_host, autoindex, dir, env, negotiation, setenvif, status.
+  * Mod imap has been renamed to imagemap, ditto for auth_ldap =>
+    authnz_ldap.  Cope with that in postinst.
+  * Stop globbing in apache2.conf
+  * Don't install CHANGES into the apache2 package.  It's just a
+    metapackage.
+  * Add rudimentary rdeps handling to a2dismod
+  * Stop providing apache-utils.
+  * Cope with /var/run and /var/lock on tmpfs.
 
  -- Thom May <thom@debian.org>  Thu,  4 May 2006 14:55:01 +0100
 

@@ -218,9 +218,7 @@ binary-arch: install
 	dh_installman -a
 	dh_installchangelogs -a CHANGES
 	dh_installinit -a -r --init-script=apache2 debian/apache2-common.init.d -- defaults 91
-ifeq (,$(findstring nostrip,$(DEB_BUILD_OPTIONS)))
 	dh_strip -a
-endif
 	dh_link -a
 	dh_compress -a
 	dh_fixperms -a -Xsuexec2

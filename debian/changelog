@@ -31,6 +31,7 @@ apache2 (2.2.2-1) UNRELEASED; urgency=low
   * Remove all subdirs in srclib as we are using external libraries for
     those anyway.  Also remove test/zb.c.  Closes: 340538
   * Make ssl.conf not block on /dev/random, but rather use /dev/urandom.
+  * Make apache2-common depend on lsb-base, thanks to Gleb Arshinov
 
  -- Thom May <thom@debian.org>  Thu,  4 May 2006 14:55:01 +0100
 

@@ -168,7 +168,7 @@ install: build install-worker install-prefork install-common install-dev
 	chmod 4755 debian/apache2-common/usr/lib/apache2/suexec 
 	for i in `find debian/a2-scripts -name .svn -prune -o -name .arch-ids -prune -o -type f -print`; \
                 do install -m755 $$i debian/apache2-common/usr/sbin; \
-		rm debian/apache2-common/usr/sbin/update-apache2-modules debian/apache2-common/usr/sbin/modhandler.py; \
+		rm -f debian/apache2-common/usr/sbin/update-apache2-modules debian/apache2-common/usr/sbin/modhandler.py; \
         done 
 	for i in worker event; do \
 		install -m755 debian/mpm-postinst-threaded debian/apache2-mpm-$$i.postinst ;\

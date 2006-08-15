@@ -95,7 +95,7 @@ mpm-%:
 	mkdir -p $(BUILD)/$*
 	cd $(BUILD)/$* ;\
 	CFLAGS="$(AP2_CONFLAGS)" LDFLAGS="$(AP2_LDFLAGS)" $(CONFFLAGS) $(REALCURDIR)/configure --srcdir=$(REALCURDIR) $(AP2_COMMON_CONFARGS) $(AP2_CONFARGS) --with-mpm=$*  ;\
-	$(MAKE)
+	$(MAKE) CC=$(CC)
 	touch $@
 
 install-%:

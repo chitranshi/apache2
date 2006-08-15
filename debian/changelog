@@ -10,6 +10,7 @@ apache2 (2.2.3-1) UNRELEASED; urgency=low
       Closes: #343467.
     - mpm_perchild no longer exists, so closing bugs for perchild.
       Closes: #236193, #238586
+    - Fixes PHP POST with SSLVerifyClient. Closes: 353443
   * Build-depend on lsb-release and pick up the branding from there.
   * Build-depend on apr-util 1.0 which is now in a separate source
     package.

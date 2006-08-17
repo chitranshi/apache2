@@ -1,4 +1,4 @@
-apache2 (2.2.3-1) UNRELEASED; urgency=low
+apache2 (2.2.3-1) experimental; urgency=low
 
   * New Upstream Release.  Closes: #344072
     http://httpd.apache.org/docs/2.2/new_features_2_2.html has a list of

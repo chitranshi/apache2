@@ -8,5 +8,6 @@
 031_apxs2_sucks_more
 032_suexec_is_shared
 033_dbm_read_hash_or_btree
+034_apxs2_libtool_fixtastic
 038_no_LD_LIBRARY_PATH
 042_htdigest_CAN-2005-1344

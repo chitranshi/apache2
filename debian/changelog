@@ -6,6 +6,7 @@ apache2 (2.2.3-1) UNRELEASED; urgency=low
     version.  This is to force modules to be uninstalled until versions
     compiled against 2.2 are provided.
   * Remove Daniel Stone from list of uploaders.
+  * We no longer ship 035_HEAD_Content-Length_Fix_From_CVS.  Closes: #298143
 
  -- Tollef Fog Heen <tfheen@debian.org>  Thu, 17 Aug 2006 14:02:58 +0200
 

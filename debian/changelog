@@ -47,7 +47,7 @@ apache2 (2.2.3-1~exp.r170) experimental; urgency=low
   * Make ssl.conf not block on /dev/random, but rather use /dev/urandom.
   * Make apache2-common depend on lsb-base, thanks to Gleb Arshinov
 
- -- Thom May <thom@debian.org>  Tue, 15 Aug 2006 14:43:35 +0200
+ -- Jeroen van Wolffelaar <jeroen@wolffelaar.nl>  Tue, 15 Aug 2006 16:17:33 +0200
 
 apache2 (2.2.0-1) UNRELEASED; urgency=low
 

@@ -2,7 +2,7 @@ Source: apache2
 Section: web
 Priority: optional
 Maintainer: Debian Apache Maintainers <debian-apache@lists.debian.org>
-Uploaders: Tollef Fog Heen <tfheen@debian.org>, Thom May <thom@debian.org>, Fabio M. Di Nitto <fabbione@fabbione.net>, Daniel Stone <daniels@debian.org>, Adam Conrad <adconrad@0c3.net>
+Uploaders: Tollef Fog Heen <tfheen@debian.org>, Thom May <thom@debian.org>, Fabio M. Di Nitto <fabbione@fabbione.net>, Adam Conrad <adconrad@0c3.net>
 Build-Depends: debhelper (>=4.1.16), dpatch, lsb-release, libaprutil1-dev, openssl, libpcre3-dev, libtool
 Standards-Version: 3.6.1.0
 

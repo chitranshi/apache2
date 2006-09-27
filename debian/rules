@@ -79,7 +79,6 @@ endif
 
 BUILD=debian/build-tree
 REALCURDIR=$(CURDIR)
-LIBTOOL=/usr/bin/libtool
 INSTALL=/usr/bin/install
 
 clean: unpatch
@@ -95,7 +94,7 @@ mpm-%:
 	mkdir -p $(BUILD)/$*
 	cd $(BUILD)/$* ;\
 	CFLAGS="$(AP2_CONFLAGS)" LDFLAGS="$(AP2_LDFLAGS)" $(CONFFLAGS) $(REALCURDIR)/configure --srcdir=$(REALCURDIR) $(AP2_COMMON_CONFARGS) $(AP2_CONFARGS) --with-mpm=$*  ;\
-	$(MAKE) CC=$(CC)
+	$(MAKE)
 	touch $@
 
 install-%:
@@ -110,7 +109,7 @@ install-common:
 	dh_testroot
 	dh_installdirs
 	cd $(BUILD)/worker ;\
-	$(MAKE) DESTDIR=$(REALCURDIR)/debian/apache2-common install
+	$(MAKE) DESTDIR=$(REALCURDIR)/debian/apache2.2-common install
 
 install-dev: 
 	dh_testdir
@@ -132,9 +131,9 @@ install-dev:
 install: build install-worker install-prefork install-common install-dev
 	dh_testroot
 	dh_testdir
-	dh_install -a --sourcedir=$(REALCURDIR)/debian/apache2-common
+	dh_install -a --sourcedir=$(REALCURDIR)/debian/apache2.2-common
 
-	cp debian/bash_completion debian/apache2-common/etc/bash_completion.d/apache2-common
+	cp debian/bash_completion debian/apache2.2-common/etc/bash_completion.d/apache2.2-common
 
 	#apache2-utils extras
 	cp support/check_forensic debian/apache2-utils/usr/sbin/check_forensic
@@ -155,22 +154,22 @@ install: build install-worker install-prefork install-common install-dev
 	ln -s logresolve debian/apache2-utils/usr/sbin/logresolve2
 	ln -s rotatelogs debian/apache2-utils/usr/sbin/rotatelogs2
 
-	mv debian/apache2-common/usr/sbin/envvars debian/apache2-common/etc/apache2/
-	mv debian/apache2-common/usr/sbin/envvars-std debian/apache2-common/usr/share/apache2/build/
-	mv debian/apache2-common/usr/sbin/suexec debian/apache2-common/usr/lib/apache2/
-	rm debian/apache2-common/usr/sbin/*
+	mv debian/apache2.2-common/usr/sbin/envvars debian/apache2.2-common/etc/apache2/
+	mv debian/apache2.2-common/usr/sbin/envvars-std debian/apache2.2-common/usr/share/apache2/build/
+	mv debian/apache2.2-common/usr/sbin/suexec debian/apache2.2-common/usr/lib/apache2/
+	rm debian/apache2.2-common/usr/sbin/*
 
 	#reinstall apachectl after we clean up
-	install -m 755 $(BUILD)/worker/support/apachectl debian/apache2-common/usr/sbin/apache2ctl
+	install -m 755 $(BUILD)/worker/support/apachectl debian/apache2.2-common/usr/sbin/apache2ctl
 
-	mv debian/apache2-common/etc/apache2 debian/apache2-common/usr/share/apache2/examples
-	cp -a debian/config-dir debian/apache2-common/etc/apache2
-	mkdir -p debian/apache2-common/etc/logrotate.d
-	cp debian/logrotate debian/apache2-common/etc/logrotate.d/apache2
-	chmod 4755 debian/apache2-common/usr/lib/apache2/suexec 
+	mv debian/apache2.2-common/etc/apache2 debian/apache2.2-common/usr/share/apache2/examples
+	cp -a debian/config-dir debian/apache2.2-common/etc/apache2
+	mkdir -p debian/apache2.2-common/etc/logrotate.d
+	cp debian/logrotate debian/apache2.2-common/etc/logrotate.d/apache2
+	chmod 4755 debian/apache2.2-common/usr/lib/apache2/suexec 
 	for i in `find debian/a2-scripts -name .svn -prune -o -name .arch-ids -prune -o -type f -print`; \
-                do install -m755 $$i debian/apache2-common/usr/sbin; \
-		rm -f debian/apache2-common/usr/sbin/update-apache2-modules debian/apache2-common/usr/sbin/modhandler.py; \
+                do install -m755 $$i debian/apache2.2-common/usr/sbin; \
+		rm -f debian/apache2.2-common/usr/sbin/update-apache2-modules debian/apache2.2-common/usr/sbin/modhandler.py; \
         done 
 	for i in worker event; do \
 		install -m755 debian/mpm-postinst-threaded debian/apache2-mpm-$$i.postinst ;\
@@ -184,12 +183,12 @@ install: build install-worker install-prefork install-common install-dev
 	rm -rf debian/apache2-doc/usr/share/doc/apache2-doc/conf/
 	rm -rf debian/apache2-doc/usr/share/doc/apache2-doc/examples/original
 	cp debian/apache2-doc.conf debian/apache2-doc/etc/apache2/conf.d/apache2-doc
-	mv debian/apache2-common/usr/share/apache2/examples debian/apache2-doc/usr/share/doc/apache2-doc/
+	mv debian/apache2.2-common/usr/share/apache2/examples debian/apache2-doc/usr/share/doc/apache2-doc/
 
 	#cleanup of death
-	rm -rf debian/apache2-common/usr/include
-	rm -rf debian/apache2-common/usr/share/apache2/build
-	rm -rf debian/apache2-common/usr/share/apache2/default-site
+	rm -rf debian/apache2.2-common/usr/include
+	rm -rf debian/apache2.2-common/usr/share/apache2/build
+	rm -rf debian/apache2.2-common/usr/share/apache2/default-site
 
 	for i in worker prefork event; do \
 		rm -rf debian/apache2-mpm-$$i/ ;\
@@ -220,13 +219,13 @@ binary-arch: install
 	dh_installdocs -a
 	dh_installman -a
 	dh_installchangelogs -a CHANGES
-	dh_installinit -a -r --init-script=apache2 debian/apache2-common.init.d -- start 91 09
+	dh_installinit -a -r --init-script=apache2 debian/apache2.2-common.init.d -- start 91 09
 	dh_strip -a
 	dh_link -a
 	dh_compress -a
 	dh_fixperms -a -Xsuexec2
-	chown -R www-data:www-data debian/apache2-common/var/cache/apache2
-	chmod 644 debian/apache2-common/usr/share/man/man8/suexec.8.gz
+	chown -R www-data:www-data debian/apache2.2-common/var/cache/apache2
+	chmod 644 debian/apache2.2-common/usr/share/man/man8/suexec.8.gz
 	dh_makeshlibs -a -V
 	dh_installdeb -a
 	dh_shlibdeps -a

@@ -134,6 +134,8 @@ install: build install-worker install-prefork install-common install-dev
 	dh_testdir
 	dh_install -a --sourcedir=$(REALCURDIR)/debian/apache2-common
 
+	cp debian/bash_completion debian/apache2-common/etc/bash_completion.d/apache2-common
+
 	#apache2-utils extras
 	cp support/check_forensic debian/apache2-utils/usr/sbin/check_forensic
 	cp debian/check_forensic.8 debian/apache2-utils/usr/share/man/man8/check_forensic.8

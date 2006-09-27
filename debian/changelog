@@ -49,6 +49,23 @@ apache2 (2.2.3-1~exp.r170) experimental; urgency=low
 
  -- Jeroen van Wolffelaar <jeroen@wolffelaar.nl>  Tue, 15 Aug 2006 16:17:33 +0200
 
+apache2 (2.0.55-4.1) unstable; urgency=high
+
+  * Non-maintainer upload.  Urgency set to high due to security fixes.
+  * Added '052_mod_rewrite_CVE-2006-3747' to fix the off-by-one bug in
+    mod_rewrite.
+    [CVE-2006-3747].  (Closes: #380182)
+  * Added '053_restore_prefix_fix' to allow rebuilding from source.
+    (Closes: #374160)
+  * Added '054_apr_sendfile' to allow building for Hurd.
+    (Closes: #349416)
+  * Added '055_expect_CVE-2006-3918' to fix XSS attack in Expect headers.
+    [CVE-2006-3918].  (Closes: #381376)
+  * Added bash-completion script from Guillaume Rousse.
+    (Closes: #299855)
+
+ -- Steve Kemp <skx@debian.org>  Sat, 5 Aug 2006 21:35:53 +0000
+
 apache2 (2.2.0-1) UNRELEASED; urgency=low
 
   * New upstream release.

@@ -1,6 +1,7 @@
 etc/apache2/mods-enabled
 etc/apache2/sites-enabled
 etc/apache2/conf.d
+etc/bash_completion.d
 usr/share/apache2/build
 var/cache/apache2
 var/run/apache2

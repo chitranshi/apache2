@@ -2,6 +2,9 @@ apache2 (2.2.3-1) UNRELEASED; urgency=low
 
   * Remove mention of AddDefaultCharset from apache2.conf as this is now
     in /etc/apache2/conf.d/charset.
+  * Rename apache2-common to apache2.2-common.  Conflict and replace old
+    version.  This is to force modules to be uninstalled until versions
+    compiled against 2.2 are provided.
 
  -- Tollef Fog Heen <tfheen@debian.org>  Thu, 17 Aug 2006 14:02:58 +0200
 

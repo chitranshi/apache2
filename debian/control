@@ -6,9 +6,11 @@ Uploaders: Tollef Fog Heen <tfheen@debian.org>, Thom May <thom@debian.org>, Fabi
 Build-Depends: debhelper (>=4.1.16), dpatch, lsb-release, libaprutil1-dev, openssl, libpcre3-dev, libtool
 Standards-Version: 3.6.1.0
 
-Package: apache2-common
+Package: apache2.2-common
 Architecture: any
 Depends: ${misc:Depends}, apache2-utils, net-tools, libmagic1, mime-support, lsb-base
+Conflicts: apache2-common
+Replaces: apache2-common
 Description: Next generation, scalable, extendable web server
  Apache v2 is the next generation of the omnipresent Apache web server. This
  version - a total rewrite - introduces many new improvements, such as
@@ -23,7 +25,7 @@ Description: Next generation, scalable, extendable web server
 
 Package: apache2-mpm-worker
 Architecture: any
-Depends: ${shlibs:Depends}, apache2-common (= ${Source-Version})
+Depends: ${shlibs:Depends}, apache2.2-common (= ${Source-Version})
 Provides: apache2-modules, apache2, httpd, httpd-cgi
 Conflicts: apache2-mpm-prefork
 Replaces: apache2-mpm-threadpool (<< 2.0.53), apache2-mpm-perchild (<< 2.2.0)
@@ -36,7 +38,7 @@ Description: High speed threaded model for Apache HTTPD 2.1
 
 Package: apache2-mpm-prefork
 Architecture: any
-Depends: ${shlibs:Depends}, apache2-common (= ${Source-Version})
+Depends: ${shlibs:Depends}, apache2.2-common (= ${Source-Version})
 Provides: apache2-modules, apache2, httpd, httpd-cgi
 Conflicts: apache2-mpm-worker, apache2-mpm-perchild
 Description: Traditional model for Apache HTTPD 2.1
@@ -51,7 +53,7 @@ Description: Traditional model for Apache HTTPD 2.1
 
 Package: apache2-mpm-event
 Architecture: any
-Depends: ${shlibs:Depends}, apache2-common (= ${Source-Version})
+Depends: ${shlibs:Depends}, apache2.2-common (= ${Source-Version})
 Provides: apache2-modules, apache2, httpd, httpd-cgi
 Conflicts: apache2-mpm-worker, apache2-mpm-perchild
 Description: Event driven model for Apache HTTPD 2.1
@@ -106,7 +108,7 @@ Description: documentation for apache2
 Package: apache2-prefork-dev
 Section: devel
 Architecture: any
-Depends: apache2-common (= ${Source-Version}), openssl, libaprutil1-dev
+Depends: apache2.2-common (= ${Source-Version}), openssl, libaprutil1-dev
 Conflicts: apache2-threaded-dev
 Description: development headers for apache2
  This package provides the development headers and apxs2 binary for
@@ -118,7 +120,7 @@ Description: development headers for apache2
 Package: apache2-threaded-dev
 Section: devel
 Architecture: any
-Depends: apache2-common (= ${Source-Version}), openssl, libaprutil1-dev
+Depends: apache2.2-common (= ${Source-Version}), openssl, libaprutil1-dev
 Conflicts: apache2-prefork-dev
 Provides: apache2-dev
 Description: development headers for apache2

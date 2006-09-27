@@ -1,12 +1,16 @@
-apache2 (2.2.3-2) UNRELEASED; urgency=low
+apache2 (2.2.3-1) UNRELEASED; urgency=low
 
   * Remove mention of AddDefaultCharset from apache2.conf as this is now
     in /etc/apache2/conf.d/charset.
 
  -- Tollef Fog Heen <tfheen@debian.org>  Thu, 17 Aug 2006 14:02:58 +0200
 
-apache2 (2.2.3-1) experimental; urgency=low
+apache2 (2.2.3-1~exp.r170) experimental; urgency=low
 
+  [ Jeroen van Wolffelaar ]
+  * Staging upload to experimental of subversion revision r170
+
+  [ Thom May, Tollef Fog Heen, Fabio M. Di Nitto and Adam Conrad ]
   * New Upstream Release.  Closes: #344072
     http://httpd.apache.org/docs/2.2/new_features_2_2.html has a list of
     new features and changes.

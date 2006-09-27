@@ -31,6 +31,36 @@ fi
 APACHE2="$ENV /usr/sbin/apache2"
 APACHE2CTL="$ENV /usr/sbin/apache2ctl"
 
+pidof_apache() {
+    # if pidof is null for some reasons the script exits automagically
+    # classified as good/unknown feature
+    PIDS=`pidof apache2` || true
+    
+    PID=""
+    
+    # let's try to find the pid file
+    # apache2 allows more than PidFile entry in the config but only
+    # the last found in the config is used
+    for PFILE in `grep ^PidFile /etc/apache2/* -r | awk '{print $2}'`; do
+	if [ -e $PFILE ]; then
+            PID=`cat $PFILE`
+	fi
+    done
+    REALPID=0
+    # if there is a pid we need to verify that belongs to apache2
+    # for real
+    for i in $PIDS; do
+        if [ "$i" = "$PID" ]; then
+	    # in this case the pid stored in the
+	    # pidfile matches one of the pidof apache
+	    # so a simple kill will make it
+            echo $PID
+            return 0
+        fi
+    done
+    return 1
+}
+
 apache_stop() {
 	if `apache2 -t > /dev/null 2>&1`; then
 		# if the config is ok than we just stop normaly
@@ -38,34 +68,9 @@ apache_stop() {
 	else
 		# if we are here something is broken and we need to try
 		# to exit as nice and clean as possible
+		PID=$(pidof_apache)
 
-		# if pidof is null for some reasons the script exits automagically
-		# classified as good/unknown feature
-		PIDS=`pidof apache2` || true
-
-		PID=""
-
-		# let's try to find the pid file
-		# apache2 allows more than PidFile entry in the config but only
-		# the last found in the config is used
-		for PFILE in `grep ^PidFile /etc/apache2/* -r | awk '{print $2}'`; do
-			if [ -e $PFILE ]; then
-				PID=`cat $PFILE`
-			fi
-		done
-		REALPID=0
-		# if there is a pid we need to verify that belongs to apache2
-		# for real
-		for i in $PIDS; do
-			if [ "$i" = "$PID" ]; then
-				# in this case the pid stored in the
-				# pidfile matches one of the pidof apache
-				# so a simple kill will make it
-				REALPID=1
-			fi
-		done
-
-		if [ $REALPID = 1 ]; then
+		if [ "${PID}" ]; then
 			# in this case it is everything nice and dandy
 			# and we kill apache2
 			kill $PID
@@ -112,10 +117,12 @@ case $1 in
 	;;
 	reload)
 		log_begin_msg "Reloading web server config..."
-		if $APACHE2CTL graceful $2 ; then
+		if pidof_apache; then
+                    if $APACHE2CTL graceful $2 ; then
                         log_end_msg 0
-                else
+                    else
                         log_end_msg 1
+                    fi
                 fi
 	;;
 	restart | force-reload)

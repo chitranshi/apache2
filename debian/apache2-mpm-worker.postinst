@@ -12,7 +12,7 @@ if [ -z "$2" ]; then
 fi
 
 if [ -x "/etc/init.d/apache2" ]; then
-        update-rc.d apache2 defaults 91 >/dev/null
+        update-rc.d apache2 defaults 91 09 >/dev/null
         if [ -x /usr/sbin/invoke-rc.d ]; then
                 invoke-rc.d apache2 start ||true
         else

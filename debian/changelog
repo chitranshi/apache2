@@ -19,6 +19,10 @@ apache2 (2.2.3-1) UNRELEASED; urgency=low
     as those are copies of other files.
   * Add build-depends for libapr1-dev (>= 1.2.7-6) to make sure we get a
     version which ships a useful apr-config --apr-libtool.
+  * Stop apache2 in apache2.2-common's preinst to avoid having
+    apache2.2-common's apache modules overwrite apache2-common's and
+    thereby causing stop to fail.  Thanks to Steinar H. Gunderson for
+    finding this bug.
 
  -- Tollef Fog Heen <tfheen@debian.org>  Thu, 17 Aug 2006 14:02:58 +0200
 

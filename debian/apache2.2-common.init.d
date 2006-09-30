@@ -43,7 +43,8 @@ pidof_apache() {
     # the last found in the config is used
     for PFILE in `grep ^PidFile /etc/apache2/* -r | awk '{print $2}'`; do
 	if [ -e $PFILE ]; then
-            PID=`cat $PFILE`
+            cat $PFILE
+            return 0
 	fi
     done
     REALPID=0
@@ -74,12 +75,7 @@ apache_stop() {
 			# in this case it is everything nice and dandy
 			# and we kill apache2
 			kill $PID
-		else
-			# this is the worst situation... just kill all of them
-			#for i in $PIDS; do
-			#	kill $i
-			#done
-			# Except, we can't do that, because it's very, very bad
+		elif [ "$(pidof apache2)" ]; then
 			if [ "$VERBOSE" != no ]; then
                                 echo " ... failed!"
 			        echo "You may still have some apache2 processes running.  There are"

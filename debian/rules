@@ -109,7 +109,7 @@ install-common:
 	dh_testroot
 	dh_installdirs
 	cd $(BUILD)/worker ;\
-	$(MAKE) DESTDIR=$(REALCURDIR)/debian/apache2.2-common install
+	$(MAKE) DESTDIR=$(REALCURDIR)/debian/tmp install
 
 install-dev: 
 	dh_testdir
@@ -125,13 +125,28 @@ install-dev:
 		cp debian/apache2-mpm-$$i/usr/include/apache2/* debian/apache2-$$TARGET-dev/usr/include/apache2/ ;\
 		cp debian/apache2-mpm-$$i/usr/share/apache2/build/* debian/apache2-$$TARGET-dev/usr/share/apache2/build/ ;\
 		cp $(BUILD)/$$i/support/apxs debian/apache2-$$TARGET-dev/usr/bin/apxs2 ;\
-		cp debian/apache2-mpm-$$i/usr/share/man/man8/apxs.8 debian/apache2-$$TARGET-dev/usr/share/man/man8/apxs2.8 ;\
 	done
 
 install: build install-worker install-prefork install-common install-dev
 	dh_testroot
 	dh_testdir
-	dh_install -a --sourcedir=$(REALCURDIR)/debian/apache2.2-common
+
+	#cleanup of death
+	rm -rf debian/tmp/usr/include
+	rm -rf debian/tmp/usr/share/apache2/build
+	rm -f debian/tmp/usr/share/man/man8/httpd.8 # We install our own
+	rm -f debian/tmp/usr/sbin/apxs debian/tmp/usr/sbin/apache2
+
+	# DO NOT FALL FOR THE TEMPTATION TO MV INTO PACKAGES OR DOOM
+	# WILL FIND YOU.  Use dh_install, this is just because dh_install
+	# can't rename files
+
+	mv debian/tmp/usr/share/man/man8/apxs.8 debian/tmp/usr/share/man/man8/apxs2.8
+	mv debian/tmp/usr/sbin/apachectl debian/tmp/usr/sbin/apache2ctl
+	mv debian/tmp/usr/share/man/man8/apachectl.8 debian/tmp/usr/share/man/man8/apache2ctl.8
+
+	dh_install --list-missing --sourcedir=debian/tmp
+# --sourcedir=$(REALCURDIR)/debian/apache2.2-common
 
 	cp debian/bash_completion debian/apache2.2-common/etc/bash_completion.d/apache2.2-common
 
@@ -142,28 +157,7 @@ install: build install-worker install-prefork install-common install-dev
 	cp $(BUILD)/worker/support/split-logfile debian/apache2-utils/usr/sbin/split-logfile
 	chmod 755 debian/apache2-utils/usr/sbin/split-logfile
 
-	#grotesque hack to get rid of stuff from apache-common
-	find debian/apache2-utils/usr/ -type f |sed -e 's/utils/common/'|xargs rm -f ;\
-
-	#apache2-utils backward compatibility symlinks
-	ln -s ab debian/apache2-utils/usr/sbin/ab2
-	ln -s checkgid debian/apache2-utils/usr/sbin/checkgid2
-	ln -s dbmmanage debian/apache2-utils/usr/bin/dbmmanage2
-	ln -s htdigest debian/apache2-utils/usr/bin/htdigest2
-	ln -s htpasswd debian/apache2-utils/usr/bin/htpasswd2
-	ln -s logresolve debian/apache2-utils/usr/sbin/logresolve2
-	ln -s rotatelogs debian/apache2-utils/usr/sbin/rotatelogs2
-
-	mv debian/apache2.2-common/usr/sbin/envvars debian/apache2.2-common/etc/apache2/
-	mv debian/apache2.2-common/usr/sbin/envvars-std debian/apache2.2-common/usr/share/apache2/build/
-	mv debian/apache2.2-common/usr/sbin/suexec debian/apache2.2-common/usr/lib/apache2/
-	rm debian/apache2.2-common/usr/sbin/*
-
-	#reinstall apachectl after we clean up
-	install -m 755 $(BUILD)/worker/support/apachectl debian/apache2.2-common/usr/sbin/apache2ctl
-
-	mv debian/apache2.2-common/etc/apache2 debian/apache2.2-common/usr/share/apache2/examples
-	cp -a debian/config-dir debian/apache2.2-common/etc/apache2
+	cp -a debian/config-dir/* debian/apache2.2-common/etc/apache2
 	mkdir -p debian/apache2.2-common/etc/logrotate.d
 	cp debian/logrotate debian/apache2.2-common/etc/logrotate.d/apache2
 	chmod 4755 debian/apache2.2-common/usr/lib/apache2/suexec 
@@ -177,18 +171,6 @@ install: build install-worker install-prefork install-common install-dev
 		install -m755 debian/mpms.prerm debian/apache2-mpm-$$i.prerm ;\
 	done
 	install -m755 debian/mpms.prerm debian/apache2-mpm-prefork.prerm
-
-	#documentation
-	cp -R docs/* debian/apache2-doc/usr/share/doc/apache2-doc/
-	rm -rf debian/apache2-doc/usr/share/doc/apache2-doc/conf/
-	rm -rf debian/apache2-doc/usr/share/doc/apache2-doc/examples/original
-	cp debian/apache2-doc.conf debian/apache2-doc/etc/apache2/conf.d/apache2-doc
-	mv debian/apache2.2-common/usr/share/apache2/examples debian/apache2-doc/usr/share/doc/apache2-doc/
-
-	#cleanup of death
-	rm -rf debian/apache2.2-common/usr/include
-	rm -rf debian/apache2.2-common/usr/share/apache2/build
-	rm -rf debian/apache2.2-common/usr/share/apache2/default-site
 
 	for i in worker prefork event; do \
 		rm -rf debian/apache2-mpm-$$i/ ;\

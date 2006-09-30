@@ -11,6 +11,10 @@ apache2 (2.2.3-1) UNRELEASED; urgency=low
   * Install S91/K09 links, not S91/K91, also only support not starting
     through defaults file to cover upgrades from old
     installations. Closes: #359977, #349655
+  * Big cleanup by using dh_install properly rather than loads of hacks in
+    debian/rules.
+  * No longer ship compat symlinks for ab, etc.  Those are installed as
+    ab, htpasswd and similar.
 
  -- Tollef Fog Heen <tfheen@debian.org>  Thu, 17 Aug 2006 14:02:58 +0200
 

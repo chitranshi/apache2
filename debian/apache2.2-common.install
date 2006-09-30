@@ -1,0 +1,14 @@
+usr/share/apache2/icons
+usr/sbin/apache2ctl
+usr/share/man/man8/apache2ctl.8
+usr/share/man/man8/suexec.8
+usr/share/apache2/error
+usr/lib/apache2/modules
+usr/sbin/suexec usr/lib/apache2
+usr/sbin/envvars etc/apache2
+usr/sbin/envvars-std usr/share/apache2/build
+usr/sbin/httxt2dbm
+etc/apache2 usr/share/doc/apache2.2-common/examples
+usr/share/apache2/default-site/htdocs/*.gif /var/www/apache2-default
+usr/share/apache2/default-site/htdocs/*.png /var/www/apache2-default
+usr/share/apache2/default-site/htdocs/*.html /var/www/apache2-default

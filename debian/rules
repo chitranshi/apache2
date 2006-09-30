@@ -84,7 +84,9 @@ INSTALL=/usr/bin/install
 clean: unpatch
 	dh_testdir
 	dh_clean
-	rm -rf $(BUILD) mpm-worker mpm-prefork mpm-event install
+	rm -rf $(BUILD) mpm-worker mpm-prefork mpm-event install 
+	rm -f debian/apache2-mpm-worker.postinst debian/apache2-mpm-worker.preinst debian/apache2-mpm-worker.prerm
+	rm -f debian/apache2-mpm-event.postinst debian/apache2-mpm-event.preinst debian/apache2-mpm-event.prerm
 
 build: patch-stamp build-mpms 
 build-mpms: mpm-worker mpm-prefork mpm-event

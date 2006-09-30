@@ -15,6 +15,8 @@ apache2 (2.2.3-1) UNRELEASED; urgency=low
     debian/rules.
   * No longer ship compat symlinks for ab, etc.  Those are installed as
     ab, htpasswd and similar.
+  * Remove apache2-mpm-{event,worker}-{prerm,preinst,postinst} in clean,
+    as those are copies of other files.
 
  -- Tollef Fog Heen <tfheen@debian.org>  Thu, 17 Aug 2006 14:02:58 +0200
 

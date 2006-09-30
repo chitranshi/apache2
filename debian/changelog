@@ -17,6 +17,8 @@ apache2 (2.2.3-1) UNRELEASED; urgency=low
     ab, htpasswd and similar.
   * Remove apache2-mpm-{event,worker}-{prerm,preinst,postinst} in clean,
     as those are copies of other files.
+  * Add build-depends for libapr1-dev (>= 1.2.7-6) to make sure we get a
+    version which ships a useful apr-config --apr-libtool.
 
  -- Tollef Fog Heen <tfheen@debian.org>  Thu, 17 Aug 2006 14:02:58 +0200
 

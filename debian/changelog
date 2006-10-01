@@ -1,4 +1,4 @@
-apache2 (2.2.3-1) UNRELEASED; urgency=low
+apache2 (2.2.3-1) unstable; urgency=low
 
   * Remove mention of AddDefaultCharset from apache2.conf as this is now
     in /etc/apache2/conf.d/charset.

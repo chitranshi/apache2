@@ -23,6 +23,8 @@ apache2 (2.2.3-1) UNRELEASED; urgency=low
     apache2.2-common's apache modules overwrite apache2-common's and
     thereby causing stop to fail.  Thanks to Steinar H. Gunderson for
     finding this bug.
+  * Add Conflicts for broken modules which didn't depend on
+    apache2-common.
 
  -- Tollef Fog Heen <tfheen@debian.org>  Thu, 17 Aug 2006 14:02:58 +0200
 

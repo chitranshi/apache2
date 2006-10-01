@@ -3,7 +3,7 @@
 # This is an evil hack around the fact that dpkg is unpacking in the
 # wrong order causing "stop" to fail.
 
-if [ -e /usr/sbin/apache2 ]; then
+if [ -z "$2" ] && [ -e /usr/sbin/apache2 ]; then
     chmod -x /usr/sbin/apache2
 fi
 

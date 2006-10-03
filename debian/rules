@@ -214,7 +214,6 @@ binary-arch: install
 	dh_compress -a
 	dh_fixperms -a -Xsuexec2
 	chown -R www-data:www-data debian/apache2.2-common/var/cache/apache2
-	chmod 644 debian/apache2.2-common/usr/share/man/man8/suexec.8.gz
 	dh_makeshlibs -a -V
 	dh_installdeb -a
 	dh_shlibdeps -a

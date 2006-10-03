@@ -1,3 +1,10 @@
+apache2 (2.2.3-2) UNRELEASED; urgency=low
+
+  * Make sure to ship /var/log/apache2 in the apache2.2-common package.
+    Closes: #390786
+
+ --
+
 apache2 (2.2.3-1) unstable; urgency=low
 
   * Remove mention of AddDefaultCharset from apache2.conf as this is now

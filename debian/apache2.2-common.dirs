@@ -5,4 +5,5 @@ etc/bash_completion.d
 usr/share/apache2/build
 var/cache/apache2
 var/run/apache2
+var/log/apache2
 var/www

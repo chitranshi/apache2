@@ -7,7 +7,7 @@ fi
 NETSTAT=netstat
 
 if [ -e /usr/sbin/apache2 ]; then
-    if [ `dpkg-statoverride --list /usr/sbin/apache2` = "" ]; then
+    if [ "`dpkg-statoverride --list /usr/sbin/apache2`" = "" ]; then
         chmod +x /usr/sbin/apache2
     else
         chmod `dpkg-statoverride --list /usr/sbin/apache2 | cut -f 3` /usr/sbin/apache2

@@ -146,6 +146,7 @@ install: build install-worker install-prefork install-common install-dev
 	mv debian/tmp/usr/share/man/man8/apxs.8 debian/tmp/usr/share/man/man8/apxs2.8
 	mv debian/tmp/usr/sbin/apachectl debian/tmp/usr/sbin/apache2ctl
 	mv debian/tmp/usr/share/man/man8/apachectl.8 debian/tmp/usr/share/man/man8/apache2ctl.8
+	mv debian/tmp/usr/share/man/man8/suexec.8 debian/tmp/usr/share/man/man8/suexec2.8
 
 	dh_install --list-missing --sourcedir=debian/tmp
 # --sourcedir=$(REALCURDIR)/debian/apache2.2-common

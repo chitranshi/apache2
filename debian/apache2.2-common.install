@@ -1,7 +1,7 @@
 usr/share/apache2/icons
 usr/sbin/apache2ctl
 usr/share/man/man8/apache2ctl.8
-usr/share/man/man8/suexec.8
+usr/share/man/man8/suexec2.8
 usr/share/apache2/error
 usr/lib/apache2/modules
 usr/sbin/suexec usr/lib/apache2

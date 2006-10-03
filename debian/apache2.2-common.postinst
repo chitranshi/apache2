@@ -6,6 +6,14 @@ fi
 
 NETSTAT=netstat
 
+if [ -e /usr/sbin/apache2 ]; then
+    if [ `dpkg-statoverride --list /usr/sbin/apache2` = "" ]; then
+        chmod +x /usr/sbin/apache2
+    else
+        chmod `dpkg-statoverride --list /usr/sbin/apache2 | cut -f 3` /usr/sbin/apache2
+    fi
+fi
+
 if [ ! -f /etc/apache2/ports.conf ]; then
         echo "# 0 = start on boot; 1 = don't start on boot" > /etc/default/apache2
         NO_AF_INET=`$NETSTAT -lnt 2>&1 | grep 'no support for .AF INET (tcp)'` || true

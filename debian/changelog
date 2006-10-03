@@ -5,6 +5,8 @@ apache2 (2.2.3-2) UNRELEASED; urgency=low
   * Install suexec.8 as suexec2.8.  Closes: #390774
   * Make sure that we never ship .svn directories in any binary packages.
     Closes: #390785
+  * Not only chmod -x /usr/sbin/apache2 in apache2.2-common.preinst, chmod
+    +x it in same's postinst too.  Closes: #390794
 
  -- Tollef Fog Heen <tfheen@debian.org>  Tue,  3 Oct 2006 10:03:48 +0200
 

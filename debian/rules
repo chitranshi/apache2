@@ -181,6 +181,10 @@ install: build install-worker install-prefork install-common install-dev
 		install -m 755 $(BUILD)/$$i/apache2 debian/apache2-mpm-$$i/usr/sbin/apache2 ;\
 	done
 
+	for pkg in `awk '/^Package:/ { print $$2 }' debian/control`; do \
+		find debian/$$pkg/ -name .svn -exec rm -rf {} + ; \
+	done
+
 	touch $@
 
 binary-indep: install

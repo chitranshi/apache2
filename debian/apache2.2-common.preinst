@@ -4,6 +4,13 @@
 # wrong order causing "stop" to fail.
 
 if [ -z "$2" ] && [ -e /usr/sbin/apache2 ]; then
+    if [ -x "/etc/init.d/apache2" ]; then
+        if [ -x /usr/sbin/invoke-rc.d ]; then
+                invoke-rc.d apache2 stop || true
+        else
+                /etc/init.d/apache2 stop || true
+        fi
+    fi
     chmod -x /usr/sbin/apache2
 fi
 

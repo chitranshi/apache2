@@ -14,4 +14,7 @@ if [ -z "$2" ] && [ -e /usr/sbin/apache2 ]; then
     chmod -x /usr/sbin/apache2
 fi
 
+# YAY, MORE EVILNESS
+rm -f /var/lib/dpkg/info/apache2-common.postrm
+
 #DEBHELPER#

@@ -12,6 +12,8 @@ apache2 (2.2.3-2) UNRELEASED; urgency=low
   * Make apache2-mpm-{worker,prefork} conflict with apache2-mpm-event.
   * rm -f /var/lib/dpkg/info/apache2-common.postrm.  So apache2-common can
     be purged. Yes, we're on crack.  Closes: #390823
+  * Make apache2-utils's Replaces on apache2-common be unversioned.
+    Closes: #391018
 
  -- Tollef Fog Heen <tfheen@debian.org>  Tue,  3 Oct 2006 10:03:48 +0200
 

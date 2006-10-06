@@ -9,6 +9,7 @@ apache2 (2.2.3-2) UNRELEASED; urgency=low
     +x it in same's postinst too.  Closes: #390794
   * We now ship htcacheclean in apache2-utils.  Closes: #376680
   * Try to stop old apaches in preinst of the mpms.  Closes:  #390893
+  * Make apache2-mpm-{worker,prefork} conflict with apache2-mpm-event.
 
  -- Tollef Fog Heen <tfheen@debian.org>  Tue,  3 Oct 2006 10:03:48 +0200
 

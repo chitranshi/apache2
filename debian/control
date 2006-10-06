@@ -27,7 +27,7 @@ Package: apache2-mpm-worker
 Architecture: any
 Depends: ${shlibs:Depends}, apache2.2-common (= ${Source-Version})
 Provides: apache2-modules, apache2, httpd, httpd-cgi
-Conflicts: apache2-mpm-prefork
+Conflicts: apache2-mpm-prefork, apache2-mpm-event
 Replaces: apache2-mpm-threadpool (<< 2.0.53), apache2-mpm-perchild (<< 2.2.0)
 Description: High speed threaded model for Apache HTTPD 2.1
  The worker MPM provides a threaded implementation for Apache HTTPD 2.1. It is
@@ -40,7 +40,7 @@ Package: apache2-mpm-prefork
 Architecture: any
 Depends: ${shlibs:Depends}, apache2.2-common (= ${Source-Version})
 Provides: apache2-modules, apache2, httpd, httpd-cgi
-Conflicts: apache2-mpm-worker, apache2-mpm-perchild
+Conflicts: apache2-mpm-worker, apache2-mpm-perchild, apache2-mpm-event
 Description: Traditional model for Apache HTTPD 2.1
  This Multi-Processing Module (MPM) implements a non-threaded,
  pre-forking web server that handles requests in a manner similar to

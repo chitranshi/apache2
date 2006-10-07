@@ -127,3 +127,12 @@ Description: development headers for apache2
  This package provides the development headers and apxs2 binary for
  threaded versions of apache2; see the apache2 package description
  for more details.
+
+Package: apache2-src
+Section: devel
+Priority: extra
+Architecture: all
+Description: Apache source code
+ This package includes the complete and patched source code for the
+ Apache HTTPD.  It is useful for other packages to build-depend on in
+ order to build custom MPMs.

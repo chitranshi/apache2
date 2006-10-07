@@ -5,6 +5,8 @@ apache2 (2.2.3-3) UNRELEASED; urgency=low
   * Do not AddDefaultCharset if we are proxying.  Closes: #277526
 
   [ Adam Conrad ]
+  * Update our php4 and php5 conflicts, to reflect the reality that each
+    were uploaded and built again while apache2.2 was in the new queue.
   * Migrate kill symlinks from K91 to K09 (closes: #376503)
 
  -- Adam Conrad <adconrad@0c3.net>  Sat,  7 Oct 2006 17:57:04 +1000

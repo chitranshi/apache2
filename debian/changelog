@@ -1,4 +1,4 @@
-apache2 (2.2.3-3) UNRELEASED; urgency=low
+apache2 (2.2.3-3) UNRELEASED; urgency=medium
 
   [ Tollef Fog Heen ]
   * Build apache2-src package.

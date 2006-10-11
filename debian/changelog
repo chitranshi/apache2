@@ -3,6 +3,7 @@ apache2 (2.2.3-3) UNRELEASED; urgency=low
   [ Tollef Fog Heen ]
   * Build apache2-src package.
   * Do not AddDefaultCharset if we are proxying.  Closes: #277526
+  * Do not forcefully link against libdb4.3 and other libs.
 
   [ Adam Conrad ]
   * Update our php4 and php5 conflicts, to reflect the reality that each

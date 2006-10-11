@@ -7,6 +7,7 @@ apache2 (2.2.3-3) UNRELEASED; urgency=medium
   * Enable the same list of modules as we had in 2.0 (by default) and do
     that for all older versions than 2.2.3-3 to fix upgrade issues people
     have had.  Closes: #392349
+  * Set default IndexWidth to *.
 
   [ Adam Conrad ]
   * Update our php4 and php5 conflicts, to reflect the reality that each

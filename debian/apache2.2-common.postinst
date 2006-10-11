@@ -47,9 +47,8 @@ if [ "$2" = "<unknown>" -o -z "$2" ]; then
         fi
 fi
 
-if [ "$2" = "<unknown>" -o -z "$2" ] || dpkg --compare-versions "$2" lt 2.2.0; then
+if [ "$2" = "<unknown>" -o -z "$2" ] || dpkg --compare-versions "$2" lt 2.2.0-3; then
 	a2enmod alias
-	a2enmod authz_host
 	a2enmod autoindex
 	a2enmod dir
 	a2enmod env
@@ -57,6 +56,15 @@ if [ "$2" = "<unknown>" -o -z "$2" ] || dpkg --compare-versions "$2" lt 2.2.0; t
 	a2enmod negotiation
 	a2enmod setenvif
 	a2enmod status
+        a2enmod auth_basic
+
+        # Those come from mod_auth:
+        a2enmod authz_default
+        a2enmod authz_groupfile
+        a2enmod authn_file
+        
+	# This comes from mod_access:
+        a2enmod authz_host
 fi
 
 if [ -n "$2" ] && dpkg --compare-versions "$2" lt 2.2.0; then

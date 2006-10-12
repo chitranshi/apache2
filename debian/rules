@@ -201,7 +201,7 @@ binary-indep: install
 	dh_installchangelogs -i CHANGES -Napache2
 	dh_installchangelogs -papache2
 	dh_compress -i
-	dh_fixperms -i -Xsuexec2
+	dh_fixperms -i -Xsuexec
 	dh_installdeb -i
 	dh_gencontrol -i
 	dh_md5sums -i
@@ -218,7 +218,7 @@ binary-arch: install
 	dh_strip -a
 	dh_link -a
 	dh_compress -a
-	dh_fixperms -a -Xsuexec2
+	dh_fixperms -a -Xsuexec
 	chown -R www-data:www-data debian/apache2.2-common/var/cache/apache2
 	dh_makeshlibs -a -V
 	dh_installdeb -a

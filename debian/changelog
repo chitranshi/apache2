@@ -18,6 +18,9 @@ apache2 (2.2.3-3) UNRELEASED; urgency=medium
     Closes: #392189
   * Migrate kill symlinks from K91 to K09 (closes: #376503)
 
+  [ Thom May ]
+  * Fix permissions on suexec (Closes: #391918)
+
  -- Adam Conrad <adconrad@0c3.net>  Sat,  7 Oct 2006 17:57:04 +1000
 
 apache2 (2.2.3-2) unstable; urgency=low

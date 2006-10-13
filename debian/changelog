@@ -1,7 +1,9 @@
 apache2 (2.2.3-3) UNRELEASED; urgency=medium
 
   [ Peter Samuelson ]
-  * If a module is already disabled, exit 0 (but not if it does not exist) 
+  * a2dismod: exit 0 if a module exists but is already disabled.
+  * Ship a2enmod.8 and a2dismod.8 again, and expand them a bit.
+    (Closes: #270551)
 
   [ Tollef Fog Heen ]
   * Build apache2-src package.

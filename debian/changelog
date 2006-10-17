@@ -22,6 +22,7 @@ apache2 (2.2.3-3) UNRELEASED; urgency=medium
 
   [ Thom May ]
   * Fix permissions on suexec (Closes: #391918)
+  * This is Debian, not Ubuntu (Closes: #393277)
 
  -- Adam Conrad <adconrad@0c3.net>  Sat,  7 Oct 2006 17:57:04 +1000
 

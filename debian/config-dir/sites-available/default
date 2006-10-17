@@ -14,8 +14,7 @@ NameVirtualHost *
 		allow from all
 		# This directive allows us to have apache2's default start page
                 # in /apache2-default/, but still have / go to the right place
-                # Commented out for Ubuntu
-                #RedirectMatch ^/$ /apache2-default/
+                RedirectMatch ^/$ /apache2-default/
 	</Directory>
 
 	ScriptAlias /cgi-bin/ /usr/lib/cgi-bin/

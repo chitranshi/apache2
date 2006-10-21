@@ -16,6 +16,7 @@ set -e
 if [ -x /usr/sbin/apache2 ] ; then
 	HAVE_APACHE2=1
 else
+	echo "No apache MPM package installed"
 	exit 0
 fi
 

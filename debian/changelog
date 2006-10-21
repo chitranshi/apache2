@@ -17,6 +17,7 @@ apache2 (2.2.3-3) UNRELEASED; urgency=medium
     superset of CPPFLAGS.
   * Warn when not starting HTTPD due to missing apache binary.  
     Closes: #384128
+  * Provide sample disk and memory cache configurations.  Closes: #278564
 
   [ Adam Conrad ]
   * Update our php4 and php5 conflicts, to reflect the reality that each

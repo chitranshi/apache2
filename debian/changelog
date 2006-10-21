@@ -13,6 +13,8 @@ apache2 (2.2.3-3) UNRELEASED; urgency=medium
     that for all older versions than 2.2.3-3 to fix upgrade issues people
     have had.  Closes: #392349
   * Set default IndexWidth to *.
+  * Clean up CPPFLAGS and CFLAGS, including making all of CFLAGS a
+    superset of CPPFLAGS.
 
   [ Adam Conrad ]
   * Update our php4 and php5 conflicts, to reflect the reality that each

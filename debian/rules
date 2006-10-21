@@ -128,6 +128,17 @@ install-dev:
 		cp debian/apache2-mpm-$$i/usr/share/apache2/build/* debian/apache2-$$TARGET-dev/usr/share/apache2/build/ ;\
 		cp $(BUILD)/$$i/support/apxs debian/apache2-$$TARGET-dev/usr/bin/apxs2 ;\
 	done
+# Clean up config_vars.mk
+	for i in threaded prefork; do \
+		( cd debian/apache2-$$i-dev/usr/share/apache2/build/ ; \
+		grep -v -E '(^|_)(CPP|C)FLAGS' config_vars.mk > tmp_config_vars.mk ; \
+		printf "CPPFLAGS = %s\n" "`grep -E '(^|_)CPPFLAGS' config_vars.mk | cut -d= -f 2- | tr ' ' '\n' | grep -E '^-([DI]|pthread)' | sort | uniq | tr '\n' ' '`" >> tmp_config_vars.mk ; \
+		printf "CFLAGS = %s\n" "`grep -E '(^|_)(CPP|C)FLAGS' config_vars.mk | cut -d= -f 2- | tr ' ' '\n' | grep -E '^-([DI]|pthread)' | sort | uniq | tr '\n' ' '`" >> tmp_config_vars.mk ; \
+		printf "NOTEST_CPPFLAGS = \n" >> tmp_config_vars.mk ; \
+		printf "EXTRA_CPPFLAGS = \n" >> tmp_config_vars.mk ; \
+		printf "EXTRA_CFLAGS = \n" >> tmp_config_vars.mk ; \
+		mv tmp_config_vars.mk config_vars.mk ) ; \
+	done
 
 install-src:
 	dh_testdir

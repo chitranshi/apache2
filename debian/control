@@ -91,7 +91,7 @@ Description: utility programs for webservers
 
 Package: apache2
 Architecture: all
-Depends: apache2-mpm-worker|apache2-mpm-prefork
+Depends: apache2-mpm-worker | apache2-mpm-prefork | apache2-mpm-event
 Section: web
 Description: Next generation, scalable, extendable web server
  Apache v2 is the next generation of the omnipresent Apache web server. This

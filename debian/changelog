@@ -20,6 +20,7 @@ apache2 (2.2.3-3) UNRELEASED; urgency=medium
     Closes: #384128
   * Provide sample disk and memory cache configurations.  Closes: #278564
   * Provide dir.conf.   Closes: #392356
+  * Add alternate dependency from apache to apache2-mpm-event 
 
   [ Adam Conrad ]
   * Update our php4 and php5 conflicts, to reflect the reality that each

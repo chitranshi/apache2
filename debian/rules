@@ -178,6 +178,10 @@ install: build install-worker install-prefork install-common install-dev install
 	chmod 755 debian/apache2-utils/usr/sbin/split-logfile
 
 	cp -a debian/config-dir/* debian/apache2.2-common/etc/apache2
+	if [ "`lsb_release -i -s`" = "Ubuntu" ]; then \
+		sed -i -e 's/RedirectMatch/#RedirectMatch/' \
+		debian/apache2.2-common/etc/apache2/sites-available/default; \
+	fi
 	mkdir -p debian/apache2.2-common/etc/logrotate.d
 	cp debian/logrotate debian/apache2.2-common/etc/logrotate.d/apache2
 	chmod 4755 debian/apache2.2-common/usr/lib/apache2/suexec 

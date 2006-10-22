@@ -123,7 +123,7 @@ case $1 in
                 fi
 	;;
 	restart | force-reload)
-		log_begin_msg "Forcing reload of web server  (apache2)..."
+		log_begin_msg "Forcing reload of web server (apache2)..."
 		if ! apache_stop; then
                         log_end_msg 1
                 fi

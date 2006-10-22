@@ -129,11 +129,11 @@ install-dev:
 		cp $(BUILD)/$$i/support/apxs debian/apache2-$$TARGET-dev/usr/bin/apxs2 ;\
 	done
 # Clean up config_vars.mk
-	for i in threaded prefork; do \
+	set -x ; for i in threaded prefork; do \
 		( cd debian/apache2-$$i-dev/usr/share/apache2/build/ ; \
 		grep -v -E '(^|_)(CPP|C)FLAGS' config_vars.mk > tmp_config_vars.mk ; \
-		printf "CPPFLAGS = %s\n" "`grep -E '(^|_)CPPFLAGS' config_vars.mk | cut -d= -f 2- | tr ' ' '\n' | grep -E '^-([DI]|pthread)' | sort | uniq | tr '\n' ' '`" >> tmp_config_vars.mk ; \
-		printf "CFLAGS = %s\n" "`grep -E '(^|_)(CPP|C)FLAGS' config_vars.mk | cut -d= -f 2- | tr ' ' '\n' | grep -E '^-([DI]|pthread)' | sort | uniq | tr '\n' ' '`" >> tmp_config_vars.mk ; \
+		printf "CPPFLAGS = %s\n" "`grep -E '(^|_)(CPPFLAGS|INCLUDES)' config_vars.mk | cut -d= -f 2- | tr ' ' '\n' | grep -E '^-([DI]|pthread)' | sort | uniq | tr '\n' ' '`" >> tmp_config_vars.mk ; \
+		printf "CFLAGS = %s\n" "`grep -E '(^|_)(CPPFLAGS|CFLAGS|INCLUDES)' config_vars.mk | cut -d= -f 2- | tr ' ' '\n' | grep -E '^-(D|I/|pthread)'  | sort | uniq | tr '\n' ' '`" >> tmp_config_vars.mk ; \
 		printf "NOTEST_CPPFLAGS = \n" >> tmp_config_vars.mk ; \
 		printf "EXTRA_CPPFLAGS = \n" >> tmp_config_vars.mk ; \
 		printf "EXTRA_CFLAGS = \n" >> tmp_config_vars.mk ; \

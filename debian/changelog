@@ -14,7 +14,8 @@ apache2 (2.2.3-3) UNRELEASED; urgency=medium
     have had.  Closes: #392349
   * Set default IndexWidth to *.
   * Clean up CPPFLAGS and CFLAGS, including making all of CFLAGS a
-    superset of CPPFLAGS.
+    superset of CPPFLAGS.  Also make sure to include -I switches with
+    absolute paths so the apache headers are useful.
   * Warn when not starting HTTPD due to missing apache binary.  
     Closes: #384128
   * Provide sample disk and memory cache configurations.  Closes: #278564

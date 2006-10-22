@@ -27,6 +27,8 @@ apache2 (2.2.3-3) UNRELEASED; urgency=medium
     were uploaded and built again while apache2.2 was in the new queue.
     Closes: #392189
   * Migrate kill symlinks from K91 to K09 (closes: #376503)
+  * Make apache2 depend on the current version of the MPMs, as it used
+    to in the 2.0.x series (and make it binNMU-safe) (closes: #394658)
 
   [ Thom May ]
   * Fix permissions on suexec (Closes: #391918)

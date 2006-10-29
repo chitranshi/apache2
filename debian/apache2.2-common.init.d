@@ -113,7 +113,12 @@ case $1 in
                 fi
 	;;
 	reload)
-		log_begin_msg "Reloading web server config..."
+		if ! $APACHE2CTL configtest > /dev/null 2>&1; then
+                    $APACHE2CTL configtest || true
+                    log_end_msg 1
+                    exit 1
+                fi
+                log_begin_msg "Reloading web server config..."
 		if pidof_apache; then
                     if $APACHE2CTL graceful $2 ; then
                         log_end_msg 0

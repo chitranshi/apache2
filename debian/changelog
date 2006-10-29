@@ -1,3 +1,10 @@
+apache2 (2.2.3-4) UNRELEASED; urgency=low
+
+  * Fix up apache2-src so the .tar.gz contains an apache2 top level
+    directory.
+
+ -- Tollef Fog Heen <tfheen@debian.org>  Sun, 29 Oct 2006 22:55:03 +0100
+
 apache2 (2.2.3-3) unstable; urgency=medium
 
   [ Peter Samuelson ]

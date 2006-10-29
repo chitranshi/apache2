@@ -144,7 +144,10 @@ install-src:
 	dh_testdir
 	dh_testroot
 	dh_installdirs
-	tar czf debian/apache2-src/usr/src/apache2.tar.gz `find -mindepth 1 -maxdepth 1 -not -name debian`
+	mkdir -p debian/apache2-src/tmp/apache2
+	find -mindepth 1 -maxdepth 1 -not -name debian -print0 | tar cf - --null -T - | (cd debian/apache2-src/tmp/apache2 && tar xf -)
+	cd debian/apache2-src/tmp/ && tar czf ../usr/src/apache2.tar.gz apache2
+	rm -rf debian/apache2-src/tmp
 
 install: build install-worker install-prefork install-common install-dev install-src
 	dh_testroot

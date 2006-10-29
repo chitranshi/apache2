@@ -4,6 +4,7 @@ apache2 (2.2.3-4) UNRELEASED; urgency=low
     directory.
   * Make apache2 MPMs provide and conflict with apache2-mpm so other
     packages can provide MPMs too.
+  * Get rid of 2.1 references from descriptions.
 
  -- Tollef Fog Heen <tfheen@debian.org>  Sun, 29 Oct 2006 22:55:03 +0100
 

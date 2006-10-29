@@ -1,4 +1,4 @@
-apache2 (2.2.3-3) UNRELEASED; urgency=medium
+apache2 (2.2.3-3) unstable; urgency=medium
 
   [ Peter Samuelson ]
   * a2dismod: exit 0 if a module exists but is already disabled.

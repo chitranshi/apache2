@@ -140,6 +140,6 @@ case $1 in
                 fi
 	;;
 	*)
-		log_success_msg "Usage: /etc/init.d/apache2 start|stop|restart|reload|force-reload"
+		log_success_msg "Usage: /etc/init.d/apache2 {start|stop|restart|reload|force-reload}"
 	;;
 esac

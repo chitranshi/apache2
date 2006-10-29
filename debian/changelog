@@ -25,6 +25,8 @@ apache2 (2.2.3-3) UNRELEASED; urgency=medium
     configuration is broken.  Closes: #316858
   * Add default deflate.conf compressing text/html, text/plain and
     text/xml.  Closes: #349016
+  * Add { and } around the usage format in the init script to make the
+    init script bash completion happier.  Closes: #350606
 
   [ Adam Conrad ]
   * Update our php4 and php5 conflicts, to reflect the reality that each

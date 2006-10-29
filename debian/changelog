@@ -24,7 +24,7 @@ apache2 (2.2.3-3) UNRELEASED; urgency=medium
   * On reload, make the init script exit 1 with an error message if the
     configuration is broken.  Closes: #316858
   * Add default deflate.conf compressing text/html, text/plain and
-    text/xml.
+    text/xml.  Closes: #349016
 
   [ Adam Conrad ]
   * Update our php4 and php5 conflicts, to reflect the reality that each

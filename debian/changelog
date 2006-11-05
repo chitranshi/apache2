@@ -1,10 +1,15 @@
 apache2 (2.2.3-4) UNRELEASED; urgency=low
 
+  [ Tollef Fog Heen ]
   * Fix up apache2-src so the .tar.gz contains an apache2 top level
     directory.
   * Make apache2 MPMs provide and conflict with apache2-mpm so other
     packages can provide MPMs too.
   * Get rid of 2.1 references from descriptions.
+
+  [ Thom May ]
+  * fix up compare for enabling modules in apache2.2-common.postinst 
+    (Closes: #396678)
 
  -- Tollef Fog Heen <tfheen@debian.org>  Sun, 29 Oct 2006 22:55:03 +0100
 

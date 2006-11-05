@@ -9,7 +9,10 @@ apache2 (2.2.3-4) UNRELEASED; urgency=low
 
   [ Thom May ]
   * fix up compare for enabling modules in apache2.2-common.postinst 
-    (Closes: #396678)
+    (Closes: #396678,392349)
+  * Let the init script cope with multiple pid files correctly. Probably we
+    shouldn't be doing this at all, but we might as well do it properly!
+    (Closes: #396162)
 
  -- Tollef Fog Heen <tfheen@debian.org>  Sun, 29 Oct 2006 22:55:03 +0100
 

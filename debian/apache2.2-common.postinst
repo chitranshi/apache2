@@ -47,7 +47,7 @@ if [ "$2" = "<unknown>" -o -z "$2" ]; then
         fi
 fi
 
-if [ "$2" = "<unknown>" -o -z "$2" ] || dpkg --compare-versions "$2" lt 2.2.3-3; then
+if [ "$2" = "<unknown>" -o -z "$2" ] || dpkg --compare-versions "$2" lt 2.2.3-4; then
 	a2enmod alias
 	a2enmod autoindex
 	a2enmod dir

@@ -37,28 +37,31 @@ pidof_apache() {
     # classified as good/unknown feature
     PIDS=`pidof apache2` || true
     
-    PID=""
-    
     # let's try to find the pid file
-    # apache2 allows more than PidFile entry in the config but only
-    # the last found in the config is used
+    # apache2 allows more than PidFile entry
+    # most simple way is to check all of them
+
+    PIDS2=""
+
     for PFILE in `grep ^PidFile /etc/apache2/* -r | awk '{print $2}'`; do
-	if [ -e $PFILE ]; then
-            cat $PFILE
-            return 0
-	fi
+	[ -e $PFILE ] && PIDS2="$PIDS2 `cat $PFILE`"
     done
-    REALPID=0
+
     # if there is a pid we need to verify that belongs to apache2
     # for real
     for i in $PIDS; do
-        if [ "$i" = "$PID" ]; then
-	    # in this case the pid stored in the
-	    # pidfile matches one of the pidof apache
-	    # so a simple kill will make it
-            echo $PID
-            return 0
-        fi
+	# may be it is not the right way to make second dimension
+	# for really huge setups with hundreds of apache processes
+	# and tons of garbage in /etc/apache2... or is it?
+	for j in $PIDS2; do
+    	    if [ "$i" = "$j" ]; then
+	      # in this case the pid stored in the
+	      # pidfile matches one of the pidof apache
+	      # so a simple kill will make it
+           	echo $i
+              return 0
+            fi
+        done
     done
     return 1
 }
@@ -75,7 +78,8 @@ apache_stop() {
 		if [ "${PID}" ]; then
 			# in this case it is everything nice and dandy
 			# and we kill apache2
-			kill $PID
+			log_warning_msg "We failed to correctly shutdown apache, so we're now killing all running apache processes. This is almost certainly suboptimal, so please make sure your system is working as you'd expect now!"
+                        kill $PID
 		elif [ "$(pidof apache2)" ]; then
 			if [ "$VERBOSE" != no ]; then
                                 echo " ... failed!"

@@ -13,6 +13,7 @@ apache2 (2.2.3-4) UNRELEASED; urgency=low
   * Let the init script cope with multiple pid files correctly. Probably we
     shouldn't be doing this at all, but we might as well do it properly!
     (Closes: #396162)
+  * Add a sensible autoindex default config
 
  -- Tollef Fog Heen <tfheen@debian.org>  Sun, 29 Oct 2006 22:55:03 +0100
 

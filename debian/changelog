@@ -8,14 +8,23 @@ apache2 (2.2.3-4) UNRELEASED; urgency=low
   * Get rid of 2.1 references from descriptions.
 
   [ Thom May ]
-  * fix up compare for enabling modules in apache2.2-common.postinst 
-    (Closes: #396678,392349)
   * Let the init script cope with multiple pid files correctly. Probably we
     shouldn't be doing this at all, but we might as well do it properly!
     (Closes: #396162)
   * Add a sensible autoindex default config
 
  -- Tollef Fog Heen <tfheen@debian.org>  Sun, 29 Oct 2006 22:55:03 +0100
+
+apache2 (2.2.3-3.1) unstable; urgency=high
+
+  * Non-maintainer upload.
+  * Enable authz_user by default, fix silent authentication breakage.
+    Closes: #397310
+  * Add default modules if coming from earlier than this version.
+    Closes: #392349, #392352, #392701, #393913, #396678, #395976
+  * Re-Enable modules cern_meta, dumpio and ext_filter. Closes: #391393
+
+ -- Andreas Barth <aba@not.so.argh.org>  Fri, 10 Nov 2006 15:44:33 +0100
 
 apache2 (2.2.3-3) unstable; urgency=medium
 

@@ -1,2 +1,3 @@
 debian/a2enmod.8
 debian/a2dismod.8
+debian/apache2.8

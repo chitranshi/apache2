@@ -13,6 +13,9 @@ apache2 (2.2.3-4) UNRELEASED; urgency=low
     (Closes: #396162)
   * Add a sensible autoindex default config
 
+  [ Peter Samuelson ]
+  * Ship apache2.8 manpage in apache2.2-common.  (Closes: #391813)
+
  -- Tollef Fog Heen <tfheen@debian.org>  Sun, 29 Oct 2006 22:55:03 +0100
 
 apache2 (2.2.3-3.1) unstable; urgency=high

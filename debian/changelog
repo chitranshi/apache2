@@ -1,6 +1,7 @@
 apache2 (2.2.3-4) UNRELEASED; urgency=medium
 
   [ Tollef Fog Heen ]
+  * Revert NMU
   * Fix up apache2-src so the .tar.gz contains an apache2 top level
     directory.
   * Make apache2 MPMs provide and conflict with apache2-mpm so other

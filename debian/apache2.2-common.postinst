@@ -47,7 +47,7 @@ if [ "$2" = "<unknown>" -o -z "$2" ]; then
         fi
 fi
 
-if [ "$2" = "<unknown>" -o -z "$2" ] || dpkg --compare-versions "$2" lt 2.2.3-3.1; then
+if [ "$2" = "<unknown>" -o -z "$2" ] || dpkg --compare-versions "$2" lt 2.2.3-4; then
 	a2enmod alias
 	a2enmod autoindex
 	a2enmod dir
@@ -60,14 +60,14 @@ if [ "$2" = "<unknown>" -o -z "$2" ] || dpkg --compare-versions "$2" lt 2.2.3-3.
 
         # Those come from mod_auth:
         a2enmod authz_default
-        a2enmod authz_user
         a2enmod authz_groupfile
         a2enmod authn_file
         
 	# This comes from mod_access:
         a2enmod authz_host
+fi
 
-	# Module replacements from previous versions of apache2
+if [ -n "$2" ] && dpkg --compare-versions "$2" lt 2.2.0; then
 	if [ -L /etc/apache2/mods-enabled/imap.load ]; then
 		a2dismod imap
 		a2enmod imagemap

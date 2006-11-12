@@ -31,7 +31,6 @@ AP2_COMMON_CONFARGS = --enable-layout=Debian --enable-so \
 		      --enable-authnz-ldap=shared  \
 		      --enable-disk-cache=shared --enable-cache=shared \
 		      --enable-mem-cache=shared --enable-file-cache=shared \
-		      --enable-cern-meta=shared --enable-dumpio=shared --enable-ext-filter=shared \
 		      --enable-charset-lite=shared --enable-cgi=shared \
 		      --enable-dav-lock=shared --enable-log-forensic=shared \
 		      --enable-log-config --enable-logio \

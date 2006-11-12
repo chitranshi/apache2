@@ -1,0 +1,19 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## ajp_connection_reuse by <peter@p12n.org>
+##
+## DP: Fix accidental connection reuse in mod_proxy_ajp, #396265.
+## DP: Patch is from upstream r437748 and will be in upstream 2.2.4.
+
+@DPATCH@
+Index: modules/proxy/mod_proxy_ajp.c
+--- a/modules/proxy/mod_proxy_ajp.c
++++ b/modules/proxy/mod_proxy_ajp.c
+@@ -175,6 +175,8 @@
+                                 AJP13_MAX_SEND_BODY_SZ);
+ 
+         if (status != APR_SUCCESS) {
++            /* We had a failure: Close connection to backend */
++            conn->close++;
+             ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server,
+                          "proxy: ap_get_brigade failed");
+             apr_brigade_destroy(input_brigade);

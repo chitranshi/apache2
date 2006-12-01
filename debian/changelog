@@ -6,7 +6,7 @@ apache2 (2.2.3-4) UNRELEASED; urgency=medium
     directory.
   * Make apache2 MPMs provide and conflict with apache2-mpm so other
     packages can provide MPMs too.
-  * Get rid of 2.1 references from descriptions.
+  * Get rid of 2.1 references from descriptions.  (Closes: #400981)
 
   [ Thom May ]
   * fix up compare for enabling modules in apache2.2-common.postinst 

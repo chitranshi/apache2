@@ -116,7 +116,7 @@ case $1 in
                         log_end_msg 1
                 fi
 	;;
-	reload)
+	reload | force-reload)
 		if ! $APACHE2CTL configtest > /dev/null 2>&1; then
                     $APACHE2CTL configtest || true
                     log_end_msg 1
@@ -131,8 +131,8 @@ case $1 in
                     fi
                 fi
 	;;
-	restart | force-reload)
-		log_begin_msg "Forcing reload of web server (apache2)..."
+	restart)
+		log_begin_msg "Restarting web server (apache2)..."
 		if ! apache_stop; then
                         log_end_msg 1
                 fi

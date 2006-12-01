@@ -20,6 +20,8 @@ apache2 (2.2.3-4) UNRELEASED; urgency=medium
   * Ship apache2.8 manpage in apache2.2-common.  (Closes: #391813)
   * New patch ajp_connection_reuse: fix connection reuse bug in
     mod_proxy_ajp.  (Closes: #396265)
+  * Rearrange init script so that 'force-reload' is the same as 'reload'.
+    (Closes: #401053)
 
  -- Tollef Fog Heen <tfheen@debian.org>  Sun, 29 Oct 2006 22:55:03 +0100
 

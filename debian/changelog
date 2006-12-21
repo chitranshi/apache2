@@ -22,6 +22,7 @@ apache2 (2.2.3-4) UNRELEASED; urgency=medium
     mod_proxy_ajp.  (Closes: #396265)
   * Rearrange init script so that 'force-reload' is the same as 'reload'.
     (Closes: #401053)
+  * Add Build-Depends: mawk.  (Closes: #403682)
 
  -- Tollef Fog Heen <tfheen@debian.org>  Sun, 29 Oct 2006 22:55:03 +0100
 

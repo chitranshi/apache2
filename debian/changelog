@@ -23,6 +23,12 @@ apache2 (2.2.3-4) UNRELEASED; urgency=medium
   * Rearrange init script so that 'force-reload' is the same as 'reload'.
     (Closes: #401053)
   * Add Build-Depends: mawk.  (Closes: #403682)
+  * Refactor apache2.2-common.postinst slightly, to account for sarge
+    upgrades (since it's a new package name, rather than an upgrade).
+    (Closes: #396782, #415775)
+  * If mod_proxy was configured in sarge, add proxy_http and
+    disk_cache modules, which used to be included in the mod_proxy config.
+    (Closes: #407171)
 
  -- Tollef Fog Heen <tfheen@debian.org>  Sun, 29 Oct 2006 22:55:03 +0100
 

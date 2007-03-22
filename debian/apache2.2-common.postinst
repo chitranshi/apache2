@@ -14,6 +14,19 @@ if [ -e /usr/sbin/apache2 ]; then
     fi
 fi
 
+# Detect whether this is a new install or an upgrade.
+# Ordinarily one just checks $2, but since we renamed apache2-common to
+# apache2.2-common, we have to be more devious.
+IS_NEW_INSTALL=1
+IS_UPGRADE_FROM_SARGE=
+if [ -e /etc/apache2/ports.conf ] ||
+   [ -n "$(ls /etc/apache2/sites-enabled/)" ]; then
+	IS_NEW_INSTALL=
+elif [ -z "$2" ]; then
+	IS_UPGRADE_FROM_SARGE=1
+fi
+
+
 if [ ! -f /etc/apache2/ports.conf ]; then
         echo "# 0 = start on boot; 1 = don't start on boot" > /etc/default/apache2
         NO_AF_INET=`$NETSTAT -lnt 2>&1 | grep 'no support for .AF INET (tcp)'` || true
@@ -34,7 +47,7 @@ fi
 
 
 #set up default site and dummy error and access logs
-if [ "$2" = "<unknown>" -o -z "$2" ]; then
+if [ "$IS_NEW_INSTALL" ]; then
         if [ ! -L /etc/apache2/sites-enabled/000-default -a \
              ! -f /etc/apache2/sites-enabled/000-default ]; then
                 ln -s /etc/apache2/sites-available/default /etc/apache2/sites-enabled/000-default
@@ -47,7 +60,7 @@ if [ "$2" = "<unknown>" -o -z "$2" ]; then
         fi
 fi
 
-if [ "$2" = "<unknown>" -o -z "$2" ] || dpkg --compare-versions "$2" lt 2.2.3-4; then
+if [ "$IS_NEW_INSTALL" ] || dpkg --compare-versions "$2" lt 2.2.3-4; then
 	a2enmod alias
 	a2enmod autoindex
 	a2enmod dir
@@ -65,6 +78,13 @@ if [ "$2" = "<unknown>" -o -z "$2" ] || dpkg --compare-versions "$2" lt 2.2.3-4;
         
 	# This comes from mod_access:
         a2enmod authz_host
+fi
+
+if [ "$IS_UPGRADE_FROM_SARGE" ]; then
+	if [ -l /etc/apache2/mods-enabled/proxy.load ]; then
+		a2enmod proxy_http
+		a2enmod disk_cache
+	fi
 fi
 
 if [ -n "$2" ] && dpkg --compare-versions "$2" lt 2.2.0; then

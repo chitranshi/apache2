@@ -81,7 +81,7 @@ if [ "$IS_NEW_INSTALL" ] || dpkg --compare-versions "$2" lt 2.2.3-4; then
 fi
 
 if [ "$IS_UPGRADE_FROM_SARGE" ]; then
-	if [ -l /etc/apache2/mods-enabled/proxy.load ]; then
+	if [ -L /etc/apache2/mods-enabled/proxy.load ]; then
 		a2enmod proxy_http
 		a2enmod disk_cache
 	fi

@@ -1,0 +1,19 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## 043_ajp_connection_reuse by Steinar H. Gunderson <sesse@debian.org>
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: Fix flaw in ajp connection reuse; see Apache Bugzille #40310.
+## DP: Patch by Ian Abel, also exists in upstream Subversion (r434483).
+
+@DPATCH@
+--- apache2/modules/proxy/mod_proxy_ajp.c
++++ apache2/modules/proxy/mod_proxy_ajp.c
+@@ -175,6 +175,7 @@
+                                 AJP13_MAX_SEND_BODY_SZ);
+ 
+         if (status != APR_SUCCESS) {
++            conn->close++;
+             ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server,
+                          "proxy: ap_get_brigade failed");
+             apr_brigade_destroy(input_brigade);
+

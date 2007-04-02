@@ -2,13 +2,13 @@ Source: apache2
 Section: web
 Priority: optional
 Maintainer: Debian Apache Maintainers <debian-apache@lists.debian.org>
-Uploaders: Tollef Fog Heen <tfheen@debian.org>, Thom May <thom@debian.org>, Fabio M. Di Nitto <fabbione@fabbione.net>, Adam Conrad <adconrad@0c3.net>
+Uploaders: Tollef Fog Heen <tfheen@debian.org>, Thom May <thom@debian.org>, Fabio M. Di Nitto <fabbione@fabbione.net>, Adam Conrad <adconrad@0c3.net>, Peter Samuelson <peter@p12n.org>
 Build-Depends: debhelper (>=4.1.16), dpatch, lsb-release, libaprutil1-dev, libapr1-dev (>= 1.2.7-6), openssl, libpcre3-dev, libtool, mawk
 Standards-Version: 3.6.1.0
 
 Package: apache2.2-common
 Architecture: any
-Depends: ${misc:Depends}, apache2-utils, net-tools, libmagic1, mime-support, lsb-base
+Depends: ${misc:Depends}, apache2-utils, net-tools, libmagic1, mime-support, lsb-base, procps
 Conflicts: apache2-common, libapache2-mod-php5 (<= 5.1.6-3), libapache2-mod-php4 (<= 4:4.4.4-2), libapache2-mod-mime-xattr (<= 0.3-2), libapache2-mod-mono (<= 1.1.17-3), libapache2-mod-proxy-html (<= 2.4.3-2), libapache2-mod-scgi (<= 1.11-1), libapache2-mod-speedycgi (<= 2.22-3), libapache2-modxslt (<= 2005072700-1), libapache2-redirtoservername (<= 0.1-1), libapache2-webauth (<= 3.5.3-1), libapache2-webkdc (<= 3.5.3-1)
 Replaces: apache2-common
 Description: Next generation, scalable, extendable web server

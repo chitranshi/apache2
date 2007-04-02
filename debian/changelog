@@ -1,7 +1,6 @@
-apache2 (2.2.3-4) UNRELEASED; urgency=medium
+apache2 (2.2.3-5) UNRELEASED; urgency=low
 
   [ Tollef Fog Heen ]
-  * Revert NMU
   * Fix up apache2-src so the .tar.gz contains an apache2 top level
     directory.
   * Make apache2 MPMs provide and conflict with apache2-mpm so other
@@ -9,8 +8,6 @@ apache2 (2.2.3-4) UNRELEASED; urgency=medium
   * Get rid of 2.1 references from descriptions.  (Closes: #400981)
 
   [ Thom May ]
-  * fix up compare for enabling modules in apache2.2-common.postinst 
-    (Closes: #396678,392349)
   * Let the init script cope with multiple pid files correctly. Probably we
     shouldn't be doing this at all, but we might as well do it properly!
     (Closes: #396162)
@@ -18,11 +15,17 @@ apache2 (2.2.3-4) UNRELEASED; urgency=medium
 
   [ Peter Samuelson ]
   * Ship apache2.8 manpage in apache2.2-common.  (Closes: #391813)
-  * New patch ajp_connection_reuse: fix connection reuse bug in
-    mod_proxy_ajp.  (Closes: #396265)
   * Rearrange init script so that 'force-reload' is the same as 'reload'.
     (Closes: #401053)
   * Add Build-Depends: mawk.  (Closes: #403682)
+
+ -- Tollef Fog Heen <tfheen@debian.org>  Sun, 29 Oct 2006 22:55:03 +0100
+
+apache2 (2.2.3-4) unstable; urgency=high
+
+  * High-urgency upload for RC bugfixes.
+  * Ack NMUs - thanks Andi, Steve.
+  * Add myself to Uploaders.
   * Refactor apache2.2-common.postinst slightly, to account for sarge
     upgrades (since it's a new package name, rather than an upgrade).
     (Closes: #396782, #415775)
@@ -30,7 +33,36 @@ apache2 (2.2.3-4) UNRELEASED; urgency=medium
     disk_cache modules, which used to be included in the mod_proxy config.
     (Closes: #407171)
 
- -- Tollef Fog Heen <tfheen@debian.org>  Sun, 29 Oct 2006 22:55:03 +0100
+ -- Peter Samuelson <peter@p12n.org>  Tue, 27 Mar 2007 07:06:49 -0500
+
+apache2 (2.2.3-3.3) unstable; urgency=high
+
+  * Non-maintainer upload.
+  * High-urgency upload for RC bugfix.
+  * apache2.2-common should depend on procps, since it will fail to create
+    httpd.conf if it's not installed.  Closes: #398535.
+
+ -- Steve Langasek <vorlon@debian.org>  Mon,  5 Feb 2007 01:55:57 -0800
+
+apache2 (2.2.3-3.2) unstable; urgency=high
+
+  * Non-maintainer upload.
+  * 043_ajp_connection_reuse: Patch from upstream Bugzilla, fixing a critical
+    issue with regard to connection reuse in mod_proxy_ajp.
+    Closes: #396265
+
+ -- Andreas Barth <aba@not.so.argh.org>  Sat,  9 Dec 2006 21:05:45 +0000
+
+apache2 (2.2.3-3.1) unstable; urgency=low
+
+  * Non-maintainer upload.
+  * Enable authz_user by default, fix silent authentication breakage.
+    Closes: #397310
+  * Add default modules if coming from earlier than this version.
+    Closes: #392349, #392352, #392701, #393913, #396678, #395976
+  * Re-Enable modules cern_meta, dumpio and ext_filter. Closes: #391393
+
+ -- Andreas Barth <aba@not.so.argh.org>  Fri, 10 Nov 2006 15:44:33 +0100
 
 apache2 (2.2.3-3) unstable; urgency=medium
 

@@ -14,16 +14,20 @@ if [ -e /usr/sbin/apache2 ]; then
     fi
 fi
 
+mod_is_enabled() {
+    test -L /etc/apache2/mods-enabled/$1.load
+}
+
 # Detect whether this is a new install or an upgrade.
 # Ordinarily one just checks $2, but since we renamed apache2-common to
 # apache2.2-common, we have to be more devious.
-IS_NEW_INSTALL=1
-IS_UPGRADE_FROM_SARGE=
-if [ -e /etc/apache2/ports.conf ] ||
-   [ -n "$(ls /etc/apache2/sites-enabled/)" ]; then
-	IS_NEW_INSTALL=
-elif [ -z "$2" ]; then
-	IS_UPGRADE_FROM_SARGE=1
+if [ -n "$2" ]; then
+	UPGRADE=from_2_2
+elif [ -e /etc/apache2/ports.conf ] ||
+     [ -n "$(ls /etc/apache2/sites-enabled/)" ]; then
+	UPGRADE=from_2_0
+else
+	UPGRADE=new_install
 fi
 
 
@@ -47,7 +51,7 @@ fi
 
 
 #set up default site and dummy error and access logs
-if [ "$IS_NEW_INSTALL" ]; then
+if [ $UPGRADE = new_install ]; then
         if [ ! -L /etc/apache2/sites-enabled/000-default -a \
              ! -f /etc/apache2/sites-enabled/000-default ]; then
                 ln -s /etc/apache2/sites-available/default /etc/apache2/sites-enabled/000-default
@@ -60,7 +64,8 @@ if [ "$IS_NEW_INSTALL" ]; then
         fi
 fi
 
-if [ "$IS_NEW_INSTALL" ] || dpkg --compare-versions "$2" lt 2.2.3-4; then
+# Note, this line catches new installs as well as upgrades
+if dpkg --compare-versions "$2" lt 2.2.3-3.1; then
 	a2enmod alias
 	a2enmod autoindex
 	a2enmod dir
@@ -73,26 +78,25 @@ if [ "$IS_NEW_INSTALL" ] || dpkg --compare-versions "$2" lt 2.2.3-4; then
 
         # Those come from mod_auth:
         a2enmod authz_default
+        a2enmod authz_user
         a2enmod authz_groupfile
         a2enmod authn_file
         
 	# This comes from mod_access:
         a2enmod authz_host
-fi
 
-if [ "$IS_UPGRADE_FROM_SARGE" ]; then
-	if [ -L /etc/apache2/mods-enabled/proxy.load ]; then
+fi
+if [ $UPGRADE = from_2_0 ]; then
+        # Module replacements from previous versions of apache2
+	if mod_is_enabled proxy; then
 		a2enmod proxy_http
 		a2enmod disk_cache
 	fi
-fi
-
-if [ -n "$2" ] && dpkg --compare-versions "$2" lt 2.2.0; then
-	if [ -L /etc/apache2/mods-enabled/imap.load ]; then
+	if mod_is_enabled imap; then
 		a2dismod imap
 		a2enmod imagemap
 	fi
-	if [ -L /etc/apache2/mods-enabled/auth_ldap.load ]; then
+	if mod_is_enabled auth_ldap; then
 		a2dismod auth_ldap
 		a2enmod authnz_ldap
 	fi

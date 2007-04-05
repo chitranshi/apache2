@@ -20,7 +20,8 @@ apache2 (2.2.3-5) UNRELEASED; urgency=low
   * Add Build-Depends: mawk.  (Closes: #403682)
   * Add a needed <IfModule mod_include.c> guard to apache2.conf.
     (Closes: #407307)
-  
+  * Stop shipping /var/run/apache2/ as it is created at runtime anyway.
+
  -- Tollef Fog Heen <tfheen@debian.org>  Sun, 29 Oct 2006 22:55:03 +0100
 
 apache2 (2.2.3-4) unstable; urgency=high

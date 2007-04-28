@@ -12,6 +12,8 @@ apache2 (2.2.3-5) UNRELEASED; urgency=low
     shouldn't be doing this at all, but we might as well do it properly!
     (Closes: #396162)
   * Add a sensible autoindex default config
+  * Add patch from upstream to ensure that mod_cgi 500 responses aren't
+    truncated (Closes: #412580)
 
   [ Peter Samuelson ]
   * Ship apache2.8 manpage in apache2.2-common.  (Closes: #391813)

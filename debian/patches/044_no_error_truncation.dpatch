@@ -1,0 +1,32 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## no_error_truncation.dpatch by Tim Retout <tim@retout.co.uk>
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: Patch to stop errors being truncated when using mod_cgi. Taken from 
+## DP: http://issues.apache.org/bugzilla/show_bug.cgi?id=39710
+
+@DPATCH@
+
+diff -ru apache2-2.2.3.orig/modules/generators/mod_cgi.c apache2-2.2.3/modules/generators/mod_cgi.c
+--- apache2-2.2.3.orig/modules/generators/mod_cgi.c	2006-07-12 04:38:44.000000000 +0100
++++ apache2-2.2.3/modules/generators/mod_cgi.c	2007-04-27 23:43:20.000000000 +0100
+@@ -922,18 +922,7 @@
+         int ret;
+ 
+         if ((ret = ap_scan_script_header_err_brigade(r, bb, sbuf))) {
+-            ret = log_script(r, conf, ret, dbuf, sbuf, bb, script_err);
+-
+-            /* Set our status. */
+-            r->status = ret;
+-
+-            /* Pass EOS bucket down the filter chain. */
+-            apr_brigade_cleanup(bb);
+-            b = apr_bucket_eos_create(c->bucket_alloc);
+-            APR_BRIGADE_INSERT_TAIL(bb, b);
+-            ap_pass_brigade(r->output_filters, bb);
+-
+-            return ret;
++            return log_script(r, conf, ret, dbuf, sbuf, bb, script_err);
+         }
+ 
+         location = apr_table_get(r->headers_out, "Location");

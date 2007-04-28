@@ -14,6 +14,8 @@ apache2 (2.2.3-5) UNRELEASED; urgency=low
   * Add a sensible autoindex default config
   * Add patch from upstream to ensure that mod_cgi 500 responses aren't
     truncated (Closes: #412580)
+  * Use graceful-stop to shutdown apache to ensure we cope nicely with long
+    running or blocked children
 
   [ Peter Samuelson ]
   * Ship apache2.8 manpage in apache2.2-common.  (Closes: #391813)
@@ -24,7 +26,7 @@ apache2 (2.2.3-5) UNRELEASED; urgency=low
     (Closes: #407307)
   * Stop shipping /var/run/apache2/ as it is created at runtime anyway.
 
- -- Tollef Fog Heen <tfheen@debian.org>  Sun, 29 Oct 2006 22:55:03 +0100
+ -- Thom May <thom@debian.org>  Sat, 28 Apr 2007 11:32:14 +0200
 
 apache2 (2.2.3-4) unstable; urgency=high
 

@@ -102,9 +102,4 @@ if [ $UPGRADE = from_2_0 ]; then
 	fi
 fi
 
-# Make sure /var/lock/apache2 has the correct permissions
-if [ -d /var/lock/apache2 ]; then
-        chown www-data /var/lock/apache2
-fi
-
 exit 0

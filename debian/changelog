@@ -18,7 +18,7 @@ apache2 (2.2.3-5) UNRELEASED; urgency=low
     running or blocked children
 
   [ Peter Samuelson ]
-  * Ship apache2.8 manpage in apache2.2-common.  (Closes: #391813)
+  * Ship apache2 manpage in apache2.2-common.  (Closes: #391813)
   * Rearrange init script so that 'force-reload' is the same as 'reload'.
     (Closes: #401053)
   * Add Build-Depends: mawk.  (Closes: #403682)

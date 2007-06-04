@@ -52,9 +52,9 @@ fi
 
 #set up default site and dummy error and access logs
 if [ $UPGRADE = new_install ]; then
-        if [ ! -L /etc/apache2/sites-enabled/000-default -a \
-             ! -f /etc/apache2/sites-enabled/000-default ]; then
-                ln -s /etc/apache2/sites-available/default /etc/apache2/sites-enabled/000-default
+        if [ ! -L /etc/apache2/sites-enabled/default -a \
+             ! -f /etc/apache2/sites-enabled/default ]; then
+                ln -s /etc/apache2/sites-available/default /etc/apache2/sites-enabled/default
         fi
         touch /var/log/apache2/error.log /var/log/apache2/access.log
         chown root:adm /var/log/apache2/error.log /var/log/apache2/access.log

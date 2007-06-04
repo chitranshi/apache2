@@ -33,6 +33,7 @@ apache2 (2.2.3-5) UNRELEASED; urgency=low
   * Add Build-Depends: libssl-dev, zlib1g-dev (Closes: #399043)
   * Add XS-Vcs-* to debian/control
   * Change 000-default to default in postinst
+  * Improve handling of empty $MODNAME in a2enmod (Closes: #422589)
 
  -- Thom May <thom@debian.org>  Sat, 28 Apr 2007 11:32:14 +0200
 

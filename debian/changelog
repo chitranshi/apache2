@@ -29,6 +29,9 @@ apache2 (2.2.3-5) UNRELEASED; urgency=low
     postinst to the init script, as /var/lock may not persist across
     reboots.  (Closes: #420101)
 
+  [ Stefan Fritsch ]
+  * Add Build-Depends: libssl-dev, zlib1g-dev (Closes: #399043)
+
  -- Thom May <thom@debian.org>  Sat, 28 Apr 2007 11:32:14 +0200
 
 apache2 (2.2.3-4) unstable; urgency=high

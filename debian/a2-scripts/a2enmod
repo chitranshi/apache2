@@ -15,7 +15,7 @@ fi
 
 #figure out if we're on a prefork or threaded mpm
 if [ -x /usr/sbin/apache2 ]; then
-	PREFORK=`/usr/sbin/apache2 -l | grep prefork || true`
+	PREFORK=`/usr/sbin/apache2 -l | grep -E 'prefork|itk' || true`
 fi
 
 if [ "$MODNAME" = "cgi" ] && [ -z $PREFORK ]; then

@@ -9,3 +9,13 @@ stop.
 However, "/etc/init.d/apache2 restart" will not work if you use a SSL key file
 with password. In this case you need to change the "restart" in
 /etc/logrotate.d/apache2 to "reload".
+
+
+Using "Include" with wildcards
+==============================
+
+Debian's Apache ignores config files whose names
+
+- do not begin with a letter or number
+- contain a character that is neither letter nor number nor _-.
+- contain .dpkg

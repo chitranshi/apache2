@@ -34,8 +34,10 @@ apache2 (2.2.3-5) UNRELEASED; urgency=low
   * Add XS-Vcs-* to debian/control
   * Improve handling of empty $MODNAME in a2enmod (Closes: #422589)
   * Treat apache2-mpm-itk as prefork in a2enmod (Closes: #412602)
-  * Add README.Debian to describe when and how to change "restart" to "reload"
-    in the logrotate script.
+  * Re-add README.Debian and describe 
+    - the config dir layout (closes: #419552)
+    - which files are ignored by Include
+    - when and how to change "restart" to "reload" in the logrotate script
   * When purging, remove {mods,sites}-enabled symlinks and the config files
     created by postinst (Closes: #397789)
   * Fix suexec to log after a cgi error (Closes: #312385)

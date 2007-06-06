@@ -1,5 +1,102 @@
-Restarting Apache during logrotate / SSL keys with passwords
-============================================================
+Contents:
+
+	Apache2 Configuration under Debian GNU/Linux
+		Files and Directories in /etc/apache2
+		Tools
+
+	Using SSL keys with passwords /	Restarting Apache during logrotate
+
+
+Apache2 Configuration under Debian GNU/Linux
+============================================
+
+Debian's default Apache2 installation attempts to make adding and
+removing modules, virtual hosts, and extra configuration directives as
+flexible is possible, in order to make automating the changes and
+administering the server as easy as possible.
+
+Files and Directories in /etc/apache2:
+-------------------------------------
+
+apache2.conf
+
+	This is the main configuration file.
+
+conf.d/
+
+	Files in this directory are included by this line in
+	apache2.conf:
+
+	# Include generic snippets of statements
+	Include /etc/apache2/conf.d
+
+	This is a good place to add additional configuration
+	directives.
+
+httpd.conf
+
+	Empty file.
+
+magic
+
+	Empty file.
+
+mods-available/
+
+	This directory contains a series of .load and .conf files.
+	The .load files contain the Apache configuration directive
+	necessary to load the module in question.  The respective
+	.conf files contain configuration directives necessary to
+	utilize the module in question.
+
+mods-enabled/
+
+	To actually enable a module for Apache2, it is necessary to
+	create a symlink in this directory to the .load (and .conf, if
+	it exists) files associated with the module in
+	mods-available/.  For example:
+
+	cgi.load -> /etc/apache2/mods-available/cgi.load
+
+ports.conf
+
+	Configuration directives for which ports and IP addresses to
+	listen to.
+
+sites-available/
+
+	Like mods-available/, except it contains configuration
+	directives for different virtual hosts that might be used with
+	apache2.  Note that the hostname doesn't have to correspond
+	exactly with the filename.  'default' is the default host.
+
+sites-enabled/
+
+	Similar in functionality to mods-enabled/, sites-enabled
+	contains symlinks to sites in sites-available/ that the
+	admnistrator wishes to enable.
+
+	Example:
+	dedasys -> /etc/apache2/sites-available/dedasys
+
+The Include directive ignores files with names that
+
+- do not begin with a letter or number
+- contain a character that is neither letter nor number nor _-.
+- contain .dpkg
+
+Tools
+-----
+
+a2enmod and a2dismod are available for enabling and disabling modules utilizing
+the above configuration system.
+
+a2ensite and a2dissite do essentially the same thing as the above tools, but
+for sites rather than modules.
+
+
+Using SSL keys with passwords / Restarting Apache during logrotate
+==================================================================
 
 Since a graceful reload (/etc/init.d/apache2 reload) does not work reliably in
 all situations, we use restart during logrotate. Since 2.2.3-5, we use 2.2's new
@@ -9,13 +106,3 @@ stop.
 However, "/etc/init.d/apache2 restart" will not work if you use a SSL key file
 with password. In this case you need to change the "restart" in
 /etc/logrotate.d/apache2 to "reload".
-
-
-Using "Include" with wildcards
-==============================
-
-Debian's Apache ignores config files whose names
-
-- do not begin with a letter or number
-- contain a character that is neither letter nor number nor _-.
-- contain .dpkg

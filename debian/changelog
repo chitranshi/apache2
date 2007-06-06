@@ -40,6 +40,7 @@ apache2 (2.2.3-5) UNRELEASED; urgency=low
     created by postinst (Closes: #397789)
   * Fix suexec to log after a cgi error (Closes: #312385)
   * Add watch file
+  * Add AddType for .bz2 (Closes: #416322)
 
  -- Thom May <thom@debian.org>  Sat, 28 Apr 2007 11:32:14 +0200
 

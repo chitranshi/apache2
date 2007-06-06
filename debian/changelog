@@ -37,6 +37,8 @@ apache2 (2.2.3-5) UNRELEASED; urgency=low
   * Treat apache2-mpm-itk as prefork in a2enmod (Closes: #412602)
   * Add README.Debian to describe when and how to change "restart" to "reload"
     in the logrotate script.
+  * When purging, remove {mods,sites}-enabled symlink and the config files
+    created by postinst (Closes: #397789)
 
  -- Thom May <thom@debian.org>  Sat, 28 Apr 2007 11:32:14 +0200
 

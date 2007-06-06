@@ -1,0 +1,24 @@
+#! /bin/sh
+
+set -e
+
+if [ "$1" = purge ] ; then
+	rm -f 	/etc/apache2/httpd.conf \
+		/etc/apache2/ports.conf \
+		/etc/apache2/conf.d/charset
+
+	for f in /etc/apache2/sites-enabled/* \
+		 /etc/apache2/mods-enabled/* ; do
+		[ -L "$f" ] && rm -f "$f" 
+	done
+	
+	for d in /etc/apache2/sites-enabled/ \
+		/etc/apache2/mods-enabled/ \
+		/etc/apache2/conf.d \
+		/etc/apache2 ; do
+		rmdir $d 2> /dev/null || true
+	done
+
+fi
+
+#DEBHELPER#

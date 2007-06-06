@@ -13,4 +13,5 @@
 042_htdigest_CAN-2005-1344
 043_ajp_connection_reuse
 044_no_error_truncation
+045_suexec_log_cloexec.dpatch
 099_config_guess_sub_update

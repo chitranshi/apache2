@@ -38,6 +38,7 @@ apache2 (2.2.3-5) UNRELEASED; urgency=low
     in the logrotate script.
   * When purging, remove {mods,sites}-enabled symlink and the config files
     created by postinst (Closes: #397789)
+  * Fix suexec to log after a cgi error (Closes: #312385)
 
  -- Thom May <thom@debian.org>  Sat, 28 Apr 2007 11:32:14 +0200
 

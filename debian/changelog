@@ -35,6 +35,8 @@ apache2 (2.2.3-5) UNRELEASED; urgency=low
   * Change 000-default to default in postinst
   * Improve handling of empty $MODNAME in a2enmod (Closes: #422589)
   * Treat apache2-mpm-itk as prefork in a2enmod (Closes: #412602)
+  * Add README.Debian to describe when and how to change "restart" to "reload"
+    in the logrotate script.
 
  -- Thom May <thom@debian.org>  Sat, 28 Apr 2007 11:32:14 +0200
 

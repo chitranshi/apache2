@@ -1,0 +1,11 @@
+Restarting Apache during logrotate / SSL keys with passwords
+============================================================
+
+Since a graceful reload (/etc/init.d/apache2 reload) does not work reliably in
+all situations, we use restart during logrotate. Since 2.2.3-5, we use 2.2's new
+graceful-stop feature, so that restart should work even if apache is slow to
+stop.
+
+However, "/etc/init.d/apache2 restart" will not work if you use a SSL key file
+with password. In this case you need to change the "restart" in
+/etc/logrotate.d/apache2 to "reload".

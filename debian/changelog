@@ -36,11 +36,13 @@ apache2 (2.2.3-5) UNRELEASED; urgency=low
   * Treat apache2-mpm-itk as prefork in a2enmod (Closes: #412602)
   * Add README.Debian to describe when and how to change "restart" to "reload"
     in the logrotate script.
-  * When purging, remove {mods,sites}-enabled symlink and the config files
+  * When purging, remove {mods,sites}-enabled symlinks and the config files
     created by postinst (Closes: #397789)
   * Fix suexec to log after a cgi error (Closes: #312385)
   * Add watch file
   * Add AddType for .bz2 (Closes: #416322)
+  * Make init script messages conform better to policy (Closes: #390348)
+    and exit with failure if called with unknown parameter (Closes: #412407)
 
  -- Thom May <thom@debian.org>  Sat, 28 Apr 2007 11:32:14 +0200
 

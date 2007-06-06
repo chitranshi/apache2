@@ -101,7 +101,7 @@ case $1 in
 		install -d -o www-data /var/lock/apache2
 		#ssl_scache shouldn't be here if we're just starting up.
 		rm -f /var/run/apache2/*ssl_scache*
-		log_begin_msg "Starting web server (apache2)..."
+		log_daemon_msg "Starting web server" "apache2"
 		if $APACHE2CTL start; then
                         log_end_msg 0
                 else
@@ -109,7 +109,7 @@ case $1 in
                 fi
 	;;
 	stop)
-		log_begin_msg "Stopping web server (apache2)..."
+		log_daemon_msg "Stopping web server" "apache2"
 		if apache_stop; then
                         log_end_msg 0
                 else
@@ -122,7 +122,7 @@ case $1 in
                     log_end_msg 1
                     exit 1
                 fi
-                log_begin_msg "Reloading web server config..."
+                log_daemon_msg "Reloading web server config" "apache2"
 		if pidof_apache; then
                     if $APACHE2CTL graceful $2 ; then
                         log_end_msg 0
@@ -132,7 +132,7 @@ case $1 in
                 fi
 	;;
 	restart)
-		log_begin_msg "Restarting web server (apache2)..."
+		log_daemon_msg "Restarting web server" "apache2"
 		if ! apache_stop; then
                         log_end_msg 1
                 fi
@@ -145,5 +145,6 @@ case $1 in
 	;;
 	*)
 		log_success_msg "Usage: /etc/init.d/apache2 {start|stop|restart|reload|force-reload}"
+		exit 1
 	;;
 esac

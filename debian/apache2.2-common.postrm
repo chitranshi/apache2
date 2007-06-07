@@ -5,7 +5,8 @@ set -e
 if [ "$1" = purge ] ; then
 	rm -f 	/etc/apache2/httpd.conf \
 		/etc/apache2/ports.conf \
-		/etc/apache2/conf.d/charset
+		/etc/apache2/conf.d/charset \
+		/etc/default/apache2
 
 	for f in /etc/apache2/sites-enabled/* \
 		 /etc/apache2/mods-enabled/* ; do

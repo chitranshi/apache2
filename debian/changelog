@@ -47,6 +47,7 @@ apache2 (2.2.3-5) UNRELEASED; urgency=low
     and exit with failure if called with unknown parameter (Closes: #412407)
   * Fix segfault in mod_proxy_ftp when FTP server sends back no spaces
     (Closes: #413727)
+  * Ship /etc/apache2/conf.d/apache2-doc (Closes: #418464)
 
  -- Thom May <thom@debian.org>  Sat, 28 Apr 2007 11:32:14 +0200
 

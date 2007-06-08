@@ -20,6 +20,7 @@ fi
 
 if [ "$MODNAME" = "cgi" ] && [ -z $PREFORK ]; then
 	MODNAME="cgid"
+	echo "Your MPM seems to be threaded. Selecting cgid instead of cgi."
 fi
 
 if [ -e $SYSCONFDIR/mods-enabled/$MODNAME.load ]; then

@@ -50,6 +50,10 @@ apache2 (2.2.3-5) UNRELEASED; urgency=low
   * Ship /etc/apache2/conf.d/apache2-doc (Closes: #418464)
   * Tell the user when selecting cgid instead of cgi (Closes: #428058)
   * Add a2ensite/a2dissite man pages (Closes: #322385)
+  * Comment out CacheEnable by default, to prevent filling up /var.
+    Document the problem in README.Debian and NEWS.Debian, point to
+    htcacheclean and give a warning when doing a2enmod disk_cache
+    (Closes: #423653). 
 
  -- Thom May <thom@debian.org>  Sat, 28 Apr 2007 11:32:14 +0200
 

@@ -40,7 +40,16 @@ if [ ! -z "$DEPENDS" ]; then
                 /usr/sbin/a2enmod "$i";
         done
 fi
-        
+
+if [ -e $SYSCONFDIR/mods-available/$MODNAME.conf ] ; then
+	if grep -qE '^# a2enmod-note:.*needs-configuration' \
+			$SYSCONFDIR/mods-available/$MODNAME.conf ; then
+		echo "mod_$MODNAME needs configuration before being able to work."
+		echo "See the comments in $SYSCONFDIR/mods-available/$MODNAME.conf"
+		echo "for details."
+	fi
+fi
+
 for i in conf load; do 
         if [ -e $SYSCONFDIR/mods-available/$MODNAME.$i -a ! -e $SYSCONFDIR/mods-enabled/$MODNAME.$i ]; then
         cd $SYSCONFDIR/mods-enabled;

@@ -1,0 +1,20 @@
+apache2 (2.2.3-5) unstable; urgency=low
+
+  Note to users of mod_proxy who have upgraded from Apache 2.0.x,
+  and to users of mod_disk_cache:
+
+  Due to a mistake, when mod_proxy was enabled during the upgrade from 2.0.x
+  to 2.2.3, mod_disk_cache was enabled and disk caching was switched on. This
+  could lead to the never shrinking disk cache filling up the /var partition.
+
+  From 2.2.3-5, disk caching is switched off again in the default
+  configuration of mod_disk_cache, as it was in 2.0.x. If you had mod_proxy
+  enabled during the upgrade, you should check whether
+  /var/cache/apache2/mod_disk_cache contains files that you don't want to be
+  there.
+
+  Users of mod_disk_cache should read the comments in
+  /etc/apache2/mods-available/disk_cache.conf and check that their
+  configuration is correct.
+
+ -- Stefan Fritsch <sf@debian.org>  Sat, 09 Jun 2007 11:03:03 +0200

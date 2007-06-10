@@ -2,7 +2,7 @@ Source: apache2
 Section: web
 Priority: optional
 Maintainer: Debian Apache Maintainers <debian-apache@lists.debian.org>
-Uploaders: Tollef Fog Heen <tfheen@debian.org>, Thom May <thom@debian.org>, Fabio M. Di Nitto <fabbione@fabbione.net>, Adam Conrad <adconrad@0c3.net>, Peter Samuelson <peter@p12n.org>
+Uploaders: Tollef Fog Heen <tfheen@debian.org>, Thom May <thom@debian.org>, Fabio M. Di Nitto <fabbione@fabbione.net>, Adam Conrad <adconrad@0c3.net>, Peter Samuelson <peter@p12n.org>, Stefan Fritsch <sf@debian.org>
 Build-Depends: debhelper (>=4.1.16), dpatch, lsb-release, libaprutil1-dev, libapr1-dev (>= 1.2.7-6), openssl, libpcre3-dev, libtool, mawk, zlib1g-dev, libssl-dev
 Standards-Version: 3.6.1.0
 XS-Vcs-Browser: http://svn.debian.org/wsvn/pkg-apache

@@ -6,7 +6,15 @@ if [ "$1" = purge ] ; then
 	rm -f 	/etc/apache2/httpd.conf \
 		/etc/apache2/ports.conf \
 		/etc/apache2/conf.d/charset \
-		/etc/default/apache2
+		/etc/default/apache2 \
+		/var/cache/apache2/reload \
+		/var/log/apache2/access.log* \
+		/var/log/apache2/error.log*
+	
+	rm -rf 	/var/cache/apache2/proxy \
+		/var/cache/apache2/mod_disk_cache \
+		/var/run/apache2 \
+		/var/lock/apache2
 
 	for f in /etc/apache2/sites-enabled/* \
 		 /etc/apache2/mods-enabled/* ; do
@@ -16,7 +24,9 @@ if [ "$1" = purge ] ; then
 	for d in /etc/apache2/sites-enabled/ \
 		/etc/apache2/mods-enabled/ \
 		/etc/apache2/conf.d \
-		/etc/apache2 ; do
+		/etc/apache2 \
+		/var/log/apache2 \
+		/var/cache/apache2 ; do
 		rmdir $d 2> /dev/null || true
 	done
 

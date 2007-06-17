@@ -2,6 +2,7 @@ apache2 (2.2.3-6) UNRELEASED; urgency=low
 
   * Update patch for truncated mod_cgi 500 responses from upstream SVN
     (Closes: #412580)
+  * Remove log, cache, and lock files on purge (Closes: #428887)
 
  -- Stefan Fritsch <sf@debian.org>  Mon, 11 Jun 2007 20:00:48 +0200
 

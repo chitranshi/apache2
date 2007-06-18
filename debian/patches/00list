@@ -11,7 +11,6 @@
 034_apxs2_libtool_fixtastic
 038_no_LD_LIBRARY_PATH
 042_htdigest_CAN-2005-1344
-043_ajp_connection_reuse
 044_no_error_truncation
 045_suexec_log_cloexec.dpatch
 046_proxy_ftp_dirparse_crash.dpatch

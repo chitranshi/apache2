@@ -5,6 +5,7 @@ apache2 (2.2.3-6) UNRELEASED; urgency=low
   * Remove log, cache, and lock files on purge (Closes: #428887)
   * Change logrotate script to use reload instead of restart.
     (Closes: #298689)
+  * Ship /usr/lib/cgi-bin (Closes: #415698)
 
  -- Stefan Fritsch <sf@debian.org>  Mon, 11 Jun 2007 20:00:48 +0200
 

@@ -9,7 +9,7 @@
 	sharedscripts
 	postrotate
 		if [ -f /var/run/apache2.pid ]; then
-			/etc/init.d/apache2 restart > /dev/null
+			/etc/init.d/apache2 reload > /dev/null
 		fi
 	endscript
 }

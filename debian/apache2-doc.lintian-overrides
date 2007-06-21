@@ -1,0 +1,2 @@
+apache2-doc: extra-license-file usr/share/doc/apache2-doc/manual/license.html.en
+apache2-doc: extra-license-file usr/share/doc/apache2-doc/manual/LICENSE.gz

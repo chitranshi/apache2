@@ -630,6 +630,8 @@ under the same terms as the software itself.
 
 End PCRE LICENCE
 
+Note: The GPL and the LGPL can be found in /usr/share/common-licenses/GPL
+and /usr/share/common-licenses/LGPL, respectively.
 
 For the test\zb.c component:
 

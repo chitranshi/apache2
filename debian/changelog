@@ -11,6 +11,7 @@ apache2 (2.2.4-1) UNRELEASED; urgency=low
   * Ship /usr/lib/cgi-bin (Closes: #415698)
   * Move conf.d include to the end of apache2.conf (Closes: #305933)
   * Update Standards-Version (no changes needed)
+  * Fix some lintian warnings.
   * Start apache when doing a "restart" even if it was not running
     (Closes: #384682)
 

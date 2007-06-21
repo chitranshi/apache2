@@ -106,6 +106,7 @@ install-%:
 	dh_installdirs
 	cd $(BUILD)/$* ;\
 	$(MAKE) DESTDIR=$(REALCURDIR)/debian/apache2-mpm-$* install
+	install -m644 debian/mpms.lintian-overrides debian/apache2-mpm-$*/usr/share/lintian/overrides/apache2-mpm-$*
 
 install-common:
 	dh_testdir
@@ -113,6 +114,7 @@ install-common:
 	dh_installdirs
 	cd $(BUILD)/worker ;\
 	$(MAKE) DESTDIR=$(REALCURDIR)/debian/tmp install
+	install -m644 debian/apache2.2-common.lintian-overrides debian/tmp/usr/share/lintian/overrides/apache2.2-common
 
 install-dev: 
 	dh_testdir
@@ -175,6 +177,7 @@ install: build install-worker install-prefork install-common install-dev install
 	cp debian/bash_completion debian/apache2.2-common/etc/bash_completion.d/apache2.2-common
 
 	cp debian/apache2-doc.conf debian/apache2-doc/etc/apache2/conf.d/apache2-doc
+	install -m644 debian/apache-doc.lintian-overrides debian/apache2-doc/usr/share/lintian/overrides/apache2-doc
 
 	#apache2-utils extras
 	cp support/check_forensic debian/apache2-utils/usr/sbin/check_forensic
@@ -191,6 +194,7 @@ install: build install-worker install-prefork install-common install-dev install
 	mkdir -p debian/apache2.2-common/etc/logrotate.d
 	cp debian/logrotate debian/apache2.2-common/etc/logrotate.d/apache2
 	chmod 4755 debian/apache2.2-common/usr/lib/apache2/suexec 
+	chmod 644 debian/apache2.2-common/usr/lib/apache2/modules/mod_suexec.so
 	for i in `find debian/a2-scripts -name .svn -prune -o -name .arch-ids -prune -o -type f -print`; \
                 do install -m755 $$i debian/apache2.2-common/usr/sbin; \
 		rm -f debian/apache2.2-common/usr/sbin/update-apache2-modules debian/apache2.2-common/usr/sbin/modhandler.py; \

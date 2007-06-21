@@ -1,0 +1,1 @@
+apache2.2-common: setuid-binary usr/lib/apache2/suexec 4755 root/root

@@ -1,3 +1,9 @@
+apache2 (2.2.4-2) unstable; urgency=low
+
+  * Update Standards-Version (no changes needed)
+
+ -- Stefan Fritsch <sf@debian.org>  Thu, 21 Jun 2007 15:18:32 +0200
+
 apache2 (2.2.4-1) unstable; urgency=low
 
   * New upstream version (Closes: #427050)

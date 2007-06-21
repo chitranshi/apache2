@@ -1,12 +1,4 @@
-apache2 (2.2.4-2) UNRELEASED; urgency=low
-
-  * Update Standards-Version (no changes needed)
-  * Start apache when doing a "restart" even if it was not running
-    (Closes: #384682)
-
- -- Stefan Fritsch <sf@debian.org>  Thu, 21 Jun 2007 15:18:32 +0200
-
-apache2 (2.2.4-1) unstable; urgency=low
+apache2 (2.2.4-1) UNRELEASED; urgency=low
 
   * New upstream version (Closes: #427050)
     - Fixes "proxy: error reading status line from remote server"
@@ -18,6 +10,9 @@ apache2 (2.2.4-1) unstable; urgency=low
     (Closes: #298689)
   * Ship /usr/lib/cgi-bin (Closes: #415698)
   * Move conf.d include to the end of apache2.conf (Closes: #305933)
+  * Update Standards-Version (no changes needed)
+  * Start apache when doing a "restart" even if it was not running
+    (Closes: #384682)
 
  -- Stefan Fritsch <sf@debian.org>  Thu, 21 Jun 2007 13:36:21 +0200
 

@@ -134,7 +134,7 @@ case $1 in
 	restart)
 		log_daemon_msg "Restarting web server" "apache2"
 		if ! apache_stop; then
-                        log_end_msg 1
+                        log_end_msg 1 || true
                 fi
 		sleep 10
 		if $APACHE2CTL start; then

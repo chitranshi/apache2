@@ -1,6 +1,8 @@
-apache2 (2.2.4-2) unstable; urgency=low
+apache2 (2.2.4-2) UNRELEASED; urgency=low
 
   * Update Standards-Version (no changes needed)
+  * Start apache when doing a "restart" even if it was not running
+    (Closes: #384682)
 
  -- Stefan Fritsch <sf@debian.org>  Thu, 21 Jun 2007 15:18:32 +0200
 

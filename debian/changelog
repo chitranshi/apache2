@@ -1,4 +1,4 @@
-apache2 (2.2.4-1) UNRELEASED; urgency=low
+apache2 (2.2.4-1) unstable; urgency=low
 
   * New upstream version (Closes: #427050)
     - Fixes "proxy: error reading status line from remote server"
@@ -11,7 +11,7 @@ apache2 (2.2.4-1) UNRELEASED; urgency=low
   * Ship /usr/lib/cgi-bin (Closes: #415698)
   * Move conf.d include to the end of apache2.conf (Closes: #305933)
 
- -- Stefan Fritsch <sf@debian.org>  Mon, 11 Jun 2007 20:00:48 +0200
+ -- Stefan Fritsch <sf@debian.org>  Thu, 21 Jun 2007 13:36:21 +0200
 
 apache2 (2.2.3-5) unstable; urgency=low
 

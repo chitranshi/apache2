@@ -114,7 +114,7 @@ install-common:
 	dh_installdirs
 	cd $(BUILD)/worker ;\
 	$(MAKE) DESTDIR=$(REALCURDIR)/debian/tmp install
-	install -m644 debian/apache2.2-common.lintian-overrides debian/tmp/usr/share/lintian/overrides/apache2.2-common
+	install -m644 debian/apache2.2-common.lintian-overrides debian/apache2.2-common/usr/share/lintian/overrides/apache2.2-common
 
 install-dev: 
 	dh_testdir

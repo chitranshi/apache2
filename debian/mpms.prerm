@@ -5,7 +5,13 @@
 
 case "$1" in
         upgrade|remove)
-                /usr/sbin/invoke-rc.d apache2 stop
+		if [ -x "/etc/init.d/apache2" ]; then
+			if [ -x /usr/sbin/invoke-rc.d ]; then
+				invoke-rc.d apache2 stop || true
+			else
+				/etc/init.d/apache2 stop || true
+			fi
+		fi
 		sleep 2
         ;;
         deconfigure|failed-upgrade)

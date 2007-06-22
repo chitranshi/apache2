@@ -178,7 +178,7 @@ install: build install-worker install-prefork install-common install-dev install
 	chmod o-rx debian/apache2.2-common/var/log/apache2
 
 	cp debian/apache2-doc.conf debian/apache2-doc/etc/apache2/conf.d/apache2-doc
-	install -m644 debian/apache-doc.lintian-overrides debian/apache2-doc/usr/share/lintian/overrides/apache2-doc
+	install -m644 debian/apache2-doc.lintian-overrides debian/apache2-doc/usr/share/lintian/overrides/apache2-doc
 
 	#apache2-utils extras
 	cp support/check_forensic debian/apache2-utils/usr/sbin/check_forensic

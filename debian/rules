@@ -175,7 +175,6 @@ install: build install-worker install-prefork install-common install-dev install
 # --sourcedir=$(REALCURDIR)/debian/apache2.2-common
 
 	cp debian/bash_completion debian/apache2.2-common/etc/bash_completion.d/apache2.2-common
-	chmod o-rx debian/apache2.2-common/var/log/apache2
 
 	cp debian/apache2-doc.conf debian/apache2-doc/etc/apache2/conf.d/apache2-doc
 	install -m644 debian/apache2-doc.lintian-overrides debian/apache2-doc/usr/share/lintian/overrides/apache2-doc
@@ -224,7 +223,7 @@ binary-indep: install
 	dh_testroot -i 
 	dh_installdirs -i
 	dh_installdocs -i
-	ln -s ../apache2.2-common/README.Debian debian/apache2/usr/share/doc/apache2/
+	ln -sf ../apache2.2-common/README.Debian debian/apache2/usr/share/doc/apache2/
 	dh_installchangelogs -i CHANGES -Napache2
 	dh_installchangelogs -papache2
 	dh_compress -i
@@ -247,6 +246,8 @@ binary-arch: install
 	dh_compress -a
 	dh_fixperms -a -Xsuexec
 	chown -R www-data:www-data debian/apache2.2-common/var/cache/apache2
+	chown root:adm debian/apache2.2-common/var/log/apache2
+	chmod o-rx debian/apache2.2-common/var/log/apache2
 	dh_makeshlibs -a -V
 	dh_installdeb -a
 	dh_shlibdeps -a

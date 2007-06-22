@@ -175,6 +175,7 @@ install: build install-worker install-prefork install-common install-dev install
 # --sourcedir=$(REALCURDIR)/debian/apache2.2-common
 
 	cp debian/bash_completion debian/apache2.2-common/etc/bash_completion.d/apache2.2-common
+	chmod o-rx debian/apache2.2-common/var/log/apache2
 
 	cp debian/apache2-doc.conf debian/apache2-doc/etc/apache2/conf.d/apache2-doc
 	install -m644 debian/apache-doc.lintian-overrides debian/apache2-doc/usr/share/lintian/overrides/apache2-doc

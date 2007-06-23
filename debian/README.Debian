@@ -88,6 +88,12 @@ The Include directive ignores files with names that
 - contain a character that is neither letter nor number nor _-.
 - contain .dpkg
 
+Other files
+-----------
+
+For historical reasons, the pid file is in /var/run/apache2.pid and not in
+/var/run/apache2/apache2.pid.
+
 Tools
 -----
 

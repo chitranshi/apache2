@@ -19,6 +19,7 @@ apache2 (2.2.4-1) UNRELEASED; urgency=low
   * fix options syntax in sites-available/default (Closes: #419539)
   * don't fail in prerm if apache is not running (Closes: #418536)
   * Add note to README.Debian how to read docs (Closes: #350822)
+  * Document pid file name (Closes: #350286)
   * Suggest apache2-doc and www-browser (Closes: #399056)
 
  -- Stefan Fritsch <sf@debian.org>  Thu, 21 Jun 2007 13:36:21 +0200

@@ -224,7 +224,7 @@ binary-indep: install
 	dh_installdirs -i
 	dh_installdocs -i
 	ln -sf ../apache2.2-common/README.Debian debian/apache2/usr/share/doc/apache2/
-	ln -sf ../apache2.2-common/README.Debian debian/apache2-doc/usr/share/doc/apache2-doc/
+	cp debian/README.Debian debian/apache2-doc/usr/share/doc/apache2-doc/
 	dh_installchangelogs -i CHANGES -Napache2
 	dh_installchangelogs -papache2
 	dh_compress -i

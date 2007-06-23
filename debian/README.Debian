@@ -7,7 +7,7 @@ Contents
 
 	Using mod_disk_cache
 	
-	Using SSL keys with passwords /	Restarting Apache during logrotate
+	Documentation
 
 
 Apache2 Configuration under Debian GNU/Linux
@@ -106,3 +106,15 @@ prevent the disk cache to grow indefinitely, you have to use htcacheclean from
 the apache2-utils package. There is currently no mechanism in the Debian
 package to start htcacheclean automatically. See the htcacheclean man page for
 details.
+
+Documentation
+=============
+
+The full apache 2 documentation can be found on the web at
+
+http://httpd.apache.org/docs/2.2/
+
+or, if you have installed the apache2-doc package, at
+
+http://localhost/manual/
+

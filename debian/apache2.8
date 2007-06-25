@@ -1,179 +1,81 @@
-.TH apache2 8 "February 1997"
-.\" The Apache Software License, Version 1.1
-.\"
-.\" Copyright (c) 2000-2002 The Apache Software Foundation.  All rights
-.\" reserved.
-.\"
-.\" Redistribution and use in source and binary forms, with or without
-.\" modification, are permitted provided that the following conditions
-.\" are met:
-.\"
-.\" 1. Redistributions of source code must retain the above copyright
-.\"    notice, this list of conditions and the following disclaimer.
-.\"
-.\" 2. Redistributions in binary form must reproduce the above copyright
-.\"    notice, this list of conditions and the following disclaimer in
-.\"    the documentation and/or other materials provided with the
-.\"    distribution.
-.\"
-.\" 3. The end-user documentation included with the redistribution,
-.\"    if any, must include the following acknowledgment:
-.\"       "This product includes software developed by the
-.\"        Apache Software Foundation (http://www.apache.org/)."
-.\"    Alternately, this acknowledgment may appear in the software itself,
-.\"    if and wherever such third-party acknowledgments normally appear.
-.\"
-.\" 4. The names "Apache" and "Apache Software Foundation" must
-.\"    not be used to endorse or promote products derived from this
-.\"    software without prior written permission. For written
-.\"    permission, please contact apache@apache.org.
-.\"
-.\" 5. Products derived from this software may not be called "Apache",
-.\"    nor may "Apache" appear in their name, without prior written
-.\"    permission of the Apache Software Foundation.
-.\"
-.\" THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED
-.\" WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
-.\" OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-.\" DISCLAIMED.  IN NO EVENT SHALL THE APACHE SOFTWARE FOUNDATION OR
-.\" ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-.\" SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-.\" LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
-.\" USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-.\" ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-.\" OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
-.\" OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
-.\" SUCH DAMAGE.
-.\"
-.\" This software consists of voluntary contributions made by many
-.\" individuals on behalf of the Apache Software Foundation.  For more
-.\" information on the Apache Software Foundation, please see
-.\" <http://www.apache.org/>.
-.\"
+.TH "APACHE2" 8 "2005-09-20" "Apache HTTP Server" "apache2"
+
 .SH NAME
-apache2 \- Apache hypertext transfer protocol server
-.SH SYNOPSIS
-.B apache2 
-[
-.BI \-d " serverroot"
-] [
-.BI \-f " config"
-] [
-.BI \-C " directive"
-] [
-.BI \-c " directive"
-] [
-.BI \-D " parameter"
-]
+apache2 \- Apache Hypertext Transfer Protocol Server
 
-.B apache2 
-[
-.B \-h
-] 
-[
-.B \-l
-] 
-[
-.B \-L
-] 
-[
-.B \-v
-] 
-[
-.B \-V
-] 
-[
-.B \-t
-] 
-[
-.B \-X
-]
-
-.SH DESCRIPTION
-.B apache2
-is the Apache HyperText Transfer Protocol (HTTP) server program. It is
-designed to be run as a standalone daemon process. When used like this
-it will create a pool of child processes to handle requests. To stop
-it, send a TERM signal to the initial (parent) process. The PID of
-this process is written to a file as given in the configuration file.
+.SH "SYNOPSIS"
+ 
 .PP
-This manual page only lists the command line arguments. For details
-of the directives necessary to configure 
-.B apache2
-see the Apache manual,
-which is part of the Apache distribution or can be found at
-http://httpd.apache.org/. Paths in this manual may not reflect those
-compiled into 
-.B apache2.
-.SH OPTIONS
-.TP 12
-.BI \-d " serverroot"
-Set the initial value for the ServerRoot directive to \fIserverroot\fP. This
-can be overridden by the ServerRoot command in the configuration file. The
-default is \fB/usr/local/apache2\fP.
+\fBapache2\fR [ -\fBd\fR \fIserverroot\fR ] [ -\fBf\fR \fIconfig\fR ] [ -\fBC\fR \fIdirective\fR ] [ -\fBc\fR \fIdirective\fR ] [ -\fBD\fR \fIparameter\fR ] [ -\fBe\fR \fIlevel\fR ] [ -\fBE\fR \fIfile\fR ] [ \fB-k\fR start|restart|graceful|stop|graceful-stop ] [ -\fBR\fR \fIdirectory\fR ] [ -\fBh\fR ] [ -\fBl\fR ] [ -\fBL\fR ] [ -\fBS\fR ] [ -\fBt\fR ] [ -\fBv\fR ] [ -\fBV\fR ] [ -\fBX\fR ] [ -\fBM\fR ]
+ 
+
+.SH "SUMMARY"
+ 
+.PP
+apache2 is the Apache HyperText Transfer Protocol (HTTP) server program\&. It is designed to be run as a standalone daemon process\&. When used like this it will create a pool of child processes or threads to handle requests\&.
+ 
+.PP
+In general, apache2 should not be invoked directly, but rather should be invoked via /etc/init.d/apache2\&.
+
+.PP
+The full documentation is available in the apache2-doc package or at http://httpd.apache.org/docs/2.2/
+ 
+
+.SH "OPTIONS"
+ 
+ 
 .TP
-.BI \-f " config"
-Execute the commands in the file \fIconfig\fP on startup. If \fIconfig\fP
-does not begin with a /, then it is taken to be a path relative to
-the ServerRoot. The default is \fBconf/apache2.conf\fP.
+-d \fIserverroot\fR
+Set the initial value for the ServerRoot directive to \fIserverroot\fR\&. This can be overridden by the ServerRoot directive in the configuration file\&.
 .TP
-.BI \-C " directive"
-Process the configuration \fIdirective\fP before reading config files.
+-f \fIconfig\fR
+Uses the directives in the file \fIconfig\fR on startup\&. If \fIconfig\fR does not begin with a /, then it is taken to be a path relative to the ServerRoot\&. The default is /etc/apache2/apache2\&.conf\&.  
 .TP
-.BI \-c " directive"
-Process the configuration \fIdirective\fP after reading config files.
+-k start|restart|graceful|stop|graceful-stop
+Signals apache2 to start, restart, or stop\&. See Stopping Apache for more information\&.  
 .TP
-.BI \-D " parameter"
-Sets a configuration \fIparameter\fP which can be used with
-<IfDefine>...</IfDefine> sections in the configuration files
-to conditionally skip or process commands.
+-C \fIdirective\fR
+Process the configuration \fIdirective\fR before reading config files\&.  
 .TP
-.B \-h
-Output a short summary of available command line options.
+-c \fIdirective\fR
+Process the configuration \fIdirective\fR after reading config files\&.  
 .TP
-.B \-l
-Output a list of modules compiled into the server.
+-D \fIparameter\fR
+Sets a configuration \fIparameter \fRwhich can be used with <IfDefine> sections in the configuration files to conditionally skip or process commands at server startup and restart\&.  
 .TP
-.B \-L
-Output a list of directives together with expected arguments and
-places where the directive is valid.
+-e \fIlevel\fR
+Sets the LogLevel to \fIlevel\fR during server startup\&. This is useful for temporarily increasing the verbosity of the error messages to find problems during startup\&.  
 .TP
-.B \-S
-Show the settings as parsed from the config file (currently only shows the
-virtualhost settings).
+-E \fIfile\fR
+Send error messages during server startup to \fIfile\fR\&.  
 .TP
-.B \-t
-Run syntax tests for configuration files only. The program immediately exits
-after these syntax parsing with either a return code of 0 (Syntax OK) or
-return code not equal to 0 (Syntax Error).  If 
-.BI \-D " DUMP_VHOSTS"
-is also set, details of the virtual host configuration will be printed.
+-R \fIdirectory\fR
+When the server is compiled using the SHARED_CORE rule, this specifies the \fIdirectory\fR for the shared object files\&.  
 .TP
-.B \-v
-Print the version of 
-.B apache2
-, and then exit.
+-h
+Output a short summary of available command line options\&.  
 .TP
-.B \-V
-Print the version and build parameters of 
-.B apache2
-, and then exit.
+-l
+Output a list of modules compiled into the server\&. This will \fBnot\fR list dynamically loaded modules included using the LoadModule directive\&.  
 .TP
-.B \-X
-Run
-.B apache2
-in debug mode.  Only one worker will be started and the server will not detach
-from the console.
-.SH FILES
-.PD 0
-.B /usr/local/apache2/conf/apache2.conf
-.br
-.B /usr/local/apache2/conf/mime.types
-.br
-.B /usr/local/apache2/conf/magic
-.br
-.B /usr/local/apache2/logs/error_log
-.br
-.B /usr/local/apache2/logs/access_log
-.br
-.B /usr/local/apache2/logs/apache2.pid
+-L
+Output a list of directives together with expected arguments and places where the directive is valid\&.  
+.TP
+-M
+Dump a list of loaded Static and Shared Modules\&.  
+.TP
+-S
+Show the settings as parsed from the config file (currently only shows the virtualhost settings)\&.  
+.TP
+-t
+Run syntax tests for configuration files only\&. The program immediately exits after these syntax parsing tests with either a return code of 0 (Syntax OK) or return code not equal to 0 (Syntax Error)\&. If -D \fIDUMP\fR_\fIVHOSTS \fRis also set, details of the virtual host configuration will be printed\&. If -D \fIDUMP\fR_\fIMODULES \fR is set, all loaded modules will be printed\&.  
+.TP
+-v
+Print the version of apache2, and then exit\&.  
+.TP
+-V
+Print the version and build parameters of apache2, and then exit\&.  
+.TP
+-X
+Run apache2 in debug mode\&. Only one worker will be started and the server will not detach from the console\&.  
+ 

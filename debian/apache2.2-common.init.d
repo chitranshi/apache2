@@ -25,7 +25,7 @@ fi
 test -f /etc/default/rcS && . /etc/default/rcS
 test -f /etc/default/apache2 && . /etc/default/apache2
 if [ "$NO_START" != "0" -a "$1" != "stop" ]; then 
-        [ "$VERBOSE" != no ] && log_warning_msg "Not starting apache2 - edit /etc/default/apache2 and change NO_START to be 0.";
+        log_warning_msg "Not starting apache2 - edit /etc/default/apache2 and change NO_START to be 0.";
         exit 0;
 fi
 

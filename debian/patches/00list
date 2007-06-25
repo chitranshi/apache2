@@ -14,4 +14,5 @@
 044_no_error_truncation
 045_suexec_log_cloexec.dpatch
 046_proxy_ftp_dirparse_crash.dpatch
+047_fix_usage_message.dpatch
 099_config_guess_sub_update

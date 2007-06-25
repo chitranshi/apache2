@@ -28,7 +28,7 @@ Description: Next generation, scalable, extendable web server
 
 Package: apache2-mpm-worker
 Architecture: any
-Depends: ${shlibs:Depends}, apache2.2-common (= ${Source-Version})
+Depends: ${shlibs:Depends}, apache2.2-common (= ${binary:Version})
 Provides: apache2-mpm, apache2, httpd, httpd-cgi
 Conflicts: apache2-mpm, apache2-common
 Replaces: apache2-mpm-threadpool (<< 2.0.53), apache2-mpm-perchild (<< 2.2.0)
@@ -41,7 +41,7 @@ Description: High speed threaded model for Apache HTTPD
 
 Package: apache2-mpm-prefork
 Architecture: any
-Depends: ${shlibs:Depends}, apache2.2-common (= ${Source-Version})
+Depends: ${shlibs:Depends}, apache2.2-common (= ${binary:Version})
 Provides: apache2-mpm, apache2, httpd, httpd-cgi
 Conflicts: apache2-mpm, apache2-common
 Description: Traditional model for Apache HTTPD
@@ -56,7 +56,7 @@ Description: Traditional model for Apache HTTPD
 
 Package: apache2-mpm-event
 Architecture: any
-Depends: ${shlibs:Depends}, apache2.2-common (= ${Source-Version})
+Depends: ${shlibs:Depends}, apache2.2-common (= ${binary:Version})
 Provides: apache2-mpm, apache2, httpd, httpd-cgi
 Conflicts: apache2-mpm, apache2-common
 Description: Event driven model for Apache HTTPD
@@ -94,7 +94,7 @@ Description: utility programs for webservers
 
 Package: apache2
 Architecture: all
-Depends: apache2-mpm-worker (>= ${Source-Version}) | apache2-mpm-prefork (>= ${Source-Version}) | apache2-mpm-event (>= ${Source-Version})
+Depends: apache2-mpm-worker (>= ${Source:Version}) | apache2-mpm-prefork (>= ${Source:Version}) | apache2-mpm-event (>= ${Source:Version})
 Section: web
 Description: Next generation, scalable, extendable web server
  Apache v2 is the next generation of the omnipresent Apache web server. This
@@ -111,7 +111,7 @@ Description: documentation for apache2
 Package: apache2-prefork-dev
 Section: devel
 Architecture: any
-Depends: apache2.2-common (= ${Source-Version}), openssl, libaprutil1-dev
+Depends: apache2.2-common (= ${binary:Version}), openssl, libaprutil1-dev
 Conflicts: apache2-threaded-dev
 Description: development headers for apache2
  This package provides the development headers and apxs2 binary for
@@ -123,7 +123,7 @@ Description: development headers for apache2
 Package: apache2-threaded-dev
 Section: devel
 Architecture: any
-Depends: apache2.2-common (= ${Source-Version}), openssl, libaprutil1-dev
+Depends: apache2.2-common (= ${binary:Version}), openssl, libaprutil1-dev
 Conflicts: apache2-prefork-dev
 Provides: apache2-dev
 Description: development headers for apache2

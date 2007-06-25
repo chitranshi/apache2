@@ -1,5 +1,6 @@
 apache2 (2.2.4-1) UNRELEASED; urgency=low
 
+  [ Stefan Fritsch ]
   * New upstream version (Closes: #427050)
     - Fixes "proxy: error reading status line from remote server"
       (Closes: #410331)
@@ -26,6 +27,9 @@ apache2 (2.2.4-1) UNRELEASED; urgency=low
     VERBOSE=yes is not the default anymore
   * Replace apache2(8) man page with a more current version
   * Show -X option in help message (Closes: #391817)
+
+  [ Peter Samuelson ]
+  * Add shlibs:Depends to apache2.2-common.
 
  -- Stefan Fritsch <sf@debian.org>  Thu, 21 Jun 2007 13:36:21 +0200
 

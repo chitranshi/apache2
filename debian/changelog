@@ -12,8 +12,7 @@ apache2 (2.2.4-1) UNRELEASED; urgency=low
   * Ship /usr/lib/cgi-bin (Closes: #415698)
   * Move conf.d include to the end of apache2.conf (Closes: #305933)
   * Update Standards-Version (no changes needed)
-  * Fix some lintian warnings, add some overrides, and make the
-    package binNMU safe.
+  * Fix some lintian warnings, add some overrides
   * Start apache when doing a "restart" even if it was not running
     (Closes: #384682)
   * remove o+rx from /var/log/apache2 (Closes: #291841)
@@ -26,6 +25,7 @@ apache2 (2.2.4-1) UNRELEASED; urgency=low
   * Make init script always display a warning if NO_START=1 since
     VERBOSE=yes is not the default anymore
   * Replace apache2(8) man page with a more current version
+  * Add httxt2dbm(8) man page
   * Show -X option in help message (Closes: #391817)
 
   [ Peter Samuelson ]

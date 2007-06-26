@@ -27,6 +27,7 @@ apache2 (2.2.4-1) UNRELEASED; urgency=low
   * Replace apache2(8) man page with a more current version
   * Add httxt2dbm(8) man page
   * Show -X option in help message (Closes: #391817)
+  * remove sick-hack-to-update-modules
 
   [ Peter Samuelson ]
   * Add shlibs:Depends to apache2.2-common.

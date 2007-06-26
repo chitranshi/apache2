@@ -106,7 +106,6 @@ install-%:
 	dh_installdirs
 	cd $(BUILD)/$* ;\
 	$(MAKE) DESTDIR=$(REALCURDIR)/debian/apache2-mpm-$* install
-	install -m644 debian/mpms.lintian-overrides debian/apache2-mpm-$*/usr/share/lintian/overrides/apache2-mpm-$*
 
 install-common:
 	dh_testdir
@@ -209,7 +208,9 @@ install: build install-worker install-prefork install-common install-dev install
 	for i in worker prefork event; do \
 		rm -rf debian/apache2-mpm-$$i/ ;\
 		mkdir -p debian/apache2-mpm-$$i/usr/sbin ;\
+		mkdir -p debian/apache2-mpm-$$i/usr/share/lintian/overrides ;\
 		install -m 755 $(BUILD)/$$i/apache2 debian/apache2-mpm-$$i/usr/sbin/apache2 ;\
+		install -m644 debian/mpms.lintian-overrides debian/apache2-mpm-$$i/usr/share/lintian/overrides/apache2-mpm-$$i ;\
 	done
 
 	for pkg in `awk '/^Package:/ { print $$2 }' debian/control`; do \

@@ -1,4 +1,4 @@
 etc/apache2/conf.d
 usr/share/doc/apache2-doc
 var/www/apache2-default
-usr/share/lintian/overrides/
+usr/share/lintian/overrides

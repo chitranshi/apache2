@@ -192,7 +192,8 @@ install: build install-worker install-prefork install-common install-dev install
 	fi
 	mkdir -p debian/apache2.2-common/etc/logrotate.d
 	cp debian/logrotate debian/apache2.2-common/etc/logrotate.d/apache2
-	chmod 4755 debian/apache2.2-common/usr/lib/apache2/suexec 
+	chmod 4750 debian/apache2.2-common/usr/lib/apache2/suexec 
+	chgrp www-data debian/apache2.2-common/usr/lib/apache2/suexec
 	chmod 644 debian/apache2.2-common/usr/lib/apache2/modules/mod_suexec.so
 	for i in `find debian/a2-scripts -name .svn -prune -o -name .arch-ids -prune -o -type f -print`; \
                 do install -m755 $$i debian/apache2.2-common/usr/sbin; \

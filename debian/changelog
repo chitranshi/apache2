@@ -29,6 +29,7 @@ apache2 (2.2.4-1) UNRELEASED; urgency=low
   * Show -X option in help message (Closes: #391817)
   * remove sick-hack-to-update-modules
   * Don't use AddDefaultCharset for our docs (Closes: #414429)
+  * chmod o-rx suexec (Closes: #431048)
 
   [ Peter Samuelson ]
   * Add shlibs:Depends to apache2.2-common.

@@ -23,7 +23,7 @@ apache2 (2.2.4-1) UNRELEASED; urgency=low
   * Document pid file name (Closes: #350286)
   * Suggest apache2-doc and www-browser (Closes: #399056)
   * Make init script always display a warning if NO_START=1 since
-    VERBOSE=yes is not the default anymore
+    VERBOSE=yes is not the default anymore (Closes: #430116)
   * Replace apache2(8) man page with a more current version
   * Add httxt2dbm(8) man page
   * Show -X option in help message (Closes: #391817)

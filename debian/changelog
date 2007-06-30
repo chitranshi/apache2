@@ -1,6 +1,7 @@
 apache2 (2.2.4-1) UNRELEASED; urgency=low
 
   [ Stefan Fritsch ]
+  * Security: fix CVE-2007-1863: DoS in mod_cache
   * New upstream version (Closes: #427050)
     - Fixes "proxy: error reading status line from remote server"
       (Closes: #410331)

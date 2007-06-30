@@ -16,4 +16,5 @@
 046_proxy_ftp_dirparse_crash.dpatch
 047_fix_usage_message.dpatch
 048_CVE-2007-1862.dpatch
+049_CVE-2007-1863.dpatch
 099_config_guess_sub_update

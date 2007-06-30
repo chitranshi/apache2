@@ -6,23 +6,25 @@ apache2 (2.2.4-1) UNRELEASED; urgency=low
     - Fixes "proxy: error reading status line from remote server"
       (Closes: #410331)
   * Fix CVE-2007-1862: mod_mem_cache DoS introduced in 2.2.4
-  * Update patch for truncated mod_cgi 500 responses from upstream SVN
-    (Closes: #412580)
-  * Remove log, cache, and lock files on purge (Closes: #428887)
   * Change logrotate script to use reload instead of restart.
     (Closes: #298689)
+  * chmod o-rx /var/log/apache2 (Closes: #291841)
+  * chmod o-rx suexec (Closes: #431048)
+  * Update patch for truncated mod_cgi 500 responses from upstream SVN
+    (Closes: #412580)
+  * Don't use AddDefaultCharset for our docs (Closes: #414429)
+  * fix options syntax in sites-available/default (Closes: #419539)
+  * Remove log, cache, and lock files on purge (Closes: #428887)
   * Ship /usr/lib/cgi-bin (Closes: #415698)
+  * Add note to README.Debian how to read docs (Closes: #350822)
+  * Document pid file name (Closes: #350286)
   * Move conf.d include to the end of apache2.conf (Closes: #305933)
   * Update Standards-Version (no changes needed)
   * Fix some lintian warnings, add some overrides
   * Start apache when doing a "restart" even if it was not running
     (Closes: #384682)
-  * remove o+rx from /var/log/apache2 (Closes: #291841)
   * reload config in apache2-doc postinst (Closes: #289289)
-  * fix options syntax in sites-available/default (Closes: #419539)
   * don't fail in prerm if apache is not running (Closes: #418536)
-  * Add note to README.Debian how to read docs (Closes: #350822)
-  * Document pid file name (Closes: #350286)
   * Suggest apache2-doc and www-browser (Closes: #399056)
   * Make init script always display a warning if NO_START=1 since
     VERBOSE=yes is not the default anymore (Closes: #430116)
@@ -30,8 +32,6 @@ apache2 (2.2.4-1) UNRELEASED; urgency=low
   * Add httxt2dbm(8) man page
   * Show -X option in help message (Closes: #391817)
   * remove sick-hack-to-update-modules
-  * Don't use AddDefaultCharset for our docs (Closes: #414429)
-  * chmod o-rx suexec (Closes: #431048)
   * don't depend on procps on hurd (Closes: #431125)
 
   [ Peter Samuelson ]

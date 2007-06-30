@@ -9,7 +9,7 @@ apache2 (2.2.4-1) UNRELEASED; urgency=low
   * Change logrotate script to use reload instead of restart.
     (Closes: #298689)
   * chmod o-rx /var/log/apache2 (Closes: #291841)
-  * chmod o-rx suexec (Closes: #431048)
+  * chmod o-x suexec (Closes: #431048)
   * Update patch for truncated mod_cgi 500 responses from upstream SVN
     (Closes: #412580)
   * Don't use AddDefaultCharset for our docs (Closes: #414429)

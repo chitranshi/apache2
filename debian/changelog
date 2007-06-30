@@ -4,6 +4,7 @@ apache2 (2.2.4-1) UNRELEASED; urgency=low
   * New upstream version (Closes: #427050)
     - Fixes "proxy: error reading status line from remote server"
       (Closes: #410331)
+  * Fix CVE-2007-1862: mod_mem_cache DoS introduced in 2.2.4
   * Update patch for truncated mod_cgi 500 responses from upstream SVN
     (Closes: #412580)
   * Remove log, cache, and lock files on purge (Closes: #428887)

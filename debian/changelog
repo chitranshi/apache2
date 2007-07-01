@@ -1,11 +1,12 @@
-apache2 (2.2.4-1) UNRELEASED; urgency=low
+apache2 (2.2.4-1) unstable; urgency=medium
 
   [ Stefan Fritsch ]
-  * Security: fix CVE-2007-1863: DoS in mod_cache
+  * Urgency medium for security fix
+  * Fix CVE-2007-1863: DoS in mod_cache
   * New upstream version (Closes: #427050)
     - Fixes "proxy: error reading status line from remote server"
       (Closes: #410331)
-  * Fix CVE-2007-1862: mod_mem_cache DoS introduced in 2.2.4
+  * Fix CVE-2007-1862: mod_mem_cache DoS (introduced in 2.2.4)
   * Change logrotate script to use reload instead of restart.
     (Closes: #298689)
   * chmod o-rx /var/log/apache2 (Closes: #291841)
@@ -14,11 +15,11 @@ apache2 (2.2.4-1) UNRELEASED; urgency=low
     (Closes: #412580)
   * Don't use AddDefaultCharset for our docs (Closes: #414429)
   * fix options syntax in sites-available/default (Closes: #419539)
+  * Move conf.d include to the end of apache2.conf (Closes: #305933)
   * Remove log, cache, and lock files on purge (Closes: #428887)
   * Ship /usr/lib/cgi-bin (Closes: #415698)
   * Add note to README.Debian how to read docs (Closes: #350822)
   * Document pid file name (Closes: #350286)
-  * Move conf.d include to the end of apache2.conf (Closes: #305933)
   * Update Standards-Version (no changes needed)
   * Fix some lintian warnings, add some overrides
   * Start apache when doing a "restart" even if it was not running
@@ -37,7 +38,7 @@ apache2 (2.2.4-1) UNRELEASED; urgency=low
   [ Peter Samuelson ]
   * Add shlibs:Depends to apache2.2-common.
 
- -- Stefan Fritsch <sf@debian.org>  Thu, 21 Jun 2007 13:36:21 +0200
+ -- Stefan Fritsch <sf@debian.org>  Sun, 01 Jul 2007 19:57:51 +0200
 
 apache2 (2.2.3-5) unstable; urgency=low
 

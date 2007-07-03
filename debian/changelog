@@ -1,7 +1,9 @@
 apache2 (2.2.4-2) UNRELEASED; urgency=low
 
+  * Modularize config: Move module specific configuration from apache2.conf
+    to mods-available/*conf (Closes: #338472)
   * Remove the NO_START kludge. Now you have to use rc*.d symlinks to disable
-    apache2. (Closes: #408462)
+    apache2. (Closes: #408462, #275561)
   * Disable AddDefaultCharset again (Closes: #397886)
   * Make ports.conf, conf.d/charset, and /etc/default/apache2 conffiles
     managed by dpkg

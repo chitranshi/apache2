@@ -82,6 +82,17 @@ if [ $UPGRADE = from_2_0 ]; then
 	fi
 fi
 
+if [ -n "$2" ] && dpkg --compare-versions "$2" lt 2.2.4-2; then
+	echo -n activating new config files ...
+	for a in actions alias autoindex info mime negotiation setenvif status ; do 
+		if mod_is_enabled $a && [ ! -e /etc/apache2/mods-enabled/$a.conf ] ; then
+			ln -sf 	../mods-available/$a.conf /etc/apache2/mods-enabled/$a.conf
+			echo -n " $a.conf"
+		fi
+	done
+	echo " done."
+fi
+
 rm -f /etc/apache2/ports.conf.dpkg-apache2.2-common.old
 rm -f /etc/default/apache2.dpkg-apache2.2-common.old
 rm -f /etc/apache2/conf.d/charset.dpkg-apache2.2-common.old

@@ -9,9 +9,6 @@ ENV="env -i LANG=C PATH=/usr/local/bin:/usr/bin:/bin"
 #echo "You haven't enabled any sites yet, so I'm not starting apache2." && \
 #echo "To add and enable a host, use addhost and enhost." && exit 0
 
-#edit /etc/default/apache2 to change this.
-NO_START=0
-
 set -e
 if [ -x /usr/sbin/apache2 ] ; then
 	HAVE_APACHE2=1
@@ -24,10 +21,6 @@ fi
 
 test -f /etc/default/rcS && . /etc/default/rcS
 test -f /etc/default/apache2 && . /etc/default/apache2
-if [ "$NO_START" != "0" -a "$1" != "stop" ]; then 
-        log_warning_msg "Not starting apache2 - edit /etc/default/apache2 and change NO_START to be 0.";
-        exit 0;
-fi
 
 APACHE2="$ENV /usr/sbin/apache2"
 APACHE2CTL="$ENV /usr/sbin/apache2ctl"

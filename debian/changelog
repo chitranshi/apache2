@@ -1,3 +1,13 @@
+apache2 (2.2.4-2) unstable; urgency=low
+
+  * Remove the NO_START kludge. Now you have to use rc*.d symlinks to disable
+    apache2.
+  * Disable AddDefaultCharset by default
+  * Make ports.conf, conf.d/charset, and /etc/default/apache2 conffiles
+    managed by dpkg
+
+ -- Stefan Fritsch <sf@debian.org>  Tue, 03 Jul 2007 21:23:40 +0200
+
 apache2 (2.2.4-1) unstable; urgency=medium
 
   [ Stefan Fritsch ]

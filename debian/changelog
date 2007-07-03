@@ -1,4 +1,4 @@
-apache2 (2.2.4-2) unstable; urgency=low
+apache2 (2.2.4-2) UNRELEASED; urgency=low
 
   * Remove the NO_START kludge. Now you have to use rc*.d symlinks to disable
     apache2.

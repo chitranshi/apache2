@@ -4,13 +4,13 @@ apache2 (2.2.4-2) UNRELEASED; urgency=low
     to mods-available/*conf (Closes: #338472)
   * Remove the NO_START kludge. Now you have to use rc*.d symlinks to disable
     apache2. (Closes: #408462, #275561)
+  * Create run and lock directores also in postinst, to allow apache2ctl
+    to work in chroots. Together with the previous item, this closes: #418499
   * Disable AddDefaultCharset again (Closes: #397886)
   * Make ports.conf, conf.d/charset, and /etc/default/apache2 conffiles
     managed by dpkg
   * Listen on port 443 by default if mod_ssl is loaded (Closes: #404598)
   * Add init.d dependency info from insserv overrides to /etc/init.d/apache2
-  * Create run and lock directores also in postinst, to allow apache2ctl
-    to work in chroots (related to #418499)
 
  -- Stefan Fritsch <sf@debian.org>  Tue, 03 Jul 2007 21:23:40 +0200
 

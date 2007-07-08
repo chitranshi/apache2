@@ -11,6 +11,7 @@ apache2 (2.2.4-2) UNRELEASED; urgency=low
     managed by dpkg
   * Listen on port 443 by default if mod_ssl is loaded (Closes: #404598)
   * Add init.d dependency info from insserv overrides to /etc/init.d/apache2
+  * Replace apachectl with apache2ctl in docs (Closes: #164493)
 
  -- Stefan Fritsch <sf@debian.org>  Tue, 03 Jul 2007 21:23:40 +0200
 

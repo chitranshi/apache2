@@ -97,11 +97,7 @@ rm -f /etc/apache2/ports.conf.dpkg-apache2.2-common.old
 rm -f /etc/default/apache2.dpkg-apache2.2-common.old
 rm -f /etc/apache2/conf.d/charset.dpkg-apache2.2-common.old
 
-# create run and lock directores with correct permissions (having it in the
-# start script is not enough for the
-# debootstrap-into-chroot-and-apache2ctl-start case)
-mkdir -p /var/run/apache2
-install -d -o www-data /var/lock/apache2
+[ -f /etc/apache2/httpd.conf ] || touch /etc/apache2/httpd.conf
 
 
 exit 0

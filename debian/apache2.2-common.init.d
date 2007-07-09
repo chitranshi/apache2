@@ -96,11 +96,6 @@ apache_stop() {
 # Stupid hack to keep lintian happy. (Warrk! Stupidhack!).
 case $1 in
 	start)
-		[ -f /etc/apache2/httpd.conf ] || touch /etc/apache2/httpd.conf
-		mkdir -p /var/run/apache2
-		install -d -o www-data /var/lock/apache2
-		#ssl_scache shouldn't be here if we're just starting up.
-		rm -f /var/run/apache2/*ssl_scache*
 		log_daemon_msg "Starting web server" "apache2"
 		if $APACHE2CTL start; then
                         log_end_msg 0

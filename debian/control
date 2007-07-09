@@ -113,6 +113,7 @@ Section: devel
 Architecture: any
 Depends: apache2.2-common (= ${binary:Version}), openssl, libaprutil1-dev
 Conflicts: apache2-threaded-dev
+Priority: extra
 Description: development headers for apache2
  This package provides the development headers and apxs2 binary for
  apache2-mpm-prefork; see the apache2 package description for more details.
@@ -126,6 +127,7 @@ Architecture: any
 Depends: apache2.2-common (= ${binary:Version}), openssl, libaprutil1-dev
 Conflicts: apache2-prefork-dev
 Provides: apache2-dev
+Priority: extra
 Description: development headers for apache2
  This package provides the development headers and apxs2 binary for
  threaded versions of apache2; see the apache2 package description

@@ -16,6 +16,14 @@ ENV="env -i LANG=C PATH=/usr/local/bin:/usr/bin:/bin"
 #echo "You haven't enabled any sites yet, so I'm not starting apache2." && \
 #echo "To add and enable a host, use addhost and enhost." && exit 0
 
+#edit /etc/default/apache2 to change this.
+HTCACHECLEAN_RUN=auto
+HTCACHECLEAN_MODE=daemon
+HTCACHECLEAN_SIZE=300M
+HTCACHECLEAN_DAEMON_INTERVAL=120
+HTCACHECLEAN_PATH=/var/cache/apache2/mod_disk_cache
+HTCACHECLEAN_OPTIONS=""
+
 set -e
 if [ -x /usr/sbin/apache2 ] ; then
 	HAVE_APACHE2=1
@@ -31,6 +39,28 @@ test -f /etc/default/apache2 && . /etc/default/apache2
 
 APACHE2="$ENV /usr/sbin/apache2"
 APACHE2CTL="$ENV /usr/sbin/apache2ctl"
+HTCACHECLEAN="$ENV /usr/sbin/htcacheclean"
+
+check_htcacheclean() {
+	[ "$HTCACHECLEAN_MODE" = "daemon" ] || return 1
+
+	[ "$HTCACHECLEAN_RUN"  = "yes"    ] && return 0
+
+	[ "$HTCACHECLEAN_RUN"  = "auto" \
+	  -a -e /etc/apache2/mods-enabled/disk_cache.load ] && return 0
+	
+	return 1
+}
+
+start_htcacheclean() {
+	$HTCACHECLEAN $HTCACHECLEAN_OPTIONS -d$HTCACHECLEAN_DAEMON_INTERVAL \
+			-i -p$HTCACHECLEAN_PATH -l$HTCACHECLEAN_SIZE
+				
+}
+
+stop_htcacheclean() {
+	killall htcacheclean 2> /dev/null || echo ...not running
+}
 
 pidof_apache() {
     # if pidof is null for some reasons the script exits automagically
@@ -98,13 +128,23 @@ case $1 in
 	start)
 		log_daemon_msg "Starting web server" "apache2"
 		if $APACHE2CTL start; then
+			if check_htcacheclean ; then
+				log_progress_msg htcacheclean
+				start_htcacheclean || log_end_msg 1
+			fi
                         log_end_msg 0
                 else
                         log_end_msg 1
                 fi
 	;;
 	stop)
-		log_daemon_msg "Stopping web server" "apache2"
+		if check_htcacheclean ; then
+			log_daemon_msg "Stopping web server" "htcacheclean"
+			stop_htcacheclean
+			log_progress_msg "apache2"
+		else
+			log_daemon_msg "Stopping web server" "apache2"
+		fi
 		if apache_stop; then
                         log_end_msg 0
                 else
@@ -127,19 +167,38 @@ case $1 in
                 fi
 	;;
 	restart)
-		log_daemon_msg "Restarting web server" "apache2"
+		if check_htcacheclean ; then
+			log_daemon_msg "Restarting web server" "htcacheclean"
+			stop_htcacheclean
+			log_progress_msg apache2
+		else
+			log_daemon_msg "Restarting web server" "apache2"
+		fi
 		if ! apache_stop; then
                         log_end_msg 1 || true
                 fi
 		sleep 10
 		if $APACHE2CTL start; then
+			if check_htcacheclean ; then
+				start_htcacheclean || log_end_msg 1
+			fi
                         log_end_msg 0
                 else
                         log_end_msg 1
                 fi
 	;;
+	start-htcacheclean)
+		log_daemon_msg "Starting htcacheclean"
+		start_htcacheclean || log_end_msg 1
+		log_end_msg 0
+	;;
+	stop-htcacheclean)
+		log_daemon_msg "Stopping htcacheclean"
+			stop_htcacheclean
+			log_end_msg 0
+	;;
 	*)
-		log_success_msg "Usage: /etc/init.d/apache2 {start|stop|restart|reload|force-reload}"
+		log_success_msg "Usage: /etc/init.d/apache2 {start|stop|restart|reload|force-reload|start-htcacheclean|stop-htcacheclean}"
 		exit 1
 	;;
 esac

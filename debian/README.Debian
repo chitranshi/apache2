@@ -107,11 +107,17 @@ for sites rather than modules.
 Using mod_disk_cache
 ====================
 
-You need to enable caching in /etc/apache2/mods-enabled/disk_cache.conf . To
-prevent the disk cache to grow indefinitely, you have to use htcacheclean from
-the apache2-utils package. There is currently no mechanism in the Debian
-package to start htcacheclean automatically. See the htcacheclean man page for
-details.
+To ensure that the disk cache does not grow indefinitely, htcacheclean is
+started when mod_disk_cache is enabled. Both daemon and cron (daily) mode
+are supported. The configuration (run mode, cache size, ...) in
+/etc/default/apache2 .
+
+Normally, htcacheclean is automatically started and stopped by
+/etc/init.d/apache2. However, if you change the state of mod_disk_cache or the
+configuration of htcacheclean while apache2 is running, you may need to
+manually start/stop htcacheclean with "/etc/init.d/apache2 start-htcacheclean"
+or "/etc/init.d/apache2 stop-htcacheclean".
+
 
 Documentation
 =============

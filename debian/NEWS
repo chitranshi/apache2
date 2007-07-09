@@ -1,20 +1,37 @@
-apache2 (2.2.3-5) unstable; urgency=low
+apache2 (2.2.4-2) unstable; urgency=low
 
-  Note to users of mod_proxy who have upgraded from Apache 2.0.x,
-  and to users of mod_disk_cache:
+  * This version introduces some changes in the configration layout and
+    defaults. You will probably have to adjust your configuration accordingly.
 
-  If mod_proxy was enabled at the time of the upgrade from 2.0.x to 2.2.3-4,
-  mod_disk_cache was enabled and disk caching switched on. This could lead to
-  the /var partition being filled up by the indefinitely growing disk cache.
+    - Module specific configuration has been moved from /etc/apache2/apache2.conf
+      to /etc/apache2/mods-available/*.conf for the following modules:
+        actions
+        alias
+        autoindex
+        info
+        mime
+        negotiation
+        setenvif
+        status
 
-  From version 2.2.3-5, disk caching is again switched off in the default
-  configuration of mod_disk_cache, as it was in 2.0.x. If you had mod_proxy
-  enabled during the upgrade from 2.0, you should check whether
-  /var/cache/apache2/mod_disk_cache contains files that you don't want to be
-  there.
+    - AddDefaultCharset is again disabled by default. See
+      /etc/apache2/conf.d/charset
 
-  Users of mod_disk_cache should read the comments in
-  /etc/apache2/mods-available/disk_cache.conf and check that their
-  configuration is correct.
+    - "Listen 443" is automatically enabled in /etc/apache2/ports.conf if
+      mod_ssl is enabled.
 
- -- Stefan Fritsch <sf@debian.org>  Sat, 09 Jun 2007 11:03:03 +0200
+  * The NO_START functionality from /etc/default/apache2 has been removed. If
+    you don't want to start apache2 on boot, rename the S*apache2 start
+    symlinks as usual.
+
+  * Disk caching is now enabled by default if mod_disk_cache is enabled. If
+    you don't want to use disk caching, check that mod_disk_cache is disabled
+    (it was enabled automatically by previous versions when mod_proxy was
+    enabled). In this case, you might also want to remove any cache files from
+    /var/cache/apache2/mod_disk_cache .
+
+    To ensure that the disk cache does not grow indefinitely, htcacheclean is
+    now started when mod_disk_cache is enabled. The details can be configured
+    in /etc/default/apache2 .
+
+ -- Stefan Fritsch <sf@debian.org>  Mon, 09 Jul 2007 21:50:58 +0200

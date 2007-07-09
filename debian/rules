@@ -244,7 +244,8 @@ binary-arch: install
 	dh_installdocs -a
 	dh_installman -a
 	dh_installchangelogs -a CHANGES
-	dh_installinit -a -r --init-script=apache2 debian/apache2.2-common.init.d -- start 91 09
+	dh_installinit -a -r --name=apache2 debian/apache2.2-common.init.d -- start 91 09
+	dh_installcron -a -r --name=apache2
 	dh_strip -a
 	dh_link -a
 	dh_compress -a

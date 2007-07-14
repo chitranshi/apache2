@@ -17,7 +17,7 @@ apache2 (2.2.4-2) UNRELEASED; urgency=low
   * Replace apachectl with apache2ctl in docs (Closes: #164493)
   * Add usage message to apache2ctl (Closes: #359008)
   * Make -dev packages priority extra
-  * Add secure example cipher/protocol configuratin to ssl.conf
+  * Add secure example cipher/protocol configuration to ssl.conf
 
  -- Stefan Fritsch <sf@debian.org>  Tue, 03 Jul 2007 21:23:40 +0200
 

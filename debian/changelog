@@ -18,6 +18,7 @@ apache2 (2.2.4-2) UNRELEASED; urgency=low
   * Add usage message to apache2ctl (Closes: #359008)
   * Make -dev packages priority extra
   * Add secure example cipher/protocol configuration to ssl.conf
+  * Update watch file (Closes: #433552)
 
  -- Stefan Fritsch <sf@debian.org>  Tue, 03 Jul 2007 21:23:40 +0200
 

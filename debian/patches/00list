@@ -20,4 +20,5 @@
 050_enhance_apache2ctl.dpatch
 051_CVE-2006-5752.dpatch
 052_CVE-2007-3304.dpatch
+053_mod_cache_HEAD_41230.dpatch
 099_config_guess_sub_update

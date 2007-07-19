@@ -31,6 +31,7 @@ fi
 
 restore_conffile() {
 	if [ -e $1.dpkg-apache2.2-common.old ] ; then
+		echo Restoring previous version of $1 ...
 		mv $1.dpkg-apache2.2-common.old $1
 	fi
 }

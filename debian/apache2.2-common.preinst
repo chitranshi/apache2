@@ -19,6 +19,7 @@ rm -f /var/lib/dpkg/info/apache2-common.postrm
 
 mv_conffile() {
 	if [ "`md5sum $1 2>/dev/null | cut -d ' ' -f 1`" = "$2" ] ; then
+		echo Replacing $1 with new version ...
 		mv $1 $1.dpkg-apache2.2-common.old
 	fi
 }

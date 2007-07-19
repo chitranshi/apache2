@@ -13,6 +13,10 @@ apache2 (2.2.4-2) UNRELEASED; urgency=low
   * Listen on port 443 by default if mod_ssl is loaded (Closes: #404598)
   * Add logic to start htcacheclean as daemon or cronjob. The configuration
     is in /etc/default/apache2
+  * Fix security issues:
+    - CVE-2007-3304: prevent parent process to send SIGUSR1 to arbitrary
+      processes
+    - CVE-2006-5752: XSS in mod_status
   * Add init.d dependency info from insserv overrides to /etc/init.d/apache2
   * Replace apachectl with apache2ctl in docs (Closes: #164493)
   * Add usage message to apache2ctl (Closes: #359008)

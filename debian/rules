@@ -256,7 +256,7 @@ binary-arch: install
 	dh_installchangelogs -a CHANGES
 	rm -f debian/apache2-dbg/usr/share/doc/apache2-dbg/changelog
 	rm -f debian/apache2-dbg/usr/share/doc/apache2-dbg/NEWS.Debian
-	dh_installinit -a -r --name=apache2 debian/apache2.2-common.init.d -- start 91 09
+	dh_installinit -a -r --name=apache2 -- start 91 09
 	dh_installcron -a -r --name=apache2
 	dh_strip -a --dbg-package=apache2-dbg -Napache2-mpm-worker -Napache2-mpm-event -Napache2-mpm-prefork -Napache2-dbg
 	dh_link -a

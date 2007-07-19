@@ -1,4 +1,4 @@
-apache2 (2.2.4-2) UNRELEASED; urgency=low
+apache2 (2.2.4-2) unstable; urgency=low
 
   * Modularize config: Move module specific configuration from apache2.conf
     to mods-available/*conf (Closes: #338472)

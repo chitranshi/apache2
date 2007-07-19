@@ -141,3 +141,11 @@ Description: Apache source code
  This package includes the complete and patched source code for the
  Apache HTTPD.  It is useful for other packages to build-depend on in
  order to build custom MPMs.
+
+Package: apache2-dbg
+Section: libdevel
+Priority: extra
+Architecture: any
+Depends: apache2.2-common (= ${binary:Version})
+Description: Apache debugging symbols
+ This package includes the debugging symbols for Apache 2.

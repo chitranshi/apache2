@@ -19,6 +19,8 @@ apache2 (2.2.4-2) UNRELEASED; urgency=low
   * Make -dev packages priority extra
   * Add secure example cipher/protocol configuration to ssl.conf
   * Update watch file (Closes: #433552)
+  * Bump dh_compat to 5
+  * Add new package apache2-dbg with debugging symbols
 
  -- Stefan Fritsch <sf@debian.org>  Tue, 03 Jul 2007 21:23:40 +0200
 

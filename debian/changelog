@@ -1,3 +1,9 @@
+apache2 (2.2.4-3) unstable; urgency=low
+
+  * make mod_authn_dbd depend on mod_dbd
+
+ -- Stefan Fritsch <sf@debian.org>  Tue, 24 Jul 2007 23:28:26 +0200
+
 apache2 (2.2.4-2) unstable; urgency=low
 
   * Modularize config: Move module specific configuration from apache2.conf

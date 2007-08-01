@@ -278,6 +278,7 @@ binary-arch: install
 	dh_md5sums -a
 	if [ "$(LSB_RELEASE)" = "Ubuntu" ]; then \
 		rm -rf debian/apache2-dbg; \
+		sed -i '/apache2-dbg/d' debian/files; \
 		dh_builddeb -a -Napache2-dbg; \
 	else \
 		dh_builddeb -a; \

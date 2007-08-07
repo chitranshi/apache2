@@ -4,6 +4,7 @@ set -e
 
 if [ "$1" = purge ] ; then
 	rm -f 	/etc/apache2/httpd.conf \
+		/etc/apache2/ports.conf.dpkg-apache2.2-common.existed \
 		/var/cache/apache2/reload \
 		/var/log/apache2/access.log* \
 		/var/log/apache2/error.log*
@@ -40,6 +41,7 @@ if [ "$1" = abort-upgrade ] ; then
 	restore_conffile /etc/default/apache2
 	restore_conffile /etc/apache2/ports.conf
 	restore_conffile /etc/apache2/conf.d/charset
+	rm -f /etc/apache2/ports.conf.dpkg-apache2.2-common.existed
 fi
 
 #DEBHELPER#

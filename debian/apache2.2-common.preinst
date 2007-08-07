@@ -24,6 +24,12 @@ mv_conffile() {
 	fi
 }
 
+# we want to check in postinst whether /etc/apache2/ports.conf existed before
+# the install
+if [ -z "$2" ] && [ -e /etc/apache2/ports.conf ]; then
+	touch /etc/apache2/ports.conf.dpkg-apache2.2-common.existed
+fi
+
 if [ -n "$2" ] && dpkg --compare-versions "$2" lt 2.2.4-2; then
 	mv_conffile /etc/default/apache2 	9ac83f9132b78c3aa6dd4d7a583bf476
 	mv_conffile /etc/apache2/ports.conf	d5fcefc335117f400d451de47efeca87

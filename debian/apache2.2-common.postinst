@@ -23,8 +23,7 @@ mod_is_enabled() {
 # apache2.2-common, we have to be more devious.
 if [ -n "$2" ]; then
 	UPGRADE=from_2_2
-elif [ -e /etc/apache2/ports.conf.dpkg-apache2.2-common.old ] ||
-     [ -e /etc/apache2/ports.conf ] ||
+elif [ -e /etc/apache2/ports.conf.dpkg-apache2.2-common.existed ] ||
      [ -n "$(ls /etc/apache2/sites-enabled/)" ]; then
 	UPGRADE=from_2_0
 else
@@ -96,6 +95,7 @@ fi
 rm -f /etc/apache2/ports.conf.dpkg-apache2.2-common.old
 rm -f /etc/default/apache2.dpkg-apache2.2-common.old
 rm -f /etc/apache2/conf.d/charset.dpkg-apache2.2-common.old
+rm -f /etc/apache2/ports.conf.dpkg-apache2.2-common.existed
 
 [ -f /etc/apache2/httpd.conf ] || touch /etc/apache2/httpd.conf
 

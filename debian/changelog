@@ -4,6 +4,7 @@ apache2 (2.2.4-3) unstable; urgency=low
   * enable default site on new installs again (Closes: #436341)
   * make mod_authn_dbd depend on mod_dbd
   * make a2dissite return 0 if a site is already disabled (Closes: #435398)
+  * make a2 scripts print errors to stderr (Closes: #435400)
 
   [ Adam Conrad ]
   * Special case apache2-dbg magic in debian/rules, so we don't do

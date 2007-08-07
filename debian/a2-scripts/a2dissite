@@ -23,7 +23,7 @@ if ! [ -e $SYSCONFDIR/sites-enabled/$SITENAME -o \
 		echo "Site $SITENAME is already disabled"
 		exit 0
 	fi
-	echo "This site is already disabled, or does not exist!"
+	echo "Site $SITENAME does not exist!" >&2
 	exit 1
 fi
 

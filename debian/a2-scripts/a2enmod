@@ -29,7 +29,7 @@ if [ -e $SYSCONFDIR/mods-enabled/$MODNAME.load ]; then
 fi
 
 if ! [ -e $SYSCONFDIR/mods-available/$MODNAME.load ]; then
-	echo "This module does not exist!"
+	echo "This module does not exist!" >&2
 	exit 1
 fi
 

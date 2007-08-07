@@ -18,9 +18,9 @@ DEPENDS=`grep -l "# Depends:.*$MODNAME" $SYSCONFDIR/mods-enabled/*.load| sed -e 
 #        a2dismod ${i%.load};
 #done
 if [ ! -z "$DEPENDS" ]; then
-        echo "The following modules depend on the module you requested be uninstalled:"
-        echo "$DEPENDS"
-        echo "Please uninstall these first"
+        echo "The following modules depend on the module you requested be uninstalled:" >&2
+        echo "$DEPENDS" >&2
+        echo "Please uninstall these first" >&2
         exit 1
 fi
 
@@ -29,7 +29,7 @@ if ! [ -L $SYSCONFDIR/mods-enabled/$MODNAME.load ]; then
         echo "Module $MODNAME already disabled"
         exit 0
     fi
-    echo "Module $MODNAME does not exist!"
+    echo "Module $MODNAME does not exist!" >&2
     exit 1
 fi
 

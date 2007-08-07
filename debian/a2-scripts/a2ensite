@@ -24,7 +24,7 @@ if [ -e $SYSCONFDIR/sites-enabled/$SITENAME -o \
 fi
 
 if ! [ -e $SYSCONFDIR/sites-available/$SITENAME ]; then
-	echo "This site does not exist!"
+	echo "This site does not exist!" >&2
 	exit 1
 fi
 

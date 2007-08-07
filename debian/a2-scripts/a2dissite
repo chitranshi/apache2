@@ -19,6 +19,10 @@ fi
 
 if ! [ -e $SYSCONFDIR/sites-enabled/$SITENAME -o \
        -e $SYSCONFDIR/sites-enabled/"$PRIORITY"-"$SITENAME" ]; then
+	if [ -e $SYSCONFDIR/sites-available/$SITENAME ]; then
+		echo "Site $SITENAME is already disabled"
+		exit 0
+	fi
 	echo "This site is already disabled, or does not exist!"
 	exit 1
 fi

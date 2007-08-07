@@ -3,12 +3,13 @@ apache2 (2.2.4-3) unstable; urgency=low
   [ Stefan Fritsch ]
   * enable default site on new installs again (Closes: #436341)
   * make mod_authn_dbd depend on mod_dbd
+  * make a2dissite return 0 if a site is already disabled (Closes: #435398)
 
   [ Adam Conrad ]
   * Special case apache2-dbg magic in debian/rules, so we don't do
     this on Ubuntu, which has an archive of detached debug packages.
 
- -- Stefan Fritsch <sf@debian.org>  Tue, 07 Aug 2007 19:16:38 +0200
+ -- Stefan Fritsch <sf@debian.org>  Tue, 07 Aug 2007 20:49:28 +0200
 
 apache2 (2.2.4-2) unstable; urgency=low
 

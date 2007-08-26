@@ -2,8 +2,9 @@ apache2 (2.2.4-4) UNRELEASED; urgency=low
 
   * Add index.htm to the default DirectoryIndex configuration
     (Closes: #439375)
+  * Use apache2ctl in init script (Closes: #439027)
 
- -- Stefan Fritsch <sf@debian.org>  Sun, 26 Aug 2007 23:16:27 +0200
+ -- Stefan Fritsch <sf@debian.org>  Sun, 26 Aug 2007 23:25:33 +0200
 
 apache2 (2.2.4-3) unstable; urgency=low
 

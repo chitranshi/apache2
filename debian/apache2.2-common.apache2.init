@@ -157,7 +157,7 @@ case $1 in
                     exit 1
                 fi
                 log_daemon_msg "Reloading web server config" "apache2"
-		if pidof_apache; then
+		if pidof_apache > /dev/null ; then
                     if $APACHE2CTL graceful $2 ; then
                         log_end_msg 0
                     else

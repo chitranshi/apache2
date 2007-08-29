@@ -1,18 +1,14 @@
 apache2 (2.2.4-2) unstable; urgency=low
 
-  * This version introduces some changes in the configration layout and
+  * This version introduces some changes in the configuration layout and
     defaults. You will probably have to adjust your configuration accordingly.
 
-    - Module specific configuration has been moved from /etc/apache2/apache2.conf
-      to /etc/apache2/mods-available/*.conf for the following modules:
-        actions
-        alias
-        autoindex
-        info
-        mime
-        negotiation
-        setenvif
-        status
+    - Module specific configuration has been moved from 
+      /etc/apache2/apache2.conf to /etc/apache2/mods-available/*.conf for the
+      following modules: 
+        actions          alias              autoindex
+        info             mime               negotiation
+        setenvif         status
 
     - AddDefaultCharset is again disabled by default. See
       /etc/apache2/conf.d/charset

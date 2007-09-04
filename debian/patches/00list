@@ -11,14 +11,8 @@
 034_apxs2_libtool_fixtastic
 038_no_LD_LIBRARY_PATH
 042_htdigest_CAN-2005-1344
-044_no_error_truncation
 045_suexec_log_cloexec.dpatch
 046_proxy_ftp_dirparse_crash.dpatch
 047_fix_usage_message.dpatch
-048_CVE-2007-1862.dpatch
-049_CVE-2007-1863.dpatch
 050_enhance_apache2ctl.dpatch
-051_CVE-2006-5752.dpatch
-052_CVE-2007-3304.dpatch
-053_mod_cache_HEAD_41230.dpatch
 099_config_guess_sub_update

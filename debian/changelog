@@ -1,4 +1,4 @@
-apache2 (2.2.6-1) UNRELEASED; urgency=low
+apache2 (2.2.6-1) unstable; urgency=low
 
   * New upstream release
     - fixes spurious warning for valid wildcard certificates (Closes: #414855)
@@ -12,7 +12,7 @@ apache2 (2.2.6-1) UNRELEASED; urgency=low
   * make init script less noisy (Closes: #438950)
   * improve NEWS entry (Closes: #440084)
 
- -- Stefan Fritsch <sf@debian.org>  Tue, 04 Sep 2007 23:56:48 +0200
+ -- Stefan Fritsch <sf@debian.org>  Thu, 06 Sep 2007 23:54:42 +0200
 
 apache2 (2.2.4-3) unstable; urgency=low
 

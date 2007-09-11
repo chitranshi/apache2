@@ -1,6 +1,13 @@
+apache2 (2.2.6-2) UNRELEASED; urgency=low
+
+  * Add CVE reference to 2.2.6-1 changelog entry
+
+ -- Stefan Fritsch <sf@debian.org>  Tue, 11 Sep 2007 22:23:16 +0200
+
 apache2 (2.2.6-1) unstable; urgency=low
 
   * New upstream release
+    - fixes mod_proxy DoS for threaded MPMs (CVE-2007-3847)
     - fixes spurious warning for valid wildcard certificates (Closes: #414855)
     - adds warning that htpasswd is not setuid safe (Closes: #356285)
     - adds Type and Charset options to IndexOptions directive,

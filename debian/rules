@@ -162,6 +162,7 @@ install: build install-worker install-prefork install-common install-dev install
 	dh_testdir
 
 	#cleanup of death
+	rm -rf debian/tmp/etc/apache2/original
 	rm -rf debian/tmp/usr/include
 	rm -rf debian/tmp/usr/share/apache2/build
 	rm -f debian/tmp/usr/share/man/man8/httpd.8 # We install our own

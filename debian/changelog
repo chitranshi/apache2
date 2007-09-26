@@ -1,9 +1,10 @@
 apache2 (2.2.6-2) UNRELEASED; urgency=low
 
+  * Fix "Bad file descriptor" error on reload (Closes: #443310)
   * Remove duplicate config examples (Closes: #294662)
   * Add CVE reference to 2.2.6-1 changelog entry
 
- -- Stefan Fritsch <sf@debian.org>  Tue, 18 Sep 2007 21:04:38 +0200
+ -- Stefan Fritsch <sf@debian.org>  Wed, 26 Sep 2007 23:35:16 +0200
 
 apache2 (2.2.6-1) unstable; urgency=low
 

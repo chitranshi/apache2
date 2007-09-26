@@ -1,0 +1,26 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## 051Bad_file_descriptor_PR42829.dpatch
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: fix [error] (9)Bad file descriptor: apr_socket_accept: (client socket)
+## DP: on graceful reload
+
+@DPATCH@
+--- a/server/mpm/prefork/prefork.c.orig      Fri Jul  6 11:12:53 2007
++++ a/server/mpm/prefork/prefork.c   Fri Jul  6 11:18:24 2007
+@@ -330,8 +330,6 @@
+ 
+ static void stop_listening(int sig)
+ {
+-    ap_close_listeners();
+-
+     /* For a graceful stop, we want the child to exit when done */
+     die_now = 1;
+ }
+@@ -657,6 +655,7 @@
+             die_now = 1;
+         }
+     }
++    ap_close_listeners();
+     clean_child_exit(0);
+ }

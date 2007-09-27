@@ -17,3 +17,4 @@
 050_enhance_apache2ctl.dpatch
 051Bad_file_descriptor_PR42829.dpatch
 099_config_guess_sub_update
+052_logresolve_linelength.dpatch

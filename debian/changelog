@@ -4,8 +4,9 @@ apache2 (2.2.6-2) UNRELEASED; urgency=low
   * Allow logresolve to process long lines (Closes: #331631)
   * Remove duplicate config examples (Closes: #294662)
   * Add CVE reference to 2.2.6-1 changelog entry
+  * Include README.backtrace describing how to create a backtrace
 
- -- Stefan Fritsch <sf@debian.org>  Thu, 27 Sep 2007 20:16:18 +0200
+ -- Stefan Fritsch <sf@debian.org>  Wed, 03 Oct 2007 17:14:30 +0200
 
 apache2 (2.2.6-1) unstable; urgency=low
 

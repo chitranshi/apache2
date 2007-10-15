@@ -98,7 +98,7 @@ pidof_apache() {
 apache_stop() {
 	if `$APACHE2CTL configtest > /dev/null 2>&1`; then
 		# if the config is ok than we just stop normaly
-                $APACHE2CTL graceful-stop
+                $APACHE2CTL stop
 	else
 		# if we are here something is broken and we need to try
 		# to exit as nice and clean as possible
@@ -119,6 +119,34 @@ apache_stop() {
                         fi
                         return 1
 		fi
+	fi
+}
+
+apache_sync_stop() {
+	# running ?
+	PIDTMP=$(pidof_apache)
+	if $(kill -0 "${PIDTMP:-}" 2> /dev/null); then
+	    PID=$PIDTMP
+	fi
+
+	apache_stop
+
+	# wait until really stopped
+	if [ -n "${PID:-}" ]; then
+		i=0
+		while $(kill -0 "${PID:-}" 2> /dev/null);  do
+        		if [ $i = '30' ]; then
+        			break;
+        	 	else
+        			if [ $i = '0' ]; then
+                			echo -n " waiting "
+        			else
+                	      		echo -n "."
+        		 	fi
+        			i=$(($i+1))
+        			sleep 2
+        	      fi
+		 done
 	fi
 }
 
@@ -173,10 +201,9 @@ case $1 in
 		else
 			log_daemon_msg "Restarting web server" "apache2"
 		fi
-		if ! apache_stop; then
+		if ! apache_sync_stop; then
                         log_end_msg 1 || true
                 fi
-		sleep 10
 		if $APACHE2CTL start; then
 			if check_htcacheclean ; then
 				start_htcacheclean || log_end_msg 1

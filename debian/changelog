@@ -1,11 +1,14 @@
 apache2 (2.2.6-2) UNRELEASED; urgency=low
 
+  * Since graceful-stop is not working reliably, use stop in the init script
+    instead. For restart, we also have to merge the logic to wait until apache
+    is dead from 2.2.4-3+etch3. This is a partial workaround for #445263.
   * Allow logresolve to process long lines (Closes: #331631)
   * Remove duplicate config examples (Closes: #294662)
   * Include README.backtrace describing how to create a backtrace
   * Add CVE reference to 2.2.6-1 changelog entry
 
- -- Stefan Fritsch <sf@debian.org>  Fri, 05 Oct 2007 18:56:32 +0200
+ -- Stefan Fritsch <sf@debian.org>  Mon, 15 Oct 2007 22:49:04 +0200
 
 apache2 (2.2.6-1) unstable; urgency=low
 

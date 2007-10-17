@@ -254,7 +254,7 @@ binary-arch: install
 	dh_testdir -a
 	dh_testroot -a 
 	dh_installdirs -a
-	dh_installdocs -a README.backtrace
+	dh_installdocs -a debian/README.backtrace
 	dh_installman -a
 	dh_installchangelogs -a CHANGES
 	rm -f debian/apache2-dbg/usr/share/doc/apache2-dbg/changelog

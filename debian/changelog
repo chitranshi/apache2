@@ -1,4 +1,4 @@
-apache2 (2.2.6-2) UNRELEASED; urgency=low
+apache2 (2.2.6-2) unstable; urgency=low
 
   * Avoid calling apr_pollset_poll() and accept_func() when the listening
     sockets have already been closed on graceful stop or reload. This

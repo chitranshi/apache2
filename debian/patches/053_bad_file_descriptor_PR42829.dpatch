@@ -1,0 +1,38 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## 053_bad_file_descriptor_PR42829.dpatch by Stefan Fritsch <sf@debian.org>
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: Fix "Bad file descriptor" error on graceful reload
+## DP: and processes not being killed on graceful stop
+
+@DPATCH@
+--- a/server/mpm/prefork/prefork.c-dist	2007-07-17 16:48:25.000000000 +0200
++++ b/server/mpm/prefork/prefork.c	2007-10-18 14:23:49.698231000 +0200
+@@ -570,6 +570,11 @@
+                 apr_int32_t numdesc;
+                 const apr_pollfd_t *pdesc;
+ 
++                if (die_now) {
++                    status = !APR_SUCCESS;
++                    goto unlock;
++                }
++
+                 /* timeout == -1 == wait forever */
+                 status = apr_pollset_poll(pollset, -1, &numdesc, &pdesc);
+                 if (status != APR_SUCCESS) {
+@@ -618,8 +623,14 @@
+         /* if we accept() something we don't want to die, so we have to
+          * defer the exit
+          */
+-        status = lr->accept_func(&csd, lr, ptrans);
++        if (!die_now) {
++            status = lr->accept_func(&csd, lr, ptrans);
++        }
++        else {
++            status = !APR_SUCCESS;
++        }
+ 
++    unlock:
+         SAFE_ACCEPT(accept_mutex_off());      /* unlock after "accept" */
+ 
+         if (status == APR_EGENERAL) {

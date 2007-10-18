@@ -1,14 +1,16 @@
 apache2 (2.2.6-2) UNRELEASED; urgency=low
 
-  * Since graceful-stop is not working reliably, use stop in the init script
-    instead. For restart, we also have to merge the logic to wait until apache
-    is dead from 2.2.4-3+etch3. This is a partial workaround for #445263.
+  * Avoid calling apr_pollset_poll() and accept_func() when the listening
+    sockets have already been closed on graceful stop or reload. This
+    hopefully fixes processes not being killed (closes: #445263, #447164)
+    and the "Bad file descriptor: apr_socket_accept: (client socket)"
+    error message (closes: #400918, #443310)
   * Allow logresolve to process long lines (Closes: #331631)
   * Remove duplicate config examples (Closes: #294662)
   * Include README.backtrace describing how to create a backtrace
   * Add CVE reference to 2.2.6-1 changelog entry
 
- -- Stefan Fritsch <sf@debian.org>  Mon, 15 Oct 2007 22:49:04 +0200
+ -- Stefan Fritsch <sf@debian.org>  Thu, 18 Oct 2007 19:35:40 +0200
 
 apache2 (2.2.6-1) unstable; urgency=low
 

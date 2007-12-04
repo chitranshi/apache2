@@ -3,8 +3,9 @@ apache2 (2.2.6-3) UNRELEASED; urgency=low
   * Add Homepage field to debian/control.
   * Allocate fewer bucket brigades in case of a flush bucket. This might help
     with the memory leaks reportet in #399776 and #421557.
+  * Update 053_bad_file_descriptor_PR42829.dpatch to avoid a race condition.
 
- -- Stefan Fritsch <sf@debian.org>  Tue, 04 Dec 2007 22:59:20 +0100
+ -- Stefan Fritsch <sf@debian.org>  Tue, 04 Dec 2007 23:10:14 +0100
 
 apache2 (2.2.6-2) unstable; urgency=low
 

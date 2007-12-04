@@ -7,8 +7,39 @@
 
 @DPATCH@
 --- a/server/mpm/prefork/prefork.c-dist	2007-07-17 16:48:25.000000000 +0200
-+++ b/server/mpm/prefork/prefork.c	2007-10-18 14:23:49.698231000 +0200
-@@ -570,6 +570,11 @@
++++ b/server/mpm/prefork/prefork.c	2007-11-16 10:42:08.588895000 +0100
+@@ -137,10 +137,12 @@
+ int tpf_child = 0;
+ char tpf_server_name[INETD_SERVNAME_LENGTH+1];
+ #endif /* TPF */
+ 
+ static volatile int die_now = 0;
++static volatile int listeners_closed = 0;
++static int active_connection = 0;
+ 
+ #ifdef GPROF
+ /*
+  * change directory for gprof to plop the gmon.out file
+  * configure in httpd.conf:
+@@ -328,11 +330,14 @@
+     clean_child_exit(0);
+ }
+ 
+ static void stop_listening(int sig)
+ {
+-    ap_close_listeners();
++    if (active_connection) {
++        ap_close_listeners();
++        listeners_closed = 1;
++    }
+ 
+     /* For a graceful stop, we want the child to exit when done */
+     die_now = 1;
+ }
+ 
+@@ -568,10 +573,15 @@
+             /* multiple listening sockets - need to poll */
+             for (;;) {
                  apr_int32_t numdesc;
                  const apr_pollfd_t *pdesc;
  
@@ -20,7 +51,11 @@
                  /* timeout == -1 == wait forever */
                  status = apr_pollset_poll(pollset, -1, &numdesc, &pdesc);
                  if (status != APR_SUCCESS) {
-@@ -618,8 +623,14 @@
+                     if (APR_STATUS_IS_EINTR(status)) {
+                         if (one_process && shutdown_pending) {
+@@ -616,12 +626,18 @@
+         }
+     got_fd:
          /* if we accept() something we don't want to die, so we have to
           * defer the exit
           */
@@ -36,3 +71,28 @@
          SAFE_ACCEPT(accept_mutex_off());      /* unlock after "accept" */
  
          if (status == APR_EGENERAL) {
+             /* resource shortage or should-not-occur occured */
+             clean_child_exit(1);
+@@ -633,15 +649,22 @@
+         /*
+          * We now have a connection, so set it up with the appropriate
+          * socket options, file descriptors, and read/write buffers.
+          */
+ 
++        active_connection = 1;
++        if (die_now && !listeners_closed) {
++            ap_close_listeners();
++            listeners_closed = 1;
++        }
++
+         current_conn = ap_run_create_connection(ptrans, ap_server_conf, csd, my_child_num, sbh, bucket_alloc);
+         if (current_conn) {
+             ap_process_connection(current_conn, csd);
+             ap_lingering_close(current_conn);
+         }
++        active_connection = 0;
+ 
+         /* Check the pod and the generation number after processing a
+          * connection so that we'll go away if a graceful restart occurred
+          * while we were processing the connection or we are the lucky
+          * idle server process that gets to die.

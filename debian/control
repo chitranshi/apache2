@@ -7,6 +7,7 @@ Build-Depends: debhelper (>=4.1.16), dpatch, lsb-release, libaprutil1-dev, libap
 Standards-Version: 3.7.2.0
 XS-Vcs-Browser: http://svn.debian.org/wsvn/pkg-apache
 XS-Vcs-svn: svn://svn.debian.org/pkg-apache
+Homepage: http://httpd.apache.org/
 
 Package: apache2.2-common
 Architecture: any

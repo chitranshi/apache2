@@ -1,3 +1,9 @@
+apache2 (2.2.6-3) UNRELEASED; urgency=low
+
+  * Add Homepage field to debian/control.
+
+ -- Stefan Fritsch <sf@debian.org>  Tue, 04 Dec 2007 22:47:32 +0100
+
 apache2 (2.2.6-2) unstable; urgency=low
 
   * Avoid calling apr_pollset_poll() and accept_func() when the listening

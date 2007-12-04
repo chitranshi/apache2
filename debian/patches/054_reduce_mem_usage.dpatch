@@ -1,0 +1,57 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## 054_reduce_mem_usage.dpatch by Stefan Fritsch <sf@debian.org>
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: Allocate fewer bucket brigades in case of a flush bucket.
+## DP: Might help with #399776 and #421557
+
+@DPATCH@
+diff -urNad trunk~/modules/http/chunk_filter.c trunk/modules/http/chunk_filter.c
+--- trunk~/modules/http/chunk_filter.c	2006-07-12 05:38:44.000000000 +0200
++++ trunk/modules/http/chunk_filter.c	2007-12-02 18:52:20.955996723 +0100
+@@ -85,7 +85,9 @@
+             }
+             if (APR_BUCKET_IS_FLUSH(e)) {
+                 flush = e;
+-                more = apr_brigade_split(b, APR_BUCKET_NEXT(e));
++                if (e != APR_BRIGADE_LAST(b)) {
++                    more = apr_brigade_split(b, APR_BUCKET_NEXT(e));
++                }
+                 break;
+             }
+             else if (e->length == (apr_size_t)-1) {
+diff -urNad trunk~/server/protocol.c trunk/server/protocol.c
+--- trunk~/server/protocol.c	2006-07-12 05:38:44.000000000 +0200
++++ trunk/server/protocol.c	2007-12-02 18:51:19.200477476 +0100
+@@ -1385,6 +1385,7 @@
+ 
+ typedef struct {
+     apr_bucket_brigade *bb;
++    apr_bucket_brigade *tmpbb;
+ } old_write_filter_ctx;
+ 
+ AP_CORE_DECLARE_NONSTD(apr_status_t) ap_old_write_filter(
+@@ -1399,8 +1400,7 @@
+          * can simply insert our buffered data at the front and
+          * pass the whole bundle down the chain.
+          */
+-        APR_BRIGADE_CONCAT(ctx->bb, bb);
+-        bb = ctx->bb;
++        APR_BRIGADE_PREPEND(bb, ctx->bb);
+         ctx->bb = NULL;
+     }
+ 
+@@ -1449,7 +1449,12 @@
+     ctx = r->output_filters->ctx;
+ 
+     if (ctx->bb == NULL) {
+-        ctx->bb = apr_brigade_create(r->pool, c->bucket_alloc);
++        if (ctx->tmpbb == NULL) {
++            ctx->tmpbb = ctx->bb = apr_brigade_create(r->pool, c->bucket_alloc);
++	}
++	else {
++	    ctx->bb = ctx->tmpbb;
++	}
+     }
+ 
+     return ap_fwrite(f->next, ctx->bb, str, len);

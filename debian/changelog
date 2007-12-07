@@ -8,6 +8,7 @@ apache2 (2.2.6-3) UNRELEASED; urgency=low
   * Redirect /doc/apache2-doc/manual/ to /manual/ in the apache2-doc config
     (Closes: #450867).
   * Add icons for .ogg and .ogm (Closes: #255443).
+  * Add comment about how to log X-Forwarded-For (Closes: #425008).
   * Make mod_proxy_balancer not depend on mod_cache.
   * Add Homepage field to debian/control.
 

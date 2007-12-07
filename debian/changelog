@@ -7,10 +7,11 @@ apache2 (2.2.6-3) UNRELEASED; urgency=low
   * Update 053_bad_file_descriptor_PR42829.dpatch to avoid a race condition.
   * Redirect /doc/apache2-doc/manual/ to /manual/ in the apache2-doc config
     (Closes: #450867).
+  * Add icons for .ogg and .ogm (Closes: #255443).
   * Make mod_proxy_balancer not depend on mod_cache.
   * Add Homepage field to debian/control.
 
- -- Stefan Fritsch <sf@debian.org>  Fri, 07 Dec 2007 21:38:14 +0100
+ -- Stefan Fritsch <sf@debian.org>  Fri, 07 Dec 2007 22:10:07 +0100
 
 apache2 (2.2.6-2) unstable; urgency=low
 

@@ -1,4 +1,4 @@
-apache2 (2.2.6-3) UNRELEASED; urgency=low
+apache2 (2.2.6-3) unstable; urgency=low
 
   * Allocate fewer bucket brigades in case of a flush bucket. This might help
     with the memory leaks reported in #399776 and #421557.

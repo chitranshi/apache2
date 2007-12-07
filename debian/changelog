@@ -11,8 +11,10 @@ apache2 (2.2.6-3) UNRELEASED; urgency=low
   * Add comment about how to log X-Forwarded-For (Closes: #425008).
   * Make mod_proxy_balancer not depend on mod_cache.
   * Add Homepage field to debian/control.
+  * Add/fix some lintian overrides, fix some warnings.
+  * Bump Standards-Version (no changes).
 
- -- Stefan Fritsch <sf@debian.org>  Fri, 07 Dec 2007 22:10:07 +0100
+ -- Stefan Fritsch <sf@debian.org>  Fri, 07 Dec 2007 22:38:59 +0100
 
 apache2 (2.2.6-2) unstable; urgency=low
 

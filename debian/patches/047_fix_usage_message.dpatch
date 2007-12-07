@@ -2,7 +2,7 @@
 ## 047_fix_usage_message.dpatch by Stefan Fritsch <sf@debian.org>
 ##
 ## All lines beginning with `## DP:' are a description of the patch.
-## DP: No description.
+## DP: Add -X to the help message
 
 @DPATCH@
 diff -urNad apache2-2.2.4~/server/main.c apache2-2.2.4/server/main.c

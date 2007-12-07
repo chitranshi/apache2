@@ -19,3 +19,4 @@
 052_logresolve_linelength.dpatch
 053_bad_file_descriptor_PR42829.dpatch
 054_reduce_mem_usage.dpatch
+056-CVE-2007-6203.dpatch

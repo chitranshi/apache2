@@ -183,8 +183,17 @@ install: build install-worker install-prefork install-common install-dev install
 	cp debian/bash_completion debian/apache2.2-common/etc/bash_completion.d/apache2.2-common
 
 	cp debian/apache2-doc.conf debian/apache2-doc/etc/apache2/conf.d/apache2-doc
-	install -m644 debian/apache2-doc.lintian-overrides debian/apache2-doc/usr/share/lintian/overrides/apache2-doc
 	grep -rl apachectl debian/apache2-doc/usr/share/doc/apache2-doc/manual | xargs perl -p -i -e 's/apachectl(?!\.html)/apache2ctl/g'
+	# remove content negotiation
+	mv debian/apache2-doc/usr/share/doc/apache2-doc/manual \
+		debian/apache2-doc/usr/share/doc/apache2-doc/manual.orig
+	perl debian/convert_docs debian/apache2-doc/usr/share/doc/apache2-doc/manual.orig \
+		debian/apache2-doc/usr/share/doc/apache2-doc/manual
+	mv debian/apache2-doc/usr/share/doc/apache2-doc/manual.orig/images \
+		debian/apache2-doc/usr/share/doc/apache2-doc/manual.orig/style \
+		debian/apache2-doc/usr/share/doc/apache2-doc/manual
+	rmdir debian/apache2-doc/usr/share/doc/apache2-doc/manual/style/lang
+	rm -r debian/apache2-doc/usr/share/doc/apache2-doc/manual.orig
 
 	#apache2-utils extras
 	cp support/check_forensic debian/apache2-utils/usr/sbin/check_forensic

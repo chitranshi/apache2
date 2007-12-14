@@ -1,3 +1,11 @@
+apache2 (2.2.6-4) UNRELEASED; urgency=low
+
+  * Convert docs to be directly viewable with a browser (and not use content
+    negotiation).
+  * Add doc-base entry for the documentation (closes: #311269)
+
+ -- Stefan Fritsch <sf@debian.org>  Sat, 15 Dec 2007 00:16:20 +0100
+
 apache2 (2.2.6-3) unstable; urgency=low
 
   * Allocate fewer bucket brigades in case of a flush bucket. This might help

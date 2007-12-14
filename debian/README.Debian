@@ -126,7 +126,10 @@ The full apache 2 documentation can be found on the web at
 
 http://httpd.apache.org/docs/2.2/
 
-or, if you have installed the apache2-doc package, at
+or, if you have installed the apache2-doc package, in
+
+/usr/share/doc/apache2-doc/manual/
+
+or at
 
 http://localhost/manual/
-

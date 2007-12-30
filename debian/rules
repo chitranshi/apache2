@@ -203,10 +203,6 @@ install: build install-worker install-prefork install-common install-dev install
 	chmod 755 debian/apache2-utils/usr/sbin/split-logfile
 
 	cp -a debian/config-dir/* debian/apache2.2-common/etc/apache2
-	if [ "$(LSB_RELEASE)" = "Ubuntu" ]; then \
-		sed -i -e 's/RedirectMatch/#RedirectMatch/' \
-		debian/apache2.2-common/etc/apache2/sites-available/default; \
-	fi
 	mkdir -p debian/apache2.2-common/etc/logrotate.d
 	cp debian/logrotate debian/apache2.2-common/etc/logrotate.d/apache2
 	chmod 4754 debian/apache2.2-common/usr/lib/apache2/suexec 
@@ -216,6 +212,9 @@ install: build install-worker install-prefork install-common install-dev install
                 do install -m755 $$i debian/apache2.2-common/usr/sbin; \
 		rm -f debian/apache2.2-common/usr/sbin/update-apache2-modules debian/apache2.2-common/usr/sbin/modhandler.py; \
         done 
+	rm -r debian/apache2.2-common/var/www/apache2-default
+	mkdir -p debian/apache2.2-common/usr/share/apache2/default-site
+	cp debian/default-index.html debian/apache2.2-common/usr/share/apache2/default-site/index.html
 	for i in worker event; do \
 		install -m755 debian/mpm-postinst-threaded debian/apache2-mpm-$$i.postinst ;\
 		install -m755 debian/mpm-preinst-threaded debian/apache2-mpm-$$i.preinst;\

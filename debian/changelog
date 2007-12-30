@@ -2,7 +2,11 @@ apache2 (2.2.6-4) UNRELEASED; urgency=low
 
   * Convert docs to be directly viewable with a browser (and not use content
     negotiation).
-  * Add doc-base entry for the documentation (closes: #311269)
+  * Add doc-base entry for the documentation. (closes: #311269)
+  * Don't ship default files in /var/www, but copy a sample file to
+    /var/www/index.html on new installs. Also remove the now unneeded
+    RedirectMatch line from sites-available/default.
+    (Closes: #411774, #458093)
 
  -- Stefan Fritsch <sf@debian.org>  Sat, 15 Dec 2007 00:16:20 +0100
 

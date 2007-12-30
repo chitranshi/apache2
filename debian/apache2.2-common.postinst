@@ -92,6 +92,19 @@ if [ -n "$2" ] && dpkg --compare-versions "$2" lt 2.2.4-2; then
 	echo " done."
 fi
 
+# Note, this line catches new installs as well as upgrades
+if dpkg --compare-versions "$2" lt 2.2.6-4; then
+	if [ ! -e /var/www/index.html  -a \
+	     ! -e /var/www/index.cgi   -a \
+	     ! -e /var/www/index.pl    -a \
+	     ! -e /var/www/index.php   -a \
+	     ! -e /var/www/index.xhtml -a \
+	     ! -e /var/www/index.html ] ; then
+		cp /usr/share/apache2/default-site/index.html /var/www/index.html
+	fi
+fi
+
+
 rm -f /etc/apache2/ports.conf.dpkg-apache2.2-common.old
 rm -f /etc/default/apache2.dpkg-apache2.2-common.old
 rm -f /etc/apache2/conf.d/charset.dpkg-apache2.2-common.old

@@ -44,4 +44,11 @@ if [ "$1" = abort-upgrade ] ; then
 	rm -f /etc/apache2/ports.conf.dpkg-apache2.2-common.existed
 fi
 
+if [ "$1" = remove ] ; then
+	if [ "`md5sum /var/www/index.html 2>/dev/null | cut -d ' ' -f 1`" \
+	     = "5388f60d7695cb57b87c799ee62d20b2" ] ; then
+		rm /var/www/index.html
+	fi
+fi
+
 #DEBHELPER#

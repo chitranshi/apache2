@@ -112,6 +112,7 @@ rm -f /etc/apache2/ports.conf.dpkg-apache2.2-common.existed
 
 [ -f /etc/apache2/httpd.conf ] || touch /etc/apache2/httpd.conf
 
+#DEBHELPER#
 
 exit 0
 

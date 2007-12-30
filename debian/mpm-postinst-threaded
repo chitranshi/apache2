@@ -20,12 +20,13 @@ for i in `seq 0 6`; do
 done
 
 if [ -x "/etc/init.d/apache2" ]; then
-        update-rc.d apache2 defaults 91 09 >/dev/null
         if [ -x /usr/sbin/invoke-rc.d ]; then
                 invoke-rc.d apache2 start ||true
         else
                 /etc/init.d/apache2 start ||true
         fi
 fi
+
+#DEBHELPER#
 
 exit 0

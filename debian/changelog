@@ -7,6 +7,12 @@ apache2 (2.2.6-4) UNRELEASED; urgency=low
     /var/www/index.html on new installs. Also remove the now unneeded
     RedirectMatch line from sites-available/default.
     (Closes: #411774, #458093)
+  * Fix some lintian warnings:
+    - Pass --no-start to dh_installinit instead of omitting the debhelper token
+      in various maintainer scripts. Also move the update-rc.d call to
+      apache2.2-common.
+    - Add Short-Description to init script.
+  * Remove unused apache2-mpm-prefork.prerm from source package.
 
  -- Stefan Fritsch <sf@debian.org>  Sat, 15 Dec 2007 00:16:20 +0100
 

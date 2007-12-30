@@ -18,6 +18,9 @@ removing modules, virtual hosts, and extra configuration directives as
 flexible is possible, in order to make automating the changes and
 administering the server as easy as possible.
 
+Please be aware that this layout is quite different from the standard
+Apache configuration. 
+
 Files and Directories in /etc/apache2:
 -------------------------------------
 
@@ -79,6 +82,10 @@ sites-enabled/
 	contains symlinks to sites in sites-available/ that the
 	admnistrator wishes to enable.
 
+	Apache uses the first VirtualHost that matches the IP/Port
+	as default for named virtual hosts. Therefore the 'default'
+	site is linked to '000-default' so that it will be read first.
+
 	Example:
 	dedasys -> /etc/apache2/sites-available/dedasys
 
@@ -133,3 +140,7 @@ or, if you have installed the apache2-doc package, in
 or at
 
 http://localhost/manual/
+
+There is also a wiki that contains useful information:
+
+http://wiki.apache.org/httpd/

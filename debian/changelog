@@ -12,7 +12,8 @@ apache2 (2.2.6-4) UNRELEASED; urgency=low
       in various maintainer scripts. Also move the update-rc.d call to
       apache2.2-common.
     - Add Short-Description to init script.
-  * Remove unused apache2-mpm-prefork.prerm from source package.
+  * Remove unused apache2-mpm-prefork.prerm from source package and clean up
+    debian/rules a bit.
 
  -- Stefan Fritsch <sf@debian.org>  Sat, 15 Dec 2007 00:16:20 +0100
 

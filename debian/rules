@@ -204,7 +204,6 @@ install: build install-worker install-prefork install-common install-dev install
 	chmod 755 debian/apache2-utils/usr/sbin/split-logfile
 
 	cp -a debian/config-dir/* debian/apache2.2-common/etc/apache2
-	mkdir -p debian/apache2.2-common/etc/logrotate.d
 	cp debian/logrotate debian/apache2.2-common/etc/logrotate.d/apache2
 	chmod 4754 debian/apache2.2-common/usr/lib/apache2/suexec 
 	chgrp www-data debian/apache2.2-common/usr/lib/apache2/suexec
@@ -214,7 +213,6 @@ install: build install-worker install-prefork install-common install-dev install
 		rm -f debian/apache2.2-common/usr/sbin/update-apache2-modules debian/apache2.2-common/usr/sbin/modhandler.py; \
         done 
 	rm -r debian/apache2.2-common/var/www/apache2-default
-	mkdir -p debian/apache2.2-common/usr/share/apache2/default-site
 	cp debian/default-index.html debian/apache2.2-common/usr/share/apache2/default-site/index.html
 	for i in worker event; do \
 		install -m755 debian/mpm-postinst-threaded debian/apache2-mpm-$$i.postinst ;\
@@ -225,8 +223,6 @@ install: build install-worker install-prefork install-common install-dev install
 
 	for i in worker prefork event; do \
 		rm -rf debian/apache2-mpm-$$i/ ;\
-		mkdir -p debian/apache2-mpm-$$i/usr/sbin ;\
-		mkdir -p debian/apache2-mpm-$$i/usr/share/lintian/overrides ;\
 		install -m 755 $(BUILD)/$$i/apache2 debian/apache2-mpm-$$i/usr/sbin/apache2 ;\
 		if [ "$(LSB_RELEASE)" != "Ubuntu" ] && [ -n "$(DEB_BUILD_STRIP)" ] ; then \
 			objcopy --only-keep-debug debian/apache2-mpm-$$i/usr/sbin/apache2 debian/apache2-dbg/usr/lib/debug/usr/sbin/apache2-mpm-$$i ;\

@@ -9,6 +9,3 @@ usr/sbin/envvars etc/apache2
 usr/sbin/envvars-std usr/share/apache2/build
 usr/sbin/httxt2dbm
 etc/apache2 usr/share/doc/apache2.2-common/examples
-usr/share/apache2/default-site/htdocs/*.gif /var/www/apache2-default
-usr/share/apache2/default-site/htdocs/*.png /var/www/apache2-default
-usr/share/apache2/default-site/htdocs/*.html /var/www/apache2-default

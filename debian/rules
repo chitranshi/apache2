@@ -70,14 +70,14 @@ AP2_COMMON_CONFARGS = --enable-layout=Debian --enable-so \
 #		      This is insufficiently flexible.
 #		      --enable-mods-shared=all --enable-modules=all 
 
-AP2_CONFLAGS = $(CFLAGS) -pipe -I/usr/include/xmltok -I/usr/include/openssl -Wall
+AP2_CFLAGS = $(CFLAGS) -pipe -I/usr/include/xmltok -I/usr/include/openssl -Wall
 AP2_LDFLAGS = -Wl,--as-needed
 
 #support debug building
 ifneq (,$(findstring debug,$(DEB_BUILD_OPTIONS)))
-AP2_CONFLAGS += -g -O0
+AP2_CFLAGS += -g -O0
 else
-AP2_CONFLAGS += -O2
+AP2_CFLAGS += -O2
 endif
 
 ifeq (,$(findstring nostrip,$(DEB_BUILD_OPTIONS)))
@@ -103,7 +103,7 @@ mpm-%:
 	dh_testdir
 	mkdir -p $(BUILD)/$*
 	cd $(BUILD)/$* ;\
-	CFLAGS="$(AP2_CONFLAGS)" LDFLAGS="$(AP2_LDFLAGS)" $(CONFFLAGS) $(REALCURDIR)/configure --srcdir=$(REALCURDIR) $(AP2_COMMON_CONFARGS) $(AP2_CONFARGS) --with-mpm=$*  ;\
+	CFLAGS="$(AP2_CFLAGS)" LDFLAGS="$(AP2_LDFLAGS)" $(CONFFLAGS) $(REALCURDIR)/configure --srcdir=$(REALCURDIR) $(AP2_COMMON_CONFARGS) $(AP2_CONFARGS) --with-mpm=$*  ;\
 	$(MAKE)
 	touch $@
 

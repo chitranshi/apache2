@@ -1,5 +1,25 @@
-apache2 (2.2.6-4) UNRELEASED; urgency=low
+apache2 (2.2.7-1) UNRELEASED; urgency=low
 
+  * New upstream version:
+    - Fixes cross-site scripting issues in
+      o mod_imagemap (CVE-2007-5000)
+      o mod_status (CVE-2007-6388)
+      o mod_proxy_balancer's balancer manager (CVE-2007-6421)
+    - Fixes a denial of service issue in mod_proxy_balancer's balancer manager
+      (CVE-2007-6422).
+    - Fixes mod_proxy URL encoding in error messages (closes: #337325).
+    - Adds explicit charset to the output of various modules to work around
+      possible cross-site scripting flaws affecting web browsers that do not
+      derive the response character set as required by RFC2616. For
+      mod_proxy_ftp there is now the new ProxyFtpDirCharset directive to
+      specify something else than ISO-8859-1.
+    - Adds mod_substitute which performs inline response content pattern
+      matching (including regex) and substitution (like mod_line_edit).
+    - Adds "DefaultType none" option.
+    - Adds new "B" option to RewriteRule to suppress URL unescaping.
+    - Adds an "if" directive for mod_include to test whether an URL is
+      accessible, and if so, conditionally display content.
+    - Adds support for mod_ssl to the event MPM.
   * Convert docs to be directly viewable with a browser (and not use content
     negotiation).
   * Add doc-base entry for the documentation. (closes: #311269)

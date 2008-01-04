@@ -12,11 +12,8 @@
 038_no_LD_LIBRARY_PATH
 042_htdigest_CAN-2005-1344
 045_suexec_log_cloexec.dpatch
-046_proxy_ftp_dirparse_crash.dpatch
 047_fix_usage_message.dpatch
 050_enhance_apache2ctl.dpatch
 099_config_guess_sub_update
 052_logresolve_linelength.dpatch
 053_bad_file_descriptor_PR42829.dpatch
-054_reduce_mem_usage.dpatch
-056-CVE-2007-6203.dpatch

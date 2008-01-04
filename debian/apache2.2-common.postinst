@@ -99,7 +99,7 @@ if dpkg --compare-versions "$2" lt 2.2.7-1~0; then
 	     ! -e /var/www/index.pl    -a \
 	     ! -e /var/www/index.php   -a \
 	     ! -e /var/www/index.xhtml -a \
-	     ! -e /var/www/index.html ] ; then
+	     ! -e /var/www/index.htm ] ; then
 		cp /usr/share/apache2/default-site/index.html /var/www/index.html
 	fi
 fi

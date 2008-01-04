@@ -222,6 +222,8 @@ install: build install-worker install-prefork install-common install-dev install
 
 	for i in worker prefork event; do \
 		rm -rf debian/apache2-mpm-$$i/ ;\
+		mkdir -p debian/apache2-mpm-$$i/usr/sbin ;\
+		mkdir -p debian/apache2-mpm-$$i/usr/share/lintian/overrides ;\
 		install -m 755 $(BUILD)/$$i/apache2 debian/apache2-mpm-$$i/usr/sbin/apache2 ;\
 		if [ "$(LSB_RELEASE)" != "Ubuntu" ] && [ -n "$(DEB_BUILD_STRIP)" ] ; then \
 			objcopy --only-keep-debug debian/apache2-mpm-$$i/usr/sbin/apache2 debian/apache2-dbg/usr/lib/debug/usr/sbin/apache2-mpm-$$i ;\

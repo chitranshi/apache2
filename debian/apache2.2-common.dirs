@@ -6,6 +6,7 @@ etc/logrotate.d
 usr/lib/cgi-bin
 usr/share/apache2/build
 usr/share/apache2/default-site
+usr/share/bug/apache2.2-common
 usr/share/lintian/overrides
 var/cache/apache2
 var/cache/apache2/mod_disk_cache

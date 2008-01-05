@@ -182,6 +182,8 @@ install: build install-worker install-prefork install-common install-dev install
 # --sourcedir=$(REALCURDIR)/debian/apache2.2-common
 
 	cp debian/bash_completion debian/apache2.2-common/etc/bash_completion.d/apache2.2-common
+	install -m755 debian/apache2.2-common.bug.script debian/apache2.2-common/usr/share/bug/apache2.2-common/script
+	install -m644 debian/apache2.2-common.bug.control debian/apache2.2-common/usr/share/bug/apache2.2-common/control
 
 	cp debian/apache2-doc.conf debian/apache2-doc/etc/apache2/conf.d/apache2-doc
 	grep -rl apachectl debian/apache2-doc/usr/share/doc/apache2-doc/manual | xargs perl -p -i -e 's/apachectl(?!\.html)/apache2ctl/g'
@@ -224,6 +226,7 @@ install: build install-worker install-prefork install-common install-dev install
 		rm -rf debian/apache2-mpm-$$i/ ;\
 		mkdir -p debian/apache2-mpm-$$i/usr/sbin ;\
 		mkdir -p debian/apache2-mpm-$$i/usr/share/lintian/overrides ;\
+		mkdir -p debian/apache2-mpm-$$i/usr/share/bug/apache2-mpm-$$i ;\
 		install -m 755 $(BUILD)/$$i/apache2 debian/apache2-mpm-$$i/usr/sbin/apache2 ;\
 		if [ "$(LSB_RELEASE)" != "Ubuntu" ] && [ -n "$(DEB_BUILD_STRIP)" ] ; then \
 			objcopy --only-keep-debug debian/apache2-mpm-$$i/usr/sbin/apache2 debian/apache2-dbg/usr/lib/debug/usr/sbin/apache2-mpm-$$i ;\
@@ -232,6 +235,7 @@ install: build install-worker install-prefork install-common install-dev install
 			objcopy --add-gnu-debuglink=debian/apache2-dbg/usr/lib/debug/usr/sbin/apache2-mpm-$$i debian/apache2-mpm-$$i/usr/sbin/apache2 ;\
 		fi ;\
 		perl -p -e "s/^/apache2-mpm-$$i: /" < debian/mpms.lintian-overrides > debian/apache2-mpm-$$i/usr/share/lintian/overrides/apache2-mpm-$$i ;\
+		ln -s ../apache2.2-common/script debian/apache2-mpm-$$i/usr/share/bug/apache2-mpm-$$i ;\
 	done
 
 	for pkg in `awk '/^Package:/ { print $$2 }' debian/control`; do \
@@ -246,6 +250,8 @@ binary-indep: install
 	dh_installdirs -i
 	dh_installdocs -i
 	ln -sf ../apache2.2-common/README.Debian debian/apache2/usr/share/doc/apache2/
+	mkdir -p debian/apache2/usr/share/bug/apache2
+	ln -sf ../apache2.2-common/script debian/apache2/usr/share/bug/apache2
 	cp debian/README.Debian debian/apache2-doc/usr/share/doc/apache2-doc/
 	dh_installchangelogs -i CHANGES -Napache2
 	dh_installchangelogs -papache2

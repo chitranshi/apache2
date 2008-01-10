@@ -1,4 +1,4 @@
-apache2 (2.2.7-1) UNRELEASED; urgency=low
+apache2 (2.2.8-1) UNRELEASED; urgency=low
 
   * New upstream version:
     - Fixes cross-site scripting issues in
@@ -12,7 +12,7 @@ apache2 (2.2.7-1) UNRELEASED; urgency=low
       possible cross-site scripting flaws affecting web browsers that do not
       derive the response character set as required by RFC2616. For
       mod_proxy_ftp there is now the new ProxyFtpDirCharset directive to
-      specify something else than ISO-8859-1.
+      specify something else than ISO-8859-1 (CVE-2008-0005).
     - Adds mod_substitute which performs inline response content pattern
       matching (including regex) and substitution (like mod_line_edit).
     - Adds "DefaultType none" option.

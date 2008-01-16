@@ -37,6 +37,8 @@ apache2 (2.2.8-1) UNRELEASED; urgency=low
   * Add some information to README.Debian (Apache wiki, default virtual host)
   * Build with LDFLAGS=-Wl,--as-needed to drop a lot of unnecessary
     dependencies, easing library transitions (closes: #458857).
+  * Add icons for OpenDocuments, add sharutils to Build-Depends for uudecode.
+    Patch by Nicolas Valcárcel.
   * Add reportbug script to list enabled modules.
   * Fix some lintian warnings:
     - Pass --no-start to dh_installinit instead of omitting the debhelper token

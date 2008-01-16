@@ -95,6 +95,9 @@ clean: unpatch
 	rm -f debian/apache2-mpm-worker.postinst debian/apache2-mpm-worker.preinst debian/apache2-mpm-worker.prerm
 	rm -f debian/apache2-mpm-event.postinst debian/apache2-mpm-event.preinst debian/apache2-mpm-event.prerm
 	rm -f debian/apache2-mpm-prefork.prerm
+	for i in `ls debian/icons/ | cut -d. -f1,2`; do \
+		rm -f debian/tmp/usr/share/apache2/icons/$$i; \
+	done
 
 build: patch-stamp build-mpms 
 build-mpms: mpm-worker mpm-prefork mpm-event
@@ -177,6 +180,10 @@ install: build install-worker install-prefork install-common install-dev install
 	mv debian/tmp/usr/sbin/apachectl debian/tmp/usr/sbin/apache2ctl
 	mv debian/tmp/usr/share/man/man8/apachectl.8 debian/tmp/usr/share/man/man8/apache2ctl.8
 	mv debian/tmp/usr/share/man/man8/suexec.8 debian/tmp/usr/share/man/man8/suexec2.8
+	mkdir -p debian/tmp/usr/share/apache2/icons/
+	for i in `ls debian/icons/ | cut -d. -f1,2`; do \
+		uudecode -o debian/tmp/usr/share/apache2/icons/$$i debian/icons/$$i".uue"; \
+	done
 
 	dh_install --list-missing --sourcedir=debian/tmp
 # --sourcedir=$(REALCURDIR)/debian/apache2.2-common

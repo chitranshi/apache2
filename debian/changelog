@@ -22,8 +22,8 @@ apache2 (2.2.8-1) UNRELEASED; urgency=low
     - Adds support for mod_ssl to the event MPM.
   * Move the configuration of User, Group, and PidFile to
     /etc/apache2/envvars. This makes it easier to use these settings in
-    scripts. /etc/apache2/envvars can now also be used to influence apache2ctl.
-    (Closes: #349709, #460105)
+    scripts. /etc/apache2/envvars can now also be used to influence apache2ctl
+    (inspired by Marc Haber's patch).  (Closes: #349709, #460105)
   * Make apache2ctl check the configuration syntax before trying to restart
     apache, to match the behaviour documented in the man page.
     (Closes: #459236)
@@ -38,7 +38,7 @@ apache2 (2.2.8-1) UNRELEASED; urgency=low
   * Build with LDFLAGS=-Wl,--as-needed to drop a lot of unnecessary
     dependencies, easing library transitions (closes: #458857).
   * Add icons for OpenDocuments, add sharutils to Build-Depends for uudecode.
-    Patch by Nicolas Valcárcel.
+    Patch by Nicolas Valcárcel. (Closes: #436441)
   * Add reportbug script to list enabled modules.
   * Fix some lintian warnings:
     - Pass --no-start to dh_installinit instead of omitting the debhelper token

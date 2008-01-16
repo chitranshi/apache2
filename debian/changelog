@@ -23,7 +23,7 @@ apache2 (2.2.8-1) UNRELEASED; urgency=low
   * Move the configuration of User, Group, and PidFile to
     /etc/apache2/envvars. This makes it easier to use these settings in
     scripts. /etc/apache2/envvars can now also be used to influence apache2ctl
-    (inspired by Marc Haber's patch).  (Closes: #349709, #460105)
+    (inspired by Marc Haber's patch).  (Closes: #349709, #460105, #458085)
   * Make apache2ctl check the configuration syntax before trying to restart
     apache, to match the behaviour documented in the man page.
     (Closes: #459236)

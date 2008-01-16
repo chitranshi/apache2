@@ -28,6 +28,13 @@ apache2.conf
 
 	This is the main configuration file.
 
+envvars
+
+	This contains environment variables that may be used in the
+	configuration. Some settings, like user and pid file, need to
+	go in here so that other scripts can use them. It can also
+	be used to change some default settings used by apache2ctl.
+
 conf.d/
 
 	Files in this directory are included by this line in

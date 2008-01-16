@@ -5,7 +5,6 @@ usr/share/man/man8/suexec2.8
 usr/share/apache2/error
 usr/lib/apache2/modules
 usr/sbin/suexec usr/lib/apache2
-usr/sbin/envvars etc/apache2
 usr/sbin/envvars-std usr/share/apache2/build
 usr/sbin/httxt2dbm
 etc/apache2 usr/share/doc/apache2.2-common/examples

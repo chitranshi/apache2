@@ -20,6 +20,13 @@ apache2 (2.2.8-1) UNRELEASED; urgency=low
     - Adds an "if" directive for mod_include to test whether an URL is
       accessible, and if so, conditionally display content.
     - Adds support for mod_ssl to the event MPM.
+  * Move the configuration of User, Group, and PidFile to
+    /etc/apache2/envvars. This makes it easier to use these settings in
+    scripts. /etc/apache2/envvars can now also be used to influence apache2ctl.
+    (Closes: #349709, #460105)
+  * Make apache2ctl check the configuration syntax before trying to restart
+    apache, to match the behaviour documented in the man page.
+    (Closes: #459236)
   * Convert docs to be directly viewable with a browser (and not use content
     negotiation).
   * Add doc-base entry for the documentation. (closes: #311269)

@@ -66,32 +66,25 @@ pidof_apache() {
     # if pidof is null for some reasons the script exits automagically
     # classified as good/unknown feature
     PIDS=`pidof apache2` || true
+
+    PFILE=`. /etc/apache2/envvars ; echo $APACHE_PID_FILE`
+    if [ -z "$PFILE" ] ; then
+    	echo ERROR: APACHE_PID_FILE needs to be defined in /etc/apache2/envvars >&2
+	exit 2
+    fi
+
+    [ -e $PFILE ] && PIDS2=`cat $PFILE`
     
-    # let's try to find the pid file
-    # apache2 allows more than PidFile entry
-    # most simple way is to check all of them
-
-    PIDS2=""
-
-    for PFILE in `grep ^PidFile /etc/apache2/* -r | awk '{print $2}'`; do
-	[ -e $PFILE ] && PIDS2="$PIDS2 `cat $PFILE`"
-    done
-
     # if there is a pid we need to verify that belongs to apache2
     # for real
     for i in $PIDS; do
-	# may be it is not the right way to make second dimension
-	# for really huge setups with hundreds of apache processes
-	# and tons of garbage in /etc/apache2... or is it?
-	for j in $PIDS2; do
-    	    if [ "$i" = "$j" ]; then
-	      # in this case the pid stored in the
-	      # pidfile matches one of the pidof apache
-	      # so a simple kill will make it
-           	echo $i
-              return 0
-            fi
-        done
+    	if [ "$i" = "$PIDS2" ]; then
+            # in this case the pid stored in the
+            # pidfile matches one of the pidof apache
+            # so a simple kill will make it
+            echo $i
+            return 0
+        fi
     done
     return 1
 }

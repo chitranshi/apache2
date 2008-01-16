@@ -7,10 +7,71 @@
 ## DP: - add usage message
 
 @DPATCH@
-diff -urNad apache2-work~/support/apachectl.in apache2-work/support/apachectl.in
---- apache2-work~/support/apachectl.in	2007-07-09 19:01:22.000000000 +0200
-+++ apache2-work/support/apachectl.in	2007-07-09 19:03:01.000000000 +0200
-@@ -71,12 +71,23 @@
+diff -urNad trunk~/docs/man/apachectl.8 trunk/docs/man/apachectl.8
+--- trunk~/docs/man/apachectl.8	2008-01-16 21:24:42.000000000 +0100
++++ trunk/docs/man/apachectl.8	2008-01-16 21:41:00.108749456 +0100
+@@ -68,7 +68,7 @@
+ Stops the Apache httpd daemon\&. This is equivalent to apachectl -k stop\&.  
+ .TP
+ restart
+-Restarts the Apache httpd daemon\&. If the daemon is not running, it is started\&. This command automatically checks the configuration files as in configtest before initiating the restart to make sure the daemon doesn't die\&. This is equivalent to apachectl -k restart\&.  
++Restarts the Apache httpd daemon\&. If the daemon is not running, it is started\&. This command automatically checks the configuration files as in configtest before initiating the restart to catch the most obvious errors\&. However, it is still possible for the daemon to die because of problems with the configuration\&. This is equivalent to apachectl -k restart\&.  
+ .TP
+ fullstatus
+ Displays a full status report from mod_status\&. For this to work, you need to have mod_status enabled on your server and a text-based browser such as lynx available on your system\&. The URL used to access the status report can be set by editing the STATUSURL variable in the script\&.  
+@@ -77,7 +77,7 @@
+ Displays a brief status report\&. Similar to the fullstatus option, except that the list of requests currently being served is omitted\&.  
+ .TP
+ graceful
+-Gracefully restarts the Apache httpd daemon\&. If the daemon is not running, it is started\&. This differs from a normal restart in that currently open connections are not aborted\&. A side effect is that old log files will not be closed immediately\&. This means that if used in a log rotation script, a substantial delay may be necessary to ensure that the old log files are closed before processing them\&. This command automatically checks the configuration files as in configtest before initiating the restart to make sure Apache doesn't die\&. This is equivalent to apachectl -k graceful\&.  
++Gracefully restarts the Apache httpd daemon\&. If the daemon is not running, it is started\&. This differs from a normal restart in that currently open connections are not aborted\&. A side effect is that old log files will not be closed immediately\&. This means that if used in a log rotation script, a substantial delay may be necessary to ensure that the old log files are closed before processing them\&. This command automatically checks the configuration files as in configtest before initiating the restart to catch the most obvious errors\&. However, it is still possible for the daemon to die because of problems with the configuration\&. This is equivalent to apachectl -k graceful\&.  
+ .TP
+ graceful-stop
+ Gracefully stops the Apache httpd daemon\&. This differs from a normal stop in that currently open connections are not aborted\&. A side effect is that old log files will not be closed immediately\&. This is equivalent to apachectl -k graceful-stop\&.  
+diff -urNad trunk~/support/apachectl.in trunk/support/apachectl.in
+--- trunk~/support/apachectl.in	2008-01-16 21:40:59.644723012 +0100
++++ trunk/support/apachectl.in	2008-01-16 21:44:01.603092229 +0100
+@@ -40,28 +40,31 @@
+ # |||||||||||||||||||| START CONFIGURATION SECTION  ||||||||||||||||||||
+ # --------------------                              --------------------
+ # 
+-# the path to your httpd binary, including options if necessary
+-HTTPD='@exp_sbindir@/@progname@'
+-#
++# the path to the environment variable file
++test -z "$APACHE_ENVVARS" && APACHE_ENVVARS='/etc/apache2/envvars'
+ # pick up any necessary environment variables
+-if test -f @exp_sysconfdir@/envvars; then
+-  . @exp_sysconfdir@/envvars
++if test -f $APACHE_ENVVARS; then
++  . $APACHE_ENVVARS
+ fi
++# the following APACHE_* variables should be set in /etc/apache2/envvars
++#
++# the path to your httpd binary, including options if necessary
++HTTPD=${APACHE_HTTPD:-/usr/sbin/apache2}
+ #
+ # a command that outputs a formatted text version of the HTML at the
+ # url given on the command line.  Designed for lynx, however other
+ # programs may work.  
+-LYNX="@LYNX_PATH@ -dump"
++LYNX="${APACHE_LYNX:-@LYNX_PATH@ -dump}"
+ #
+ # the URL to your server's mod_status status page.  If you do not
+ # have one, then status and fullstatus will not work.
+-STATUSURL="http://localhost:@PORT@/server-status"
++STATUSURL="${APACHE_STATUSURL:-http://localhost:@PORT@/server-status}"
+ #
+ # Set this variable to a command that increases the maximum
+ # number of file descriptors allowed per child process. This is
+ # critical for configurations that use many file descriptors,
+ # such as mass vhosting, or a multithreaded server.
+-ULIMIT_MAX_FILES="@APACHECTL_ULIMIT@"
++ULIMIT_MAX_FILES="${APACHE_ULIMIT_MAX_FILES:-@APACHECTL_ULIMIT@}"
+ # --------------------                              --------------------
+ # ||||||||||||||||||||   END CONFIGURATION SECTION  ||||||||||||||||||||
+ 
+@@ -71,13 +74,32 @@
  fi
  
  ERROR=0
@@ -24,16 +85,35 @@ diff -urNad apache2-work~/support/apachectl.in apache2-work/support/apachectl.in
  
  case $ARGV in
 -start|stop|restart|graceful|graceful-stop)
+-    $HTTPD -k $ARGV
 +start)
 +    mkdir -p /var/run/apache2
-+    install -d -o www-data /var/lock/apache2
++    install -d -o ${APACHE2_RUN_USER:-www-data} /var/lock/apache2
 +    # ssl_scache shouldn't be here if we're just starting up.
 +    # (this is bad if there are several apache2 instances running)
 +    rm -f /var/run/apache2/*ssl_scache*
-+    $HTTPD -k $ARGV
++    $HTTPD ${APACHE_ARGUMENTS} -k $ARGV
 +    ERROR=$?
 +    ;;
-+stop|restart|graceful|graceful-stop)
-     $HTTPD -k $ARGV
++stop|graceful-stop)
++    $HTTPD ${APACHE_ARGUMENTS} -k $ARGV
++    ERROR=$?
++    ;;
++restart|graceful)
++    if $HTTPD ${APACHE_ARGUMENTS} -t 2> /dev/null ; then
++        $HTTPD ${APACHE_ARGUMENTS} -k $ARGV
++    else
++        $HTTPD ${APACHE_ARGUMENTS} -t
++    fi
      ERROR=$?
      ;;
+ startssl|sslstart|start-SSL)
+@@ -87,7 +109,7 @@
+     ERROR=2
+     ;;
+ configtest)
+-    $HTTPD -t
++    $HTTPD ${APACHE_ARGUMENTS} -t
+     ERROR=$?
+     ;;
+ status)

@@ -19,7 +19,10 @@ flexible is possible, in order to make automating the changes and
 administering the server as easy as possible.
 
 Please be aware that this layout is quite different from the standard
-Apache configuration. 
+Apache configuration. Due to the use of environment variables, apache2
+needs to be started/stopped with /etc/init.d/apache2 or apache2ctl. 
+Calling /usr/bin/apache2 directly will not work with the default
+configuration.
 
 Files and Directories in /etc/apache2:
 -------------------------------------

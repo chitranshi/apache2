@@ -5,6 +5,8 @@ apache2 (2.2.8-1) unstable; urgency=low
     (like the init and logrotate scripts, and apache2ctl).
     If you changed these settings from their default values, you need to adjust
     /etc/apache2/envvars.
+    This also means that starting apache2 with "apache2 -k start" is no longer
+    possible, you have to use /etc/init.d/apache2 or apache2ctl.
 
  -- Stefan Fritsch <sf@debian.org>  Tue, 15 Jan 2008 21:41:23 +0100
 

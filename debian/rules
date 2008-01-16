@@ -278,6 +278,7 @@ binary-arch: install
 	dh_installchangelogs -a CHANGES
 	rm -f debian/apache2-dbg/usr/share/doc/apache2-dbg/changelog
 	rm -f debian/apache2-dbg/usr/share/doc/apache2-dbg/NEWS.Debian
+	rm -f debian/apache2-utils/usr/share/doc/apache2-utils/NEWS.Debian
 	dh_installinit -a --no-start -r --name=apache2 -- defaults 91 09
 	dh_installcron -a -r --name=apache2
 	if [ "$(LSB_RELEASE)" = "Ubuntu" ]; then \

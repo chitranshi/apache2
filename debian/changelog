@@ -47,6 +47,8 @@ apache2 (2.2.8-1) UNRELEASED; urgency=low
     - Add Short-Description to init script.
   * Remove unused apache2-mpm-prefork.prerm from source package and clean up
     debian/rules a bit.
+  * Don't ship NEWS.Debian with apache2-utils, as the contents are only
+    relevant for the server.
 
  -- Stefan Fritsch <sf@debian.org>  Sat, 15 Dec 2007 00:16:20 +0100
 

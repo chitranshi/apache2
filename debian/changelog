@@ -1,4 +1,4 @@
-apache2 (2.2.8-1) UNRELEASED; urgency=low
+apache2 (2.2.8-1) unstable; urgency=low
 
   * New upstream version:
     - Fixes cross-site scripting issues in
@@ -50,7 +50,7 @@ apache2 (2.2.8-1) UNRELEASED; urgency=low
   * Don't ship NEWS.Debian with apache2-utils, as the contents are only
     relevant for the server.
 
- -- Stefan Fritsch <sf@debian.org>  Sat, 15 Dec 2007 00:16:20 +0100
+ -- Stefan Fritsch <sf@debian.org>  Thu, 17 Jan 2008 20:27:56 +0100
 
 apache2 (2.2.6-3) unstable; urgency=low
 

@@ -257,7 +257,9 @@ binary-indep: install
 	dh_testroot -i 
 	dh_installdirs -i
 	dh_installdocs -i
-	ln -sf ../apache2.2-common/README.Debian debian/apache2/usr/share/doc/apache2/
+	# always compress to make the symlink work
+	gzip -9 debian/apache2.2-common/usr/share/doc/apache2.2-common/README.Debian
+	ln -sf ../apache2.2-common/README.Debian.gz debian/apache2/usr/share/doc/apache2/
 	mkdir -p debian/apache2/usr/share/bug/apache2
 	ln -sf ../apache2.2-common/script debian/apache2/usr/share/bug/apache2
 	cp debian/README.Debian debian/apache2-doc/usr/share/doc/apache2-doc/

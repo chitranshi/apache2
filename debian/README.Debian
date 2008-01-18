@@ -15,7 +15,7 @@ Apache2 Configuration under Debian GNU/Linux
 
 Debian's default Apache2 installation attempts to make adding and
 removing modules, virtual hosts, and extra configuration directives as
-flexible is possible, in order to make automating the changes and
+flexible as possible, in order to make automating the changes and
 administering the server as easy as possible.
 
 Please be aware that this layout is quite different from the standard
@@ -126,7 +126,7 @@ Using mod_disk_cache
 
 To ensure that the disk cache does not grow indefinitely, htcacheclean is
 started when mod_disk_cache is enabled. Both daemon and cron (daily) mode
-are supported. The configuration (run mode, cache size, ...) in
+are supported. The configuration (run mode, cache size, ...) is in
 /etc/default/apache2 .
 
 Normally, htcacheclean is automatically started and stopped by

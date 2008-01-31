@@ -8,8 +8,8 @@
 
 @DPATCH@
 diff -urNad trunk~/docs/man/apachectl.8 trunk/docs/man/apachectl.8
---- trunk~/docs/man/apachectl.8	2008-01-16 21:24:42.000000000 +0100
-+++ trunk/docs/man/apachectl.8	2008-01-16 21:41:00.108749456 +0100
+--- trunk~/docs/man/apachectl.8	2008-01-26 11:48:40.000000000 +0100
++++ trunk/docs/man/apachectl.8	2008-01-31 18:29:06.319652460 +0100
 @@ -68,7 +68,7 @@
  Stops the Apache httpd daemon\&. This is equivalent to apachectl -k stop\&.  
  .TP
@@ -29,8 +29,8 @@ diff -urNad trunk~/docs/man/apachectl.8 trunk/docs/man/apachectl.8
  graceful-stop
  Gracefully stops the Apache httpd daemon\&. This differs from a normal stop in that currently open connections are not aborted\&. A side effect is that old log files will not be closed immediately\&. This is equivalent to apachectl -k graceful-stop\&.  
 diff -urNad trunk~/support/apachectl.in trunk/support/apachectl.in
---- trunk~/support/apachectl.in	2008-01-16 21:40:59.644723012 +0100
-+++ trunk/support/apachectl.in	2008-01-16 21:44:01.603092229 +0100
+--- trunk~/support/apachectl.in	2008-01-31 18:29:05.711617810 +0100
++++ trunk/support/apachectl.in	2008-01-31 18:29:32.497144231 +0100
 @@ -40,28 +40,31 @@
  # |||||||||||||||||||| START CONFIGURATION SECTION  ||||||||||||||||||||
  # --------------------                              --------------------
@@ -117,3 +117,12 @@ diff -urNad trunk~/support/apachectl.in trunk/support/apachectl.in
      ERROR=$?
      ;;
  status)
+@@ -97,7 +119,7 @@
+     $LYNX $STATUSURL
+     ;;
+ *)
+-    $HTTPD $ARGV
++    $HTTPD ${APACHE_ARGUMENTS} $ARGV
+     ERROR=$?
+ esac
+ 

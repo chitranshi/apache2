@@ -6,7 +6,7 @@ apache2 (2.2.8-2) UNRELEASED; urgency=low
     debcheckout.
   * Add missing ${APACHE_ARGUMENTS} to *) case in apache2ctl.
   * In upgrades from etch, replace /etc/apache2/default without asking also in
-    the NO_START=1 case, in order to not break piuparts (closes: #466531).
+    the NO_START=1 case, in order to not break piuparts (closes: #466367).
   * Provide a fallback access log (other_vhosts_access.log) and a suitable
     LogFormat (vhost_combined) for VirtualHosts that don't define their own
     log file. (Closes: #313430)

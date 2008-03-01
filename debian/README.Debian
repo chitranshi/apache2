@@ -6,6 +6,8 @@ Contents
 		Tools
 
 	Using mod_disk_cache
+
+	SSL workaround for MSIE
 	
 	Documentation
 
@@ -134,6 +136,17 @@ Normally, htcacheclean is automatically started and stopped by
 configuration of htcacheclean while apache2 is running, you may need to
 manually start/stop htcacheclean with "/etc/init.d/apache2 start-htcacheclean"
 or "/etc/init.d/apache2 stop-htcacheclean".
+
+
+SSL workaround for MSIE
+=======================
+
+The SSL workaround for MS Internet Explorer needs to be added to your SSL
+VirtualHost section (it was previously in ssl.conf but caused keepalive to be
+disabled even for non-SSL connections):
+
+SetEnvIf User-Agent ".*MSIE.*"  nokeepalive ssl-unclean-shutdown \
+                                downgrade-1.0 force-response-1.0
 
 
 Documentation

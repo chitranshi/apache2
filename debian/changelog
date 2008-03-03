@@ -14,6 +14,8 @@ apache2 (2.2.8-2) UNRELEASED; urgency=low
     (Closes: #410334)
   * Make bugreport script source /etc/apache2/envvars before calling apache2.
   * Add note about MSIE SSL workaround to README.Debian.
+  * Don't ship empty /var/www/apache2-default in apache2-doc.
+    (Closes: #469145)
 
  -- Stefan Fritsch <sf@debian.org>  Fri, 18 Jan 2008 21:12:01 +0100
 

@@ -24,12 +24,12 @@ if [ "$MODNAME" = "cgi" ] && [ -z $PREFORK ]; then
 fi
 
 if [ -e $SYSCONFDIR/mods-enabled/$MODNAME.load ]; then
-	echo "This module is already enabled!"
+	echo "Module $MODNAME is already enabled!"
 	exit 0 
 fi
 
 if ! [ -e $SYSCONFDIR/mods-available/$MODNAME.load ]; then
-	echo "This module does not exist!" >&2
+	echo "Module $MODNAME does not exist!" >&2
 	exit 1
 fi
 

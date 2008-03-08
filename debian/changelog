@@ -5,6 +5,7 @@ apache2 (2.2.8-2) UNRELEASED; urgency=low
     log file. (Closes: #313430)
   * Fix broken symlink to README.Debian.gz and typos in the file
     (closes: #461462).
+  * Improve generation of password salts in htpasswd (closes: #469271).
   * Point VCS tags in debian control to trunk, to make them useful with
     debcheckout.
   * Add missing ${APACHE_ARGUMENTS} to *) case in apache2ctl.

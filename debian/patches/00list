@@ -18,3 +18,4 @@
 052_logresolve_linelength.dpatch
 053_bad_file_descriptor_PR42829.dpatch
 054_filename_in_warning.dpatch
+055_htpasswd_salt_generation.dpatch

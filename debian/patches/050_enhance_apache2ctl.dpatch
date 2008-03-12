@@ -87,11 +87,11 @@ diff -urNad trunk~/support/apachectl.in trunk/support/apachectl.in
 -start|stop|restart|graceful|graceful-stop)
 -    $HTTPD -k $ARGV
 +start)
-+    mkdir -p /var/run/apache2
-+    install -d -o ${APACHE2_RUN_USER:-www-data} /var/lock/apache2
++    mkdir -p ${APACHE_RUN_DIR:-/var/run/apache2}
++    install -d -o ${APACHE_RUN_USER:-www-data} ${APACHE_LOCK_DIR:-/var/lock/apache2}
 +    # ssl_scache shouldn't be here if we're just starting up.
 +    # (this is bad if there are several apache2 instances running)
-+    rm -f /var/run/apache2/*ssl_scache*
++    rm -f ${APACHE_RUN_DIR:-/var/run/apache2}/*ssl_scache*
 +    $HTTPD ${APACHE_ARGUMENTS} -k $ARGV
 +    ERROR=$?
 +    ;;

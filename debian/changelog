@@ -1,5 +1,7 @@
 apache2 (2.2.8-3) UNRELEASED; urgency=low
 
+  * mod_cache: Handle If-Range correctly if the cached resource was stale
+    (closes: #47065).
   * Introduce APACHE_RUN_DIR and APACHE_LOCK_DIR in apache2ctl. Also, make it
     use APACHE_RUN_USER instead of APACHE2_RUN_USER, to be consistent with
     apache2.conf.

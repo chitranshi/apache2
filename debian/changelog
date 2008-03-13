@@ -3,6 +3,7 @@ apache2 (2.2.8-3) UNRELEASED; urgency=low
   * Introduce APACHE_RUN_DIR and APACHE_LOCK_DIR in apache2ctl. Also, make it
     use APACHE_RUN_USER instead of APACHE2_RUN_USER, to be consistent with
     apache2.conf.
+  * Remove Fabio M. Di Nitto from the uploaders field (thanks for your work).
 
  -- Stefan Fritsch <sf@debian.org>  Wed, 12 Mar 2008 17:55:40 +0100
 

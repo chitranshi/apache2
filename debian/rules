@@ -29,14 +29,18 @@ AP2_COMMON_CONFARGS = --enable-layout=Debian --enable-so \
 	  	      --with-suexec-docroot=/var/www \
 		      --with-suexec-userdir=public_html \
 		      --with-suexec-logfile=/var/log/apache2/suexec.log \
-		      --enable-suexec=shared --enable-authn-alias=shared \
-		      --enable-authnz-ldap=shared  \
+		      --enable-suexec=shared \
+		      --enable-log-config=static --enable-logio=static \
+		      --with-apr=/usr/bin/apr-1-config \
+		      --with-apr-util=/usr/bin/apu-1-config \
+		      --with-pcre=yes
+
+AP2_MODS_CONFARGS =   --enable-authn-alias=shared --enable-authnz-ldap=shared  \
 		      --enable-disk-cache=shared --enable-cache=shared \
 		      --enable-mem-cache=shared --enable-file-cache=shared \
 		      --enable-cern-meta=shared --enable-dumpio=shared --enable-ext-filter=shared \
 		      --enable-charset-lite=shared --enable-cgi=shared \
 		      --enable-dav-lock=shared --enable-log-forensic=shared \
-		      --enable-log-config --enable-logio \
 		      --enable-ldap=shared --enable-proxy=shared \
 		      --enable-proxy-connect=shared --enable-proxy-ftp=shared \
 		      --enable-proxy-http=shared --enable-proxy-ajp=shared \
@@ -63,13 +67,7 @@ AP2_COMMON_CONFARGS = --enable-layout=Debian --enable-so \
 		      --enable-actions=shared --enable-speling=shared \
 		      --enable-userdir=shared --enable-alias=shared \
 		      --enable-rewrite=shared --enable-mime=shared \
-		      --enable-substitute=shared \
-		      --with-apr=/usr/bin/apr-1-config \
-		      --with-apr-util=/usr/bin/apu-1-config \
-		      --with-pcre=yes
-#
-#		      This is insufficiently flexible.
-#		      --enable-mods-shared=all --enable-modules=all 
+		      --enable-substitute=shared
 
 AP2_CFLAGS = $(CFLAGS) -pipe -I/usr/include/xmltok -I/usr/include/openssl -Wall
 AP2_LDFLAGS = -Wl,--as-needed
@@ -102,13 +100,30 @@ clean: unpatch
 
 build: patch-stamp build-mpms 
 build-mpms: mpm-worker mpm-prefork mpm-event
+	for mpm in prefork event ; do \
+		if ! diff -u $(BUILD)/$$mpm/mods.list $(BUILD)/worker/mods.list ; then \
+			echo Different modules built into httpd binaries, will not proceed ;\
+			exit 1 ;\
+		fi \
+	done
+
+
+mpm-worker:
+	dh_testdir
+	mkdir -p $(BUILD)/worker
+	cd $(BUILD)/worker ;\
+	CFLAGS="$(AP2_CFLAGS)" LDFLAGS="$(AP2_LDFLAGS)" $(CONFFLAGS) $(REALCURDIR)/configure --srcdir=$(REALCURDIR) $(AP2_COMMON_CONFARGS) $(AP2_MODS_CONFARGS) --with-mpm=worker  ;\
+	$(MAKE) ;\
+	./apache2 -l |grep -v worker > mods.list
+	touch $@
 
 mpm-%:
 	dh_testdir
 	mkdir -p $(BUILD)/$*
 	cd $(BUILD)/$* ;\
-	CFLAGS="$(AP2_CFLAGS)" LDFLAGS="$(AP2_LDFLAGS)" $(CONFFLAGS) $(REALCURDIR)/configure --srcdir=$(REALCURDIR) $(AP2_COMMON_CONFARGS) $(AP2_CONFARGS) --with-mpm=$*  ;\
-	$(MAKE)
+	CFLAGS="$(AP2_CFLAGS)" LDFLAGS="$(AP2_LDFLAGS)" $(CONFFLAGS) $(REALCURDIR)/configure --srcdir=$(REALCURDIR) $(AP2_COMMON_CONFARGS) --enable-modules=none --with-mpm=$*  ;\
+	$(MAKE) ;\
+	./apache2 -l |grep -v $* > mods.list
 	touch $@
 
 install-%:

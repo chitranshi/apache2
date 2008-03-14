@@ -7,6 +7,8 @@ apache2 (2.2.8-3) UNRELEASED; urgency=low
     apache2.conf.
   * Add 'status' function to init script (adapted from patch by Dustin
     Kirkland).
+  * Don't build the modules three times. We are only shipping one set of them,
+    anyway. (Inspired by the Fedora package.)
   * Remove Fabio M. Di Nitto from the uploaders field (thanks for your work).
 
  -- Stefan Fritsch <sf@debian.org>  Wed, 12 Mar 2008 17:55:40 +0100

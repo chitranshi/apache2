@@ -1,4 +1,4 @@
-apache2 (2.2.8-3) UNRELEASED; urgency=low
+apache2 (2.2.8-3) unstable; urgency=low
 
   * mod_cache: Handle If-Range correctly if the cached resource was stale
     (closes: #47065).
@@ -14,7 +14,7 @@ apache2 (2.2.8-3) UNRELEASED; urgency=low
     anyway. (Inspired by the Fedora package.)
   * Remove Fabio M. Di Nitto from the uploaders field (thanks for your work).
 
- -- Stefan Fritsch <sf@debian.org>  Wed, 12 Mar 2008 17:55:40 +0100
+ -- Stefan Fritsch <sf@debian.org>  Fri, 14 Mar 2008 10:57:19 +0100
 
 apache2 (2.2.8-2) unstable; urgency=low
 

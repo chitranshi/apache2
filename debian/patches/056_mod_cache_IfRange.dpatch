@@ -3,6 +3,8 @@
 ## All lines beginning with `## DP:' are a description of the patch.
 ## DP: mod_cache: Handle If-Range correctly if the cached resource was stale.
 ## DP: PR 44579 , #470652
+
+@DPATCH@
 Index: modules/cache/mod_cache.c
 ===================================================================
 --- a/modules/cache/mod_cache.c	(revision 636385)

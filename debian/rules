@@ -233,10 +233,10 @@ install: build install-worker install-prefork install-common install-dev install
 	chmod 4754 debian/apache2.2-common/usr/lib/apache2/suexec 
 	chgrp www-data debian/apache2.2-common/usr/lib/apache2/suexec
 	chmod 644 debian/apache2.2-common/usr/lib/apache2/modules/mod_suexec.so
-	for i in `find debian/a2-scripts -name .svn -prune -o -name .arch-ids -prune -o -type f -print`; \
-                do install -m755 $$i debian/apache2.2-common/usr/sbin; \
-		rm -f debian/apache2.2-common/usr/sbin/update-apache2-modules debian/apache2.2-common/usr/sbin/modhandler.py; \
-        done 
+	install -m755 debian/a2enmod debian/apache2.2-common/usr/sbin
+	ln -s a2enmod debian/apache2.2-common/usr/sbin/a2dismod
+	ln -s a2enmod debian/apache2.2-common/usr/sbin/a2ensite
+	ln -s a2enmod debian/apache2.2-common/usr/sbin/a2dissite
 	cp debian/default-index.html debian/apache2.2-common/usr/share/apache2/default-site/index.html
 	for i in worker event; do \
 		install -m755 debian/mpm-postinst-threaded debian/apache2-mpm-$$i.postinst ;\

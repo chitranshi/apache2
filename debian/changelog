@@ -1,5 +1,9 @@
 apache2 (2.2.8-4) UNRELEASED; urgency=low
 
+  * Replace a2{en,dis}{mod,site} by a rewritten version that
+    - supports wildcards (Closes: #373969).
+    - can be influenced with environment variables (Closes: #349716).
+    - checks existing symlinks for correctness (Closes: #409970).
   * Fix typo in bug number in 2.2.8-3 changelog entry.
 
  -- Stefan Fritsch <sf@debian.org>  Fri, 14 Mar 2008 23:34:36 +0100

@@ -4,6 +4,8 @@ apache2 (2.2.8-4) UNRELEASED; urgency=low
     - supports wildcards (Closes: #373969).
     - can be influenced with environment variables (Closes: #349716).
     - checks existing symlinks for correctness (Closes: #409970).
+  * Include config.nice in apache2-src. This hopefully allows apache2-mpm-itk
+    to drop the build-dependency on apache2-prefork-dev.
   * Fix typo in bug number in 2.2.8-3 changelog entry.
 
  -- Stefan Fritsch <sf@debian.org>  Fri, 14 Mar 2008 23:34:36 +0100

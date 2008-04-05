@@ -21,3 +21,4 @@
 055_htpasswd_salt_generation.dpatch
 056_mod_cache_IfRange.dpatch
 057_disablemods.dpatch
+058_suexec-CVE-2007-1742.dpatch

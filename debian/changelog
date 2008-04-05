@@ -10,6 +10,7 @@ apache2 (2.2.8-4) UNRELEASED; urgency=low
       instead of public_html* (CVE-2007-1742).
   * Include config.nice in apache2-src. This hopefully allows apache2-mpm-itk
     to drop the build-dependency on apache2-prefork-dev.
+  * Mention environment variables in apache2 man page.
   * Fix typo in bug number in 2.2.8-3 changelog entry.
 
  -- Stefan Fritsch <sf@debian.org>  Fri, 14 Mar 2008 23:34:36 +0100

@@ -2,31 +2,24 @@
 
 .SH NAME
 apache2 \- Apache Hypertext Transfer Protocol Server
-
 .SH "SYNOPSIS"
- 
 .PP
 \fBapache2\fR [ -\fBd\fR \fIserverroot\fR ] [ -\fBf\fR \fIconfig\fR ] [ -\fBC\fR \fIdirective\fR ] [ -\fBc\fR \fIdirective\fR ] [ -\fBD\fR \fIparameter\fR ] [ -\fBe\fR \fIlevel\fR ] [ -\fBE\fR \fIfile\fR ] [ \fB-k\fR start|restart|graceful|stop|graceful-stop ] [ -\fBR\fR \fIdirectory\fR ] [ -\fBh\fR ] [ -\fBl\fR ] [ -\fBL\fR ] [ -\fBS\fR ] [ -\fBt\fR ] [ -\fBv\fR ] [ -\fBV\fR ] [ -\fBX\fR ] [ -\fBM\fR ]
- 
-
 .SH "SUMMARY"
- 
 .PP
 apache2 is the Apache HyperText Transfer Protocol (HTTP) server program\&. It is designed to be run as a standalone daemon process\&. When used like this it will create a pool of child processes or threads to handle requests\&.
- 
 .PP
 In general, apache2 should not be invoked directly, but rather should be
 invoked via /etc/init.d/apache2 or apache2ctl\&. The default Debian
 configuration requires environment variables that are defined in
 /etc/apache2/envvars and are not available if apache2 is started directly.
-
+.SH "DOCUMENTATION"
 .PP
-The full documentation is available in the apache2-doc package or at http://httpd.apache.org/docs/2.2/
- 
-
+The full documentation is available in the apache2-doc package or at
+http://httpd.apache.org/docs/2.2/ . Information about Debian specific changes
+and configuration can be found in
+/usr/share/doc/apache2.2-common/README.Debian.gz .
 .SH "OPTIONS"
- 
- 
 .TP
 -d \fIserverroot\fR
 Set the initial value for the ServerRoot directive to \fIserverroot\fR\&. This can be overridden by the ServerRoot directive in the configuration file\&.
@@ -81,4 +74,6 @@ Print the version and build parameters of apache2, and then exit\&.
 .TP
 -X
 Run apache2 in debug mode\&. Only one worker will be started and the server will not detach from the console\&.  
- 
+.SH SEE ALSO
+.BR /usr/share/doc/apache2.2-common/README.Debian.gz
+

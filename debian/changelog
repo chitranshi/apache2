@@ -12,6 +12,7 @@ apache2 (2.2.8-4) UNRELEASED; urgency=low
     to drop the build-dependency on apache2-prefork-dev.
   * Mention environment variables in apache2 man page and point to
     README.Debian.
+  * Drop unneeded build-dep on libtool.
   * Fix typo in bug number in 2.2.8-3 changelog entry.
 
  -- Stefan Fritsch <sf@debian.org>  Fri, 14 Mar 2008 23:34:36 +0100

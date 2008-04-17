@@ -7,27 +7,6 @@
 ## DP: - add usage message
 
 @DPATCH@
-diff -urNad trunk~/docs/man/apachectl.8 trunk/docs/man/apachectl.8
---- trunk~/docs/man/apachectl.8	2008-01-26 11:48:40.000000000 +0100
-+++ trunk/docs/man/apachectl.8	2008-01-31 18:29:06.319652460 +0100
-@@ -68,7 +68,7 @@
- Stops the Apache httpd daemon\&. This is equivalent to apachectl -k stop\&.  
- .TP
- restart
--Restarts the Apache httpd daemon\&. If the daemon is not running, it is started\&. This command automatically checks the configuration files as in configtest before initiating the restart to make sure the daemon doesn't die\&. This is equivalent to apachectl -k restart\&.  
-+Restarts the Apache httpd daemon\&. If the daemon is not running, it is started\&. This command automatically checks the configuration files as in configtest before initiating the restart to catch the most obvious errors\&. However, it is still possible for the daemon to die because of problems with the configuration\&. This is equivalent to apachectl -k restart\&.  
- .TP
- fullstatus
- Displays a full status report from mod_status\&. For this to work, you need to have mod_status enabled on your server and a text-based browser such as lynx available on your system\&. The URL used to access the status report can be set by editing the STATUSURL variable in the script\&.  
-@@ -77,7 +77,7 @@
- Displays a brief status report\&. Similar to the fullstatus option, except that the list of requests currently being served is omitted\&.  
- .TP
- graceful
--Gracefully restarts the Apache httpd daemon\&. If the daemon is not running, it is started\&. This differs from a normal restart in that currently open connections are not aborted\&. A side effect is that old log files will not be closed immediately\&. This means that if used in a log rotation script, a substantial delay may be necessary to ensure that the old log files are closed before processing them\&. This command automatically checks the configuration files as in configtest before initiating the restart to make sure Apache doesn't die\&. This is equivalent to apachectl -k graceful\&.  
-+Gracefully restarts the Apache httpd daemon\&. If the daemon is not running, it is started\&. This differs from a normal restart in that currently open connections are not aborted\&. A side effect is that old log files will not be closed immediately\&. This means that if used in a log rotation script, a substantial delay may be necessary to ensure that the old log files are closed before processing them\&. This command automatically checks the configuration files as in configtest before initiating the restart to catch the most obvious errors\&. However, it is still possible for the daemon to die because of problems with the configuration\&. This is equivalent to apachectl -k graceful\&.  
- .TP
- graceful-stop
- Gracefully stops the Apache httpd daemon\&. This differs from a normal stop in that currently open connections are not aborted\&. A side effect is that old log files will not be closed immediately\&. This is equivalent to apachectl -k graceful-stop\&.  
 diff -urNad trunk~/support/apachectl.in trunk/support/apachectl.in
 --- trunk~/support/apachectl.in	2008-01-31 18:29:05.711617810 +0100
 +++ trunk/support/apachectl.in	2008-01-31 18:29:32.497144231 +0100

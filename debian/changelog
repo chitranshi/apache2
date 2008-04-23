@@ -13,7 +13,7 @@ apache2 (2.2.8-4) UNRELEASED; urgency=low
   * Mention environment variables in apache2 and apache2ctl man pages and point
     to README.Debian. (Closes: #475150)
   * Drop unneeded build-dep on libtool.
-  * Drop obsolete apache2-mpm-perchild package.
+  * Drop obsolete apache2-mpm-perchild package (closes: #477522).
   * Fix typo in bug number in 2.2.8-3 changelog entry.
 
  -- Stefan Fritsch <sf@debian.org>  Fri, 14 Mar 2008 23:34:36 +0100

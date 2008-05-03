@@ -14,6 +14,7 @@ apache2 (2.2.8-4) UNRELEASED; urgency=low
     to README.Debian. (Closes: #475150)
   * Drop unneeded build-dep on libtool.
   * Drop obsolete apache2-mpm-perchild package (closes: #477522).
+  * Don't fail in postinst if there is a dangling symlink /var/www/index.html.
   * Fix typo in bug number in 2.2.8-3 changelog entry.
 
  -- Stefan Fritsch <sf@debian.org>  Fri, 14 Mar 2008 23:34:36 +0100

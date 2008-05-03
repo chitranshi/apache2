@@ -95,6 +95,7 @@ fi
 # Note, this line catches new installs as well as upgrades
 if dpkg --compare-versions "$2" lt 2.2.7-1~0; then
 	if [ ! -e /var/www/index.html  -a \
+	     ! -h /var/www/index.html  -a \
 	     ! -e /var/www/index.cgi   -a \
 	     ! -e /var/www/index.pl    -a \
 	     ! -e /var/www/index.php   -a \

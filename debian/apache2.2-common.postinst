@@ -54,6 +54,7 @@ if dpkg --compare-versions "$2" lt 2.2.3-3.1; then
 	a2enmod setenvif
 	a2enmod status
         a2enmod auth_basic
+	a2enmod deflate
 
         # Those come from mod_auth:
         a2enmod authz_default

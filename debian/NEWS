@@ -1,3 +1,15 @@
+apache2 (2.2.8-4) unstable; urgency=low
+
+  * The suexec helper program needed for mod_suexec is now shipped in a
+    separate package, apache2-suexec, which is not installed by default.
+    You need to install this package manually if you are using mod_suexec.
+
+    There is also the apache2-suexec-custom package, which contains a
+    customizable version of suexec which can be used with different document
+    roots than /var/www.
+
+ -- Stefan Fritsch <sf@debian.org>  Sun, 04 May 2008 20:24:00 +0200
+
 apache2 (2.2.8-1) unstable; urgency=low
 
   * The Apache User and Group and the PidFile path are now configured in

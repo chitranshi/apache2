@@ -4,7 +4,11 @@ apache2 (2.2.8-4) UNRELEASED; urgency=low
     - supports wildcards (Closes: #373969).
     - can be influenced with environment variables (Closes: #349716).
     - checks existing symlinks for correctness (Closes: #409970).
-  * Some suexec fixes:
+  * Move suexec suid helper program to a separate package apache2-suexec,
+    which is not installed by default. Provide an alternative version of
+    suexec, which can be customized with a config file. This can be found in
+    the apache2-suexec-custom package. Closes: #312252, #266835
+  * Some more suexec fixes:
     - Fix race condition when changing directories.
     - Accept only /var/www/*, and not /var/www*. The same for public_html/*
       instead of public_html* (CVE-2007-1742).

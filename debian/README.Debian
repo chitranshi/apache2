@@ -8,6 +8,8 @@ Contents
 	Using mod_disk_cache
 
 	SSL workaround for MSIE
+
+	Suexec
 	
 	Documentation
 
@@ -147,6 +149,23 @@ disabled even for non-SSL connections):
 
 SetEnvIf User-Agent ".*MSIE.*"  nokeepalive ssl-unclean-shutdown \
                                 downgrade-1.0 force-response-1.0
+
+
+Suexec
+======
+
+Debian ships two version of the suexec helper program required by mod_suexec.
+It is not installed by default, to avoid possible security issues. The package
+apache2-suexec contains the standard version that works only with document root
+/var/www, userdir suffix public_html, and apache run user www-data. The package
+apache2-suexec-custom contains a customizable version, that can be configured
+with a config file to use different settings (like /srv/www as document root).
+For more information see the suexec(8) man page in the apache2-suexec-custom
+package.
+
+Since apache2-suexec-custom has received less testing and might be slightly
+slower, apache2-suexec is the recommended version unless you need the features
+from apache2-suexec-custom.
 
 
 Documentation

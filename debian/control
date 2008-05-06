@@ -12,7 +12,7 @@ Homepage: http://httpd.apache.org/
 Package: apache2.2-common
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, apache2-utils, net-tools, libmagic1, mime-support, lsb-base, procps [!hurd-i386], perl
-Suggests: www-browser, apache2-doc
+Suggests: www-browser, apache2-doc, apache2-suexec | apache2-suexec-custom
 Conflicts: apache2-common, libapache2-mod-php5 (<= 5.1.6-3), libapache2-mod-php4 (<= 4:4.4.4-2), libapache2-mod-mime-xattr (<= 0.3-2), libapache2-mod-mono (<= 1.1.17-3), libapache2-mod-proxy-html (<= 2.4.3-2), libapache2-mod-scgi (<= 1.11-1), libapache2-mod-speedycgi (<= 2.22-3), libapache2-modxslt (<= 2005072700-1), libapache2-redirtoservername (<= 0.1-1), libapache2-webauth (<= 3.5.3-1), libapache2-webkdc (<= 3.5.3-1)
 Replaces: apache2-common
 Description: Next generation, scalable, extendable web server
@@ -85,6 +85,35 @@ Description: utility programs for webservers
   - split-logfile (Split a single log including multiple vhosts)
   - checkgid (Checks whether the caller can setgid to the specified group)
   - check_forensic (Extract mod_log_forensic output from apache log files)
+
+Package: apache2-suexec
+Section: web
+Priority: optional
+Architecture: any
+Depends: ${shlibs:Depends}, apache2.2-common
+Conflicts: apache2-suexec, apache-common
+Replaces: apache2-suexec
+Description: Standard suexec program for Apache 2 mod_suexec
+ Provides the standard suexec helper program for mod_suexec. This version is 
+ compiled with document root /var/www and userdir suffix public_html. If you
+ need different settings, use the package apache2-suexec-custom.
+
+Package: apache2-suexec-custom
+Section: web
+Priority: extra
+Architecture: any
+Depends: ${shlibs:Depends}, apache2.2-common
+Provides: apache2-suexec
+Conflicts: apache2-suexec, apache-common
+Replaces: apache2-suexec
+Description: Configurable suexec program for Apache 2 mod_suexec
+ Provides a customizable version of the suexec helper program for mod_suexec.
+ This is not the version from upstream, but can be configured with a
+ configuration file. 
+ .
+ If you do not need non-standard document root or userdir settings, it is
+ recommended that you use the standard suexec helper program from the
+ apache2-suexec package instead.
 
 Package: apache2
 Architecture: all

@@ -14,7 +14,6 @@
 045_suexec_log_cloexec.dpatch
 047_fix_usage_message.dpatch
 050_enhance_apache2ctl.dpatch
-099_config_guess_sub_update
 052_logresolve_linelength.dpatch
 053_bad_file_descriptor_PR42829.dpatch
 054_filename_in_warning.dpatch
@@ -22,3 +21,7 @@
 056_mod_cache_IfRange.dpatch
 057_disablemods.dpatch
 058_suexec-CVE-2007-1742.dpatch
+099_config_guess_sub_update
+200_cp_suexec.dpatch
+201_build_suexec-custom.dpatch
+202_suexec-custom.dpatch

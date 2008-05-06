@@ -198,7 +198,6 @@ install: build install-worker install-prefork install-common install-dev install
 	mv debian/tmp/usr/share/man/man8/apxs.8 debian/tmp/usr/share/man/man8/apxs2.8
 	mv debian/tmp/usr/sbin/apachectl debian/tmp/usr/sbin/apache2ctl
 	mv debian/tmp/usr/share/man/man8/apachectl.8 debian/tmp/usr/share/man/man8/apache2ctl.8
-	mv debian/tmp/usr/share/man/man8/suexec.8 debian/tmp/usr/share/man/man8/suexec2.8
 	mkdir -p debian/tmp/usr/share/apache2/icons/
 	for i in `ls debian/icons/ | cut -d. -f1,2`; do \
 		uudecode -o debian/tmp/usr/share/apache2/icons/$$i debian/icons/$$i".uue"; \
@@ -210,6 +209,23 @@ install: build install-worker install-prefork install-common install-dev install
 	cp debian/bash_completion debian/apache2.2-common/etc/bash_completion.d/apache2.2-common
 	install -m755 debian/apache2.2-common.bug.script debian/apache2.2-common/usr/share/bug/apache2.2-common/script
 	install -m644 debian/apache2.2-common.bug.control debian/apache2.2-common/usr/share/bug/apache2.2-common/control
+
+	# standard suexec
+	mkdir -p debian/apache2-suexec/usr/share/lintian/overrides
+	cp debian/apache2-suexec.lintian-overrides debian/apache2-suexec/usr/share/lintian/overrides/apache2-suexec
+	chmod 4754 debian/apache2-suexec/usr/lib/apache2/suexec 
+	chgrp www-data debian/apache2-suexec/usr/lib/apache2/suexec
+
+	chmod 644 debian/apache2.2-common/usr/lib/apache2/modules/mod_suexec.so
+
+	# configurable suexec
+	mkdir -p debian/apache2-suexec-custom/usr/lib/apache2 debian/apache2-suexec-custom/etc/apache2/suexec
+	mkdir -p debian/apache2-suexec-custom/usr/share/lintian/overrides
+	cp debian/apache2-suexec-custom.lintian-overrides debian/apache2-suexec-custom/usr/share/lintian/overrides/apache2-suexec-custom
+	cp debian/build-tree/worker/support/suexec-custom debian/apache2-suexec-custom/usr/lib/apache2/suexec
+	cp debian/suexec-custom.config debian/apache2-suexec-custom/etc/apache2/suexec/www-data
+	chmod 4754 debian/apache2-suexec-custom/usr/lib/apache2/suexec 
+	chgrp www-data debian/apache2-suexec-custom/usr/lib/apache2/suexec
 
 	cp debian/apache2-doc.conf debian/apache2-doc/etc/apache2/conf.d/apache2-doc
 	grep -rl apachectl debian/apache2-doc/usr/share/doc/apache2-doc/manual | xargs perl -p -i -e 's/apachectl(?!\.html)/apache2ctl/g'
@@ -233,9 +249,7 @@ install: build install-worker install-prefork install-common install-dev install
 
 	cp -a debian/config-dir/* debian/apache2.2-common/etc/apache2
 	cp debian/logrotate debian/apache2.2-common/etc/logrotate.d/apache2
-	chmod 4754 debian/apache2.2-common/usr/lib/apache2/suexec 
-	chgrp www-data debian/apache2.2-common/usr/lib/apache2/suexec
-	chmod 644 debian/apache2.2-common/usr/lib/apache2/modules/mod_suexec.so
+	
 	install -m755 debian/a2enmod debian/apache2.2-common/usr/sbin
 	ln -s a2enmod debian/apache2.2-common/usr/sbin/a2dismod
 	ln -s a2enmod debian/apache2.2-common/usr/sbin/a2ensite
@@ -279,8 +293,8 @@ binary-indep: install
 	mkdir -p debian/apache2/usr/share/bug/apache2
 	ln -sf ../apache2.2-common/script debian/apache2/usr/share/bug/apache2
 	cp debian/README.Debian debian/apache2-doc/usr/share/doc/apache2-doc/
-	dh_installchangelogs -i CHANGES -Napache2
-	dh_installchangelogs -papache2
+	dh_installchangelogs -i CHANGES -Napache2 -Napache2-suexec -Napache2-suexec-custom
+	dh_installchangelogs -papache2 -papache2-suexec -papache2-suexec-custom
 	dh_compress -i
 	dh_fixperms -i -Xsuexec
 	dh_installdeb -i

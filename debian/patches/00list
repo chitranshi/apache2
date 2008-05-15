@@ -21,6 +21,7 @@
 056_mod_cache_IfRange.dpatch
 057_disablemods.dpatch
 058_suexec-CVE-2007-1742.dpatch
+059_ssl_memleak_fix_PR44975.dpatch
 099_config_guess_sub_update
 200_cp_suexec.dpatch
 201_build_suexec-custom.dpatch

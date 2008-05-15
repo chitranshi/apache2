@@ -1,4 +1,4 @@
-apache2 (2.2.8-4) UNRELEASED; urgency=low
+apache2 (2.2.8-5) UNRELEASED; urgency=low
 
   * Replace a2{en,dis}{mod,site} by a rewritten version that
     - supports wildcards (Closes: #373969).
@@ -23,6 +23,13 @@ apache2 (2.2.8-4) UNRELEASED; urgency=low
   * Fix typo in bug number in 2.2.8-3 changelog entry.
 
  -- Stefan Fritsch <sf@debian.org>  Fri, 14 Mar 2008 23:34:36 +0100
+
+apache2 (2.2.8-4) unstable; urgency=high
+
+  * Urgency high for DoS vulnerability fix.
+  * Fix memory leak in mod_ssl with zlib compression.
+
+ -- Stefan Fritsch <sf@debian.org>  Tue, 13 May 2008 22:31:37 +0200
 
 apache2 (2.2.8-3) unstable; urgency=low
 

@@ -50,11 +50,18 @@ appended to users' home directories (public_html in standard suexec).
 If any of the lines is commented out (with #), suexec will refuse the
 corresponding type of request. It is recommended to comment out the 
 userdir suffix if you don't need it.
+.SH SECURITY
+Do not set the document root to a path that includes users' home directories
+(like /home or /var) or directories where users can mount removable media.
+Doing so would create local security issues. Suexec does not allow to set the
+document root to the root directory / .
 .SH OPTIONS
 .IP -V
 Display the list of compile-time settings used when \fBsuexec\fP
 was built.  No other action is taken.
 .PD
+.SH FILES
+.BR /etc/apache2/suexec/www-data
 .SH SEE ALSO
 .BR apache2(8) ,
 .BR /usr/share/doc/apache2.2-common/README.Debian.gz

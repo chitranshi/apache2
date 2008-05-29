@@ -21,6 +21,7 @@ apache2 (2.2.8-5) UNRELEASED; urgency=low
   * Drop obsolete apache2-mpm-perchild package (closes: #477522).
   * Don't fail in postinst if there is a dangling symlink /var/www/index.html.
   * Fix typo in bug number in 2.2.8-3 changelog entry.
+  * Use dh_lintian in debian/rules.
 
  -- Stefan Fritsch <sf@debian.org>  Fri, 14 Mar 2008 23:34:36 +0100
 

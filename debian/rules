@@ -139,7 +139,6 @@ install-common:
 	dh_installdirs
 	cd $(BUILD)/worker ;\
 	$(MAKE) DESTDIR=$(REALCURDIR)/debian/tmp install
-	install -m644 debian/apache2.2-common.lintian-overrides debian/apache2.2-common/usr/share/lintian/overrides/apache2.2-common
 
 install-dev: 
 	dh_testdir
@@ -211,8 +210,6 @@ install: build install-worker install-prefork install-common install-dev install
 	install -m644 debian/apache2.2-common.bug.control debian/apache2.2-common/usr/share/bug/apache2.2-common/control
 
 	# standard suexec
-	mkdir -p debian/apache2-suexec/usr/share/lintian/overrides
-	cp debian/apache2-suexec.lintian-overrides debian/apache2-suexec/usr/share/lintian/overrides/apache2-suexec
 	chmod 4754 debian/apache2-suexec/usr/lib/apache2/suexec 
 	chgrp www-data debian/apache2-suexec/usr/lib/apache2/suexec
 
@@ -220,8 +217,6 @@ install: build install-worker install-prefork install-common install-dev install
 
 	# configurable suexec
 	mkdir -p debian/apache2-suexec-custom/usr/lib/apache2 debian/apache2-suexec-custom/etc/apache2/suexec
-	mkdir -p debian/apache2-suexec-custom/usr/share/lintian/overrides
-	cp debian/apache2-suexec-custom.lintian-overrides debian/apache2-suexec-custom/usr/share/lintian/overrides/apache2-suexec-custom
 	cp debian/build-tree/worker/support/suexec-custom debian/apache2-suexec-custom/usr/lib/apache2/suexec
 	cp debian/suexec-custom.config debian/apache2-suexec-custom/etc/apache2/suexec/www-data
 	chmod 4754 debian/apache2-suexec-custom/usr/lib/apache2/suexec 
@@ -295,6 +290,7 @@ binary-indep: install
 	cp debian/README.Debian debian/apache2-doc/usr/share/doc/apache2-doc/
 	dh_installchangelogs -i CHANGES -Napache2 -Napache2-suexec -Napache2-suexec-custom
 	dh_installchangelogs -papache2 -papache2-suexec -papache2-suexec-custom
+	dh_lintian -i
 	dh_compress -i
 	dh_fixperms -i -Xsuexec
 	dh_installdeb -i
@@ -311,6 +307,7 @@ binary-arch: install
 	gzip -9 debian/apache2.2-common/usr/share/doc/apache2.2-common/README.Debian
 	dh_installman -a
 	dh_installchangelogs -a CHANGES
+	dh_lintian -a
 	rm -f debian/apache2-dbg/usr/share/doc/apache2-dbg/changelog
 	rm -f debian/apache2-dbg/usr/share/doc/apache2-dbg/NEWS.Debian
 	rm -f debian/apache2-utils/usr/share/doc/apache2-utils/NEWS.Debian

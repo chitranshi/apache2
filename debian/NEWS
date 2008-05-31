@@ -3,8 +3,10 @@ apache2 (2.2.8-5) unstable; urgency=low
   * The suexec helper program needed for mod_suexec is now shipped in a
     separate package, apache2-suexec, which is not installed by default.
     You need to install this package manually if you are using mod_suexec.
+    Also, the minimum userid that suexec is allowed to change to is now set
+    to 1000 (from 100), to disallow system users.
 
-    There is also the apache2-suexec-custom package, which contains a
+    There is now also the apache2-suexec-custom package, which contains a
     customizable version of suexec which can be used with different document
     roots than /var/www.
 

@@ -13,6 +13,7 @@ apache2 (2.2.8-5) UNRELEASED; urgency=low
     - Fix race condition when changing directories.
     - Accept only /var/www/*, and not /var/www*. The same for public_html/*
       instead of public_html* (CVE-2007-1742).
+    - Raise the minimum userid that suexec may change to from 100 to 1000.
   * Enable mod_deflate in new installs.
   * Include config.nice in apache2-src. This hopefully allows apache2-mpm-itk
     to drop the build-dependency on apache2-prefork-dev.

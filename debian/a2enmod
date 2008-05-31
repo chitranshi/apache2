@@ -132,6 +132,17 @@ sub doit {
     my $link = "$enabldir/$prio$acton$sffx";
 
     if ( !-e $tgt ) {
+        if ( -l $link && !-e $link ) {
+		if ( $act eq 'disable' ) {
+			info("removing dangling symlink $link\n");
+			unlink($link);
+			return 1;
+		}
+		else {
+			error("$link is a dangling symlink!\n");
+		}
+	}
+
         error("$name $acton does not exist!\n");
         return 0;
     }

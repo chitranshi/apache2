@@ -4,6 +4,7 @@ apache2 (2.2.8-5) UNRELEASED; urgency=low
     - supports wildcards (Closes: #373969).
     - can be influenced with environment variables (Closes: #349716).
     - checks existing symlinks for correctness (Closes: #409970).
+    - allows to remove dead symlinks (Closes: #480893).
   * Move suexec suid helper program to a separate package apache2-suexec,
     which is not installed by default. Provide an alternative version of
     suexec, which can be customized with a config file. This can be found in

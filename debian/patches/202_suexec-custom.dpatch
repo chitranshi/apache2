@@ -2,7 +2,7 @@
 ## 202_suexec-custom.dpatch by Stefan Fritsch <sf@debian.org>
 ##
 ## All lines beginning with `## DP:' are a description of the patch.
-## DP: No description.
+## DP: the actual patch to make suexec-custom read a config file
 
 @DPATCH@
 diff -urNad trunk~/support/suexec-custom.c trunk/support/suexec-custom.c

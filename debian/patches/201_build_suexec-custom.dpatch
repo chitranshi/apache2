@@ -2,7 +2,7 @@
 ## 201_make_suexec-custom.dpatch by Stefan Fritsch <sf@debian.org>
 ##
 ## All lines beginning with `## DP:' are a description of the patch.
-## DP: No description.
+## DP: add suexec-custom to the build system
 
 @DPATCH@
 diff -urNad trunk~/Makefile.in trunk/Makefile.in

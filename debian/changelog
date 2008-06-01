@@ -1,3 +1,9 @@
+apache2 (2.2.8-6) UNRELEASED; urgency=low
+
+  * Add some missing patch descriptions.
+
+ -- Stefan Fritsch <sf@debian.org>  Sun, 01 Jun 2008 17:05:40 +0200
+
 apache2 (2.2.8-5) unstable; urgency=low
 
   * Replace a2{en,dis}{mod,site} by a rewritten version that

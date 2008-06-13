@@ -167,10 +167,25 @@ case $1 in
 		else
 			log_daemon_msg "Restarting web server" "apache2"
 		fi
+		PID=$(pidof_apache) || true
 		if ! apache_stop; then
                         log_end_msg 1 || true
                 fi
-		sleep 10
+
+		# Wait until either the parent apache2 process is dead or
+		# 4 seconds so that the childs had a chance to close their
+		# listening sockets.
+		# If 'stop' is used instead of 'graceful-stop', this needs to
+		# be increased to at least 12 seconds.
+		t=4
+		while $(kill -0 "${PID:-}" 2> /dev/null); do
+			if [ $t = '0' ]; then
+				break
+			else
+				t=$(($t-1))
+				sleep 1
+			fi
+		done
 		if $APACHE2CTL start; then
 			if check_htcacheclean ; then
 				start_htcacheclean || log_end_msg 1

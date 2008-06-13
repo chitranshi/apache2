@@ -16,6 +16,10 @@ apache2 (2.2.9-1) UNRELEASED; urgency=low
     - mod_substitute: The default is now flattening the buckets after each
       substitution. The newly added 'q' flag allows for the quicker, more
       efficient bucket-splitting.
+  * Shorten the init script's waiting period during 'restart' from 10 to 4
+    seconds. This should still be plenty to allow the apache processes to
+    close their listening sockets. Make the wait even shorter if apache dies
+    faster. (Closes: #479136)
   * Fix some lintian warnings:
     - Add some missing patch descriptions.
     - Point to /usr/share/common-licenses instead of including the license in

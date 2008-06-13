@@ -92,7 +92,7 @@ pidof_apache() {
 apache_stop() {
 	if `$APACHE2CTL configtest > /dev/null 2>&1`; then
 		# if the config is ok than we just stop normaly
-                $APACHE2CTL graceful-stop
+                $APACHE2CTL graceful-stop 2>&1 | grep -v 'not running' >&2 || true
 	else
 		# if we are here something is broken and we need to try
 		# to exit as nice and clean as possible

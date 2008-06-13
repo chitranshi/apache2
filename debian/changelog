@@ -1,5 +1,21 @@
-apache2 (2.2.8-6) UNRELEASED; urgency=low
+apache2 (2.2.9-1) UNRELEASED; urgency=low
 
+  * New upstream release. Notable changes:
+    - mod_proxy_http: Better handling of excessive interim responses from
+      origin server to prevent potential denial of service and high memory
+      usage (CVE-2008-2364).
+    - mod_proxy_balancer: Prevent CSRF attacks against the balancer-manager
+      (CVE-2007-6420).
+    - Worker / Event MPM: Fix race condition in pool recycling that leads to
+      segmentation faults under load. (Closes: #484800)
+    - mod_proxy: Keep connections to the backend persistent in the HTTPS case.
+    - mod_proxy: Support environment variable interpolation in reverse
+      proxying directives.
+    - mod_headers: Add 'merge' option to avoid duplicate values within the
+      same header.
+    - mod_substitute: The default is now flattening the buckets after each
+      substitution. The newly added 'q' flag allows for the quicker, more
+      efficient bucket-splitting.
   * Add some missing patch descriptions.
 
  -- Stefan Fritsch <sf@debian.org>  Sun, 01 Jun 2008 17:05:40 +0200

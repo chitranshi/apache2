@@ -16,7 +16,10 @@ apache2 (2.2.9-1) UNRELEASED; urgency=low
     - mod_substitute: The default is now flattening the buckets after each
       substitution. The newly added 'q' flag allows for the quicker, more
       efficient bucket-splitting.
-  * Add some missing patch descriptions.
+  * Fix some lintian warnings:
+    - Add some missing patch descriptions.
+    - Point to /usr/share/common-licenses instead of including the license in
+      the copyright file.
 
  -- Stefan Fritsch <sf@debian.org>  Sun, 01 Jun 2008 17:05:40 +0200
 

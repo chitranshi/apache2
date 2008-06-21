@@ -15,17 +15,14 @@ Depends: ${shlibs:Depends}, ${misc:Depends}, apache2-utils, net-tools, libmagic1
 Suggests: www-browser, apache2-doc, apache2-suexec | apache2-suexec-custom
 Conflicts: apache2-common, libapache2-mod-php5 (<= 5.1.6-3), libapache2-mod-php4 (<= 4:4.4.4-2), libapache2-mod-mime-xattr (<= 0.3-2), libapache2-mod-mono (<= 1.1.17-3), libapache2-mod-proxy-html (<= 2.4.3-2), libapache2-mod-scgi (<= 1.11-1), libapache2-mod-speedycgi (<= 2.22-3), libapache2-modxslt (<= 2005072700-1), libapache2-redirtoservername (<= 0.1-1), libapache2-webauth (<= 3.5.3-1), libapache2-webkdc (<= 3.5.3-1)
 Replaces: apache2-common
-Description: Next generation, scalable, extendable web server
- Apache v2 is the next generation of the omnipresent Apache web server. This
- version - a total rewrite - introduces many new improvements, such as
- threading, a new API, IPv6 support, request/response filtering, and more.
- .
- It is also considerably faster, and can be easily extended to provide services
- other than http.
+Description: Apache HTTP Server common files
+ The Apache Software Foundation's goal is to build a secure, efficient and
+ extensible HTTP server as standards-compliant open source software. The
+ result has long been the number one web server on the Internet.
  .
  This package contains all the standard apache2 modules, including SSL support.
  However, it does *not* include the server itself; for this you need to
- install one of the apache2-mpm-* packages; such as worker or prefork.
+ install one of the apache2-mpm-* packages, such as worker or prefork.
 
 Package: apache2-mpm-worker
 Architecture: any
@@ -33,40 +30,46 @@ Depends: ${shlibs:Depends}, apache2.2-common (= ${binary:Version})
 Provides: apache2-mpm, apache2, httpd, httpd-cgi
 Conflicts: apache2-mpm, apache2-common
 Replaces: apache2-mpm-threadpool (<< 2.0.53), apache2-mpm-perchild (<< 2.2.0)
-Description: High speed threaded model for Apache HTTPD
- The worker MPM provides a threaded implementation for Apache HTTPD. It is
- considerably faster than the traditional model, and is the recommended MPM.
+Description: Apache HTTP Server - high speed threaded model
+ Each Apache Multi-Processing Module provides a different "flavor" of
+ web server binary, compiled with a different processing model.
  .
- Worker generally is a good choice for high-traffic servers because it
- has a smaller memory footprint than the prefork MPM.
+ The worker MPM provides the default threaded implementation. It is
+ recommended especially for high-traffic sites because it is faster
+ and has a smaller memory footprint than the traditional prefork MPM.
 
 Package: apache2-mpm-prefork
 Architecture: any
 Depends: ${shlibs:Depends}, apache2.2-common (= ${binary:Version})
 Provides: apache2-mpm, apache2, httpd, httpd-cgi
 Conflicts: apache2-mpm, apache2-common
-Description: Traditional model for Apache HTTPD
- This Multi-Processing Module (MPM) implements a non-threaded,
- pre-forking web server that handles requests in a manner similar to
- Apache 1.3. It is appropriate for sites that need to avoid threading for
- compatibility with non-thread-safe libraries. It is also the best MPM
- for isolating each request, so that a problem with a single request will
- not affect any other.
+Description: Apache HTTP Server - traditional non-threaded model
+ Each Apache Multi-Processing Module provides a different "flavor" of
+ web server binary, compiled with a different processing model.
  .
- It is not as fast, but is considered to be more stable.
+ The prefork MPM provides a non-threaded, pre-forking implementation
+ that handles requests in a manner similar to Apache 1.3. It is not as
+ fast as threaded models, but is considered to be more stable. It is
+ appropriate for sites that need to maintain compatibility with
+ non-thread-safe libraries, and is the best MPM for isolating each
+ request, so that a problem with a single request will not affect any
+ other.
 
 Package: apache2-mpm-event
 Architecture: any
 Depends: ${shlibs:Depends}, apache2.2-common (= ${binary:Version})
 Provides: apache2-mpm, apache2, httpd, httpd-cgi
 Conflicts: apache2-mpm, apache2-common
-Description: Event driven model for Apache HTTPD
- The event Multi-Processing Module (MPM) is designed to allow more 
- requests to be served simultaneously by passing off some processing 
- work to supporting threads, freeing up the main threads to work on 
- new requests.
+Description: Apache HTTP Server - event driven model
+ Each Apache Multi-Processing Module provides a different "flavor" of
+ web server binary, compiled with a different processing model.
  .
- This MPM is especially suitable for sites that see extensive KeepAlive traffic
+ The event MPM is designed to allow more requests to be served
+ simultaneously by passing off some processing work to supporting
+ threads, freeing up the main threads to work on new requests. It is
+ especially suitable for sites that see extensive KeepAlive traffic.
+ .
+ This MPM is experimental and less tested than the worker and prefork MPMs.
  
 Package: apache2-utils
 Architecture: any
@@ -119,17 +122,21 @@ Package: apache2
 Architecture: all
 Depends: apache2-mpm-worker (>= ${source:Version}) | apache2-mpm-prefork (>= ${source:Version}) | apache2-mpm-event (>= ${source:Version})
 Section: web
-Description: Next generation, scalable, extendable web server
- Apache v2 is the next generation of the omnipresent Apache web server. This
- version - a total rewrite - introduces many new improvements, such as
- threading, a new API, IPv6 support, request/response filtering, and more.
+Description: Apache HTTP Server metapackage         
+ The Apache Software Foundation's goal is to build a secure, efficient and
+ extensible HTTP server as standards-compliant open source software. The
+ result has long been the number one web server on the Internet.
+ .
+ It features support for HTTPS, virtual hosting, CGI, SSI, IPv6, easy
+ scripting and database integration, request/response filtering, many
+ flexible authentication schemes, and more.
 
 Package: apache2-doc
 Section: doc
 Architecture: all
-Description: documentation for apache2
- This is the documentation for apache2, see the apache2 package description
-  for more details.
+Description: Apache HTTP Server documentation
+ This package provides the documentation for Apache 2. For more details
+ see the apache2 package description.
 
 Package: apache2-prefork-dev
 Section: devel
@@ -137,12 +144,12 @@ Architecture: any
 Depends: apache2.2-common (= ${binary:Version}), openssl, libaprutil1-dev
 Conflicts: apache2-threaded-dev
 Priority: extra
-Description: development headers for apache2
+Description: Apache development headers - non-threaded MPM
  This package provides the development headers and apxs2 binary for
  apache2-mpm-prefork; see the apache2 package description for more details.
  .
- This should only be used when you absolutely *have* to have a non-threaded 
- environment, ie for PHP4.
+ This should only be used when you absolutely *must* support a non-threaded
+ environment (for PHP, for example).
 
 Package: apache2-threaded-dev
 Section: devel
@@ -151,7 +158,7 @@ Depends: apache2.2-common (= ${binary:Version}), openssl, libaprutil1-dev
 Conflicts: apache2-prefork-dev
 Provides: apache2-dev
 Priority: extra
-Description: development headers for apache2
+Description: Apache development headers - threaded MPM
  This package provides the development headers and apxs2 binary for
  threaded versions of apache2; see the apache2 package description
  for more details.

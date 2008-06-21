@@ -5,6 +5,7 @@ apache2 (2.2.9-2) UNRELEASED; urgency=low
     closed their listening sockets and there is no way for the init script to
     know when it is save to start apache again. This could make the restart of
     apache fail. (Closes: #486629, #463338)
+  * Improve package descriptions, thanks to Justin B Rye. (Closes: #486855)
 
  -- Stefan Fritsch <sf@debian.org>  Sat, 21 Jun 2008 00:06:17 +0200
 

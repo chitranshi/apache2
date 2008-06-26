@@ -8,7 +8,9 @@ apache2 (2.2.9-3) UNRELEASED; urgency=low
     If you use Aliases or Symlinks that point to directories outside the
     DocumentRoot, you need to explicitly allow access to those directories
     (Or you can revert to the old behaviour by commenting out the
-    <Directory /> block in conf.d/security .
+    <Directory /> block in /etc/apache2/conf.d/security .
+  * Adjust mod_userdir accordingly. Also add "AllowOverride Indexes" for the
+    home directories.
   * Disable SSLv2 by default. It is insecure.
 
  -- Stefan Fritsch <sf@debian.org>  Thu, 26 Jun 2008 23:49:23 +0200

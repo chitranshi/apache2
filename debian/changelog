@@ -2,6 +2,10 @@ apache2 (2.2.9-3) UNRELEASED; urgency=low
 
   * Move NameVirtualHost directive to ports.conf and switch from "*" to
     "*:80". (Closes: #314606, #486286)
+  * Add a default SSL virtual host.
+    - Use snakeoil certificate by default (if ssl-cert is installed).
+      (Closes: #293524, #446765)
+    - Add MSIE workarounds. (Closes: #421802)
   * Add a new config file /etc/apache2/conf.d/security with some vaguely
     security related diectives. (Closes: #260063)
   * Disable access to the root directory / by default (closes: #341022).

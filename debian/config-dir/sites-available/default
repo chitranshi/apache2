@@ -28,7 +28,6 @@
 	LogLevel warn
 
 	CustomLog /var/log/apache2/access.log combined
-	ServerSignature On
 
     Alias /doc/ "/usr/share/doc/"
     <Directory "/usr/share/doc/">

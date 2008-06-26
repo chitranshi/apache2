@@ -2,6 +2,7 @@ apache2 (2.2.9-3) UNRELEASED; urgency=low
 
   * Move NameVirtualHost directive to ports.conf and switch from "*" to
     "*:80". (Closes: #314606, #486286)
+  * Disable SSLv2 by default.
 
  -- Stefan Fritsch <sf@debian.org>  Thu, 26 Jun 2008 23:49:23 +0200
 

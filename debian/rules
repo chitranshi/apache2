@@ -70,18 +70,14 @@ AP2_MODS_CONFARGS =   --enable-authn-alias=shared --enable-authnz-ldap=shared  \
 		      --enable-rewrite=shared --enable-mime=shared \
 		      --enable-substitute=shared
 
-AP2_CFLAGS = $(CFLAGS) -pipe -I/usr/include/xmltok -I/usr/include/openssl -Wall
+AP2_CFLAGS = $(CFLAGS) -g -pipe -I/usr/include/xmltok -I/usr/include/openssl -Wall
 AP2_LDFLAGS = -Wl,--as-needed
 
-#support debug building
-ifneq (,$(findstring debug,$(DEB_BUILD_OPTIONS)))
-  AP2_CFLAGS += -g -O0
+#support noopt building
+ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
+  AP2_CFLAGS += -O0
 else
-  ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
-    AP2_CFLAGS += -O0
-  else
-    AP2_CFLAGS += -O2
-  endif
+  AP2_CFLAGS += -O2
 endif
 
 ifeq (,$(findstring nostrip,$(DEB_BUILD_OPTIONS)))

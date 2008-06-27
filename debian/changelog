@@ -19,6 +19,8 @@ apache2 (2.2.9-3) UNRELEASED; urgency=low
     home directories.
   * Disable SSLv2 by default. It is insecure. Also only enable ciphers with
     key lengths of at least 128 bit.
+  * Always pass -g to gcc instead of relying on dpkg-buildpackage to set
+    CFLAGS. We always want the debug info for the apache2-dbg package.
 
   [ Ryan Niebur ]
   * Upgraded to policy 3.8.0

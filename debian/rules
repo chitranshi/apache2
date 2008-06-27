@@ -75,9 +75,13 @@ AP2_LDFLAGS = -Wl,--as-needed
 
 #support debug building
 ifneq (,$(findstring debug,$(DEB_BUILD_OPTIONS)))
-AP2_CFLAGS += -g -O0
+  AP2_CFLAGS += -g -O0
 else
-AP2_CFLAGS += -O2
+  ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
+    AP2_CFLAGS += -O0
+  else
+    AP2_CFLAGS += -O2
+  endif
 endif
 
 ifeq (,$(findstring nostrip,$(DEB_BUILD_OPTIONS)))

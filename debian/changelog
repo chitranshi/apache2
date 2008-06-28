@@ -7,7 +7,7 @@ apache2 (2.2.9-3) UNRELEASED; urgency=low
     - Use snakeoil certificate by default (if ssl-cert is installed).
       (Closes: #293524, #446765)
     - Document this in README.Debian.
-      (Closes: #293469, #293519, #398520, #395823, #446765)
+      (Closes: #293469, #293519, #398520, #395823)
     - Add MSIE workarounds. (Closes: #421802)
     - Add ssl-cert to Recommends.
   * Add a new config file /etc/apache2/conf.d/security with some vaguely

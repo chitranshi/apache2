@@ -122,6 +122,11 @@ sub doit {
             $acton = 'cgid';
         }
 
+        if ( $acton eq 'ssl' && $act eq 'enable' ) {
+            info("See /usr/share/doc/apache2.2-common/README.Debian.gz on " .
+                 "how to configure SSL and create self-signed certificates";
+	}
+
         $conftgt = "$availdir/$acton.conf";
         if ( -e $conftgt ) {
             $conflink = "$enabldir/$acton.conf";

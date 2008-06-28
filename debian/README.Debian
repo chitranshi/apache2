@@ -7,7 +7,10 @@ Contents
 
 	Using mod_disk_cache
 
-	SSL workaround for MSIE
+	SSL
+		Enabling SSL
+		Creating self-signed certificates
+		SSL workaround for MSIE
 
 	Suexec
 	
@@ -140,8 +143,46 @@ manually start/stop htcacheclean with "/etc/init.d/apache2 start-htcacheclean"
 or "/etc/init.d/apache2 stop-htcacheclean".
 
 
+SSL
+===
+
+Enabling SSL
+------------
+
+To enable SSL, type (as user root):
+
+	a2ensite default-ssl
+	a2enmod ssl
+
+If you want to use self-signed certificates, you should install the ssl-cert
+package (see below). Otherwise, just adjust the SSLCertificateFile and
+SSLCertificateKeyFile directives in /etc/apache2/sites-available/default-ssl to
+point to your SSL certificate. Then restart apache:
+
+	/etc/init.d/apache2 restart
+
+
+Creating self-signed certificates
+---------------------------------
+
+If you install the ssl-cert package, a self-signed certificate will be
+automatically created using the hostname currently configured on your computer.
+You can recreate that certificate (e.g. after you have changed /etc/hosts or
+DNS to give the correct hostname) as user root with:
+
+	make-ssl-cert generate-default-snakeoil --force-overwrite
+
+To create more certificates with different host names, you can use
+
+	make-ssl-cert /usr/share/ssl-cert/ssleay.cnf /path/to/cert-file.crt
+
+This will ask you for the hostname and place both SSL key and certificate in
+the file /path/to/cert-file.crt . Use this file with the SSLCertificateFile
+directive in the apache config (you don't need the SSLCertificateKeyFile in
+this case).
+
 SSL workaround for MSIE
-=======================
+-----------------------
 
 The SSL workaround for MS Internet Explorer needs to be added to your SSL
 VirtualHost section (it was previously in ssl.conf but caused keepalive to be
@@ -149,6 +190,9 @@ disabled even for non-SSL connections):
 
 SetEnvIf User-Agent ".*MSIE.*"  nokeepalive ssl-unclean-shutdown \
                                 downgrade-1.0 force-response-1.0
+
+The default SSL virtual host in /etc/apache2/sites-available/default-ssl
+already contains this workaround.
 
 
 Suexec

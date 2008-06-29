@@ -28,9 +28,10 @@ apache2 (2.2.9-3) UNRELEASED; urgency=low
   * Upgraded to policy 3.8.0
     - added support for noopt in DEB_BUILD_OPTIONS
     - added a README.source
+    - added support for parallel in DEB_BUILD_OPTIONS
   * Dropped XS- from the Vcs fields in control
 
- -- Ryan Niebur <RyanRyan52@gmail.com>  Thu, 26 Jun 2008 17:54:36 -0700
+ -- Ryan Niebur <RyanRyan52@gmail.com>  Fri, 27 Jun 2008 10:02:28 -0700
 
 apache2 (2.2.9-2) unstable; urgency=low
 

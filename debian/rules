@@ -84,6 +84,11 @@ ifeq (,$(findstring nostrip,$(DEB_BUILD_OPTIONS)))
 DEB_BUILD_STRIP = yes
 endif
 
+ifneq (,$(filter parallel=%,$(DEB_BUILD_OPTIONS)))
+  NUMJOBS = $(patsubst parallel=%,%,$(filter parallel=%,$(DEB_BUILD_OPTIONS)))
+  MAKEFLAGS += -j$(NUMJOBS)
+endif
+
 BUILD=debian/build-tree
 REALCURDIR=$(CURDIR)
 INSTALL=/usr/bin/install
@@ -114,7 +119,7 @@ mpm-worker:
 	mkdir -p $(BUILD)/worker
 	cd $(BUILD)/worker ;\
 	CFLAGS="$(AP2_CFLAGS)" LDFLAGS="$(AP2_LDFLAGS)" $(CONFFLAGS) $(REALCURDIR)/configure --srcdir=$(REALCURDIR) $(AP2_COMMON_CONFARGS) $(AP2_MODS_CONFARGS) --with-mpm=worker  ;\
-	$(MAKE) ;\
+	$(MAKE) $(MAKEFLAGS) ;\
 	./apache2 -l |grep -v worker > mods.list
 	touch $@
 
@@ -123,7 +128,7 @@ mpm-%:
 	mkdir -p $(BUILD)/$*
 	cd $(BUILD)/$* ;\
 	CFLAGS="$(AP2_CFLAGS)" LDFLAGS="$(AP2_LDFLAGS)" $(CONFFLAGS) $(REALCURDIR)/configure --srcdir=$(REALCURDIR) $(AP2_COMMON_CONFARGS) --enable-modules=none --with-mpm=$*  ;\
-	$(MAKE) ;\
+	$(MAKE) $(MAKEFLAGS) ;\
 	./apache2 -l |grep -v $* > mods.list
 	touch $@
 
@@ -132,14 +137,14 @@ install-%:
 	dh_testroot
 	dh_installdirs
 	cd $(BUILD)/$* ;\
-	$(MAKE) DESTDIR=$(REALCURDIR)/debian/apache2-mpm-$* install
+	$(MAKE) $(MAKEFLAGS) DESTDIR=$(REALCURDIR)/debian/apache2-mpm-$* install
 
 install-common:
 	dh_testdir
 	dh_testroot
 	dh_installdirs
 	cd $(BUILD)/worker ;\
-	$(MAKE) DESTDIR=$(REALCURDIR)/debian/tmp install
+	$(MAKE) $(MAKEFLAGS) DESTDIR=$(REALCURDIR)/debian/tmp install
 
 install-dev: 
 	dh_testdir

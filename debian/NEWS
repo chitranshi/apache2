@@ -1,7 +1,21 @@
 apache2 (2.2.9-3) unstable; urgency=low
 
+  * The directive "NameVirtualHost *" has been changed to "NameVirtualHost
+    *:80". It has also been moved from sites-available/default to ports.conf.
+    This allows to ship a proper SSL default virtual host config in
+    sites-available/default-ssl, but it means that if you use several name
+    based virtual hosts:
+    
+    - you will have to change <VirtualHost *> to <VirtualHost *:80> in your
+      name based virtual hosts
+
+    - you need to add more NameVirtualHost directives if you use other ports
+      than 80 with name based virtual hosts. You may also have to add these
+      ports to the default virtual host in /etc/apache2/sites-available/default
+      (like this: "<VirtualHost *:80 *:81>").
+
   * For mod_disk_cache, caching is again disabled in disk_cache.conf by
-    default. It usually makes more sense to enable this on a per-VirtualHost
+    default. It usually makes more sense to enable this on a per-virtual host
     basis.
 
  -- Stefan Fritsch <sf@debian.org>  Mon, 30 Jun 2008 19:47:52 +0200

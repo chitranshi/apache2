@@ -96,7 +96,7 @@ INSTALL=/usr/bin/install
 clean: unpatch
 	dh_testdir
 	dh_clean
-	rm -rf $(BUILD) mpm-worker mpm-prefork mpm-event install 
+	rm -rf $(BUILD) mpm-worker mpm-prefork mpm-event install build-mpms
 	rm -f debian/apache2-mpm-worker.postinst debian/apache2-mpm-worker.preinst debian/apache2-mpm-worker.prerm
 	rm -f debian/apache2-mpm-event.postinst debian/apache2-mpm-event.preinst debian/apache2-mpm-event.prerm
 	rm -f debian/apache2-mpm-prefork.prerm
@@ -112,41 +112,42 @@ build-mpms: mpm-worker mpm-prefork mpm-event
 			exit 1 ;\
 		fi \
 	done
+	touch $@
 
 
-mpm-worker:
+mpm-worker: patch-stamp
 	dh_testdir
 	mkdir -p $(BUILD)/worker
 	cd $(BUILD)/worker ;\
 	CFLAGS="$(AP2_CFLAGS)" LDFLAGS="$(AP2_LDFLAGS)" $(CONFFLAGS) $(REALCURDIR)/configure --srcdir=$(REALCURDIR) $(AP2_COMMON_CONFARGS) $(AP2_MODS_CONFARGS) --with-mpm=worker  ;\
-	$(MAKE) $(MAKEFLAGS) ;\
+	$(MAKE) ;\
 	./apache2 -l |grep -v worker > mods.list
 	touch $@
 
-mpm-%:
+mpm-%: patch-stamp
 	dh_testdir
 	mkdir -p $(BUILD)/$*
 	cd $(BUILD)/$* ;\
 	CFLAGS="$(AP2_CFLAGS)" LDFLAGS="$(AP2_LDFLAGS)" $(CONFFLAGS) $(REALCURDIR)/configure --srcdir=$(REALCURDIR) $(AP2_COMMON_CONFARGS) --enable-modules=none --with-mpm=$*  ;\
-	$(MAKE) $(MAKEFLAGS) ;\
+	$(MAKE) ;\
 	./apache2 -l |grep -v $* > mods.list
 	touch $@
 
-install-%:
+install-%: mpm-%
 	dh_testdir
 	dh_testroot
 	dh_installdirs
 	cd $(BUILD)/$* ;\
-	$(MAKE) $(MAKEFLAGS) DESTDIR=$(REALCURDIR)/debian/apache2-mpm-$* install
+	$(MAKE) DESTDIR=$(REALCURDIR)/debian/apache2-mpm-$* install
 
-install-common:
+install-common: install-worker
 	dh_testdir
 	dh_testroot
 	dh_installdirs
 	cd $(BUILD)/worker ;\
-	$(MAKE) $(MAKEFLAGS) DESTDIR=$(REALCURDIR)/debian/tmp install
+	$(MAKE) DESTDIR=$(REALCURDIR)/debian/tmp install
 
-install-dev: 
+install-dev: install-worker install-prefork
 	dh_testdir
 	dh_testroot
 	dh_installdirs
@@ -173,7 +174,7 @@ install-dev:
 		mv tmp_config_vars.mk config_vars.mk ) ; \
 	done
 
-install-src:
+install-src: build-mpms
 	dh_testdir
 	dh_testroot
 	dh_installdirs

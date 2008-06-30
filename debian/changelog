@@ -3,6 +3,8 @@ apache2 (2.2.9-3) UNRELEASED; urgency=low
   [ Stefan Fritsch ]
   * Move NameVirtualHost directive to ports.conf and switch from "*" to
     "*:80". (Closes: #314606, #486286)
+  * Comment out the CacheEnable line in disk_cache.conf. It would have caused
+    problems with Etch to Lenny upgrades.
   * Add a default SSL virtual host. (Closes: #267477)
     - Use snakeoil certificate by default (if ssl-cert is installed).
       (Closes: #293524, #446765)

@@ -1,3 +1,11 @@
+apache2 (2.2.9-3) unstable; urgency=low
+
+  * For mod_disk_cache, caching is again disabled in disk_cache.conf by
+    default. It usually makes more sense to enable this on a per-VirtualHost
+    basis.
+
+ -- Stefan Fritsch <sf@debian.org>  Mon, 30 Jun 2008 19:47:52 +0200
+
 apache2 (2.2.8-5) unstable; urgency=low
 
   * The suexec helper program needed for mod_suexec is now shipped in a
@@ -46,13 +54,7 @@ apache2 (2.2.4-2) unstable; urgency=low
     you don't want to start apache2 on boot, rename the S*apache2 start
     symlinks as usual.
 
-  * Disk caching is now enabled by default if mod_disk_cache is enabled. If
-    you don't want to use disk caching, check that mod_disk_cache is disabled
-    (it was enabled automatically by previous versions when mod_proxy was
-    enabled). In this case, you might also want to remove any cache files from
-    /var/cache/apache2/mod_disk_cache .
-
-    To ensure that the disk cache does not grow indefinitely, htcacheclean is
+  * To ensure that the disk cache does not grow indefinitely, htcacheclean is
     now started when mod_disk_cache is enabled. The details can be configured
     in /etc/default/apache2 .
 

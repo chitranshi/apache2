@@ -12,11 +12,6 @@ apache2 (2.2.9-3) UNRELEASED; urgency=low
     - Add ssl-cert to Recommends.
   * Add a new config file /etc/apache2/conf.d/security with some vaguely
     security related diectives. (Closes: #260063)
-  * Disable access to the root directory / by default (closes: #341022).
-    If you use Aliases or Symlinks that point to directories outside the
-    DocumentRoot, you need to explicitly allow access to those directories
-    (Or you can revert to the old behaviour by commenting out the
-    <Directory /> block in /etc/apache2/conf.d/security .
   * Adjust mod_userdir accordingly. Also add "AllowOverride Indexes" for the
     home directories.
   * Disable SSLv2 by default. It is insecure. Also only enable ciphers with

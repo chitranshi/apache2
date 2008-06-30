@@ -41,6 +41,13 @@ test -f /etc/default/apache2 && . /etc/default/apache2
 APACHE2CTL="$ENV /usr/sbin/apache2ctl"
 HTCACHECLEAN="$ENV /usr/sbin/htcacheclean"
 
+PIDFILE=`. /etc/apache2/envvars ; echo $APACHE_PID_FILE`
+if [ -z "$PIDFILE" ] ; then
+	echo ERROR: APACHE_PID_FILE needs to be defined in /etc/apache2/envvars >&2
+	exit 2
+fi
+
+
 check_htcacheclean() {
 	[ "$HTCACHECLEAN_MODE" = "daemon" ] || return 1
 
@@ -67,13 +74,7 @@ pidof_apache() {
     # classified as good/unknown feature
     PIDS=`pidof apache2` || true
 
-    PFILE=`. /etc/apache2/envvars ; echo $APACHE_PID_FILE`
-    if [ -z "$PFILE" ] ; then
-    	echo ERROR: APACHE_PID_FILE needs to be defined in /etc/apache2/envvars >&2
-	exit 2
-    fi
-
-    [ -e $PFILE ] && PIDS2=`cat $PFILE`
+    [ -e $PIDFILE ] && PIDS2=`cat $PIDFILE`
     
     # if there is a pid we need to verify that belongs to apache2
     # for real

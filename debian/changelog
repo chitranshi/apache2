@@ -23,6 +23,8 @@ apache2 (2.2.9-3) UNRELEASED; urgency=low
     obvious that /etc/apache2/envvars has to be updated. (Closes: #473982)
   * Add hint about the "..., using 127.0.0.1 for ServerName" warning to
     README.Debian. (Closes: #457708)
+  * Add hint about the "could not create rewrite_log_lock" error message to
+    README.Debian. (Closes: #450831)
   * Always pass -g to gcc instead of relying on dpkg-buildpackage to set
     CFLAGS. We always want the debug info for the apache2-dbg package.
 

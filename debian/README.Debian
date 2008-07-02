@@ -16,6 +16,8 @@ Contents
 	
 	Documentation
 
+	Upgrades
+
 	Common Problems
 
 
@@ -232,6 +234,15 @@ http://localhost/manual/
 There is also a wiki that contains useful information:
 
 http://wiki.apache.org/httpd/
+
+
+Upgrades
+========
+
+Changes in the apache packages that require manual configuration adjustments
+are announced in NEWS.Debian. Installing the apt-listchanges package is
+recommended. It will display the relevant NEWS.Debian sections before
+upgrades.
 
 
 Common Problems

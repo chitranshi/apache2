@@ -27,6 +27,7 @@ apache2 (2.2.9-3) UNRELEASED; urgency=low
     README.Debian. (Closes: #457708)
   * Add hint about the "could not create rewrite_log_lock" error message to
     README.Debian. (Closes: #450831)
+  * Remove empty dir from apache2-doc to fix Lintian warning.
   * Always pass -g to gcc instead of relying on dpkg-buildpackage to set
     CFLAGS. We always want the debug info for the apache2-dbg package.
 

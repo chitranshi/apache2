@@ -240,6 +240,7 @@ install: build install-worker install-prefork install-common install-dev install
 		debian/apache2-doc/usr/share/doc/apache2-doc/manual.orig/style \
 		debian/apache2-doc/usr/share/doc/apache2-doc/manual
 	rmdir debian/apache2-doc/usr/share/doc/apache2-doc/manual/style/lang
+	rmdir debian/apache2-doc/usr/share/doc/apache2-doc/manual/style/xsl/util
 	rm -r debian/apache2-doc/usr/share/doc/apache2-doc/manual.orig
 
 	#apache2-utils extras

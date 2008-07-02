@@ -5,6 +5,8 @@ apache2 (2.2.9-3) UNRELEASED; urgency=low
     "*:80". (Closes: #314606, #486286)
   * Comment out the CacheEnable line in disk_cache.conf. It would have caused
     problems with Etch to Lenny upgrades.
+  * Change the minimum user id for suexec back to 100, the new value of 1000
+    was too disruptive. (Closes: #488821)
   * Add a default SSL virtual host. (Closes: #267477)
     - Use snakeoil certificate by default (if ssl-cert is installed).
       (Closes: #293524, #446765)
@@ -35,7 +37,7 @@ apache2 (2.2.9-3) UNRELEASED; urgency=low
     - added support for parallel in DEB_BUILD_OPTIONS
   * Dropped XS- from the Vcs fields in control
 
- -- Ryan Niebur <RyanRyan52@gmail.com>  Fri, 27 Jun 2008 10:02:28 -0700
+ -- Stefan Fritsch <sf@debian.org>  Tue, 01 Jul 2008 11:56:17 +0200
 
 apache2 (2.2.9-2) unstable; urgency=low
 

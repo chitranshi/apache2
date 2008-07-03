@@ -1,3 +1,9 @@
+apache2 (2.2.9-4) UNRELEASED; urgency=low
+
+  * Make postinst more quiet. (Closes: #489153)
+
+ -- Stefan Fritsch <sf@debian.org>  Thu, 03 Jul 2008 20:16:01 +0200
+
 apache2 (2.2.9-3) unstable; urgency=low
 
   [ Stefan Fritsch ]

@@ -36,7 +36,7 @@ fi
 if [ $UPGRADE = new_install ]; then
         if [ ! -L /etc/apache2/sites-enabled/000-default -a \
              ! -f /etc/apache2/sites-enabled/000-default ]; then
-                ln -s /etc/apache2/sites-available/default /etc/apache2/sites-enabled/000-default
+                a2ensite -q default
         fi
         touch /var/log/apache2/error.log /var/log/apache2/access.log
         chown root:adm /var/log/apache2/error.log /var/log/apache2/access.log
@@ -45,40 +45,40 @@ fi
 
 # Note, this line catches new installs as well as upgrades
 if dpkg --compare-versions "$2" lt 2.2.3-3.1; then
-	a2enmod alias
-	a2enmod autoindex
-	a2enmod dir
-	a2enmod env
-	a2enmod mime
-	a2enmod negotiation
-	a2enmod setenvif
-	a2enmod status
-        a2enmod auth_basic
-	a2enmod deflate
+	a2enmod -q alias
+	a2enmod -q autoindex
+	a2enmod -q dir
+	a2enmod -q env
+	a2enmod -q mime
+	a2enmod -q negotiation
+	a2enmod -q setenvif
+	a2enmod -q status
+	a2enmod -q auth_basic
+	a2enmod -q deflate
 
         # Those come from mod_auth:
-        a2enmod authz_default
-        a2enmod authz_user
-        a2enmod authz_groupfile
-        a2enmod authn_file
+	a2enmod -q authz_default
+	a2enmod -q authz_user
+	a2enmod -q authz_groupfile
+	a2enmod -q authn_file
         
 	# This comes from mod_access:
-        a2enmod authz_host
+	a2enmod -q authz_host
 
 fi
 if [ $UPGRADE = from_2_0 ]; then
         # Module replacements from previous versions of apache2
 	if mod_is_enabled proxy; then
-		a2enmod proxy_http
-		a2enmod disk_cache
+		a2enmod -q proxy_http
+		a2enmod -q disk_cache
 	fi
 	if mod_is_enabled imap; then
-		a2dismod imap
-		a2enmod imagemap
+		a2dismod -q imap
+		a2enmod -q imagemap
 	fi
 	if mod_is_enabled auth_ldap; then
-		a2dismod auth_ldap
-		a2enmod authnz_ldap
+		a2dismod -q auth_ldap
+		a2enmod -q authnz_ldap
 	fi
 fi
 

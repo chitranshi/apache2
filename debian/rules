@@ -296,6 +296,7 @@ binary-indep: install
 	ln -sf ../apache2.2-common/README.Debian.gz debian/apache2/usr/share/doc/apache2/
 	mkdir -p debian/apache2/usr/share/bug/apache2
 	ln -sf ../apache2.2-common/script debian/apache2/usr/share/bug/apache2
+	install -m644 debian/apache2.bug.control debian/apache2/usr/share/bug/apache2.2-common/control
 	cp debian/README.Debian debian/apache2-doc/usr/share/doc/apache2-doc/
 	dh_installchangelogs -i CHANGES -Napache2 -Napache2-suexec -Napache2-suexec-custom
 	dh_installchangelogs -papache2 -papache2-suexec -papache2-suexec-custom

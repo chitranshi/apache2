@@ -10,7 +10,9 @@ my $apache = ". /etc/apache2/envvars && /usr/sbin/apache2";
 my $res = `$apache -t 2>&1`;
 my @modules;
 if ($res !~ "Syntax OK") {
-	print $out "Config file syntax check failed.\n";
+	# if we are not root, syntax check will fail because ssl private keys
+	# are not readable
+	print $out "Config file syntax check failed.\n" if $> == 0;
 	@modules = sort glob("/etc/apache2/mods-enabled/*.load");
 	map { s{^/etc/apache2/mods-enabled/(.*)\.load$}{$1} } @modules;
 	print $out "List of /etc/apache2/mods-enabled/*.load:\n";

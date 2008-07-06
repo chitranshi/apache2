@@ -3,6 +3,8 @@ apache2 (2.2.9-4) UNRELEASED; urgency=low
   * Make postinst more quiet. (Closes: #489153)
   * Add Turkish language support. (Closes: #489224)
   * Remove duplicate comments in sites-available/default-ssl. (Closes: #489383)
+  * Describe in NEWS.Debian how to revert to the old NameVirtualHost config.
+    (Closes: #489215)
   * Redirect apache2 bug reports to apache2.2-common, to get useful dependency
     information.
 

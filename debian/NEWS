@@ -13,6 +13,11 @@ apache2 (2.2.9-3) unstable; urgency=low
       than 80 with name based virtual hosts. You may also have to add these
       ports to the default virtual host in /etc/apache2/sites-available/default
       (like this: "<VirtualHost *:80 *:81>").
+    
+    If you prefer to revert to the old setup instead (and don't need the
+    default-ssl host), just change "NameVirtualHost *:80" back to
+    "NameVirtualHost *" in ports.conf and "<VirtualHost *:80>" to
+    "<VirtualHost *>" in sites-available/default.
 
   * For mod_disk_cache, caching is again disabled in disk_cache.conf by
     default. It usually makes more sense to enable this on a per-virtual host

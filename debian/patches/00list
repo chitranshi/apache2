@@ -4,7 +4,6 @@
 008_make_include_safe
 009_apache2_has_dso
 010_fhs_compliance
-017_fix_ipv6
 031_apxs2_sucks_more
 032_suexec_is_shared
 033_dbm_read_hash_or_btree

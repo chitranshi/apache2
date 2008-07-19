@@ -17,6 +17,7 @@
 053_bad_file_descriptor_PR42829.dpatch
 057_disablemods.dpatch
 058_suexec-CVE-2007-1742.dpatch
+059_sparc_sigbus.dpatch
 099_config_guess_sub_update
 200_cp_suexec.dpatch
 201_build_suexec-custom.dpatch

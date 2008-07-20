@@ -1,10 +1,10 @@
-apache2 (2.2.9-6) UNRELEASED; urgency=high
+apache2 (2.2.9-6) unstable; urgency=high
 
   * Urgency high for RC bug fix.
   * Fix SIGBUS on SPARC by preventing gcc from optimizing some memcpy calls
     away. (Closes: #485525)
 
- -- Stefan Fritsch <sf@debian.org>  Sat, 19 Jul 2008 13:11:46 +0200
+ -- Stefan Fritsch <sf@debian.org>  Sun, 20 Jul 2008 10:17:19 +0200
 
 apache2 (2.2.9-5) unstable; urgency=medium
 

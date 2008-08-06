@@ -1,6 +1,8 @@
 apache2 (2.2.9-7) UNRELEASED; urgency=low
 
   * Fix XSS in mod_proxy_ftp (CVE-2008-2939).
+  * Also describe how to get a backtrace from a running process in
+    README.backtrace.
 
  -- Stefan Fritsch <sf@debian.org>  Wed, 06 Aug 2008 23:07:56 +0200
 

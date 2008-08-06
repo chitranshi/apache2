@@ -1,5 +1,9 @@
-If apache crashes it is helpful if you include a backtrace in the bug report.
-To create one, do the following:
+If apache crashes or freezes, it is helpful if you include a backtrace in the
+bug report.
+
+
+
+In case of a crash, do the following:
 
 1) Install the packages apache2-dbg libapr1-dbg libaprutil1-dbg gdb. 
 
@@ -33,4 +37,15 @@ Include the backtrace in the bug report.
 /var/cache/apache2/core
 
 
-http://httpd.apache.org/dev/debugging.html
+
+In case of a hanging process, you don't need a core dump and you can skip steps 2 and 3.
+
+4) Reproduce the problem. Get the pid of a hanging process.
+
+5) Start gdb with
+
+	gdb -p pid
+
+and continue as described above. It may also be helpful to include the output of
+
+	strace -p pid

@@ -3,6 +3,8 @@ apache2 (2.2.9-7) UNRELEASED; urgency=low
   * Fix XSS in mod_proxy_ftp (CVE-2008-2939).
   * Fix mod_proxy_http losing the query string with noescape (PR 45247).
   * Make the balancer manager work in Opera and MSIE (PR 45578).
+  * Fix mod_headers "edit" removing multiple headers with the same name (PR
+    45333).
   * Also describe how to get a backtrace from a running process in
     README.backtrace.
 

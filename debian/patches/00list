@@ -18,6 +18,7 @@
 057_disablemods.dpatch
 058_suexec-CVE-2007-1742.dpatch
 059_sparc_sigbus.dpatch
+060_mod_proxy_ftp_CVE-2008-2939.dpatch
 099_config_guess_sub_update
 200_cp_suexec.dpatch
 201_build_suexec-custom.dpatch

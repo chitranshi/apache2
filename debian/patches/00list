@@ -20,6 +20,7 @@
 059_sparc_sigbus.dpatch
 060_mod_proxy_ftp_CVE-2008-2939.dpatch
 061_balancer_manager_nonce.dpatch
+062_proxy_http_fix_lost_querystring.dpatch
 099_config_guess_sub_update
 200_cp_suexec.dpatch
 201_build_suexec-custom.dpatch

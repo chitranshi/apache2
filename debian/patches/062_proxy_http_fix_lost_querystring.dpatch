@@ -1,0 +1,20 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: http://issues.apache.org/bugzilla/show_bug.cgi?id=45247
+
+@DPATCH@
+--- a/modules/mappers/mod_rewrite.c	2008-05-27 18:00:11.000000000 +0200
++++ b/modules/mappers/mod_rewrite.c	2008-08-06 23:36:44.122067672 +0200
+@@ -4318,8 +4318,9 @@
+                 r->filename = apr_pstrcat(r->pool, r->filename,
+                                           r->path_info, NULL);
+             }
+-            if (r->args != NULL &&
+-                r->uri == r->unparsed_uri) {
++            if ((r->args != NULL)
++                && ((r->proxyreq == PROXYREQ_PROXY)
++                    || (rulestatus == ACTION_NOESCAPE))) {
+                 /* see proxy_http:proxy_http_canon() */
+                 r->filename = apr_pstrcat(r->pool, r->filename,
+                                           "?", r->args, NULL);

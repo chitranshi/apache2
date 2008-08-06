@@ -1,0 +1,20 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: https://issues.apache.org/bugzilla/show_bug.cgi?id=45578
+
+@DPATCH@
+--- a/modules/proxy/mod_proxy_balancer.c	(revision 683372)
++++ b/modules/proxy/mod_proxy_balancer.c	(revision 683373)
+@@ -897,9 +897,10 @@
+             ap_rvputs(r, "value=\"", ap_escape_uri(r->pool, wsel->name), "\">\n", NULL);
+             ap_rvputs(r, "<input type=hidden name=\"b\" ", NULL);
+             ap_rvputs(r, "value=\"", bsel->name + sizeof("balancer://") - 1,
+-                      "\">\n</form>\n", NULL);
++                      "\">\n", NULL);
+             ap_rvputs(r, "<input type=hidden name=\"nonce\" value=\"", 
+                       balancer_nonce, "\">\n", NULL);
++            ap_rvputs(r, "</form>\n", NULL);
+             ap_rputs("<hr />\n", r);
+         }
+         ap_rputs(ap_psignature("",r), r);

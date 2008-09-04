@@ -2,6 +2,7 @@ apache2 (2.2.9-8) UNRELEASED; urgency=low
 
   * Correct description of ServerTokens in /etc/apache2/conf.d/security.
     (Closes: #497362)
+  * Specify DocumentRoot withouth trailing slash. (Closes: #495110)
 
  -- Stefan Fritsch <sf@debian.org>  Thu, 04 Sep 2008 18:34:48 +0200
 

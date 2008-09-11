@@ -13,6 +13,7 @@ In general, apache2 should not be invoked directly, but rather should be
 invoked via /etc/init.d/apache2 or apache2ctl\&. The default Debian
 configuration requires environment variables that are defined in
 /etc/apache2/envvars and are not available if apache2 is started directly.
+However, apache2ctl can be used to pass arbitrary arguments to apache2.
 .SH "DOCUMENTATION"
 .PP
 The full documentation is available in the apache2-doc package or at
@@ -75,5 +76,6 @@ Print the version and build parameters of apache2, and then exit\&.
 -X
 Run apache2 in debug mode\&. Only one worker will be started and the server will not detach from the console\&.  
 .SH SEE ALSO
+.BR apache2ctl (8),
 .BR /usr/share/doc/apache2.2-common/README.Debian.gz
 

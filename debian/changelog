@@ -7,6 +7,9 @@ apache2 (2.2.9-8) UNRELEASED; urgency=low
   * Specify DocumentRoot without trailing slash. (Closes: #495110)
   * Clarify how to use apache2ctl to pass arbitrary arguments to
     apache2. (LP: #259363)
+  * Add hints to README.Debian about the messages
+    "NameVirtualHost *:80 has no VirtualHosts" and
+    "File does not exist: /htdocs".
 
  -- Stefan Fritsch <sf@debian.org>  Thu, 04 Sep 2008 18:34:48 +0200
 

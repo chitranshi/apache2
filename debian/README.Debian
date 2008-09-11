@@ -264,3 +264,14 @@ usually happens after apache2 has been killed with kill -9 (SIGKILL). You can
 clean up the semaphores with:
 
 	ipcs -s | grep www-data | awk ' { print $2 } ' | xargs ipcrm sem
+
+3) Message "NameVirtualHost *:80 has no VirtualHosts" in error log
+
+Probably the VirtualHost definitions have not been adjusted after the 
+NameVirtualHost directive was changed in ports.conf. 
+See /usr/share/doc/apache2.2-common/NEWS.Debian.gz
+
+4) Message "File does not exist: /htdocs" in error log
+
+In most cases this means that no matching VirtualHost definition could be
+found for an incoming request.

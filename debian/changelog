@@ -1,4 +1,4 @@
-apache2 (2.2.9-8) UNRELEASED; urgency=low
+apache2 (2.2.9-8) unstable; urgency=low
 
   * Fix Spanish language support which was broken by .es being added to
     /etc/mime.types for application/ecmascript. (Closes: #496080)
@@ -10,7 +10,7 @@ apache2 (2.2.9-8) UNRELEASED; urgency=low
     "NameVirtualHost *:80 has no VirtualHosts" and
     "File does not exist: /htdocs".
 
- -- Stefan Fritsch <sf@debian.org>  Thu, 04 Sep 2008 18:34:48 +0200
+ -- Stefan Fritsch <sf@debian.org>  Thu, 11 Sep 2008 09:17:33 +0200
 
 apache2 (2.2.9-7) unstable; urgency=low
 

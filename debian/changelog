@@ -4,7 +4,6 @@ apache2 (2.2.9-8) UNRELEASED; urgency=low
     /etc/mime.types for application/ecmascript. (Closes: #496080)
   * Correct description of ServerTokens in /etc/apache2/conf.d/security.
     (Closes: #497362)
-  * Specify DocumentRoot without trailing slash. (Closes: #495110)
   * Clarify how to use apache2ctl to pass arbitrary arguments to
     apache2. (LP: #259363)
   * Add hints to README.Debian about the messages

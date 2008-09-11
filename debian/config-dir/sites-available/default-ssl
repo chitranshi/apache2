@@ -2,7 +2,7 @@
 <VirtualHost _default_:443>
 	ServerAdmin webmaster@localhost
 	
-	DocumentRoot /var/www
+	DocumentRoot /var/www/
 	<Directory />
 		Options FollowSymLinks
 		AllowOverride None

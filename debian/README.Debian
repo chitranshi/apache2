@@ -275,3 +275,19 @@ See /usr/share/doc/apache2.2-common/NEWS.Debian.gz
 
 In most cases this means that no matching VirtualHost definition could be
 found for an incoming request.
+
+5) Support for Spanish and Turkish language with mod_negotiation
+
+Currently Apache will send Spanish and Turkish language files with the wrong
+mime types because the extensions .es and .tr have entries in /etc/mime.types
+for application/ecmascript and application/x-troff.
+
+In order to make Spanish and Turkish language support work, you need to either
+remove these entries from /etc/mime.types, or add something like
+
+    <Files *.html.tr.utf8>
+        ForceType text/html
+    </Files>
+
+to your Apache configuration. Of course, this has to be ajusted to the actual
+filenames you use.

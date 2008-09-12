@@ -1,10 +1,10 @@
-apache2 (2.2.9-9) UNRELEASED; urgency=low
+apache2 (2.2.9-9) unstable; urgency=medium
 
   * Revert the attempted fix for #496080 because it did not work due to
     upstream PR 38330. Instead, document the problem and possible workarounds
     in README.Debian.
 
- -- Stefan Fritsch <sf@debian.org>  Fri, 12 Sep 2008 11:06:09 +0200
+ -- Stefan Fritsch <sf@debian.org>  Fri, 12 Sep 2008 11:39:15 +0200
 
 apache2 (2.2.9-8) unstable; urgency=low
 

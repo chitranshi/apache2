@@ -1,10 +1,10 @@
-apache2 (2.2.9-10) UNRELEASED; urgency=low
+apache2 (2.2.9-10) unstable; urgency=low
 
   * Regression fix from upstream svn for mod_proxy_http:
     Don't trigger a retry by the client if a failure to read the response line
     was the result of a timeout.
 
- -- Stefan Fritsch <sf@debian.org>  Wed, 01 Oct 2008 11:38:43 +0200
+ -- Stefan Fritsch <sf@debian.org>  Wed, 01 Oct 2008 11:50:18 +0200
 
 apache2 (2.2.9-9) unstable; urgency=medium
 

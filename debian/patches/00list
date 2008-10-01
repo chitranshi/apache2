@@ -22,6 +22,7 @@
 061_balancer_manager_nonce.dpatch
 062_proxy_http_fix_lost_querystring.dpatch
 063_mod_headers_edit_fix.dpatch
+064_mod_proxy_http_timeout.dpatch
 099_config_guess_sub_update
 200_cp_suexec.dpatch
 201_build_suexec-custom.dpatch

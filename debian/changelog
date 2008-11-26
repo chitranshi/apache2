@@ -7,6 +7,8 @@ apache2 (2.2.9-11) UNRELEASED; urgency=low
     Crosscheck that idle workers are still available before using them and
     thus preventing an overflow of the worker queue which causes a SegFault.
     PR 45605
+  * Add a comment to ports.conf to point to NEWS.Debian.gz in case of
+    upgrading problems.
 
  -- Stefan Fritsch <sf@debian.org>  Wed, 26 Nov 2008 22:45:40 +0100
 

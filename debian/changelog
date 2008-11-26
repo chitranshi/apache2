@@ -1,8 +1,12 @@
 apache2 (2.2.9-11) UNRELEASED; urgency=low
 
-  *  Regression fix from upstream svn for mod_proxy:
-     Prevent segmentation faults by correctly adjusting the
-     lifetime of the buckets read from the proxy backend. PR 45792
+  * Regression fix from upstream svn for mod_proxy:
+    Prevent segmentation faults by correctly adjusting the lifetime of the
+    buckets read from the proxy backend. PR 45792
+  * Fix from upstream svn for mpm_worker:
+    Crosscheck that idle workers are still available before using them and
+    thus preventing an overflow of the worker queue which causes a SegFault.
+    PR 45605
 
  -- Stefan Fritsch <sf@debian.org>  Wed, 26 Nov 2008 22:45:40 +0100
 

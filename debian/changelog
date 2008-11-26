@@ -1,4 +1,4 @@
-apache2 (2.2.9-11) UNRELEASED; urgency=low
+apache2 (2.2.9-11) unstable; urgency=low
 
   * Regression fix from upstream svn for mod_proxy:
     Prevent segmentation faults by correctly adjusting the lifetime of the
@@ -10,7 +10,7 @@ apache2 (2.2.9-11) UNRELEASED; urgency=low
   * Add a comment to ports.conf to point to NEWS.Debian.gz in case of
     upgrading problems.
 
- -- Stefan Fritsch <sf@debian.org>  Wed, 26 Nov 2008 22:45:40 +0100
+ -- Stefan Fritsch <sf@debian.org>  Wed, 26 Nov 2008 23:10:22 +0100
 
 apache2 (2.2.9-10) unstable; urgency=low
 

@@ -1,3 +1,11 @@
+apache2 (2.2.9-11) UNRELEASED; urgency=low
+
+  *  Regression fix from upstream svn for mod_proxy:
+     Prevent segmentation faults by correctly adjusting the
+     lifetime of the buckets read from the proxy backend. PR 45792
+
+ -- Stefan Fritsch <sf@debian.org>  Wed, 26 Nov 2008 22:45:40 +0100
+
 apache2 (2.2.9-10) unstable; urgency=low
 
   * Regression fix from upstream svn for mod_proxy_http:

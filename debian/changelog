@@ -1,3 +1,9 @@
+apache2 (2.2.9-12) UNRELEASED; urgency=low
+
+  * fix segfault in ab when being verbose on ssl sites (Closes: #495982)
+
+ -- Ryan Niebur <ryanryan52@gmail.com>  Sat, 29 Nov 2008 16:29:18 -0800
+
 apache2 (2.2.9-11) unstable; urgency=low
 
   * Regression fix from upstream svn for mod_proxy:

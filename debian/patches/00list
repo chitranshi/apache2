@@ -25,6 +25,7 @@
 064_mod_proxy_http_timeout.dpatch
 065_mod_proxy_segfault_PR45792.dpatch
 066_mpm_worker_segfault_PR45605.dpatch
+067_fix_segfault_in_ab.dpatch
 099_config_guess_sub_update
 200_cp_suexec.dpatch
 201_build_suexec-custom.dpatch

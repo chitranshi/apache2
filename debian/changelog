@@ -1,8 +1,9 @@
 apache2 (2.2.9-12) UNRELEASED; urgency=low
 
   * fix segfault in ab when being verbose on ssl sites (Closes: #495982)
+  * remove trailing slash for DocumentRoot (Closes: #495110)
 
- -- Ryan Niebur <ryanryan52@gmail.com>  Sat, 29 Nov 2008 16:29:18 -0800
+ -- Ryan Niebur <ryanryan52@gmail.com>  Tue, 02 Dec 2008 17:52:32 -0800
 
 apache2 (2.2.9-11) unstable; urgency=low
 

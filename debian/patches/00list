@@ -17,14 +17,6 @@
 053_bad_file_descriptor_PR42829.dpatch
 057_disablemods.dpatch
 058_suexec-CVE-2007-1742.dpatch
-059_sparc_sigbus.dpatch
-060_mod_proxy_ftp_CVE-2008-2939.dpatch
-061_balancer_manager_nonce.dpatch
-062_proxy_http_fix_lost_querystring.dpatch
-063_mod_headers_edit_fix.dpatch
-064_mod_proxy_http_timeout.dpatch
-065_mod_proxy_segfault_PR45792.dpatch
-066_mpm_worker_segfault_PR45605.dpatch
 067_fix_segfault_in_ab.dpatch
 099_config_guess_sub_update
 200_cp_suexec.dpatch

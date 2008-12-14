@@ -1,12 +1,16 @@
 apache2 (2.2.11-1) UNRELEASED; urgency=low
 
   [Thom May]
-  * New Upstream Version
+  * New Upstream Version (Closes: #508186, LP: #307397)
+    - Contains rewritten shmcb code which should fix alignment problems on
+      alpha (Closes: #419720).
+    - Notable new features: chroot support, mod_proxy improvements.
+
   [Ryan Niebur]
   * fix segfault in ab when being verbose on ssl sites (Closes: #495982)
   * remove trailing slash for DocumentRoot (Closes: #495110)
 
- -- Thom May <thom@debian.org>  Mon, 08 Dec 2008 14:12:06 -0500
+ -- Stefan Fritsch <sf@debian.org>  Sat, 06 Dec 2008 18:12:21 +0100
 
 apache2 (2.2.9-11) unstable; urgency=low
 

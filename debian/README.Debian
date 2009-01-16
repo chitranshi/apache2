@@ -291,3 +291,28 @@ remove these entries from /etc/mime.types, or add something like
 
 to your Apache configuration. Of course, this has to be ajusted to the actual
 filenames you use.
+
+6) Message "Couldn't create pollset in child; check user or system limits" in
+  error log
+
+On Linux kernels since 2.6.27.8, the value in
+
+    /proc/sys/fs/epoll/max_user_instances
+
+needs to be larger than
+
+    for prefork/itk  MPM: 2 * MaxClients
+    for worker/event MPM: MaxClients + MaxClients/ThreadsPerChild
+
+It can be set on boot by adding a line like
+
+        fs.epoll.max_user_instances=1024
+
+to /etc/sysctl.conf.
+
+There are several other error messages related to creating a pollset that can
+appear for the same reason.
+
+On the other hand, errors about to adding to a pollset are related to the
+setting fs.epoll.max_user_watches. On most systems, max_user_watches should be
+high enough by default.

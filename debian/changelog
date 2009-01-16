@@ -1,3 +1,12 @@
+apache2 (2.2.11-2) UNRELEASED; urgency=low
+
+  * Report an error instead instead of segfaulting when apr_pollset_create
+    fails (PR 46467). On Linux kernels since 2.6.27.8, the value in
+    /proc/sys/fs/epoll/max_user_instances needs to be larger than twice the
+    value of MaxClients in the Apache configuration. Closes: #511103
+
+ -- Stefan Fritsch <sf@debian.org>  Fri, 16 Jan 2009 18:55:32 +0100
+
 apache2 (2.2.11-1) unstable; urgency=low
 
   [Thom May]

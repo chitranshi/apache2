@@ -18,6 +18,7 @@
 057_disablemods.dpatch
 058_suexec-CVE-2007-1742.dpatch
 067_fix_segfault_in_ab.dpatch
+068_check_pollset_create_error.dpatch
 099_config_guess_sub_update
 200_cp_suexec.dpatch
 201_build_suexec-custom.dpatch

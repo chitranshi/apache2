@@ -4,6 +4,7 @@
 ## DP: Do not free what SSL_get_peer_cert_chain returns. It returns a
 ## pointer to memory that is freed later on with the
 ## session. (Bug#495982)
+## Forwarded: https://issues.apache.org/bugzilla/show_bug.cgi?id=46393
 
 @DPATCH@
 diff -urNad apache2-2.2.9~/support/ab.c apache2-2.2.9/support/ab.c

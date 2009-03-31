@@ -1,3 +1,11 @@
+apache2 (2.2.11-3) UNRELEASED; urgency=low
+
+  * Rebuild against apr-util 1.3, to fix undefined symbol errors in mod_ldap
+    (see #521899). This also creates the dependencies on the new external
+    libaprutil1-dbd-* and libaprutil1-ldap packages.
+
+ -- Stefan Fritsch <sf@debian.org>  Tue, 31 Mar 2009 21:03:18 +0200
+
 apache2 (2.2.11-2) unstable; urgency=low
 
   * Report an error instead instead of segfaulting when apr_pollset_create

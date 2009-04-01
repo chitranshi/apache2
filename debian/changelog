@@ -1,3 +1,9 @@
+apache2 (2.2.11-4) UNRELEASED; urgency=low
+
+  * Adjust sections to match recent ftpmaster overrides.
+
+ -- Peter Samuelson <peter@p12n.org>  Tue, 31 Mar 2009 22:21:19 -0500
+
 apache2 (2.2.11-3) unstable; urgency=low
 
   * Rebuild against apr-util 1.3, to fix undefined symbol errors in mod_ldap

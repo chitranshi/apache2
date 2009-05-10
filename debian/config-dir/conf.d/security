@@ -45,6 +45,6 @@ ServerSignature On
 #
 # Set to one of:  On | Off | extended
 #
-#TraceEnable Off
-TraceEnable On
+TraceEnable Off
+#TraceEnable On
 

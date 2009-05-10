@@ -4,6 +4,7 @@ apache2 (2.2.11-4) UNRELEASED; urgency=low
   * Adjust sections to match recent ftpmaster overrides.
 
   [ Stefan Fritsch ]
+  * Disable TRACE method by default (closes: #492130).
   * Allow apache2-mpm-itk as alternate dependency in apache2 meta package
     (closes: #527225).
   * Fix some misuse of command substitution in the init script. Thanks to

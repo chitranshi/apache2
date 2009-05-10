@@ -9,6 +9,7 @@ apache2 (2.2.11-4) UNRELEASED; urgency=low
     (closes: #527225).
   * Fix some misuse of command substitution in the init script. Thanks to
     Jari Aalto for the patch. (Closes: #523398)
+  * Extend the gnome-vfs DAV workaround to gvfs (closes: #522845).
 
  -- Peter Samuelson <peter@p12n.org>  Tue, 31 Mar 2009 22:21:19 -0500
 

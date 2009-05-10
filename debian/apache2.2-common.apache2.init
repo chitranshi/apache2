@@ -13,7 +13,7 @@
 
 ENV="env -i LANG=C PATH=/usr/local/bin:/usr/bin:/bin"
 
-#[ `ls -1 /etc/apache2/sites-enabled/ | wc -l | sed -e 's/ *//;'` -eq 0 ] && \
+#[ $(ls -1 /etc/apache2/sites-enabled/ | wc -l | sed -e 's/ *//;') -eq 0 ] && \
 #echo "You haven't enabled any sites yet, so I'm not starting apache2." && \
 #echo "To add and enable a host, use addhost and enhost." && exit 0
 
@@ -41,7 +41,7 @@ test -f /etc/default/apache2 && . /etc/default/apache2
 APACHE2CTL="$ENV /usr/sbin/apache2ctl"
 HTCACHECLEAN="$ENV /usr/sbin/htcacheclean"
 
-PIDFILE=`. /etc/apache2/envvars ; echo $APACHE_PID_FILE`
+PIDFILE=$(. /etc/apache2/envvars && echo $APACHE_PID_FILE)
 if [ -z "$PIDFILE" ] ; then
 	echo ERROR: APACHE_PID_FILE needs to be defined in /etc/apache2/envvars >&2
 	exit 2
@@ -72,9 +72,9 @@ stop_htcacheclean() {
 pidof_apache() {
     # if pidof is null for some reasons the script exits automagically
     # classified as good/unknown feature
-    PIDS=`pidof apache2` || true
+    PIDS=$(pidof apache2) || true
 
-    [ -e $PIDFILE ] && PIDS2=`cat $PIDFILE`
+    [ -e $PIDFILE ] && PIDS2=$(cat $PIDFILE)
     
     # if there is a pid we need to verify that belongs to apache2
     # for real
@@ -91,7 +91,7 @@ pidof_apache() {
 }
 
 apache_stop() {
-	if `$APACHE2CTL configtest > /dev/null 2>&1`; then
+	if $APACHE2CTL configtest > /dev/null 2>&1; then
 		# if the config is ok than we just stop normaly
                 $APACHE2CTL stop 2>&1 | grep -v 'not running' >&2 || true
 	else
@@ -120,7 +120,7 @@ apache_stop() {
 apache_wait_stop() {
 	# running ?
 	PIDTMP=$(pidof_apache)
-	if $(kill -0 "${PIDTMP:-}" 2> /dev/null); then
+	if kill -0 "${PIDTMP:-}" 2> /dev/null; then
 	    PID=$PIDTMP
 	fi
 
@@ -129,7 +129,7 @@ apache_wait_stop() {
 	# wait until really stopped
 	if [ -n "${PID:-}" ]; then
 		i=0
-		while $(kill -0 "${PID:-}" 2> /dev/null);  do
+		while kill -0 "${PID:-}" 2> /dev/null;  do
         		if [ $i = '60' ]; then
         			break;
         	 	else

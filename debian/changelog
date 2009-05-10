@@ -1,6 +1,13 @@
 apache2 (2.2.11-4) UNRELEASED; urgency=low
 
+  [ Peter Samuelson ]
   * Adjust sections to match recent ftpmaster overrides.
+
+  [ Stefan Fritsch ]
+  * Allow apache2-mpm-itk as alternate dependency in apache2 meta package
+    (closes: #527225).
+  * Fix some misuse of command substitution in the init script. Thanks to
+    Jari Aalto for the patch. (Closes: #523398)
 
  -- Peter Samuelson <peter@p12n.org>  Tue, 31 Mar 2009 22:21:19 -0500
 

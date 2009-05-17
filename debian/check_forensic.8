@@ -6,8 +6,9 @@ check_forensic \- tool to extract mod_log_forensic output from apache log files
 <log_file>
 .SH "DESCRIPTION"
 chech_forensic is a simple shell script designed to help apache administrators
-to extract mod_log_forensic output from apache, apache-ssl and apache-perl
-log files.
+to extract mod_log_forensic output from apache2 log files.
+It checks the forensic log for requests that did not complete
+and outputs the request log for each one.
 .PP
 .SH AUTHOR
 This manual page was written by Fabio M. Di Nitto

@@ -14,6 +14,7 @@ apache2 (2.2.11-4) UNRELEASED; urgency=low
     Jari Aalto for the patch. (Closes: #523398)
   * Extend the gnome-vfs DAV workaround to gvfs (closes: #522845).
   * Add more info to check_forensic man page (closes: #528424).
+  * Make "apache2ctl help" point to help on apache2 args (closes: #528425).
 
  -- Peter Samuelson <peter@p12n.org>  Tue, 31 Mar 2009 22:21:19 -0500
 

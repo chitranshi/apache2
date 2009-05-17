@@ -5,6 +5,9 @@ apache2 (2.2.11-4) UNRELEASED; urgency=low
 
   [ Stefan Fritsch ]
   * Disable TRACE method by default (closes: #492130).
+  * Compress some more mime types with mod_deflate by default. This may cause
+    problems with MSIE 6, but that browser should now be considered obsolete.
+    Closes: #397526, #521209
   * Allow apache2-mpm-itk as alternate dependency in apache2 meta package
     (closes: #527225).
   * Fix some misuse of command substitution in the init script. Thanks to

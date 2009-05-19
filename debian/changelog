@@ -18,6 +18,7 @@ apache2 (2.2.11-4) UNRELEASED; urgency=low
   * Lintian warnings:
     - fix spelling error in apache2-utils description
     - tweak debian/copyright to make lintian not complain about pointers to GPL
+    - bump standards-version (no changes)
 
  -- Peter Samuelson <peter@p12n.org>  Tue, 31 Mar 2009 22:21:19 -0500
 

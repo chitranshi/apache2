@@ -1,0 +1,370 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## 
+##
+## DP: Varios Backports from branches/2.2.x
+## DP: commit 19d631414a8682c7a5277d196cca192c5e4d8f40
+## DP: Author: Ruediger Pluem <rpluem@apache.org>
+## DP: Date:   Sat Apr 25 09:58:52 2009 +0000
+## DP: 
+## DP:     Merge r763394 from trunk:
+## DP:     
+## DP:     * Avoid delivering content from a previous request which failed to send a request
+## DP:       body by closing the connection to the backend in this case instead of reusing it.
+## DP:     
+## DP:     CVE: CVE-2009-1191 (cve.mitre.org)
+## DP:     PR: 46949
+## DP:     Submitted by: rpluem
+## DP:     Reviewed by: rpluem, wrowe, jfclere
+## DP:     
+## DP:     git-svn-id: https://svn.eu.apache.org/repos/asf/httpd/httpd/branches/2.2.x@768506 13f79535-47bb-0310-9956-ffa450edef68
+## DP: 
+## DP: commit 55d787558ea9b58ed1baf0ad3826f303239819be
+## DP: Author: Roy T. Fielding <fielding@apache.org>
+## DP: Date:   Sat Apr 4 01:31:27 2009 +0000
+## DP: 
+## DP:     holy crap, how did that bug manage to persist for 15 months?
+## DP:     
+## DP:     git-svn-id: https://svn.eu.apache.org/repos/asf/httpd/httpd/branches/2.2.x@761854 13f79535-47bb-0310-9956-ffa450edef68
+## DP:     (cherry picked from commit 90d3f5590eaa9cad021ed2f8a9435e8259bc87cf)
+## DP: 
+## DP: commit 0f1868618d920c3cf0055b82c84f44cc0d6051bf
+## DP: Author: Roy T. Fielding <fielding@apache.org>
+## DP: Date:   Fri Apr 3 23:16:03 2009 +0000
+## DP: 
+## DP:     Revert changes in 2.2.11 that caused an invalid
+## DP:     etag to be emitted for on-the-fly gzip content-encoding.
+## DP:     PR 39727 will require larger fixes and this fix was far more
+## DP:     harmful than the original code.
+## DP:     
+## DP:     PR: 45023, 39727
+## DP:     
+## DP:     git-svn-id: https://svn.eu.apache.org/repos/asf/httpd/httpd/branches/2.2.x@761835 13f79535-47bb-0310-9956-ffa450edef68
+## DP: 
+## DP: commit 0b811c0fc6a29fb08b9573f1fe2962e8626cc488
+## DP: Author: Jim Jagielski <jim@apache.org>
+## DP: Date:   Tue Mar 10 15:00:54 2009 +0000
+## DP: 
+## DP:     Backported and commited
+## DP:     
+## DP:     git-svn-id: https://svn.eu.apache.org/repos/asf/httpd/httpd/branches/2.2.x@752129 13f79535-47bb-0310-9956-ffa450edef68
+## DP: 
+## DP: commit c9eae305815f7acb18579f29fb079fa61a3dee6d
+## DP: Author: Jim Jagielski <jim@apache.org>
+## DP: Date:   Mon Jan 12 13:53:43 2009 +0000
+## DP: 
+## DP:     PR 45959
+## DP:     
+## DP:     git-svn-id: https://svn.eu.apache.org/repos/asf/httpd/httpd/branches/2.2.x@733754 13f79535-47bb-0310-9956-ffa450edef68
+## DP: 
+## DP: commit 294697cff367731b4cac5252829260f3c993897d
+## DP: Author: Nick Kew <niq@apache.org>
+## DP: Date:   Thu Jan 8 01:13:36 2009 +0000
+## DP: 
+## DP:     Backport r730274
+## DP:     Fix mod_rewrite "B" flag breakage
+## DP:     PR 45529
+## DP:     
+## DP:     git-svn-id: https://svn.eu.apache.org/repos/asf/httpd/httpd/branches/2.2.x@732578 13f79535-47bb-0310-9956-ffa450edef68
+## DP: 
+## DP: commit 010ab0a76a081e8df42c1f3cbdb49f478412bca5
+## DP: Author: Paul J. Reder <rederpj@apache.org>
+## DP: Date:   Thu Dec 18 17:31:03 2008 +0000
+## DP: 
+## DP:     Commit promoted backport of PR 45994.
+## DP:       *) mod_ldap: Avoid a segfault when result->rc is checked in uldap_connection_init
+## DP:          when result is NULL. This could happen if LDAP initialization failed.
+## DP:          PR 45994.  [Dan Poirier <poirier pobox.com>]
+## DP:     
+## DP:     git-svn-id: https://svn.eu.apache.org/repos/asf/httpd/httpd/branches/2.2.x@727773 13f79535-47bb-0310-9956-ffa450edef68
+
+@DPATCH@
+diff --git a/CHANGES b/CHANGES
+index 052e376..d1317a3 100644
+--- a/CHANGES
++++ b/CHANGES
+@@ -1,4 +1,23 @@
+                                                          -*- coding: utf-8 -*-
++Changes backported from Apache 2.2.12
++  
++  *) SECURITY: CVE-2009-1191 (cve.mitre.org)
++     mod_proxy_ajp: Avoid delivering content from a previous request which
++     failed to send a request body. PR 46949 [Ruediger Pluem]
++
++  *) mod_deflate: revert changes in 2.2.8 that caused an invalid
++     etag to be emitted for on-the-fly gzip content-encoding.
++     PR 39727 will require larger fixes and this fix was far more
++     harmful than the original code. PR 45023. [Roy T. Fielding]
++
++  *) mod_rewrite: fix "B" flag breakage by reverting r589343
++     PR 45529 [Bob Ionescu <bobsiegen googlemail.com>]
++
++  *) mod_ldap: Avoid a segfault when result->rc is checked in uldap_connection_init
++     when result is NULL. This could happen if LDAP initialization failed.
++     PR 45994.  [Dan Poirier <poirier pobox.com>]
++
++
+ Changes with Apache 2.2.11
+ 
+   *) core: When the ap_http_header_filter processes an error bucket, cleanup
+diff --git a/modules/filters/mod_deflate.c b/modules/filters/mod_deflate.c
+index de1a57d..07ca194 100644
+--- a/modules/filters/mod_deflate.c
++++ b/modules/filters/mod_deflate.c
+@@ -372,23 +372,7 @@ static apr_status_t deflate_ctx_cleanup(void *data)
+         ctx->libz_end_func(&ctx->stream);
+     return APR_SUCCESS;
+ }
+-/* PR 39727: we're screwing up our clients if we leave a strong ETag
+- * header while transforming content.  Henrik Nordstrom suggests
+- * appending ";gzip".
+- *
+- * Pending a more thorough review of our Etag handling, let's just
+- * implement his suggestion.  It fixes the bug, or at least turns it
+- * from a showstopper to an inefficiency.  And it breaks nothing that
+- * wasn't already broken.
+- */
+-static void deflate_check_etag(request_rec *r, const char *transform)
+-{
+-    const char *etag = apr_table_get(r->headers_out, "ETag");
+-    if (etag && (((etag[0] != 'W') && (etag[0] !='w')) || (etag[1] != '/'))) {
+-        apr_table_set(r->headers_out, "ETag",
+-                      apr_pstrcat(r->pool, etag, "-", transform, NULL));
+-    }
+-}
++
+ static apr_status_t deflate_out_filter(ap_filter_t *f,
+                                        apr_bucket_brigade *bb)
+ {
+@@ -586,7 +570,6 @@ static apr_status_t deflate_out_filter(ap_filter_t *f,
+         }
+         apr_table_unset(r->headers_out, "Content-Length");
+         apr_table_unset(r->headers_out, "Content-MD5");
+-        deflate_check_etag(r, "gzip");
+ 
+         /* initialize deflate output buffer */
+         ctx->stream.next_out = ctx->buffer;
+@@ -1079,7 +1062,6 @@ static apr_status_t inflate_out_filter(ap_filter_t *f,
+         /* these are unlikely to be set anyway, but ... */
+         apr_table_unset(r->headers_out, "Content-Length");
+         apr_table_unset(r->headers_out, "Content-MD5");
+-        deflate_check_etag(r, "gunzip");
+ 
+         /* initialize inflate output buffer */
+         ctx->stream.next_out = ctx->buffer;
+diff --git a/modules/ldap/util_ldap.c b/modules/ldap/util_ldap.c
+index 5ea50d0..c9cc6e9 100644
+--- a/modules/ldap/util_ldap.c
++++ b/modules/ldap/util_ldap.c
+@@ -232,7 +232,16 @@ static int uldap_connection_init(request_rec *r,
+                   &(result));
+ 
+ 
+-    if (result != NULL && result->rc) {
++    if (NULL == result) {
++        /* something really bad happened */
++        ldc->bound = 0;
++        if (NULL == ldc->reason) {
++            ldc->reason = "LDAP: ldap initialization failed";
++        }
++        return(APR_EGENERAL);
++    }
++
++    if (result->rc) {
+         ldc->reason = result->reason;
+     }
+ 
+diff --git a/modules/mappers/mod_rewrite.c b/modules/mappers/mod_rewrite.c
+index 863d69e..ec631bc 100644
+--- a/modules/mappers/mod_rewrite.c
++++ b/modules/mappers/mod_rewrite.c
+@@ -380,6 +380,7 @@ static apr_global_mutex_t *rewrite_log_lock = NULL;
+ /* Optional functions imported from mod_ssl when loaded: */
+ static APR_OPTIONAL_FN_TYPE(ssl_var_lookup) *rewrite_ssl_lookup = NULL;
+ static APR_OPTIONAL_FN_TYPE(ssl_is_https) *rewrite_is_https = NULL;
++static char *escape_uri(apr_pool_t *p, const char *path);
+ 
+ /*
+  * +-------------------------------------------------------+
+@@ -628,6 +629,46 @@ static unsigned is_absolute_uri(char *uri)
+     return 0;
+ }
+ 
++static const char c2x_table[] = "0123456789abcdef";
++
++static APR_INLINE unsigned char *c2x(unsigned what, unsigned char prefix,
++                                     unsigned char *where)
++{
++#if APR_CHARSET_EBCDIC
++    what = apr_xlate_conv_byte(ap_hdrs_to_ascii, (unsigned char)what);
++#endif /*APR_CHARSET_EBCDIC*/
++    *where++ = prefix;
++    *where++ = c2x_table[what >> 4];
++    *where++ = c2x_table[what & 0xf];
++    return where;
++}
++
++/*
++ * Escapes a uri in a similar way as php's urlencode does.
++ * Based on ap_os_escape_path in server/util.c
++ */
++static char *escape_uri(apr_pool_t *p, const char *path) {
++    char *copy = apr_palloc(p, 3 * strlen(path) + 3);
++    const unsigned char *s = (const unsigned char *)path;
++    unsigned char *d = (unsigned char *)copy;
++    unsigned c;
++
++    while ((c = *s)) {
++        if (apr_isalnum(c) || c == '_') {
++            *d++ = c;
++        }
++        else if (c == ' ') {
++            *d++ = '+';
++        }
++        else {
++            d = c2x(c, '%', d);
++        }
++        ++s;
++    }
++    *d = '\0';
++    return copy;
++}
++
+ /*
+  * escape absolute uri, which may or may not be path oriented.
+  * So let's handle them differently.
+@@ -2240,15 +2281,16 @@ static char *do_expand(char *input, rewrite_ctx *ctx, rewriterule_entry *entry)
+                 if (entry && (entry->flags & RULEFLAG_ESCAPEBACKREF)) {
+                     /* escape the backreference */
+                     char *tmp2, *tmp;
+-                    tmp = apr_pstrndup(pool, bri->source + bri->regmatch[n].rm_so, span);
+-                    tmp2 = ap_escape_path_segment(pool, tmp);
++                    tmp = apr_palloc(pool, span + 1);
++                    strncpy(tmp, bri->source + bri->regmatch[n].rm_so, span);
++                    tmp[span] = '\0';
++                    tmp2 = escape_uri(pool, tmp);
+                     rewritelog((ctx->r, 5, ctx->perdir, "escaping backreference '%s' to '%s'",
+                             tmp, tmp2));
+ 
+                     current->len = span = strlen(tmp2);
+                     current->string = tmp2;
+-                }
+-                else {
++                } else {
+                     current->len = span;
+                     current->string = bri->source + bri->regmatch[n].rm_so;
+                 }
+diff --git a/modules/proxy/mod_proxy_ajp.c b/modules/proxy/mod_proxy_ajp.c
+index c3b80e3..6601cb2 100644
+--- a/modules/proxy/mod_proxy_ajp.c
++++ b/modules/proxy/mod_proxy_ajp.c
+@@ -307,21 +307,17 @@ static int ap_proxy_ajp_request(apr_pool_t *p, request_rec *r,
+                          "proxy: read zero bytes, expecting"
+                          " %" APR_OFF_T_FMT " bytes",
+                          content_length);
+-            status = ajp_send_data_msg(conn->sock, msg, 0);
+-            if (status != APR_SUCCESS) {
+-                /* We had a failure: Close connection to backend */
+-                conn->close++;
+-                ap_log_error(APLOG_MARK, APLOG_ERR, status, r->server,
+-                            "proxy: send failed to %pI (%s)",
+-                            conn->worker->cp->addr,
+-                            conn->worker->hostname);
+-                return HTTP_INTERNAL_SERVER_ERROR;
+-            }
+-            else {
+-                /* Client send zero bytes with C-L > 0
+-                 */
+-                return HTTP_BAD_REQUEST;
+-            }
++            /*
++             * We can only get here if the client closed the connection
++             * to us without sending the body.
++             * Now the connection is in the wrong state on the backend.
++             * Sending an empty data msg doesn't help either as it does
++             * not move this connection to the correct state on the backend
++             * for later resusage by the next request again.
++             * Close it to clean things up.
++             */
++            conn->close++;
++            return HTTP_BAD_REQUEST;
+         }
+     }
+ 
+diff --git a/server/request.c b/server/request.c
+index fe4026a..6ca30f9 100644
+--- a/server/request.c
++++ b/server/request.c
+@@ -558,17 +558,71 @@ AP_DECLARE(int) ap_directory_walk(request_rec *r)
+                 && (!r->path_info || !*r->path_info)))
+         && (cache->dir_conf_tested == sec_ent)
+         && (strcmp(entry_dir, cache->cached) == 0)) {
++
++        int familiar = 0;
++
+         /* Well this looks really familiar!  If our end-result (per_dir_result)
+          * didn't change, we have absolutely nothing to do :)
+          * Otherwise (as is the case with most dir_merged/file_merged requests)
+          * we must merge our dir_conf_merged onto this new r->per_dir_config.
+          */
+         if (r->per_dir_config == cache->per_dir_result) {
+-            return OK;
++            familiar = 1;
+         }
+ 
+-        if (r->per_dir_config == cache->dir_conf_merged) {
++        else if (r->per_dir_config == cache->dir_conf_merged) {
+             r->per_dir_config = cache->per_dir_result;
++            familiar = 1;
++        }
++        if (familiar) {
++            apr_finfo_t thisinfo;
++            int res;
++            allow_options_t opts;
++            core_dir_config *this_dir;
++
++            this_dir = ap_get_module_config(r->per_dir_config, &core_module);
++            opts = this_dir->opts;
++            /*
++             * If Symlinks are allowed in general we do not need the following
++             * check.
++             */
++            if (!(opts & OPT_SYM_LINKS)) {
++                rv = apr_stat(&thisinfo, r->filename,
++                              APR_FINFO_MIN | APR_FINFO_NAME | APR_FINFO_LINK,
++                              r->pool);
++                /*
++                 * APR_INCOMPLETE is as fine as result as APR_SUCCESS as we
++                 * have added APR_FINFO_NAME to the wanted parameter of
++                 * apr_stat above. On Unix platforms this means that apr_stat
++                 * is always going to return APR_INCOMPLETE in the case that
++                 * the call to the native stat / lstat did not fail.
++                 */
++                if ((rv != APR_INCOMPLETE) && (rv != APR_SUCCESS)) {
++                    /*
++                     * This should never happen, because we did a stat on the
++                     * same file, resolving a possible symlink several lines
++                     * above. Therefore do not make a detailed analysis of rv
++                     * in this case for the reason of the failure, just bail out
++                     * with a HTTP_FORBIDDEN in case we hit a race condition
++                     * here.
++                     */
++                    ap_log_rerror(APLOG_MARK, APLOG_ERR, rv, r,
++                                  "access to %s failed; stat of '%s' failed.",
++                                  r->uri, r->filename);
++                    return r->status = HTTP_FORBIDDEN;
++                }
++                if (thisinfo.filetype == APR_LNK) {
++                    /* Is this a possibly acceptable symlink? */
++                    if ((res = resolve_symlink(r->filename, &thisinfo,
++                                               opts, r->pool)) != OK) {
++                        ap_log_rerror(APLOG_MARK, APLOG_ERR, 0, r,
++                                      "Symbolic link not allowed "
++                                      "or link target not accessible: %s",
++                                      r->filename);
++                        return r->status = res;
++                    }
++                }
++            }
+             return OK;
+         }
+ 

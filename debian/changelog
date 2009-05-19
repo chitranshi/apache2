@@ -8,6 +8,14 @@ apache2 (2.2.11-4) UNRELEASED; urgency=low
   * Compress some more mime types with mod_deflate by default. This may cause
     problems with MSIE 6, but that browser should now be considered obsolete.
     Closes: #397526, #521209
+  * Various backports from upstream svn branches/2.2.x:
+    - CVE-2009-1191: mod_proxy_ajp: Avoid delivering content from a previous
+      request which failed to send a request body
+    - Fix FollowSymlinks / SymlinksIfOwnerMatch ignored with
+      server-side-includes PR 45959 (closes: #524474)
+    - Fix mod_rewrite "B" flag breakage PR 45529 (closes: #524268)
+    - Fix mod_deflate etag handling PR 45023 (LP: #358314)
+    - Fix mod_ldap segfault if LDAP initialization failed PR 45994
   * Allow apache2-mpm-itk as alternate dependency in apache2 meta package
     (closes: #527225).
   * Fix some misuse of command substitution in the init script. Thanks to

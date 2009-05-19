@@ -1,8 +1,5 @@
 apache2 (2.2.11-4) UNRELEASED; urgency=low
 
-  [ Peter Samuelson ]
-  * Adjust sections to match recent ftpmaster overrides.
-
   [ Stefan Fritsch ]
   * Disable TRACE method by default (closes: #492130).
   * Compress some more mime types with mod_deflate by default. This may cause
@@ -27,6 +24,9 @@ apache2 (2.2.11-4) UNRELEASED; urgency=low
     - fix spelling error in apache2-utils description
     - tweak debian/copyright to make lintian not complain about pointers to GPL
     - bump standards-version (no changes)
+
+  [ Peter Samuelson ]
+  * Adjust sections to match recent ftpmaster overrides.
 
  -- Peter Samuelson <peter@p12n.org>  Tue, 31 Mar 2009 22:21:19 -0500
 

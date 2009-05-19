@@ -1,4 +1,4 @@
-apache2 (2.2.11-4) UNRELEASED; urgency=low
+apache2 (2.2.11-4) unstable; urgency=low
 
   [ Stefan Fritsch ]
   * Disable TRACE method by default (closes: #492130).
@@ -28,7 +28,7 @@ apache2 (2.2.11-4) UNRELEASED; urgency=low
   [ Peter Samuelson ]
   * Adjust sections to match recent ftpmaster overrides.
 
- -- Peter Samuelson <peter@p12n.org>  Tue, 31 Mar 2009 22:21:19 -0500
+ -- Stefan Fritsch <sf@debian.org>  Tue, 19 May 2009 22:55:27 +0200
 
 apache2 (2.2.11-3) unstable; urgency=low
 

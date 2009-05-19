@@ -88,7 +88,7 @@ Description: utility programs for webservers
   - rotatelogs (Periodically stop writing to a logfile and open a new one)
   - split-logfile (Split a single log including multiple vhosts)
   - checkgid (Checks whether the caller can setgid to the specified group)
-  - check_forensic (Extract mod_log_forensic output from apache log files)
+  - check_forensic (Extract mod_log_forensic output from Apache log files)
 
 Package: apache2-suexec
 Priority: optional

@@ -15,6 +15,9 @@ apache2 (2.2.11-4) UNRELEASED; urgency=low
   * Extend the gnome-vfs DAV workaround to gvfs (closes: #522845).
   * Add more info to check_forensic man page (closes: #528424).
   * Make "apache2ctl help" point to help on apache2 args (closes: #528425).
+  * Lintian warnings:
+    - fix spelling error in apache2-utils description
+    - tweak debian/copyright to make lintian not complain about pointers to GPL
 
  -- Peter Samuelson <peter@p12n.org>  Tue, 31 Mar 2009 22:21:19 -0500
 

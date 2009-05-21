@@ -151,7 +151,6 @@ install-dev: install-worker install-prefork
 	dh_testdir
 	dh_testroot
 	dh_installdirs
-
 	for i in worker prefork; do \
 		if [ "$$i" = "prefork" ]; then \
 			TARGET=prefork ;\
@@ -220,7 +219,7 @@ install: build install-worker install-prefork install-common install-dev install
 	chmod 4754 debian/apache2-suexec/usr/lib/apache2/suexec 
 	chgrp www-data debian/apache2-suexec/usr/lib/apache2/suexec
 
-	chmod 644 debian/apache2.2-common/usr/lib/apache2/modules/mod_suexec.so
+	chmod 644 debian/apache2.2-bin/usr/lib/apache2/modules/mod_suexec.so
 
 	# configurable suexec
 	mkdir -p debian/apache2-suexec-custom/usr/lib/apache2 debian/apache2-suexec-custom/etc/apache2/suexec
@@ -269,15 +268,11 @@ install: build install-worker install-prefork install-common install-dev install
 	for i in worker prefork event; do \
 		rm -rf debian/apache2-mpm-$$i/ ;\
 		mkdir -p debian/apache2-mpm-$$i/usr/sbin ;\
+		mkdir -p debian/apache2.2-bin/usr/lib/apache2/mpm-$$i ;\
+		install -m 755 $(BUILD)/$$i/apache2 debian/apache2.2-bin/usr/lib/apache2/mpm-$$i/apache2 ;\
+		ln -s /usr/lib/apache2/mpm-$$i/apache2 debian/apache2-mpm-$$i/usr/sbin/apache2 ;\
 		mkdir -p debian/apache2-mpm-$$i/usr/share/lintian/overrides ;\
 		mkdir -p debian/apache2-mpm-$$i/usr/share/bug/apache2-mpm-$$i ;\
-		install -m 755 $(BUILD)/$$i/apache2 debian/apache2-mpm-$$i/usr/sbin/apache2 ;\
-		if [ "$(LSB_RELEASE)" != "Ubuntu" ] && [ -n "$(DEB_BUILD_STRIP)" ] ; then \
-			objcopy --only-keep-debug debian/apache2-mpm-$$i/usr/sbin/apache2 debian/apache2-dbg/usr/lib/debug/usr/sbin/apache2-mpm-$$i ;\
-			chmod 644 debian/apache2-dbg/usr/lib/debug/usr/sbin/apache2-mpm-$$i ;\
-			dh_strip -papache2-mpm-$$i ;\
-			objcopy --add-gnu-debuglink=debian/apache2-dbg/usr/lib/debug/usr/sbin/apache2-mpm-$$i debian/apache2-mpm-$$i/usr/sbin/apache2 ;\
-		fi ;\
 		perl -p -e "s/^/apache2-mpm-$$i: /" < debian/mpms.lintian-overrides > debian/apache2-mpm-$$i/usr/share/lintian/overrides/apache2-mpm-$$i ;\
 		ln -s ../apache2.2-common/script debian/apache2-mpm-$$i/usr/share/bug/apache2-mpm-$$i ;\
 	done
@@ -292,16 +287,23 @@ binary-indep: install
 	dh_testdir -i
 	dh_testroot -i 
 	dh_installdirs -i
-	dh_installdocs -i
-	ln -sf ../apache2.2-common/README.Debian.gz debian/apache2/usr/share/doc/apache2/
+	dh_installdocs -i debian/README.backtrace
 	mkdir -p debian/apache2/usr/share/bug/apache2
 	ln -sf ../apache2.2-common/script debian/apache2/usr/share/bug/apache2
 	install -m644 debian/apache2.bug.control debian/apache2/usr/share/bug/apache2/control
 	cp debian/README.Debian debian/apache2-doc/usr/share/doc/apache2-doc/
-	dh_installchangelogs -i CHANGES -Napache2 -Napache2-suexec -Napache2-suexec-custom
+	dh_installman -i
+	dh_installinit -i --no-start -r --name=apache2 -- defaults 91 09
+	dh_installcron -i -r --name=apache2
+	dh_installchangelogs -i CHANGES -Napache2
 	dh_installchangelogs -papache2 -papache2-suexec -papache2-suexec-custom
 	dh_lintian -i
+	for p in apache2-mpm-prefork apache2-mpm-event apache2-mpm-worker apache2; do \
+		rm -rf debian/$$p/usr/share/doc/$$p ;\
+		ln -s apache2.2-common debian/$$p/usr/share/doc/$$p ;\
+	done
 	dh_compress -i
+	dh_link -i
 	dh_fixperms -i -Xsuexec
 	dh_installdeb -i
 	dh_gencontrol -i
@@ -312,22 +314,20 @@ binary-arch: install
 	dh_testdir -a
 	dh_testroot -a 
 	dh_installdirs -a
-	dh_installdocs -a debian/README.backtrace
-	# always compress to make the symlink work
-	gzip -9 debian/apache2.2-common/usr/share/doc/apache2.2-common/README.Debian
+	dh_installdocs -a
 	dh_installman -a
-	dh_installchangelogs -a CHANGES
+	dh_installchangelogs -a CHANGES -Napache2-suexec -Napache2-suexec-custom
+	dh_installchangelogs -a -papache2-suexec -papache2-suexec-custom
 	dh_lintian -a
-	rm -f debian/apache2-dbg/usr/share/doc/apache2-dbg/changelog
-	rm -f debian/apache2-dbg/usr/share/doc/apache2-dbg/NEWS.Debian
+	rm -f debian/apache2.2-bin/usr/share/doc/apache2.2-bin/NEWS.Debian
 	rm -f debian/apache2-utils/usr/share/doc/apache2-utils/NEWS.Debian
-	dh_installinit -a --no-start -r --name=apache2 -- defaults 91 09
-	dh_installcron -a -r --name=apache2
-	if [ "$(LSB_RELEASE)" = "Ubuntu" ]; then \
-		dh_strip -a; \
-	else \
-		dh_strip -a --dbg-package=apache2-dbg -Napache2-mpm-worker -Napache2-mpm-event -Napache2-mpm-prefork -Napache2-dbg; \
-	fi
+	dh_strip -a --dbg-package=apache2-dbg -Napache2-dbg;
+	for p in apache2-prefork-dev apache2-threaded-dev; do \
+		rm -rf debian/$$p/usr/share/doc/$$p ;\
+		ln -s apache2.2-common debian/$$p/usr/share/doc/$$p ;\
+	done
+	rm -rf debian/apache2-dbg/usr/share/doc/apache2-dbg
+	ln -s apache2.2-bin debian/apache2-dbg/usr/share/doc/apache2-dbg
 	dh_link -a
 	dh_compress -a
 	dh_fixperms -a -Xsuexec

@@ -10,8 +10,8 @@ Vcs-svn: svn://svn.debian.org/pkg-apache/trunk/apache2
 Homepage: http://httpd.apache.org/
 
 Package: apache2.2-common
-Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, apache2-utils, net-tools, libmagic1, mime-support, lsb-base, procps [!hurd-i386], perl
+Architecture: all
+Depends: apache2.2-bin (= ${binary:Version}), apache2-utils, net-tools, libmagic1, mime-support, lsb-base, procps [!hurd-i386], perl
 Recommends: ssl-cert
 Suggests: www-browser, apache2-doc, apache2-suexec | apache2-suexec-custom
 Conflicts: apache2-common, libapache2-mod-php5 (<= 5.1.6-3), libapache2-mod-php4 (<= 4:4.4.4-2), libapache2-mod-mime-xattr (<= 0.3-2), libapache2-mod-mono (<= 1.1.17-3), libapache2-mod-proxy-html (<= 2.4.3-2), libapache2-mod-scgi (<= 1.11-1), libapache2-mod-speedycgi (<= 2.22-3), libapache2-modxslt (<= 2005072700-1), libapache2-redirtoservername (<= 0.1-1), libapache2-webauth (<= 3.5.3-1), libapache2-webkdc (<= 3.5.3-1)
@@ -21,13 +21,28 @@ Description: Apache HTTP Server common files
  extensible HTTP server as standards-compliant open source software. The
  result has long been the number one web server on the Internet.
  .
- This package contains all the standard apache2 modules, including SSL support.
+ This package contains the configuration and support scripts.
  However, it does *not* include the server itself; for this you need to
  install one of the apache2-mpm-* packages, such as worker or prefork.
 
-Package: apache2-mpm-worker
+Package: apache2.2-bin
 Architecture: any
-Depends: ${shlibs:Depends}, apache2.2-common (= ${binary:Version})
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Conflicts: apache2.2-common (<< 2.2.11-5~)
+Replaces: apache2.2-common (<< 2.2.11-5~)
+Description: Apache HTTP Server common binary files
+ The Apache Software Foundation's goal is to build a secure, efficient and
+ extensible HTTP server as standards-compliant open source software. The
+ result has long been the number one web server on the Internet.
+ .
+ This package contains all binaries but no configuration or support scripts.
+ To get a stand-alone server, you need to install one of the apache2-mpm-*
+ packages, such as worker or prefork. Other packages like gnome-user-share
+ may bring their own Apache configuration, though.
+
+Package: apache2-mpm-worker
+Architecture: all
+Depends: apache2.2-common (= ${binary:Version}), apache2.2-bin (= ${binary:Version})
 Provides: apache2-mpm, apache2, httpd, httpd-cgi
 Conflicts: apache2-mpm, apache2-common
 Replaces: apache2-mpm-threadpool (<< 2.0.53), apache2-mpm-perchild (<< 2.2.0)
@@ -40,8 +55,8 @@ Description: Apache HTTP Server - high speed threaded model
  and has a smaller memory footprint than the traditional prefork MPM.
 
 Package: apache2-mpm-prefork
-Architecture: any
-Depends: ${shlibs:Depends}, apache2.2-common (= ${binary:Version})
+Architecture: all
+Depends: apache2.2-common (= ${binary:Version}), apache2.2-bin (= ${binary:Version})
 Provides: apache2-mpm, apache2, httpd, httpd-cgi
 Conflicts: apache2-mpm, apache2-common
 Description: Apache HTTP Server - traditional non-threaded model
@@ -57,8 +72,8 @@ Description: Apache HTTP Server - traditional non-threaded model
  other.
 
 Package: apache2-mpm-event
-Architecture: any
-Depends: ${shlibs:Depends}, apache2.2-common (= ${binary:Version})
+Architecture: all
+Depends: apache2.2-common (= ${binary:Version}), apache2.2-bin (= ${binary:Version})
 Provides: apache2-mpm, apache2, httpd, httpd-cgi
 Conflicts: apache2-mpm, apache2-common
 Description: Apache HTTP Server - event driven model
@@ -119,7 +134,7 @@ Description: Configurable suexec program for Apache 2 mod_suexec
 
 Package: apache2
 Architecture: all
-Depends: apache2-mpm-worker (>= ${source:Version}) | apache2-mpm-prefork (>= ${source:Version}) | apache2-mpm-event (>= ${source:Version}) | apache2-mpm-itk
+Depends: apache2-mpm-worker (>= ${source:Version}) | apache2-mpm-prefork (>= ${source:Version}) | apache2-mpm-event (>= ${source:Version}) | apache2-mpm-itk, apache2.2-common (= ${binary:Version})
 Description: Apache HTTP Server metapackage         
  The Apache Software Foundation's goal is to build a secure, efficient and
  extensible HTTP server as standards-compliant open source software. The
@@ -171,6 +186,6 @@ Package: apache2-dbg
 Section: debug
 Priority: extra
 Architecture: any
-Depends: apache2.2-common (= ${binary:Version})
+Depends: apache2.2-bin (= ${binary:Version})
 Description: Apache debugging symbols
  This package includes the debugging symbols for Apache 2.

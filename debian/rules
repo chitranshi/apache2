@@ -95,17 +95,11 @@ INSTALL=/usr/bin/install
 
 clean: unpatch
 	dh_testdir
+	rm -rf $(BUILD) mpm-worker mpm-prefork mpm-event install
 	dh_clean
-	rm -rf $(BUILD) mpm-worker mpm-prefork mpm-event install build-mpms
-	rm -f debian/apache2-mpm-worker.postinst debian/apache2-mpm-worker.preinst debian/apache2-mpm-worker.prerm
-	rm -f debian/apache2-mpm-event.postinst debian/apache2-mpm-event.preinst debian/apache2-mpm-event.prerm
-	rm -f debian/apache2-mpm-prefork.prerm
-	for i in `ls debian/icons/ | cut -d. -f1,2`; do \
-		rm -f debian/tmp/usr/share/apache2/icons/$$i; \
-	done
 
-build: patch-stamp build-mpms 
-build-mpms: mpm-worker mpm-prefork mpm-event
+build: patch-stamp build-stamp 
+build-stamp: patch-stamp mpm-worker mpm-prefork mpm-event
 	for mpm in prefork event ; do \
 		if ! diff -u $(BUILD)/$$mpm/mods.list $(BUILD)/worker/mods.list ; then \
 			echo Different modules built into httpd binaries, will not proceed ;\
@@ -115,24 +109,27 @@ build-mpms: mpm-worker mpm-prefork mpm-event
 	touch $@
 
 
-mpm-worker: patch-stamp
-	dh_testdir
-	mkdir -p $(BUILD)/worker
-	cd $(BUILD)/worker ;\
-	CFLAGS="$(AP2_CFLAGS)" LDFLAGS="$(AP2_LDFLAGS)" $(CONFFLAGS) $(REALCURDIR)/configure --srcdir=$(REALCURDIR) $(AP2_COMMON_CONFARGS) $(AP2_MODS_CONFARGS) --with-mpm=worker  ;\
-	$(MAKE) ;\
-	./apache2 -l |grep -v worker > mods.list
-	touch $@
-
-mpm-%: patch-stamp
+mpm-worker mpm-prefork mpm-event: mpm-%: patch-stamp mpm-%.scripts-stamp
 	dh_testdir
 	mkdir -p $(BUILD)/$*
+	if [ $* = worker ] ; then \
+		ENABLE_MODULES="$(AP2_MODS_CONFARGS)" ;\
+	else \
+		ENABLE_MODULES=--enable-modules=none ;\
+	fi ;\
 	cd $(BUILD)/$* ;\
-	CFLAGS="$(AP2_CFLAGS)" LDFLAGS="$(AP2_LDFLAGS)" $(CONFFLAGS) $(REALCURDIR)/configure --srcdir=$(REALCURDIR) $(AP2_COMMON_CONFARGS) --enable-modules=none --with-mpm=$*  ;\
+	CFLAGS="$(AP2_CFLAGS)" LDFLAGS="$(AP2_LDFLAGS)" $(CONFFLAGS) $(REALCURDIR)/configure --srcdir=$(REALCURDIR) $(AP2_COMMON_CONFARGS) $$ENABLE_MODULES --with-mpm=$*  ;\
 	$(MAKE) ;\
 	./apache2 -l |grep -v $* > mods.list
 	touch $@
 
+mpm-%.scripts-stamp: debian/mpms.postinst debian/mpms.preinst debian/mpms.prerm debian/mpms.lintian-overrides
+	for f in postinst preinst prerm; do \
+		perl -p -e s/P=xxx/P=apache2-mpm-$*/ < debian/mpms.$$f > debian/apache2-mpm-$*.$$f ;\
+	done
+	perl -p -e "s/^/apache2-mpm-$*: /" < debian/mpms.lintian-overrides > debian/apache2-mpm-$*.lintian-overrides
+	touch $@ 
+ 
 install-%: mpm-%
 	dh_testdir
 	dh_testroot
@@ -160,6 +157,7 @@ install-dev: install-worker install-prefork
 		cp debian/apache2-mpm-$$i/usr/include/apache2/* debian/apache2-$$TARGET-dev/usr/include/apache2/ ;\
 		cp debian/apache2-mpm-$$i/usr/share/apache2/build/* debian/apache2-$$TARGET-dev/usr/share/apache2/build/ ;\
 		cp $(BUILD)/$$i/support/apxs debian/apache2-$$TARGET-dev/usr/bin/apxs2 ;\
+		perl -p -e s/^P=apache2/P=apache2-$${TARGET}-dev/ < debian/apache2.postinst > debian/apache2-$${TARGET}-dev.postinst ;\
 	done
 # Clean up config_vars.mk
 	set -x ; for i in threaded prefork; do \
@@ -173,7 +171,7 @@ install-dev: install-worker install-prefork
 		mv tmp_config_vars.mk config_vars.mk ) ; \
 	done
 
-install-src: build-mpms
+install-src: build-stamp
 	dh_testdir
 	dh_testroot
 	dh_installdirs
@@ -209,7 +207,6 @@ install: build install-worker install-prefork install-common install-dev install
 	done
 
 	dh_install --list-missing --sourcedir=debian/tmp
-# --sourcedir=$(REALCURDIR)/debian/apache2.2-common
 
 	cp debian/bash_completion debian/apache2.2-common/etc/bash_completion.d/apache2.2-common
 	install -m755 debian/apache2.2-common.bug.script debian/apache2.2-common/usr/share/bug/apache2.2-common/script
@@ -258,12 +255,6 @@ install: build install-worker install-prefork install-common install-dev install
 	ln -s a2enmod debian/apache2.2-common/usr/sbin/a2ensite
 	ln -s a2enmod debian/apache2.2-common/usr/sbin/a2dissite
 	cp debian/default-index.html debian/apache2.2-common/usr/share/apache2/default-site/index.html
-	for i in worker event; do \
-		install -m755 debian/mpm-postinst-threaded debian/apache2-mpm-$$i.postinst ;\
-		install -m755 debian/mpm-preinst-threaded debian/apache2-mpm-$$i.preinst;\
-		install -m755 debian/mpms.prerm debian/apache2-mpm-$$i.prerm ;\
-	done
-	install -m755 debian/mpms.prerm debian/apache2-mpm-prefork.prerm
 
 	for i in worker prefork event; do \
 		rm -rf debian/apache2-mpm-$$i/ ;\
@@ -273,7 +264,6 @@ install: build install-worker install-prefork install-common install-dev install
 		ln -s /usr/lib/apache2/mpm-$$i/apache2 debian/apache2-mpm-$$i/usr/sbin/apache2 ;\
 		mkdir -p debian/apache2-mpm-$$i/usr/share/lintian/overrides ;\
 		mkdir -p debian/apache2-mpm-$$i/usr/share/bug/apache2-mpm-$$i ;\
-		perl -p -e "s/^/apache2-mpm-$$i: /" < debian/mpms.lintian-overrides > debian/apache2-mpm-$$i/usr/share/lintian/overrides/apache2-mpm-$$i ;\
 		ln -s ../apache2.2-common/script debian/apache2-mpm-$$i/usr/share/bug/apache2-mpm-$$i ;\
 	done
 

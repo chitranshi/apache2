@@ -6,6 +6,8 @@ apache2 (2.2.11-5) UNRELEASED; urgency=low
       Closes: #468690
     - run multiple instances of apache with different MPMs. This configuration
       is not supported in any way, though. Closes: #517572
+  * Switch to debhelper compatibility level 7 and remove some code duplication
+    in debian/rules.
   * Override some Lintian warnings about old autotools helper files and being
     not binNMUable (apache2 is not binNMUable anyway, because of the
     apache2 <-> apache2-mpm-itk dependency).

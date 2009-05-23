@@ -1,4 +1,4 @@
-apache2 (2.2.11-5) UNRELEASED; urgency=low
+apache2 (2.2.11-5) unstable; urgency=low
 
   * Move all binaries into a new package apache2.2-bin and make
     apache2.2-common depend on it. This allows to
@@ -12,7 +12,7 @@ apache2 (2.2.11-5) UNRELEASED; urgency=low
     not binNMUable (apache2 is not binNMUable anyway, because of the
     apache2 <-> apache2-mpm-itk dependency).
 
- -- Stefan Fritsch <sf@debian.org>  Wed, 20 May 2009 20:22:48 +0200
+ -- Stefan Fritsch <sf@debian.org>  Fri, 22 May 2009 19:30:20 +0200
 
 apache2 (2.2.11-4) unstable; urgency=low
 

@@ -1,3 +1,9 @@
+apache2 (2.2.11-6) UNRELEASED; urgency=low
+
+  * Fix postinst scripts (closes: #532278).
+
+ -- Stefan Fritsch <sf@debian.org>  Mon, 08 Jun 2009 19:04:13 +0200
+
 apache2 (2.2.11-5) unstable; urgency=low
 
   * Move all binaries into a new package apache2.2-bin and make

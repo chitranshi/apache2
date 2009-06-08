@@ -36,9 +36,9 @@ if [ -x "/etc/init.d/apache2" ]; then
         fi
 fi
 
-if dpkg --compare-versions $2 lt 2.2.11-5~ ; then
+if dpkg --compare-versions "$2" lt 2.2.11-5~ ; then
 	DOCDIR=/usr/share/doc/$P
-	if [ -d $DOCDIR ] ; then
+	if [ ! -h $DOCDIR -a -d $DOCDIR ] ; then
 		rmdir $DOCDIR 2> /dev/null && ln -s apache2.2-common $DOCDIR
 	fi
 fi

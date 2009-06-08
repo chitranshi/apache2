@@ -1,10 +1,10 @@
-apache2 (2.2.11-6) UNRELEASED; urgency=high
+apache2 (2.2.11-6) unstable; urgency=high
 
   * CVE-2009-1195: mod_include allowed to bypass IncludesNoExec for Server
     Side Includes (closes: #530834).
   * Fix postinst scripts (closes: #532278).
 
- -- Stefan Fritsch <sf@debian.org>  Mon, 08 Jun 2009 19:04:13 +0200
+ -- Stefan Fritsch <sf@debian.org>  Mon, 08 Jun 2009 19:22:58 +0200
 
 apache2 (2.2.11-5) unstable; urgency=low
 

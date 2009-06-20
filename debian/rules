@@ -262,6 +262,7 @@ install: build install-worker install-prefork install-common install-dev install
 		mkdir -p debian/apache2.2-bin/usr/lib/apache2/mpm-$$i ;\
 		install -m 755 $(BUILD)/$$i/apache2 debian/apache2.2-bin/usr/lib/apache2/mpm-$$i/apache2 ;\
 		ln -s /usr/lib/apache2/mpm-$$i/apache2 debian/apache2-mpm-$$i/usr/sbin/apache2 ;\
+		ln -s ../lib/apache2/mpm-$$i/apache2 debian/apache2-mpm-$$i/usr/lib/debug/usr/sbin/apache2 ;\
 		mkdir -p debian/apache2-mpm-$$i/usr/share/lintian/overrides ;\
 		mkdir -p debian/apache2-mpm-$$i/usr/share/bug/apache2-mpm-$$i ;\
 		ln -s ../apache2.2-common/script debian/apache2-mpm-$$i/usr/share/bug/apache2-mpm-$$i ;\

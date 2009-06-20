@@ -1,3 +1,9 @@
+apache2 (2.2.11-7) UNRELEASED; urgency=low
+
+  * Add symlinks for the debug info to the mpm packages.
+
+ -- Stefan Fritsch <sf@debian.org>  Sat, 20 Jun 2009 09:52:00 +0200
+
 apache2 (2.2.11-6) unstable; urgency=high
 
   * CVE-2009-1195: mod_include allowed to bypass IncludesNoExec for Server

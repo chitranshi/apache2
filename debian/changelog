@@ -1,6 +1,8 @@
 apache2 (2.2.11-7) UNRELEASED; urgency=low
 
   * Add symlinks for the debug info to the mpm packages.
+  * Be slightly more informative in the default index.html without pointing
+    to Apache or Debian (LP: #89364)
 
  -- Stefan Fritsch <sf@debian.org>  Sat, 20 Jun 2009 09:52:00 +0200
 

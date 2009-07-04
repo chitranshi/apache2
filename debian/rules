@@ -259,6 +259,7 @@ install: build install-worker install-prefork install-common install-dev install
 	for i in worker prefork event; do \
 		rm -rf debian/apache2-mpm-$$i/ ;\
 		mkdir -p debian/apache2-mpm-$$i/usr/sbin ;\
+		mkdir -p debian/apache2-mpm-$$i/usr/lib/debug/usr/sbin ;\
 		mkdir -p debian/apache2.2-bin/usr/lib/apache2/mpm-$$i ;\
 		install -m 755 $(BUILD)/$$i/apache2 debian/apache2.2-bin/usr/lib/apache2/mpm-$$i/apache2 ;\
 		ln -s /usr/lib/apache2/mpm-$$i/apache2 debian/apache2-mpm-$$i/usr/sbin/apache2 ;\

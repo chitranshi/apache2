@@ -1,4 +1,4 @@
-apache2 (2.2.11-7) UNRELEASED; urgency=low
+apache2 (2.2.11-7) unstable; urgency=low
 
   * Security fixes:
     - CVE-2009-1890: denial of service in mod_proxy
@@ -10,7 +10,7 @@ apache2 (2.2.11-7) UNRELEASED; urgency=low
     (closes: #535849)
   * Bump Standards-Version (no changes)
 
- -- Stefan Fritsch <sf@debian.org>  Sat, 20 Jun 2009 09:52:00 +0200
+ -- Stefan Fritsch <sf@debian.org>  Fri, 10 Jul 2009 22:42:57 +0200
 
 apache2 (2.2.11-6) unstable; urgency=high
 

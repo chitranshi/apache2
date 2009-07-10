@@ -21,6 +21,7 @@
 068_check_pollset_create_error.dpatch
 069_backports_from_2.2.12.dpatch
 070_CVE-2009-1195_mod_include_noexec.dpatch
+071_CVE-2009-1891.dpatch
 099_config_guess_sub_update
 200_cp_suexec.dpatch
 201_build_suexec-custom.dpatch

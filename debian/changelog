@@ -8,6 +8,7 @@ apache2 (2.2.11-7) UNRELEASED; urgency=low
     to Apache or Debian (LP: #89364)
   * Remove dependency on net-tools, which is no longer necessary 
     (closes: #535849)
+  * Bump Standards-Version (no changes)
 
  -- Stefan Fritsch <sf@debian.org>  Sat, 20 Jun 2009 09:52:00 +0200
 

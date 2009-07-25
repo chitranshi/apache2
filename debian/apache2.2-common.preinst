@@ -1,34 +1,11 @@
 #! /bin/sh -e
 
-# This is an evil hack around the fact that dpkg is unpacking in the
-# wrong order causing "stop" to fail.
-
-if [ -z "$2" ] && [ -e /usr/sbin/apache2 ]; then
-    if [ -x "/etc/init.d/apache2" ]; then
-        if [ -x /usr/sbin/invoke-rc.d ]; then
-                invoke-rc.d apache2 stop || true
-        else
-                /etc/init.d/apache2 stop || true
-        fi
-    fi
-    chmod -x /usr/sbin/apache2
-fi
-
-# YAY, MORE EVILNESS
-rm -f /var/lib/dpkg/info/apache2-common.postrm
-
 mv_conffile() {
 	if [ "`md5sum $1 2>/dev/null | cut -d ' ' -f 1`" = "$2" ] ; then
 		echo Replacing $1 with new version ...
 		mv $1 $1.dpkg-apache2.2-common.old
 	fi
 }
-
-# we want to check in postinst whether /etc/apache2/ports.conf existed before
-# the install
-if [ -z "$2" ] && [ -e /etc/apache2/ports.conf ]; then
-	touch /etc/apache2/ports.conf.dpkg-apache2.2-common.existed
-fi
 
 if [ -n "$2" ] && dpkg --compare-versions "$2" lt 2.2.4-2; then
 	mv_conffile /etc/default/apache2 	9ac83f9132b78c3aa6dd4d7a583bf476

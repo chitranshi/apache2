@@ -1,6 +1,8 @@
 apache2 (2.2.11-8) UNRELEASED; urgency=low
 
   * Enable hardening compile options.
+  * Remove 2.0 -> 2.2 upgrade logic from maintainer scripts.
+  * Remove other_vhosts_access.log on package purge.
 
  -- Stefan Fritsch <sf@debian.org>  Sat, 25 Jul 2009 22:27:59 +0200
 

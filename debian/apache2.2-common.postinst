@@ -4,34 +4,12 @@ if [ "$1" != "configure" ]; then
         exit 0
 fi
 
-if [ -e /usr/sbin/apache2 ]; then
-    if [ "`dpkg-statoverride --list /usr/sbin/apache2`" = "" ]; then
-        chmod +x /usr/sbin/apache2
-    else
-        chmod `dpkg-statoverride --list /usr/sbin/apache2 | cut -f 3` /usr/sbin/apache2
-    fi
-fi
-
 mod_is_enabled() {
     test -L /etc/apache2/mods-enabled/$1.load
 }
 
-# Detect whether this is a new install or an upgrade.
-# Ordinarily one just checks $2, but since we renamed apache2-common to
-# apache2.2-common, we have to be more devious.
-if [ -n "$2" ]; then
-	UPGRADE=from_2_2
-elif [ -e /etc/apache2/ports.conf.dpkg-apache2.2-common.existed ] ||
-     [ -n "$(ls /etc/apache2/sites-enabled/)" ]; then
-	UPGRADE=from_2_0
-else
-	UPGRADE=new_install
-fi
-
-
-
 #set up default site and dummy error and access logs
-if [ $UPGRADE = new_install ]; then
+if [ -z "$2" ]; then
         if [ ! -L /etc/apache2/sites-enabled/000-default -a \
              ! -f /etc/apache2/sites-enabled/000-default ]; then
                 a2ensite -q default
@@ -64,21 +42,6 @@ if dpkg --compare-versions "$2" lt 2.2.3-3.1; then
 	a2enmod -q authz_host
 
 fi
-if [ $UPGRADE = from_2_0 ]; then
-        # Module replacements from previous versions of apache2
-	if mod_is_enabled proxy; then
-		a2enmod -q proxy_http
-		a2enmod -q disk_cache
-	fi
-	if mod_is_enabled imap; then
-		a2dismod -q imap
-		a2enmod -q imagemap
-	fi
-	if mod_is_enabled auth_ldap; then
-		a2dismod -q auth_ldap
-		a2enmod -q authnz_ldap
-	fi
-fi
 
 if [ -n "$2" ] && dpkg --compare-versions "$2" lt 2.2.4-2; then
 	echo -n activating new config files ...
@@ -104,11 +67,9 @@ if dpkg --compare-versions "$2" lt 2.2.7-1~0; then
 	fi
 fi
 
-
 rm -f /etc/apache2/ports.conf.dpkg-apache2.2-common.old
 rm -f /etc/default/apache2.dpkg-apache2.2-common.old
 rm -f /etc/apache2/conf.d/charset.dpkg-apache2.2-common.old
-rm -f /etc/apache2/ports.conf.dpkg-apache2.2-common.existed
 
 [ -f /etc/apache2/httpd.conf ] || touch /etc/apache2/httpd.conf
 

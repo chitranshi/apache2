@@ -1,3 +1,9 @@
+apache2 (2.2.11-8) UNRELEASED; urgency=low
+
+  * Enable hardening compile options.
+
+ -- Stefan Fritsch <sf@debian.org>  Sat, 25 Jul 2009 22:27:59 +0200
+
 apache2 (2.2.11-7) unstable; urgency=low
 
   * Security fixes:

@@ -1,6 +1,8 @@
 apache2 (2.2.11-8) UNRELEASED; urgency=low
 
   * Enable hardening compile options.
+  * Make a2ensite and friends ignore the same filenames as apache does for
+    included config files.
   * Remove 2.0 -> 2.2 upgrade logic from maintainer scripts.
   * Remove other_vhosts_access.log on package purge.
 

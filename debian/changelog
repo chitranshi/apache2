@@ -6,6 +6,8 @@ apache2 (2.2.12-1) UNRELEASED; urgency=low
     - mod_ssl: Adds SSLProxyCheckPeerExpire and SSLProxyCheckPeerCN directives
       to enable stricter checking of remote server certificates.
   * Enable hardening compile options.
+  * Switch default LogFormat from %b (size of file sent) to %O (bytes actually
+    sent) (closes: #272476 LP: #255124)
   * Add the default LANG=C to /etc/apache2/envvars and document it in
     README.Debian (closes #511878).
   * Make a2ensite and friends ignore the same filenames as apache does for

@@ -1,4 +1,4 @@
-# Magic data for KMimeMagic (originally for file(1) command)
+# Magic data for mod_mime_magic (originally for file(1) command)
 #
 # The format is 4-5 columns:
 #    Column #1: byte number to begin checking from, ">" indicates continuation

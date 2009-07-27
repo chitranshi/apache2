@@ -1,7 +1,7 @@
 apache2 (2.2.12-1) UNRELEASED; urgency=low
 
   * New upstream release:
-    - Adds support for TLS Server Name Indication (closes: #461917).
+    - Adds support for TLS Server Name Indication (closes: #461917 LP: #184131).
     - Fixes timefmt config in SSI (closes: #363964).
     - mod_ssl: Adds SSLProxyCheckPeerExpire and SSLProxyCheckPeerCN directives
       to enable stricter checking of remote server certificates.

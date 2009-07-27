@@ -10,6 +10,8 @@ apache2 (2.2.12-1) UNRELEASED; urgency=low
     README.Debian (closes #511878).
   * Make a2ensite and friends ignore the same filenames as apache does for
     included config files, even if LANG is not C.
+  * Change references to httpd.conf in apache2-doc to apache2.conf
+    (closes: #465393).
   * Remove 2.0 -> 2.2 upgrade logic from maintainer scripts.
   * Remove other_vhosts_access.log on package purge.
 

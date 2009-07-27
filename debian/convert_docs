@@ -85,7 +85,10 @@ sub conv {
 		$file =~ s{href="\.\./$l}{href="../../$l}g;
 		$file =~ s{href="\./$l}{href="../$l}g;
 	}
-	
+
+	# Debian tweaks
+	$file =~ s{/usr/local/apache2/conf/httpd[.]conf}{/etc/apache2/apache2.conf}g
+	$file =~ s{httpd[.]conf}{apache2.conf}g
 
 	open(my $out, ">", $new);
 	print $out $file;

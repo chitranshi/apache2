@@ -168,6 +168,10 @@ point to your SSL certificate. Then restart apache:
 
 	/etc/init.d/apache2 restart
 
+The SSL key file should only be readable by root, the certificate file may be
+globally readable. These files are read by the Apache parent process which runs
+as root. Therefore it is not necessary to make the files readable by the
+www-data user.
 
 Creating self-signed certificates
 ---------------------------------
@@ -186,7 +190,9 @@ To create more certificates with different host names, you can use
 This will ask you for the hostname and place both SSL key and certificate in
 the file /path/to/cert-file.crt . Use this file with the SSLCertificateFile
 directive in the apache config (you don't need the SSLCertificateKeyFile in
-this case).
+this case as it also contains the key). The file /path/to/cert-file.crt should
+only be readable by root. A good directory to use for the additional
+certificates/keys is /etc/ssl/private .
 
 SSL workaround for MSIE
 -----------------------

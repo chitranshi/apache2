@@ -1,5 +1,10 @@
-apache2 (2.2.11-8) UNRELEASED; urgency=low
+apache2 (2.2.12-1) UNRELEASED; urgency=low
 
+  * New upstream release:
+    - Adds support for TLS Server Name Indication (closes: #461917).
+    - Fixes timefmt config in SSI (closes: #363964)
+    - mod_ssl: Adds SSLProxyCheckPeerExpire and SSLProxyCheckPeerCN directives
+      to enable stricter checking of remote server certificates.
   * Enable hardening compile options.
   * Add the default LANG=C to /etc/apache2/envvars and document it in
     README.Debian (closes #511878).

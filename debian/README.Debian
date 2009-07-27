@@ -49,6 +49,8 @@ envvars
 	configuration. Some settings, like user and pid file, need to
 	go in here so that other scripts can use them. It can also
 	be used to change some default settings used by apache2ctl.
+	Here is also the default LANG=C setting that can be changed
+	to a different language.
 
 conf.d/
 

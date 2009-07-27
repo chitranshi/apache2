@@ -6,3 +6,10 @@
 export APACHE_RUN_USER=www-data
 export APACHE_RUN_GROUP=www-data
 export APACHE_PID_FILE=/var/run/apache2.pid
+
+## The locale used by some modules like mod_dav
+export LANG=C
+## Uncomment the following line to use the system default locale instead:
+#. /etc/default/locale
+
+export LANG

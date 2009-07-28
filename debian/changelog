@@ -14,6 +14,10 @@ apache2 (2.2.12-1) UNRELEASED; urgency=low
     included config files, even if LANG is not C.
   * Ship our own version of the magic config file (taken from file 4.17-5etch3)
     which is still compatible with mod_mime_magic (closes: #483111).
+  * Add ThreadLimit to the default config and put ThreadsPerChild and
+    MaxClients into the correct order so that Apache does not complain
+    (closes: #495656).
+    Also add a configuration block for the event MPM in apache2.conf.
   * Change references to httpd.conf in apache2-doc to apache2.conf
     (closes: #465393).
   * Clarify the recommended permissions for SSL certificates in README.Debian

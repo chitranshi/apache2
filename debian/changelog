@@ -10,6 +10,11 @@ apache2 (2.2.12-1) UNRELEASED; urgency=low
     sent) (closes: #272476 LP: #255124)
   * Add the default LANG=C to /etc/apache2/envvars and document it in
     README.Debian (closes #511878).
+  * Enable localized error pages by default if the neccessary modules are
+    loaded. Move the config for it from apache2.conf to
+    /etc/apache2/conf.d/localized-error-pages (closes: #467004).
+  * Change default for ServerTokens to 'OS', to not announce the exact module
+    versions to the world (LP: #205996)
   * Make a2ensite and friends ignore the same filenames as apache does for
     included config files, even if LANG is not C.
   * Ship our own version of the magic config file (taken from file 4.17-5etch3)
@@ -20,8 +25,6 @@ apache2 (2.2.12-1) UNRELEASED; urgency=low
     Also add a configuration block for the event MPM in apache2.conf.
   * Fix HTTP PUT with mod_dav failing to detect an aborted connection
     (closes: #451563).
-  * Change default for ServerTokens to 'OS', to not announce the exact module
-    versions to the worls (LP: #205996)
   * Change references to httpd.conf in apache2-doc to apache2.conf
     (closes: #465393).
   * Clarify the recommended permissions for SSL certificates in README.Debian

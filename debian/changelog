@@ -29,6 +29,8 @@ apache2 (2.2.12-1) UNRELEASED; urgency=low
     (closes: #465393).
   * Clarify the recommended permissions for SSL certificates in README.Debian
     (closes: #512778).
+  * Document in README.Debian how to name files in conf.d to avoid conflicts
+    with packages (closes: #493252)
   * Remove 2.0 -> 2.2 upgrade logic from maintainer scripts.
   * Remove other_vhosts_access.log on package purge.
 

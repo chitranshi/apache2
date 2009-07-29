@@ -61,7 +61,18 @@ conf.d/
 	Include /etc/apache2/conf.d
 
 	This is a good place to add additional configuration
-	directives.
+	directives. Packages should not use configuration
+	files that start with 'local-' or end with '.local'.
+	The local administrator can use these filenames to make
+	sure that there are no conflicts with files provided by
+	packages.
+
+	If the local administrator is not comfortable with packages
+	activating their config files by default, it is possible
+	to change the 'Include /etc/apache2/conf.d/' in apache2.conf
+	into 'Include /etc/apache2/conf.d.enabled/' and create that
+	directory. He can then put symlinks to the files in conf.d
+	which he wants to enable into conf.d.enabled.
 
 httpd.conf
 

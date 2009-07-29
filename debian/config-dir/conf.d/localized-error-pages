@@ -23,9 +23,11 @@
 #
 # which allows you to create your own set of files by starting with the
 # /usr/share/apache2/error/include/ files and copying them to /your/include/path/, 
-# even on a per-VirtualHost basis.  The default include files will display
-# your Apache version number and your ServerAdmin email address regardless
-# of the setting of ServerSignature.
+# even on a per-VirtualHost basis.  If you include the Alias in the global server
+# context, is has to come _before_ the 'Alias /error/ ...' line.
+#
+# The default include files will display your Apache version number and your
+# ServerAdmin email address regardless of the setting of ServerSignature.
 #
 # The internationalized error documents require mod_alias, mod_include
 # and mod_negotiation.  To activate them, uncomment the following 30 lines.

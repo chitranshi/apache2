@@ -24,7 +24,8 @@
 # where Full conveys the most information, and Prod the least.
 #
 #ServerTokens Minimal
-ServerTokens Full
+ServerTokens OS
+#ServerTokens Full
 
 #
 # Optionally add a line containing the server version and virtual host

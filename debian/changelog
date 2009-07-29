@@ -20,6 +20,8 @@ apache2 (2.2.12-1) UNRELEASED; urgency=low
     Also add a configuration block for the event MPM in apache2.conf.
   * Fix HTTP PUT with mod_dav failing to detect an aborted connection
     (closes: #451563).
+  * Change default for ServerTokens to 'OS', to not announce the exact module
+    versions to the worls (LP: #205996)
   * Change references to httpd.conf in apache2-doc to apache2.conf
     (closes: #465393).
   * Clarify the recommended permissions for SSL certificates in README.Debian

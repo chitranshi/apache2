@@ -96,12 +96,12 @@ INSTALL=/usr/bin/install
 
 clean: unpatch
 	dh_testdir
-	rm -rf $(BUILD) mpm-worker mpm-prefork mpm-event install
+	rm -rf $(BUILD) mpm-worker mpm-prefork mpm-event mpm-itk install
 	dh_clean
 
 build: patch-stamp build-stamp 
-build-stamp: patch-stamp mpm-worker mpm-prefork mpm-event
-	for mpm in prefork event ; do \
+build-stamp: patch-stamp mpm-worker mpm-prefork mpm-event mpm-itk
+	for mpm in prefork event itk ; do \
 		if ! diff -u $(BUILD)/$$mpm/mods.list $(BUILD)/worker/mods.list ; then \
 			echo Different modules built into httpd binaries, will not proceed ;\
 			exit 1 ;\
@@ -110,17 +110,40 @@ build-stamp: patch-stamp mpm-worker mpm-prefork mpm-event
 	touch $@
 
 
-mpm-worker mpm-prefork mpm-event: mpm-%: patch-stamp mpm-%.scripts-stamp
+mpm-worker mpm-prefork mpm-event mpm-itk: mpm-%: patch-stamp mpm-%.scripts-stamp
 	dh_testdir
 	mkdir -p $(BUILD)/$*
-	if [ $* = worker ] ; then \
-		ENABLE_MODULES="$(AP2_MODS_CONFARGS)" ;\
-	else \
-		ENABLE_MODULES=--enable-modules=none ;\
-	fi ;\
-	cd $(BUILD)/$* ;\
-	CFLAGS="$(AP2_CFLAGS)" LDFLAGS="$(AP2_LDFLAGS)" $(CONFFLAGS) $(REALCURDIR)/configure --srcdir=$(REALCURDIR) $(AP2_COMMON_CONFARGS) $$ENABLE_MODULES --with-mpm=$*  ;\
-	$(MAKE) ;\
+	# we don't want modifications done by itk outside of server/mpm/experimental/itk
+	# to appear in the other mpms. Therefore we copy the whole source tree.
+	set -ex ;										\
+	if [ $* = itk ] ; then 									\
+		cp -a `find . -maxdepth 1 -mindepth 1 -not -name debian` $(BUILD)/$* ;		\
+		cd $(BUILD)/$* ;								\
+		mkdir server/mpm/experimental/itk/ ;						\
+		cp server/mpm/prefork/* server/mpm/experimental/itk/ ;				\
+		mv server/mpm/experimental/itk/prefork.c server/mpm/experimental/itk/itk.c ;	\
+												\
+		for PATCH in `tail -n +2 ../../mpm-itk/patches/series`; do			\
+			echo Applying $$PATCH ... ;						\
+			patch -p1 < ../../mpm-itk/patches/$$PATCH ;				\
+			echo ;									\
+		done ;										\
+												\
+		autoheader ;									\
+		autoconf ;									\
+		CONFIGURE=./configure ;								\
+	else 											\
+		cd $(BUILD)/$* ;								\
+		CONFIGURE="$(REALCURDIR)/configure --srcdir=$(REALCURDIR)" ;			\
+	fi ;											\
+	if [ $* = worker ] ; then 								\
+		ENABLE_MODULES="$(AP2_MODS_CONFARGS)" ;						\
+	else 											\
+		ENABLE_MODULES=--enable-modules=none ;						\
+	fi ;											\
+	CFLAGS="$(AP2_CFLAGS)" LDFLAGS="$(AP2_LDFLAGS)" $(CONFFLAGS) $$CONFIGURE 		\
+		$(AP2_COMMON_CONFARGS) $$ENABLE_MODULES --with-mpm=$*  ;			\
+	$(MAKE) ;										\
 	./apache2 -l |grep -v $* > mods.list
 	touch $@
 
@@ -178,7 +201,7 @@ install-src: build-stamp
 	dh_installdirs
 	mkdir -p debian/apache2-src/tmp/apache2
 	find -mindepth 1 -maxdepth 1 -not -name debian -print0 | tar cf - --null -T - | (cd debian/apache2-src/tmp/apache2 && tar xf -)
-	for i in prefork worker event; do \
+	for i in prefork worker event itk; do \
 	  cp debian/build-tree/$$i/config.nice debian/apache2-src/tmp/apache2/config.nice.$$i ; \
 	done
 	cd debian/apache2-src/tmp/ && tar czf ../usr/src/apache2.tar.gz apache2
@@ -257,7 +280,7 @@ install: build install-worker install-prefork install-common install-dev install
 	ln -s a2enmod debian/apache2.2-common/usr/sbin/a2dissite
 	cp debian/default-index.html debian/apache2.2-common/usr/share/apache2/default-site/index.html
 
-	for i in worker prefork event; do \
+	for i in worker prefork event itk; do \
 		rm -rf debian/apache2-mpm-$$i/ ;\
 		mkdir -p debian/apache2-mpm-$$i/usr/sbin ;\
 		mkdir -p debian/apache2-mpm-$$i/usr/lib/debug/usr/sbin ;\
@@ -290,8 +313,11 @@ binary-indep: install
 	dh_installcron -i -r --name=apache2
 	dh_installchangelogs -i CHANGES -Napache2
 	dh_installchangelogs -papache2 -papache2-suexec -papache2-suexec-custom
+	cp debian/mpm-itk/README debian/apache2.2-common/usr/share/doc/apache2.2-common/README.mpm-itk
+	cp debian/mpm-itk/CHANGES debian/apache2.2-common/usr/share/doc/apache2.2-common/changelog.mpm-itk
+	cp debian/mpm-itk/debian/changelog debian/apache2.2-common/usr/share/doc/apache2.2-common/changelog.mpm-itk.Debian
 	dh_lintian -i
-	for p in apache2-mpm-prefork apache2-mpm-event apache2-mpm-worker apache2; do \
+	for p in apache2-mpm-prefork apache2-mpm-event apache2-mpm-worker apache2-mpm-itk apache2; do \
 		rm -rf debian/$$p/usr/share/doc/$$p ;\
 		ln -s apache2.2-common debian/$$p/usr/share/doc/$$p ;\
 	done

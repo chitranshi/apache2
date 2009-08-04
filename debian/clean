@@ -10,5 +10,9 @@ debian/apache2-mpm-prefork.postinst
 debian/apache2-mpm-prefork.preinst
 debian/apache2-mpm-prefork.prerm
 debian/apache2-mpm-prefork.lintian-overrides
+debian/apache2-mpm-itk.postinst
+debian/apache2-mpm-itk.preinst
+debian/apache2-mpm-itk.prerm
+debian/apache2-mpm-itk.lintian-overrides
 debian/apache2-prefork-dev.postinst
 debian/apache2-threaded-dev.postinst

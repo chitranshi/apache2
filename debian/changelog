@@ -13,8 +13,8 @@ apache2 (2.2.12-1) unstable; urgency=low
   * Switch default LogFormat from %b (size of file sent) to %O (bytes actually
     sent) (closes: #272476 LP: #255124)
   * Add the default LANG=C to /etc/apache2/envvars and document it in
-    README.Debian (closes #511878).
-  * Enable localized error pages by default if the neccessary modules are
+    README.Debian (closes: #511878).
+  * Enable localized error pages by default if the necessary modules are
     loaded. Move the config for it from apache2.conf to
     /etc/apache2/conf.d/localized-error-pages (closes: #467004). Clarify the
     required order of the aliases in the comment (closes: #196795).

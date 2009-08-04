@@ -22,7 +22,8 @@ apache2 (2.2.12-1) UNRELEASED; urgency=low
     included config files, even if LANG is not C.
   * Merge source packages apache2 and apache2-mpm-itk (current itk version is
     2.2.11-02). This removes the binNMU mess necessary for every apache2 upload
-    (closes: #500885, #512084). Add Steinar to Uploaders.
+    (closes: #500885, #512084). Add Steinar to Uploaders. Remove apache2-src
+    package, which is no longer necessary.
   * Ship our own version of the magic config file (taken from file 4.17-5etch3)
     which is still compatible with mod_mime_magic (closes: #483111).
   * Add ThreadLimit to the default config and put ThreadsPerChild and

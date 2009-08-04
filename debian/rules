@@ -195,19 +195,7 @@ install-dev: install-worker install-prefork
 		mv tmp_config_vars.mk config_vars.mk ) ; \
 	done
 
-install-src: build-stamp
-	dh_testdir
-	dh_testroot
-	dh_installdirs
-	mkdir -p debian/apache2-src/tmp/apache2
-	find -mindepth 1 -maxdepth 1 -not -name debian -print0 | tar cf - --null -T - | (cd debian/apache2-src/tmp/apache2 && tar xf -)
-	for i in prefork worker event itk; do \
-	  cp debian/build-tree/$$i/config.nice debian/apache2-src/tmp/apache2/config.nice.$$i ; \
-	done
-	cd debian/apache2-src/tmp/ && tar czf ../usr/src/apache2.tar.gz apache2
-	rm -rf debian/apache2-src/tmp
-
-install: build install-worker install-prefork install-common install-dev install-src
+install: build install-worker install-prefork install-common install-dev
 	dh_testroot
 	dh_testdir
 

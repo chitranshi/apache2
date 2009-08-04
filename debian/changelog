@@ -1,4 +1,4 @@
-apache2 (2.2.12-1) UNRELEASED; urgency=low
+apache2 (2.2.12-1) unstable; urgency=low
 
   * New upstream release:
     - Adds support for TLS Server Name Indication (closes: #461917 LP: #184131).
@@ -43,7 +43,7 @@ apache2 (2.2.12-1) UNRELEASED; urgency=low
   * Remove 2.0 -> 2.2 upgrade logic from maintainer scripts.
   * Remove other_vhosts_access.log on package purge.
 
- -- Stefan Fritsch <sf@debian.org>  Sat, 25 Jul 2009 22:27:59 +0200
+ -- Stefan Fritsch <sf@debian.org>  Tue, 04 Aug 2009 11:02:34 +0200
 
 apache2 (2.2.11-7) unstable; urgency=low
 

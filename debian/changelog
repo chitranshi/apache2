@@ -2,6 +2,8 @@ apache2 (2.2.12-1) UNRELEASED; urgency=low
 
   * New upstream release:
     - Adds support for TLS Server Name Indication (closes: #461917 LP: #184131).
+      (The Debian default configuration will be changed to use SNI in a later
+      version.)
     - Fixes timefmt config in SSI (closes: #363964).
     - mod_ssl: Adds SSLProxyCheckPeerExpire and SSLProxyCheckPeerCN directives
       to enable stricter checking of remote server certificates.

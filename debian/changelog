@@ -4,6 +4,7 @@ apache2 (2.2.13-2) UNRELEASED; urgency=low
   * Adjust priority of apache2-mpm-itk to extra.
   * Switch apache2.2-common and the four mpm packages from architecture all to
     any. This is stupid but makes apache2 binNMUable again (closes: #544509).
+  * Bump Standards-Version (no changes).
 
  -- Stefan Fritsch <sf@debian.org>  Sat, 05 Sep 2009 08:50:51 +0200
 

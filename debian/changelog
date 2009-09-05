@@ -1,3 +1,9 @@
+apache2 (2.2.13-2) UNRELEASED; urgency=low
+
+  * Add Build-Conflicts: autoconf2.13 (closes: #541536).
+
+ -- Stefan Fritsch <sf@debian.org>  Sat, 05 Sep 2009 08:50:51 +0200
+
 apache2 (2.2.13-1) unstable; urgency=low
 
   * New upstream release:

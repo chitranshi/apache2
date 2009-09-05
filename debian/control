@@ -11,7 +11,7 @@ Vcs-svn: svn://svn.debian.org/pkg-apache/trunk/apache2
 Homepage: http://httpd.apache.org/
 
 Package: apache2.2-common
-Architecture: all
+Architecture: any
 Depends: apache2.2-bin (= ${binary:Version}), apache2-utils, libmagic1, mime-support, lsb-base, procps [!hurd-i386], perl
 Recommends: ssl-cert
 Suggests: www-browser, apache2-doc, apache2-suexec | apache2-suexec-custom
@@ -42,7 +42,7 @@ Description: Apache HTTP Server common binary files
  may bring their own Apache configuration, though.
 
 Package: apache2-mpm-worker
-Architecture: all
+Architecture: any
 Depends: apache2.2-common (= ${binary:Version}), apache2.2-bin (= ${binary:Version})
 Provides: apache2-mpm, apache2, httpd, httpd-cgi
 Conflicts: apache2-mpm, apache2-common
@@ -56,7 +56,7 @@ Description: Apache HTTP Server - high speed threaded model
  and has a smaller memory footprint than the traditional prefork MPM.
 
 Package: apache2-mpm-prefork
-Architecture: all
+Architecture: any
 Depends: apache2.2-common (= ${binary:Version}), apache2.2-bin (= ${binary:Version})
 Provides: apache2-mpm, apache2, httpd, httpd-cgi
 Conflicts: apache2-mpm, apache2-common
@@ -73,7 +73,7 @@ Description: Apache HTTP Server - traditional non-threaded model
  other.
 
 Package: apache2-mpm-event
-Architecture: all
+Architecture: any
 Depends: apache2.2-common (= ${binary:Version}), apache2.2-bin (= ${binary:Version})
 Provides: apache2-mpm, apache2, httpd, httpd-cgi
 Conflicts: apache2-mpm, apache2-common
@@ -92,7 +92,7 @@ Package: apache2-mpm-itk
 Depends: apache2.2-common (= ${binary:Version}), apache2.2-bin (= ${binary:Version})
 Provides: apache2-mpm, apache2, httpd, httpd-cgi
 Conflicts: apache2-mpm, apache2-common
-Architecture: all
+Architecture: any
 Priority: extra
 Description: multiuser MPM for Apache 2.2
  The ITK Multi-Processing Module (MPM) works in about the same way as the
@@ -152,7 +152,7 @@ Description: Configurable suexec program for Apache 2 mod_suexec
 
 Package: apache2
 Architecture: all
-Depends: apache2-mpm-worker (>= ${source:Version}) | apache2-mpm-prefork (>= ${source:Version}) | apache2-mpm-event (>= ${source:Version}) | apache2-mpm-itk (>= ${source:Version}), apache2.2-common (= ${binary:Version})
+Depends: apache2-mpm-worker (>= ${source:Version}) | apache2-mpm-prefork (>= ${source:Version}) | apache2-mpm-event (>= ${source:Version}) | apache2-mpm-itk (>= ${source:Version})
 Description: Apache HTTP Server metapackage         
  The Apache Software Foundation's goal is to build a secure, efficient and
  extensible HTTP server as standards-compliant open source software. The

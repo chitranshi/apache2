@@ -1,9 +1,2 @@
 apache2 source: ancient-autotools-helper-file srclib/apr-util/xml/expat/conftools/config.sub 2002-03-07
 apache2 source: ancient-autotools-helper-file srclib/apr-util/xml/expat/conftools/config.guess 2002-03-20
-apache2 source: not-binnmuable-all-depends-any apache2-mpm-event -> apache2.2-bin
-apache2 source: not-binnmuable-all-depends-any apache2.2-common -> apache2.2-bin
-apache2 source: not-binnmuable-any-depends-all apache2-threaded-dev -> apache2.2-common
-apache2 source: not-binnmuable-any-depends-all apache2-prefork-dev -> apache2.2-common
-apache2 source: not-binnmuable-all-depends-any apache2-mpm-prefork -> apache2.2-bin
-apache2 source: not-binnmuable-all-depends-any apache2-mpm-worker -> apache2.2-bin
-apache2 source: not-binnmuable-all-depends-any apache2-mpm-itk -> apache2.2-bin

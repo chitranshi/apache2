@@ -93,6 +93,7 @@ Depends: apache2.2-common (= ${binary:Version}), apache2.2-bin (= ${binary:Versi
 Provides: apache2-mpm, apache2, httpd, httpd-cgi
 Conflicts: apache2-mpm, apache2-common
 Architecture: all
+Priority: extra
 Description: multiuser MPM for Apache 2.2
  The ITK Multi-Processing Module (MPM) works in about the same way as the
  classical "prefork" module (that is, without threads), except that it allows

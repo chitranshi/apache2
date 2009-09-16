@@ -1,4 +1,4 @@
-apache2 (2.2.13-2) unstable; urgency=low
+apache2 (2.2.13-2) unstable; urgency=high
 
   * The new support for TLS Server Name Indication added in 2.2.12 causes
     Apache to be stricter about certain misconfigurations involving name

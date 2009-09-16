@@ -151,8 +151,8 @@ Description: Configurable suexec program for Apache 2 mod_suexec
  apache2-suexec package instead.
 
 Package: apache2
-Architecture: all
-Depends: apache2-mpm-worker (>= ${source:Version}) | apache2-mpm-prefork (>= ${source:Version}) | apache2-mpm-event (>= ${source:Version}) | apache2-mpm-itk (>= ${source:Version}), apache2.2-common (= ${binary:Version})
+Architecture: any
+Depends: apache2-mpm-worker (= ${binary:Version}) | apache2-mpm-prefork (= ${binary:Version}) | apache2-mpm-event (= ${binary:Version}) | apache2-mpm-itk (= ${binary:Version}), apache2.2-common (= ${binary:Version})
 Description: Apache HTTP Server metapackage         
  The Apache Software Foundation's goal is to build a secure, efficient and
  extensible HTTP server as standards-compliant open source software. The

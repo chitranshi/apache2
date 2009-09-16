@@ -285,62 +285,52 @@ install: build install-worker install-prefork install-common install-dev
 		find debian/$$pkg/ -name .svn -exec rm -rf {} + ; \
 	done
 
-	touch $@
-
-binary-indep: install
-	dh_testdir -i
-	dh_testroot -i 
-	dh_installdirs -i
-	dh_installdocs -i debian/README.backtrace
+	# common dh stuff
+	dh_testdir
+	dh_testroot
+	dh_installdirs
+	dh_installdocs debian/README.backtrace -papache2.2-common -papache2.2-bin
+	dh_installdocs debian/README.backtrace -Napache2.2-common -Napache2.2-bin
 	mkdir -p debian/apache2/usr/share/bug/apache2
 	ln -sf ../apache2.2-common/script debian/apache2/usr/share/bug/apache2
 	install -m644 debian/apache2.bug.control debian/apache2/usr/share/bug/apache2/control
 	cp debian/README.Debian debian/apache2-doc/usr/share/doc/apache2-doc/
-	dh_installman -i
-	dh_installinit -i --no-start -r --name=apache2 -- defaults 91 09
-	dh_installcron -i -r --name=apache2
-	dh_installchangelogs -i CHANGES -Napache2
-	dh_installchangelogs -papache2 -papache2-suexec -papache2-suexec-custom
+	dh_installman
+	dh_installinit --no-start -r --name=apache2 -- defaults 91 09
+	dh_installcron --name=apache2
+	dh_installchangelogs CHANGES -Napache2-suexec -Napache2-suexec-custom -Napache2
+	dh_installchangelogs         -papache2-suexec -papache2-suexec-custom -papache2 
+	dh_lintian
+	rm -f debian/apache2.2-bin/usr/share/doc/apache2.2-bin/NEWS.Debian
+	rm -f debian/apache2-utils/usr/share/doc/apache2-utils/NEWS.Debian
+	dh_strip --dbg-package=apache2-dbg -Napache2-dbg;
 	cp debian/mpm-itk/README debian/apache2.2-common/usr/share/doc/apache2.2-common/README.mpm-itk
 	cp debian/mpm-itk/CHANGES debian/apache2.2-common/usr/share/doc/apache2.2-common/changelog.mpm-itk
 	cp debian/mpm-itk/debian/changelog debian/apache2.2-common/usr/share/doc/apache2.2-common/changelog.mpm-itk.Debian
-	dh_lintian -i
-	for p in apache2-mpm-prefork apache2-mpm-event apache2-mpm-worker apache2-mpm-itk apache2; do \
+	for p in apache2-prefork-dev apache2-threaded-dev apache2-mpm-prefork apache2-mpm-event \
+	    apache2-mpm-worker apache2-mpm-itk apache2; \
+	do \
 		rm -rf debian/$$p/usr/share/doc/$$p ;\
 		ln -s apache2.2-common debian/$$p/usr/share/doc/$$p ;\
 	done
-	dh_compress -i
-	dh_link -i
-	dh_fixperms -i -Xsuexec
+	rm -rf debian/apache2-dbg/usr/share/doc/apache2-dbg
+	ln -s apache2.2-bin debian/apache2-dbg/usr/share/doc/apache2-dbg
+	dh_link
+	dh_compress
+	dh_fixperms -Xsuexec
+	chown -R www-data:www-data debian/apache2.2-common/var/cache/apache2
+	chown root:adm debian/apache2.2-common/var/log/apache2
+	chmod o-rx debian/apache2.2-common/var/log/apache2
+
+	touch $@
+
+binary-indep: install
 	dh_installdeb -i
 	dh_gencontrol -i
 	dh_md5sums -i
 	dh_builddeb -i
 
 binary-arch: install
-	dh_testdir -a
-	dh_testroot -a 
-	dh_installdirs -a
-	dh_installdocs -a
-	dh_installman -a
-	dh_installchangelogs -a CHANGES -Napache2-suexec -Napache2-suexec-custom
-	dh_installchangelogs -a -papache2-suexec -papache2-suexec-custom
-	dh_lintian -a
-	rm -f debian/apache2.2-bin/usr/share/doc/apache2.2-bin/NEWS.Debian
-	rm -f debian/apache2-utils/usr/share/doc/apache2-utils/NEWS.Debian
-	dh_strip -a --dbg-package=apache2-dbg -Napache2-dbg;
-	for p in apache2-prefork-dev apache2-threaded-dev; do \
-		rm -rf debian/$$p/usr/share/doc/$$p ;\
-		ln -s apache2.2-common debian/$$p/usr/share/doc/$$p ;\
-	done
-	rm -rf debian/apache2-dbg/usr/share/doc/apache2-dbg
-	ln -s apache2.2-bin debian/apache2-dbg/usr/share/doc/apache2-dbg
-	dh_link -a
-	dh_compress -a
-	dh_fixperms -a -Xsuexec
-	chown -R www-data:www-data debian/apache2.2-common/var/cache/apache2
-	chown root:adm debian/apache2.2-common/var/log/apache2
-	chmod o-rx debian/apache2.2-common/var/log/apache2
 	dh_makeshlibs -a -V
 	dh_installdeb -a
 	dh_shlibdeps -a

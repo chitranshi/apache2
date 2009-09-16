@@ -1,5 +1,9 @@
 apache2 (2.2.13-2) UNRELEASED; urgency=high
 
+  * mod_proxy_ftp security fixes (closes: #545951):
+    - DoS by malicious ftp server (CVE-2009-3094) 
+    - missing input sanitization: a user could execute arbitrary ftp commands
+      on the backend ftp server (CVE-2009-3095)
   * Add entries to NEWS.Debian and README.Debian about Apache being stricter
     about certain misconfigurations involving name based SSL virtual hosts.
     Also make Apache print the location of the misconfigured VirtualHost when

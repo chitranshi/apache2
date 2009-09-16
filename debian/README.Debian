@@ -335,3 +335,9 @@ appear for the same reason.
 On the other hand, errors about to adding to a pollset are related to the
 setting fs.epoll.max_user_watches. On most systems, max_user_watches should be
 high enough by default.
+
+7) Message "Server should be SSL-aware but has no certificate configured" in
+   error log
+
+Since 2.2.12, Apache is stricter about certain misconfigurations concerning
+name based SSL virtual hosts. See NEWS.Debian.gz for more details.

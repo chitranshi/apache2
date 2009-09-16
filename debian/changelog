@@ -1,4 +1,4 @@
-apache2 (2.2.13-2) UNRELEASED; urgency=low
+apache2 (2.2.13-2) UNRELEASED; urgency=high
 
   * Add entries to NEWS.Debian and README.Debian about Apache being stricter
     about certain misconfigurations involving name based SSL virtual hosts.

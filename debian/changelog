@@ -1,3 +1,10 @@
+apache2 (2.2.13-3) UNRELEASED; urgency=low
+
+  * Disable hardening option -pie again, as gdb in Debian does not support
+    it properly.
+
+ -- Stefan Fritsch <sf@debian.org>  Wed, 23 Sep 2009 20:41:04 +0200
+
 apache2 (2.2.13-2) unstable; urgency=high
 
   * mod_proxy_ftp security fixes (closes: #545951):

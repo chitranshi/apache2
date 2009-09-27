@@ -45,6 +45,7 @@ AP2_MODS_CONFARGS =   --enable-authn-alias=shared --enable-authnz-ldap=shared  \
 		      --enable-ldap=shared --enable-proxy=shared \
 		      --enable-proxy-connect=shared --enable-proxy-ftp=shared \
 		      --enable-proxy-http=shared --enable-proxy-ajp=shared \
+		      --enable-proxy-scgi=shared \
 		      --enable-proxy-balancer=shared --enable-ssl=shared \
 		      --enable-authn-dbm=shared --enable-authn-anon=shared \
 		      --enable-authn-dbd=shared --enable-authn-file=shared \

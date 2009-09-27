@@ -19,9 +19,6 @@
 067_fix_segfault_in_ab.dpatch
 068_mod_dav_detect_EOF.dpatch
 069_no_deflate_for_HEAD.dpatch
-070_better_missing_cert_error_msg.dpatch
-071_CVE-2009-3094.dpatch
-072_CVE-2009-3095.dpatch
 099_config_guess_sub_update
 200_cp_suexec.dpatch
 201_build_suexec-custom.dpatch

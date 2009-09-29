@@ -1,11 +1,11 @@
-apache2 (2.2.14-1) UNRELEASED; urgency=low
+apache2 (2.2.14-1) unstable; urgency=low
 
   * New upstream version:
     - new module mod_proxy_scgi
   * Disable hardening option -pie again, as gdb in Debian does not support
     it properly and it is broken on mips*.
 
- -- Stefan Fritsch <sf@debian.org>  Wed, 23 Sep 2009 20:41:04 +0200
+ -- Stefan Fritsch <sf@debian.org>  Tue, 29 Sep 2009 20:55:05 +0200
 
 apache2 (2.2.13-2) unstable; urgency=high
 

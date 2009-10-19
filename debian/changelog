@@ -3,6 +3,7 @@ apache2 (2.2.14-2) UNRELEASED; urgency=low
   * Allow RemoveType to override the types from /etc/mime.types. This allows
     to use .es and .tr for Spanish and Turkish files in mod_negotiation.
     Closes: #496080
+  * Fix 'CacheEnable http://'. Closes: #442266
 
  -- Stefan Fritsch <sf@debian.org>  Mon, 19 Oct 2009 19:50:11 +0200
 

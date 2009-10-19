@@ -295,23 +295,7 @@ See /usr/share/doc/apache2.2-common/NEWS.Debian.gz
 In most cases this means that no matching VirtualHost definition could be
 found for an incoming request.
 
-5) Support for Spanish and Turkish language with mod_negotiation
-
-Currently Apache will send Spanish and Turkish language files with the wrong
-mime types because the extensions .es and .tr have entries in /etc/mime.types
-for application/ecmascript and application/x-troff.
-
-In order to make Spanish and Turkish language support work, you need to either
-remove these entries from /etc/mime.types, or add something like
-
-    <Files *.html.tr.utf8>
-        ForceType text/html
-    </Files>
-
-to your Apache configuration. Of course, this has to be ajusted to the actual
-filenames you use.
-
-6) Message "Couldn't create pollset in child; check user or system limits" in
+5) Message "Couldn't create pollset in child; check user or system limits" in
   error log
 
 On Linux kernels since 2.6.27.8, the value in
@@ -336,7 +320,7 @@ On the other hand, errors about to adding to a pollset are related to the
 setting fs.epoll.max_user_watches. On most systems, max_user_watches should be
 high enough by default.
 
-7) Message "Server should be SSL-aware but has no certificate configured" in
+6) Message "Server should be SSL-aware but has no certificate configured" in
    error log
 
 Since 2.2.12, Apache is stricter about certain misconfigurations concerning

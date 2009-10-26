@@ -66,7 +66,7 @@ start_htcacheclean() {
 }
 
 stop_htcacheclean() {
-	killall htcacheclean 2> /dev/null || echo ...not running
+	pkill htcacheclean 2> /dev/null || echo ...not running
 }
 
 pidof_apache() {

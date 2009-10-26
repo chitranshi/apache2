@@ -4,6 +4,8 @@ apache2 (2.2.14-2) UNRELEASED; urgency=low
     to use .es and .tr for Spanish and Turkish files in mod_negotiation.
     Closes: #496080
   * Fix 'CacheEnable disk http://'. Closes: #442266
+  * Fix missing dependency by changing killall to pkill in the init script.
+    LP: #460692
 
  -- Stefan Fritsch <sf@debian.org>  Mon, 19 Oct 2009 19:50:11 +0200
 

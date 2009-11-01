@@ -6,6 +6,7 @@ apache2 (2.2.14-2) UNRELEASED; urgency=low
   * Fix 'CacheEnable disk http://'. Closes: #442266
   * Fix missing dependency by changing killall to pkill in the init script.
     LP: #460692
+  * Move httxt2dbm man page into apache2.2-bin, which includes httxt2dbm, too.
 
  -- Stefan Fritsch <sf@debian.org>  Mon, 19 Oct 2009 19:50:11 +0200
 

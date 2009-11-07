@@ -212,8 +212,10 @@ The SSL workaround for MS Internet Explorer needs to be added to your SSL
 VirtualHost section (it was previously in ssl.conf but caused keepalive to be
 disabled even for non-SSL connections):
 
-SetEnvIf User-Agent ".*MSIE.*"  nokeepalive ssl-unclean-shutdown \
-                                downgrade-1.0 force-response-1.0
+	BrowserMatch "MSIE [2-6]" \
+		nokeepalive ssl-unclean-shutdown \
+		downgrade-1.0 force-response-1.0
+	BrowserMatch "MSIE [17-9]" ssl-unclean-shutdown
 
 The default SSL virtual host in /etc/apache2/sites-available/default-ssl
 already contains this workaround.

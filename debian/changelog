@@ -1,5 +1,10 @@
 apache2 (2.2.14-2) UNRELEASED; urgency=low
 
+  * Security:
+    Reject any client-initiated SSL/TLS renegotiations. This is a partial fix
+    for the TLS renegotiation prefix injection attack (CVE-2009-3555).
+    Any configuration which requires renegotiation for per-directory/location
+    access control is still vulnerable.
   * Allow RemoveType to override the types from /etc/mime.types. This allows
     to use .es and .tr for Spanish and Turkish files in mod_negotiation.
     Closes: #496080

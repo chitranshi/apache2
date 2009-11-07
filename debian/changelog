@@ -1,4 +1,4 @@
-apache2 (2.2.14-2) UNRELEASED; urgency=low
+apache2 (2.2.14-2) unstable; urgency=medium
 
   * Security:
     Reject any client-initiated SSL/TLS renegotiations. This is a partial fix
@@ -16,7 +16,7 @@ apache2 (2.2.14-2) UNRELEASED; urgency=low
   * Move httxt2dbm man page into apache2.2-bin, which includes httxt2dbm, too.
   * Enable keepalive for MSIE 7 and newer in default-ssl site and README.Debian
 
- -- Stefan Fritsch <sf@debian.org>  Mon, 19 Oct 2009 19:50:11 +0200
+ -- Stefan Fritsch <sf@debian.org>  Sat, 07 Nov 2009 14:37:37 +0100
 
 apache2 (2.2.14-1) unstable; urgency=low
 

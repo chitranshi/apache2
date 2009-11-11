@@ -1,5 +1,12 @@
-apache2 (2.2.14-4) UNRELEASED; urgency=low
+apache2 (2.2.14-3) UNRELEASED; urgency=low
 
+  * Backport various mod_dav/mod_dav_fs fixes from upstream trunk svn. This
+    includes:
+    - Make PUT replace files atomically (closes: #525137).
+    - Make MOVE not delete the destination if the source file disappeared in
+      the meantime (closes: #273476).
+    NOTE: The format of the DavLockDB has changed. The default DavLockDB will
+    be deleted on upgrade. Non-default DavLockDBs should be deleted manually.
   * Fix output of "/etc/init.d/apache2 status" (closes: #555687).
   * Set redirect-carefully for Konqueror/4.
 

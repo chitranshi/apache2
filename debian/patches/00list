@@ -22,6 +22,7 @@
 070_RemoveType_override_mime.types.dpatch
 071_fix_cacheenable.dpatch
 072_CVE-2009-3555.dpatch
+073_mod_dav_trunk_fixes.dpatch
 099_config_guess_sub_update
 200_cp_suexec.dpatch
 201_build_suexec-custom.dpatch

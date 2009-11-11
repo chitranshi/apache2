@@ -1,3 +1,9 @@
+apache2 (2.2.14-4) UNRELEASED; urgency=low
+
+  * Fix output of "/etc/init.d/apache2 status" (closes: #555687).
+
+ -- Stefan Fritsch <sf@debian.org>  Wed, 11 Nov 2009 21:51:05 +0100
+
 apache2 (2.2.14-2) unstable; urgency=medium
 
   * Security:

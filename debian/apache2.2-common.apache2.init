@@ -98,7 +98,7 @@ apache_stop() {
 	else
 		# if we are here something is broken and we need to try
 		# to exit as nice and clean as possible
-		PID=$(pidof_apache)
+		PID=$(pidof_apache) || true
 
 		if [ "${PID}" ]; then
 			# in this case it is everything nice and dandy
@@ -120,7 +120,7 @@ apache_stop() {
 
 apache_wait_stop() {
 	# running ?
-	PIDTMP=$(pidof_apache)
+	PIDTMP=$(pidof_apache) || true
 	if kill -0 "${PIDTMP:-}" 2> /dev/null; then
 	    PID=$PIDTMP
 	fi
@@ -220,12 +220,12 @@ case $1 in
 			log_end_msg 0
 	;;
 	status)
-		PID=$(pidof_apache)
+		PID=$(pidof_apache) || true
 		if [ -n "$PID" ]; then
-			log_success_msg "Apache is running (pid $PID)."
+			echo "Apache is running (pid $PID)."
 			exit 0
 		else
-			log_failure_msg "Apache is not running."
+			echo "Apache is NOT running."
 			exit 1
 		fi
 	;;

@@ -1,4 +1,4 @@
-apache2 (2.2.14-3) UNRELEASED; urgency=low
+apache2 (2.2.14-3) unstable; urgency=low
 
   * Backport various mod_dav/mod_dav_fs fixes from upstream trunk svn. This
     includes:
@@ -11,7 +11,7 @@ apache2 (2.2.14-3) UNRELEASED; urgency=low
   * Update the comment about SNI in ports.conf (closes: #556932).
   * Set redirect-carefully for Konqueror/4.
 
- -- Stefan Fritsch <sf@debian.org>  Wed, 11 Nov 2009 21:51:05 +0100
+ -- Stefan Fritsch <sf@debian.org>  Sat, 21 Nov 2009 10:20:54 +0100
 
 apache2 (2.2.14-2) unstable; urgency=medium
 

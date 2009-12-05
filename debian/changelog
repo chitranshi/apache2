@@ -1,5 +1,7 @@
 apache2 (2.2.14-4) UNRELEASED; urgency=low
 
+  * mod_rewrite: Fix URLs in redirects with literal IPv6 hosts
+    (closes: #557015).
   * Automatically listen on port 443 if mod_gnutls is loaded (closes: #558234).
   * Link with -lcrypt where necessary to fix a FTBFS with binutils-gold
     (closes: #553946).

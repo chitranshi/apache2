@@ -24,6 +24,7 @@
 072_CVE-2009-3555.dpatch
 073_mod_dav_trunk_fixes.dpatch
 074_link_support_progs_with_lcrypt.dpatch
+075_mod_rewrite_literal_ipv6_redirect.dpatch
 099_config_guess_sub_update
 200_cp_suexec.dpatch
 201_build_suexec-custom.dpatch

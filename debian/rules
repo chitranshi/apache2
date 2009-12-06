@@ -254,8 +254,6 @@ install: build install-worker install-prefork install-common install-dev
 
 	#apache2-utils extras
 	cp support/check_forensic debian/apache2-utils/usr/sbin/check_forensic
-	cp debian/check_forensic.8 debian/apache2-utils/usr/share/man/man8/check_forensic.8
-	cp debian/checkgid.8 debian/apache2-utils/usr/share/man/man8/checkgid.8
 	cp $(BUILD)/worker/support/split-logfile debian/apache2-utils/usr/sbin/split-logfile
 	chmod 755 debian/apache2-utils/usr/sbin/split-logfile
 

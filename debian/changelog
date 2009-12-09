@@ -1,5 +1,9 @@
 apache2 (2.2.14-4) UNRELEASED; urgency=low
 
+  * Disable localized error pages again by default because they break
+    configurations with "<Location /> SetHandler ...". A workaround is
+    described in the comments in /etc/apache2/conf.d/localized-error-pages
+    (closes: #543333).
   * mod_rewrite: Fix URLs in redirects with literal IPv6 hosts
     (closes: #557015).
   * Automatically listen on port 443 if mod_gnutls is loaded (closes: #558234).

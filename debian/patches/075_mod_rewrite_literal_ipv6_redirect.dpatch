@@ -37,7 +37,7 @@ diff -urNad trunk~/modules/mappers/mod_rewrite.c trunk/modules/mappers/mod_rewri
          int port;
  
 -        thisserver = ap_get_server_name(r);
-+        thisserver = ap_get_server_name_for_url(r);
++        thisserver = get_server_name_for_url(r);
          port = ap_get_server_port(r);
          thisport = ap_is_default_port(port, r)
                     ? ""
@@ -46,7 +46,7 @@ diff -urNad trunk~/modules/mappers/mod_rewrite.c trunk/modules/mappers/mod_rewri
  
      /* add the canonical URI of this URL */
 -    thisserver = ap_get_server_name(r);
-+    thisserver = ap_get_server_name_for_url(r);
++    thisserver = get_server_name_for_url(r);
      port = ap_get_server_port(r);
      if (ap_is_default_port(port, r)) {
          thisport = "";

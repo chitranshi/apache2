@@ -1,4 +1,4 @@
-apache2 (2.2.14-4) UNRELEASED; urgency=low
+apache2 (2.2.14-4) unstable; urgency=low
 
   * Disable localized error pages again by default because they break
     configurations with "<Location /> SetHandler ...". A workaround is
@@ -11,7 +11,7 @@ apache2 (2.2.14-4) UNRELEASED; urgency=low
   * Link with -lcrypt where necessary to fix a FTBFS with binutils-gold
     (closes: #553946).
 
- -- Stefan Fritsch <sf@debian.org>  Fri, 27 Nov 2009 19:36:24 +0100
+ -- Stefan Fritsch <sf@debian.org>  Sun, 13 Dec 2009 20:05:37 +0100
 
 apache2 (2.2.14-3) unstable; urgency=low
 

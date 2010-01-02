@@ -1,4 +1,4 @@
-apache2 (2.2.14-5) UNRELEASED; urgency=low
+apache2 (2.2.14-5) unstable; urgency=low
 
   * Security: Further mitigation for the TLS renegotation attack
     (CVE-2009-3555): Disable keep-alive if parts of the next request have
@@ -19,7 +19,7 @@ apache2 (2.2.14-5) UNRELEASED; urgency=low
   * Add misc-depends to various packages to make lintian happy.
   * Change build-dep from libcap2-dev to libcap-dev because of package rename.
 
- -- Stefan Fritsch <sf@debian.org>  Sat, 02 Jan 2010 22:32:27 +0100
+ -- Stefan Fritsch <sf@debian.org>  Sat, 02 Jan 2010 22:44:15 +0100
 
 apache2 (2.2.14-4) unstable; urgency=low
 

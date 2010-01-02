@@ -7,6 +7,9 @@ apache2 (2.2.14-5) UNRELEASED; urgency=low
   * Add hint README.Debian on how to pass auth info to CGI scripts.
     Closes: #483219
   * Point to README.backtrace in apache2-dbg's description.
+  * Use more debhelper functions to simplify debian/rules.
+  * Add misc-depends to various packages to make lintian happy.
+  * Change build-dep from libcap2-dev to libcap-dev because of package rename.
 
  -- Stefan Fritsch <sf@debian.org>  Sat, 02 Jan 2010 17:41:40 +0100
 

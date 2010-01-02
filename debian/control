@@ -3,7 +3,7 @@ Section: httpd
 Priority: optional
 Maintainer: Debian Apache Maintainers <debian-apache@lists.debian.org>
 Uploaders: Tollef Fog Heen <tfheen@debian.org>, Thom May <thom@debian.org>, Adam Conrad <adconrad@0c3.net>, Peter Samuelson <peter@p12n.org>, Stefan Fritsch <sf@debian.org>, Steinar H. Gunderson <sesse@debian.org>
-Build-Depends: debhelper (>= 7), dpatch, lsb-release, libaprutil1-dev (>= 1.3.4), libapr1-dev (>= 1.2.7-6), openssl, libpcre3-dev, mawk, zlib1g-dev, libssl-dev, sharutils, libcap2-dev [!kfreebsd-i386 !kfreebsd-amd64 !hurd-i386], autoconf
+Build-Depends: debhelper (>= 7.4.3), dpatch, lsb-release, libaprutil1-dev (>= 1.3.4), libapr1-dev (>= 1.2.7-6), openssl, libpcre3-dev, mawk, zlib1g-dev, libssl-dev, sharutils, libcap-dev [!kfreebsd-i386 !kfreebsd-amd64 !hurd-i386], autoconf
 Build-Conflicts: autoconf2.13
 Standards-Version: 3.8.3
 Vcs-Browser: http://svn.debian.org/wsvn/pkg-apache/trunk/apache2
@@ -12,7 +12,7 @@ Homepage: http://httpd.apache.org/
 
 Package: apache2.2-common
 Architecture: any
-Depends: apache2.2-bin (= ${binary:Version}), apache2-utils, libmagic1, mime-support, lsb-base, procps [!hurd-i386], perl
+Depends: ${misc:Depends}, apache2.2-bin (= ${binary:Version}), apache2-utils, libmagic1, mime-support, lsb-base, procps [!hurd-i386], perl
 Recommends: ssl-cert
 Suggests: www-browser, apache2-doc, apache2-suexec | apache2-suexec-custom
 Conflicts: apache2-common, libapache2-mod-php5 (<= 5.1.6-3), libapache2-mod-php4 (<= 4:4.4.4-2), libapache2-mod-mime-xattr (<= 0.3-2), libapache2-mod-mono (<= 1.1.17-3), libapache2-mod-proxy-html (<= 2.4.3-2), libapache2-mod-scgi (<= 1.11-1), libapache2-mod-speedycgi (<= 2.22-3), libapache2-modxslt (<= 2005072700-1), libapache2-redirtoservername (<= 0.1-1), libapache2-webauth (<= 3.5.3-1), libapache2-webkdc (<= 3.5.3-1)
@@ -43,7 +43,7 @@ Description: Apache HTTP Server common binary files
 
 Package: apache2-mpm-worker
 Architecture: any
-Depends: apache2.2-common (= ${binary:Version}), apache2.2-bin (= ${binary:Version})
+Depends: ${misc:Depends}, apache2.2-common (= ${binary:Version}), apache2.2-bin (= ${binary:Version})
 Provides: apache2-mpm, apache2, httpd, httpd-cgi
 Conflicts: apache2-mpm, apache2-common
 Replaces: apache2-mpm-threadpool (<< 2.0.53), apache2-mpm-perchild (<< 2.2.0)
@@ -57,7 +57,7 @@ Description: Apache HTTP Server - high speed threaded model
 
 Package: apache2-mpm-prefork
 Architecture: any
-Depends: apache2.2-common (= ${binary:Version}), apache2.2-bin (= ${binary:Version})
+Depends: ${misc:Depends}, apache2.2-common (= ${binary:Version}), apache2.2-bin (= ${binary:Version})
 Provides: apache2-mpm, apache2, httpd, httpd-cgi
 Conflicts: apache2-mpm, apache2-common
 Description: Apache HTTP Server - traditional non-threaded model
@@ -74,7 +74,7 @@ Description: Apache HTTP Server - traditional non-threaded model
 
 Package: apache2-mpm-event
 Architecture: any
-Depends: apache2.2-common (= ${binary:Version}), apache2.2-bin (= ${binary:Version})
+Depends: ${misc:Depends}, apache2.2-common (= ${binary:Version}), apache2.2-bin (= ${binary:Version})
 Provides: apache2-mpm, apache2, httpd, httpd-cgi
 Conflicts: apache2-mpm, apache2-common
 Description: Apache HTTP Server - event driven model
@@ -89,7 +89,7 @@ Description: Apache HTTP Server - event driven model
  This MPM is experimental and less tested than the worker and prefork MPMs.
  
 Package: apache2-mpm-itk
-Depends: apache2.2-common (= ${binary:Version}), apache2.2-bin (= ${binary:Version})
+Depends: ${misc:Depends}, apache2.2-common (= ${binary:Version}), apache2.2-bin (= ${binary:Version})
 Provides: apache2-mpm, apache2, httpd, httpd-cgi
 Conflicts: apache2-mpm, apache2-common
 Architecture: any
@@ -109,7 +109,7 @@ Package: apache2-utils
 Architecture: any
 Replaces: apache2-common, apache-utils (<< 1.3.33-4)
 Conflicts: apache-common (<< 1.3.28.0.1-1)
-Depends: ${shlibs:Depends}
+Depends: ${misc:Depends}, ${shlibs:Depends}
 Description: utility programs for webservers
  Provides some add-on programs useful for any webserver.  These include:
   - ab (Apache benchmark tool)
@@ -126,7 +126,7 @@ Description: utility programs for webservers
 Package: apache2-suexec
 Priority: optional
 Architecture: any
-Depends: ${shlibs:Depends}, apache2.2-common
+Depends: ${misc:Depends}, ${shlibs:Depends}, apache2.2-common
 Conflicts: apache2-suexec, apache-common
 Replaces: apache2-suexec
 Description: Standard suexec program for Apache 2 mod_suexec
@@ -137,7 +137,7 @@ Description: Standard suexec program for Apache 2 mod_suexec
 Package: apache2-suexec-custom
 Priority: extra
 Architecture: any
-Depends: ${shlibs:Depends}, apache2.2-common
+Depends: ${misc:Depends}, ${shlibs:Depends}, apache2.2-common
 Provides: apache2-suexec
 Conflicts: apache2-suexec, apache-common
 Replaces: apache2-suexec
@@ -152,7 +152,7 @@ Description: Configurable suexec program for Apache 2 mod_suexec
 
 Package: apache2
 Architecture: any
-Depends: apache2-mpm-worker (= ${binary:Version}) | apache2-mpm-prefork (= ${binary:Version}) | apache2-mpm-event (= ${binary:Version}) | apache2-mpm-itk (= ${binary:Version}), apache2.2-common (= ${binary:Version})
+Depends: ${misc:Depends}, apache2-mpm-worker (= ${binary:Version}) | apache2-mpm-prefork (= ${binary:Version}) | apache2-mpm-event (= ${binary:Version}) | apache2-mpm-itk (= ${binary:Version}), apache2.2-common (= ${binary:Version})
 Description: Apache HTTP Server metapackage         
  The Apache Software Foundation's goal is to build a secure, efficient and
  extensible HTTP server as standards-compliant open source software. The
@@ -165,13 +165,14 @@ Description: Apache HTTP Server metapackage
 Package: apache2-doc
 Section: doc
 Architecture: all
+Depends: ${misc:Depends}
 Description: Apache HTTP Server documentation
  This package provides the documentation for Apache 2. For more details
  see the apache2 package description.
 
 Package: apache2-prefork-dev
 Architecture: any
-Depends: apache2.2-common (= ${binary:Version}), openssl, libaprutil1-dev
+Depends: ${misc:Depends}, apache2.2-common (= ${binary:Version}), openssl, libaprutil1-dev
 Conflicts: apache2-threaded-dev
 Priority: extra
 Description: Apache development headers - non-threaded MPM
@@ -183,7 +184,7 @@ Description: Apache development headers - non-threaded MPM
 
 Package: apache2-threaded-dev
 Architecture: any
-Depends: apache2.2-common (= ${binary:Version}), openssl, libaprutil1-dev
+Depends: ${misc:Depends}, apache2.2-common (= ${binary:Version}), openssl, libaprutil1-dev
 Conflicts: apache2-prefork-dev
 Provides: apache2-dev
 Priority: extra
@@ -196,7 +197,7 @@ Package: apache2-dbg
 Section: debug
 Priority: extra
 Architecture: any
-Depends: apache2.2-bin (= ${binary:Version})
+Depends: ${misc:Depends}, apache2.2-bin (= ${binary:Version})
 Description: Apache debugging symbols
  This package includes the debugging symbols for Apache 2.
  See /usr/share/doc/apache2.2-common/README.backtrace for more information.

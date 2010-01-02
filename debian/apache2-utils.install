@@ -15,3 +15,5 @@ usr/sbin/rotatelogs
 usr/share/man/man8/rotatelogs.8
 usr/sbin/htcacheclean
 usr/share/man/man8/htcacheclean.8
+support/check_forensic				usr/sbin
+debian/build-tree/worker/support/split-logfile	usr/sbin

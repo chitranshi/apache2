@@ -5,7 +5,7 @@ if [ "$1" != "configure" ]; then
         exit 0
 fi
 
-P=xxx
+P=apache2-mpm-MPMXXX
 if [ $P = apache2-mpm-prefork ] || [ $P = apache2-mpm-itk ]; then
 	CGI_DIS=cgid
 	CGI_EN=cgi

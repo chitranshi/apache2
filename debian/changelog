@@ -3,6 +3,7 @@ apache2 (2.2.14-5) UNRELEASED; urgency=low
   * Print a useful error message if 'apache2ctl status' fails. Add a comment
     to /etc/apache2/envvars on how to change the options for www-browser.
     Closes: #561496, #272069
+  * Improve function to detect apache2 pid in init-script (closes: #562583).
   * Point to README.backtrace in apache2-dbg's description.
 
  -- Stefan Fritsch <sf@debian.org>  Sat, 02 Jan 2010 17:41:40 +0100

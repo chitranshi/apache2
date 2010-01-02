@@ -71,24 +71,14 @@ stop_htcacheclean() {
 }
 
 pidof_apache() {
-    # if pidof is null for some reasons the script exits automagically
-    # classified as good/unknown feature
-    PIDS=$(pidof apache2) || true
-
-    [ -e $PIDFILE ] && PIDS2=$(cat $PIDFILE)
-    
-    # if there is a pid we need to verify that belongs to apache2
-    # for real
-    for i in $PIDS; do
-    	if [ "$i" = "$PIDS2" ]; then
-            # in this case the pid stored in the
-            # pidfile matches one of the pidof apache
-            # so a simple kill will make it
-            echo $i
-            return 0
-        fi
-    done
-    return 1
+	# if there is actually an apache2 process whose pid is in PIDFILE,
+	# print it and return 0.
+	if [ -e "$PIDFILE" ]; then
+		if pidof apache2 | tr ' ' '\n' | grep $(cat $PIDFILE); then
+			return 0
+		fi
+	fi
+	return 1
 }
 
 apache_stop() {

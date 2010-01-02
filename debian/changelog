@@ -12,12 +12,14 @@ apache2 (2.2.14-5) UNRELEASED; urgency=low
     Closes: #483219
   * Re-introduce objcopy magic to avoid dangling symlinks to the debug info
     in the mpm packages. Closes: #563278
+  * Make apxs2 use a2enmod and /etc/apache2/mods-available. Closes: #470178,
+    LP: #500703
   * Point to README.backtrace in apache2-dbg's description.
   * Use more debhelper functions to simplify debian/rules.
   * Add misc-depends to various packages to make lintian happy.
   * Change build-dep from libcap2-dev to libcap-dev because of package rename.
 
- -- Stefan Fritsch <sf@debian.org>  Sat, 02 Jan 2010 17:41:40 +0100
+ -- Stefan Fritsch <sf@debian.org>  Sat, 02 Jan 2010 22:32:27 +0100
 
 apache2 (2.2.14-4) unstable; urgency=low
 

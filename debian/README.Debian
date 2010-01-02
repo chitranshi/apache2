@@ -145,6 +145,8 @@ the above configuration system.
 a2ensite and a2dissite do essentially the same thing as the above tools, but
 for sites rather than modules.
 
+apxs2 -a/-A is modified to use a2enmod to activate newly installed modules.
+
 
 Using mod_disk_cache
 ====================

@@ -261,7 +261,6 @@ install: build install-dev
 		find debian/$$pkg/ -name .svn -exec rm -rf {} + ; \
 	done
 
-	# common dh stuff
 	dh_installdocs debian/README.backtrace -papache2.2-common -papache2.2-bin
 	dh_installdocs debian/README.backtrace -Napache2.2-common -Napache2.2-bin
 	cp debian/README.Debian debian/apache2-doc/usr/share/doc/apache2-doc/
@@ -274,7 +273,18 @@ install: build install-dev
 	dh_lintian
 	rm -f debian/apache2.2-bin/usr/share/doc/apache2.2-bin/NEWS.Debian
 	rm -f debian/apache2-utils/usr/share/doc/apache2-utils/NEWS.Debian
-	dh_strip --dbg-package=apache2-dbg -Napache2-dbg;
+
+	dh_strip --dbg-package=apache2-dbg -Napache2-dbg -Xusr/lib/apache2/mpm
+	if [ "$(LSB_RELEASE)" != "Ubuntu" ] && [ -n "$(DEB_BUILD_STRIP)" ] ; then \
+		for i in worker prefork event itk; do \
+			MPM=usr/lib/apache2/mpm-$$i/apache2 ;\
+			objcopy --only-keep-debug $(BUILD)/$$i/apache2 debian/apache2-dbg/usr/lib/debug/$$MPM-mpm-$$i ;\
+			chmod 644 debian/apache2-dbg/usr/lib/debug/$$MPM-mpm-$$i ;\
+			strip --remove-section=.comment --remove-section=.note --strip-unneeded debian/apache2.2-bin/$$MPM ;\
+			objcopy --add-gnu-debuglink=debian/apache2-dbg/usr/lib/debug/$$MPM-mpm-$$i debian/apache2.2-bin/$$MPM ;\
+		done ;\
+	fi
+
 	cp debian/mpm-itk/README debian/apache2.2-common/usr/share/doc/apache2.2-common/README.mpm-itk
 	cp debian/mpm-itk/CHANGES debian/apache2.2-common/usr/share/doc/apache2.2-common/changelog.mpm-itk
 	cp debian/mpm-itk/debian/changelog debian/apache2.2-common/usr/share/doc/apache2.2-common/changelog.mpm-itk.Debian

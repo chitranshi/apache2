@@ -6,6 +6,8 @@ apache2 (2.2.14-5) UNRELEASED; urgency=low
   * Improve function to detect apache2 pid in init-script (closes: #562583).
   * Add hint README.Debian on how to pass auth info to CGI scripts.
     Closes: #483219
+  * Re-introduce objcopy magic to avoid dangling symlinks to the debug info
+    in the mpm packages. Closes: #563278
   * Point to README.backtrace in apache2-dbg's description.
   * Use more debhelper functions to simplify debian/rules.
   * Add misc-depends to various packages to make lintian happy.

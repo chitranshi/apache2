@@ -327,3 +327,12 @@ high enough by default.
 
 Since 2.2.12, Apache is stricter about certain misconfigurations concerning
 name based SSL virtual hosts. See NEWS.Debian.gz for more details.
+
+7) Apache does not pass Authorization header to CGI scripts
+
+This is intentional to avoid security holes. If you really want to change it,
+you can use mod_rewrite:
+
+	RewriteCond %{HTTP:Authorization} (.*)
+	RewriteRule . - [env=HTTP_AUTHORIZATION:%1]
+

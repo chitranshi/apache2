@@ -199,3 +199,4 @@ Architecture: any
 Depends: apache2.2-bin (= ${binary:Version})
 Description: Apache debugging symbols
  This package includes the debugging symbols for Apache 2.
+ See /usr/share/doc/apache2.2-common/README.backtrace for more information.

@@ -1,5 +1,9 @@
 apache2 (2.2.14-5) UNRELEASED; urgency=low
 
+  * Security: Further mitigation for the TLS renegotation attack
+    (CVE-2009-3555): Disable keep-alive if parts of the next request have
+    already been received when doing a renegotiation. This defends against
+    some request splicing attacks.
   * Print a useful error message if 'apache2ctl status' fails. Add a comment
     to /etc/apache2/envvars on how to change the options for www-browser.
     Closes: #561496, #272069

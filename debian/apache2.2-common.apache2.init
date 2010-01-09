@@ -163,6 +163,20 @@ case $1 in
                         log_end_msg 1
                 fi
 	;;
+	graceful-stop)
+		if check_htcacheclean ; then
+			log_daemon_msg "Stopping web server" "htcacheclean"
+			stop_htcacheclean
+			log_progress_msg "apache2"
+		else
+			log_daemon_msg "Stopping web server" "apache2"
+		fi
+		if $APACHE2CTL graceful-stop; then
+                        log_end_msg 0
+                else
+                        log_end_msg 1
+                fi
+	;;
 	reload | force-reload)
 		if ! $APACHE2CTL configtest > /dev/null 2>&1; then
                     $APACHE2CTL configtest || true
@@ -220,7 +234,7 @@ case $1 in
 		fi
 	;;
 	*)
-		log_success_msg "Usage: /etc/init.d/apache2 {start|stop|restart|reload|force-reload|start-htcacheclean|stop-htcacheclean|status}"
+		log_success_msg "Usage: /etc/init.d/apache2 {start|stop|graceful-stop|restart|reload|force-reload|start-htcacheclean|stop-htcacheclean|status}"
 		exit 1
 	;;
 esac

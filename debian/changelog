@@ -1,3 +1,9 @@
+apache2 (2.2.14-6) UNRELEASED; urgency=low
+
+  * Move ab and logresolve from /usr/sbin to /usr/bin. Closes: #351450, #564061
+
+ -- Stefan Fritsch <sf@debian.org>  Sat, 09 Jan 2010 13:11:11 +0100
+
 apache2 (2.2.14-5) unstable; urgency=low
 
   * Security: Further mitigation for the TLS renegotation attack

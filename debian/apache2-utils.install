@@ -1,5 +1,5 @@
-usr/sbin/ab
-usr/share/man/man8/ab.8
+usr/sbin/ab /usr/bin
+usr/share/man/man1/ab.1
 usr/sbin/checkgid
 usr/sbin/dbmmanage usr/bin/
 usr/share/man/man1/dbmmanage.1
@@ -9,8 +9,8 @@ usr/sbin/htdigest usr/bin/
 usr/share/man/man1/htdigest.1
 usr/sbin/htpasswd usr/bin/
 usr/share/man/man1/htpasswd.1
-usr/sbin/logresolve
-usr/share/man/man8/logresolve.8
+usr/sbin/logresolve /usr/bin
+usr/share/man/man1/logresolve.1
 usr/sbin/rotatelogs
 usr/share/man/man8/rotatelogs.8
 usr/sbin/htcacheclean

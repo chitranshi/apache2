@@ -2,6 +2,7 @@ apache2 (2.2.14-6) UNRELEASED; urgency=low
 
   * Move ab and logresolve from /usr/sbin to /usr/bin. Closes: #351450, #564061
   * Add new init script action graceful-stop (LP: #456381)
+  * Make bug script also display php extensions.
 
  -- Stefan Fritsch <sf@debian.org>  Sat, 09 Jan 2010 13:11:11 +0100
 

@@ -1,6 +1,7 @@
 apache2 (2.2.14-6) UNRELEASED; urgency=low
 
   * Move ab and logresolve from /usr/sbin to /usr/bin. Closes: #351450, #564061
+  * Fix symlinks in apache2-dbg package. Closes: #567076
   * Add new init script action graceful-stop (LP: #456381)
   * Make bug script also display php extensions.
 

@@ -281,10 +281,10 @@ install: build install-dev
 	if [ "$(LSB_RELEASE)" != "Ubuntu" ] && [ -n "$(DEB_BUILD_STRIP)" ] ; then \
 		for i in worker prefork event itk; do \
 			MPM=usr/lib/apache2/mpm-$$i/apache2 ;\
-			objcopy --only-keep-debug $(BUILD)/$$i/apache2 debian/apache2-dbg/usr/lib/debug/$$MPM-mpm-$$i ;\
-			chmod 644 debian/apache2-dbg/usr/lib/debug/$$MPM-mpm-$$i ;\
+			objcopy --only-keep-debug $(BUILD)/$$i/apache2 debian/apache2-dbg/usr/lib/debug/$$MPM ;\
+			chmod 644 debian/apache2-dbg/usr/lib/debug/$$MPM ;\
 			strip --remove-section=.comment --remove-section=.note --strip-unneeded debian/apache2.2-bin/$$MPM ;\
-			objcopy --add-gnu-debuglink=debian/apache2-dbg/usr/lib/debug/$$MPM-mpm-$$i debian/apache2.2-bin/$$MPM ;\
+			objcopy --add-gnu-debuglink=debian/apache2-dbg/usr/lib/debug/$$MPM debian/apache2.2-bin/$$MPM ;\
 		done ;\
 	fi
 

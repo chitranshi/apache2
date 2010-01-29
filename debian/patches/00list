@@ -26,6 +26,7 @@
 074_link_support_progs_with_lcrypt.dpatch
 075_mod_rewrite_literal_ipv6_redirect.dpatch
 076_apxs2_a2enmod.dpatch
+077_CacheIgnoreURLSessionIdentifiers.dpatch
 099_config_guess_sub_update
 200_cp_suexec.dpatch
 201_build_suexec-custom.dpatch

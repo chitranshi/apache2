@@ -2,6 +2,7 @@ apache2 (2.2.14-6) UNRELEASED; urgency=low
 
   * Move ab and logresolve from /usr/sbin to /usr/bin. Closes: #351450, #564061
   * Fix symlinks in apache2-dbg package. Closes: #567076
+  * Fix mod_cache CacheIgnoreURLSessionIdentifiers handling. Closes: #556383
   * Add new init script action graceful-stop (LP: #456381)
   * Unset $HOME in /etc/apache2/envvars.
   * Add a hook to apache2.2-common's postrm script that may come in handy

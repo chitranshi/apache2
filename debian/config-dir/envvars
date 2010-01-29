@@ -1,5 +1,8 @@
 # envvars - default environment variables for apache2ctl
 
+# this won't be correct after changing uid
+unset HOME
+
 # Since there is no sane way to get the parsed apache2 config in scripts, some
 # settings are defined via environment variables and then used in apache2ctl,
 # /etc/init.d/apache2, /etc/logrotate.d/apache2, etc.

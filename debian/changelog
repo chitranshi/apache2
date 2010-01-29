@@ -3,6 +3,8 @@ apache2 (2.2.14-6) UNRELEASED; urgency=low
   * Move ab and logresolve from /usr/sbin to /usr/bin. Closes: #351450, #564061
   * Fix symlinks in apache2-dbg package. Closes: #567076
   * Add new init script action graceful-stop (LP: #456381)
+  * Add a hook to apache2.2-common's postrm script that may come in handy
+    when upgrading to 2.4.
   * Make bug script also display php extensions.
 
  -- Stefan Fritsch <sf@debian.org>  Sat, 09 Jan 2010 13:11:11 +0100

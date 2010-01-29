@@ -2,7 +2,30 @@
 
 set -e
 
-if [ "$1" = purge ] ; then
+# Allow apache 2.4 to override what we do.
+if [ -x /etc/apache2/upgrade-to-2.4-in-progress ] ; then
+	set +e
+	/etc/apache2/upgrade-to-2.4-in-progress $0 "$@"
+	ret=$?
+	set -e
+	case $ret in
+	42)
+		exit 0
+		;;
+	43)
+		DONT_PURGE=1
+		;;
+	0)
+		: # do nothing
+		;;
+	*)
+		exit $ret
+		;;
+	esac
+fi
+
+
+if [ "$1" = purge -a "$DONT_PURGE" != 1 ] ; then
 	rm -f 	/etc/apache2/httpd.conf \
 		/var/cache/apache2/reload \
 		/var/log/apache2/access.log* \

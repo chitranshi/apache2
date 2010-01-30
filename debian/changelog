@@ -8,6 +8,7 @@ apache2 (2.2.14-6) UNRELEASED; urgency=low
   * Add a hook to apache2.2-common's postrm script that may come in handy
     when upgrading to 2.4.
   * Make bug script also display php extensions.
+  * Bump Standards-Version (no changes).
 
  -- Stefan Fritsch <sf@debian.org>  Sat, 09 Jan 2010 13:11:11 +0100
 

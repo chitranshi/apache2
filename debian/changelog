@@ -4,6 +4,8 @@ apache2 (2.2.14-6) UNRELEASED; urgency=low
   * Fix symlinks in apache2-dbg package. Closes: #567076
   * Fix mod_cache CacheIgnoreURLSessionIdentifiers handling. Closes: #556383
   * Add new init script action graceful-stop (LP: #456381)
+  * Add more languages to mime.conf. To limit this to useful entries, we only
+    add those for which a translation of the Debian intaller exists. LP: #217964
   * Unset $HOME in /etc/apache2/envvars.
   * Add a hook to apache2.2-common's postrm script that may come in handy
     when upgrading to 2.4.

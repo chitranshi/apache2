@@ -7,6 +7,9 @@ apache2 (2.2.14-6) UNRELEASED; urgency=low
   * Add more languages to mime.conf. To limit this to useful entries, we only
     add those for which a translation of the Debian intaller exists. LP: #217964
   * Unset $HOME in /etc/apache2/envvars.
+  * Change default config of mod_info and mod_status to use IP addresses
+    instead of hostnames. Otherwise the hostname is sometimes logged even with
+    'HostnameLookup Off'. Closes: #568409
   * Add a hook to apache2.2-common's postrm script that may come in handy
     when upgrading to 2.4.
   * Make bug script also display php extensions.

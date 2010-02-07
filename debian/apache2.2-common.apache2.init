@@ -85,14 +85,15 @@ check_htcacheclean() {
 
 start_htcacheclean() {
 	if [ ! -d "$HTCACHECLEAN_PATH" ] ; then
-		echo "Directory $HTCACHECLEAN_PATH does not exist!" >&2
+		echo "... directory $HTCACHECLEAN_PATH does not exist!" >&2
+		return 1
 	fi	
 	$HTCACHECLEAN $HTCACHECLEAN_OPTIONS -d$HTCACHECLEAN_DAEMON_INTERVAL \
 			-i -p$HTCACHECLEAN_PATH -l$HTCACHECLEAN_SIZE
 }
 
 stop_htcacheclean() {
-	pkill htcacheclean 2> /dev/null || echo ...not running
+	pkill -P 1 -f "htcacheclean.*\\<-p$HTCACHECLEAN_PATH\\>" 2> /dev/null || echo ...not running
 }
 
 pidof_apache() {

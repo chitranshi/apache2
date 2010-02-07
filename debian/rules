@@ -208,14 +208,13 @@ install: build install-dev
 	rm -rf debian/tmp/usr/include
 	rm -rf debian/tmp/usr/share/apache2/build
 	rm -f debian/tmp/usr/share/man/man8/httpd.8 # We install our own
-	rm -f debian/tmp/usr/sbin/apxs debian/tmp/usr/sbin/apache2
+	rm -f debian/tmp/usr/sbin/apxs debian/tmp/usr/sbin/apache2 debian/tmp/usr/sbin/apachectl
 
 	# DO NOT FALL FOR THE TEMPTATION TO MV INTO PACKAGES OR DOOM
 	# WILL FIND YOU.  Use dh_install, this is just because dh_install
 	# can't rename files
 
 	mv debian/tmp/usr/share/man/man8/apxs.8 debian/tmp/usr/share/man/man8/apxs2.8
-	mv debian/tmp/usr/sbin/apachectl debian/tmp/usr/sbin/apache2ctl
 	mv debian/tmp/usr/share/man/man8/apachectl.8 debian/tmp/usr/share/man/man8/apache2ctl.8
 	mkdir -p debian/tmp/usr/share/apache2/icons/
 	for i in `ls debian/icons/ | cut -d. -f1,2`; do \

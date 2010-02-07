@@ -1,4 +1,4 @@
-#!/bin/sh -e
+#!/bin/sh
 ### BEGIN INIT INFO
 # Provides:          apache2
 # Required-Start:    $local_fs $remote_fs $network $syslog
@@ -8,28 +8,44 @@
 # X-Interactive:     true
 # Short-Description: Start/stop apache2 web server
 ### END INIT INFO
-#
-# apache2		This init.d script is used to start apache2.
-#			It basically just calls apache2ctl.
+
+set -e
+
+if [ -n "$APACHE_CONFDIR" ] ; then
+	DIR_SUFFIX=
+elif [ "${0##*/apache2-}" != "$0" ] ; then
+	DIR_SUFFIX="-${0##*/apache2-}"
+	APACHE_CONFDIR=/etc/apache2$DIR_SUFFIX
+else
+	DIR_SUFFIX=
+	APACHE_CONFDIR=/etc/apache2
+fi
+if [ -z "$APACHE_ENVVARS" ] ; then
+	APACHE_ENVVARS=$APACHE_CONFDIR/envvars
+fi
 
 ENV="env -i LANG=C PATH=/usr/local/bin:/usr/bin:/bin"
+if [ "$APACHE_CONFDIR" != /etc/apache2 ] ; then
+	ENV="$ENV APACHE_CONFDIR=$APACHE_CONFDIR"
+fi
+if [ "$APACHE_ENVVARS" != "$APACHE_CONFDIR/envvars" ] ; then
+	ENV="$ENV APACHE_ENVVARS=$APACHE_ENVVARS"
+fi
 
-#[ $(ls -1 /etc/apache2/sites-enabled/ | wc -l | sed -e 's/ *//;') -eq 0 ] && \
-#echo "You haven't enabled any sites yet, so I'm not starting apache2." && \
-#echo "To add and enable a host, use addhost and enhost." && exit 0
 
 #edit /etc/default/apache2 to change this.
 HTCACHECLEAN_RUN=auto
 HTCACHECLEAN_MODE=daemon
 HTCACHECLEAN_SIZE=300M
 HTCACHECLEAN_DAEMON_INTERVAL=120
-HTCACHECLEAN_PATH=/var/cache/apache2/mod_disk_cache
+HTCACHECLEAN_PATH=/var/cache/apache2$DIR_SUFFIX/mod_disk_cache
 HTCACHECLEAN_OPTIONS=""
 
-set -e
-if [ -x /usr/sbin/apache2 ] ; then
-	HAVE_APACHE2=1
-else
+APACHE_HTTPD=$(. $APACHE_ENVVARS && echo $APACHE_HTTPD)
+if [ -z "$APACHE_HTTPD" ] ; then
+	APACHE_HTTPD=/usr/sbin/apache2
+fi
+if [ ! -x $APACHE_HTTPD ] ; then
 	echo "No apache MPM package installed"
 	exit 0
 fi
@@ -37,14 +53,19 @@ fi
 . /lib/lsb/init-functions
 
 test -f /etc/default/rcS && . /etc/default/rcS
-test -f /etc/default/apache2 && . /etc/default/apache2
+
+if [ -f /etc/default/apache2$DIR_SUFFIX ] ; then
+	. /etc/default/apache2$DIR_SUFFIX
+elif [ -f /etc/default/apache2 ] ; then
+	. /etc/default/apache2
+fi
 
 APACHE2CTL="$ENV /usr/sbin/apache2ctl"
 HTCACHECLEAN="$ENV /usr/sbin/htcacheclean"
 
-PIDFILE=$(. /etc/apache2/envvars && echo $APACHE_PID_FILE)
+PIDFILE=$(. $APACHE_ENVVARS && echo $APACHE_PID_FILE)
 if [ -z "$PIDFILE" ] ; then
-	echo ERROR: APACHE_PID_FILE needs to be defined in /etc/apache2/envvars >&2
+	echo ERROR: APACHE_PID_FILE needs to be defined in $APACHE_ENVVARS >&2
 	exit 2
 fi
 
@@ -54,16 +75,20 @@ check_htcacheclean() {
 
 	[ "$HTCACHECLEAN_RUN"  = "yes"    ] && return 0
 
+	MODSDIR=$(. $APACHE_ENVVARS && echo $APACHE_MODS_ENABLED)
 	[ "$HTCACHECLEAN_RUN"  = "auto" \
-	  -a -e /etc/apache2/mods-enabled/disk_cache.load ] && return 0
+	  -a -e ${MODSDIR:-$APACHE_CONFDIR/mods-enabled}/disk_cache.load ] && \
+		return 0
 	
 	return 1
 }
 
 start_htcacheclean() {
+	if [ ! -d "$HTCACHECLEAN_PATH" ] ; then
+		echo "Directory $HTCACHECLEAN_PATH does not exist!" >&2
+	fi	
 	$HTCACHECLEAN $HTCACHECLEAN_OPTIONS -d$HTCACHECLEAN_DAEMON_INTERVAL \
 			-i -p$HTCACHECLEAN_PATH -l$HTCACHECLEAN_SIZE
-				
 }
 
 stop_htcacheclean() {
@@ -74,7 +99,7 @@ pidof_apache() {
 	# if there is actually an apache2 process whose pid is in PIDFILE,
 	# print it and return 0.
 	if [ -e "$PIDFILE" ]; then
-		if pidof apache2 | tr ' ' '\n' | grep $(cat $PIDFILE); then
+		if pidof apache2 | tr ' ' '\n' | grep -w $(cat $PIDFILE); then
 			return 0
 		fi
 	fi
@@ -91,9 +116,9 @@ apache_stop() {
 		PID=$(pidof_apache) || true
 
 		if [ "${PID}" ]; then
-			# in this case it is everything nice and dandy
-			# and we kill apache2
-			log_warning_msg "We failed to correctly shutdown apache, so we're now killing all running apache processes. This is almost certainly suboptimal, so please make sure your system is working as you'd expect now!"
+			# in this case it is everything nice and dandy and we kill apache2
+			echo
+			log_warning_msg "The apache2$DIR_SUFFIX configtest failed, so we are trying to kill it manually. This is almost certainly suboptimal, so please make sure your system is working as you'd expect now!"
                         kill $PID
 		elif [ "$(pidof apache2)" ]; then
 			if [ "$VERBOSE" != no ]; then
@@ -226,15 +251,15 @@ case $1 in
 	status)
 		PID=$(pidof_apache) || true
 		if [ -n "$PID" ]; then
-			echo "Apache is running (pid $PID)."
+			echo "Apache2 is running (pid $PID)."
 			exit 0
 		else
-			echo "Apache is NOT running."
+			echo "Apache2$DIR_SUFFIX is NOT running."
 			exit 1
 		fi
 	;;
 	*)
-		log_success_msg "Usage: /etc/init.d/apache2 {start|stop|graceful-stop|restart|reload|force-reload|start-htcacheclean|stop-htcacheclean|status}"
+		log_success_msg "Usage: /etc/init.d/apache2$DIR_SUFFIX {start|stop|graceful-stop|restart|reload|force-reload|start-htcacheclean|stop-htcacheclean|status}"
 		exit 1
 	;;
 esac

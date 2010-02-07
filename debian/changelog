@@ -1,6 +1,8 @@
 apache2 (2.2.14-6) UNRELEASED; urgency=low
 
   * Move ab and logresolve from /usr/sbin to /usr/bin. Closes: #351450, #564061
+  * Add support for multiple apache2 instances to initscript and apache2ctl.
+    Documentation ist still missing, though... Closes: #353450
   * Set default compiled-in ServerRoot to /etc/apache2 and make paths in
     apache2.conf relative to ServerRoot.
   * Fix symlinks in apache2-dbg package. Closes: #567076

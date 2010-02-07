@@ -1,5 +1,4 @@
 001_branding
-002_apachectl
 004_usr_bin_perl_0wnz_j00
 008_make_include_safe
 009_apache2_has_dso
@@ -12,7 +11,6 @@
 042_htdigest_CAN-2005-1344
 045_suexec_log_cloexec.dpatch
 047_fix_usage_message.dpatch
-050_enhance_apache2ctl.dpatch
 052_logresolve_linelength.dpatch
 057_disablemods.dpatch
 058_suexec-CVE-2007-1742.dpatch

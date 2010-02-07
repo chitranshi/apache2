@@ -263,8 +263,9 @@ install: build install-dev
 		find debian/$$pkg/ -name .svn -exec rm -rf {} + ; \
 	done
 
-	dh_installdocs debian/README.backtrace -papache2.2-common -papache2.2-bin
-	dh_installdocs debian/README.backtrace -Napache2.2-common -Napache2.2-bin
+	dh_installdocs debian/README.backtrace -papache2.2-bin
+	dh_installdocs debian/README.backtrace debian/README.multiple-instances -papache2.2-common
+	dh_installdocs -Napache2.2-common -Napache2.2-bin
 	cp debian/README.Debian debian/apache2-doc/usr/share/doc/apache2-doc/
 	dh_installman
 	dh_bugfiles
@@ -299,6 +300,7 @@ install: build install-dev
 	rm -rf debian/apache2-dbg/usr/share/doc/apache2-dbg
 	ln -s apache2.2-bin debian/apache2-dbg/usr/share/doc/apache2-dbg
 	dh_link
+	dh_installexamples
 	dh_compress
 	dh_fixperms -Xsuexec
 	chown -R www-data:www-data debian/apache2.2-common/var/cache/apache2

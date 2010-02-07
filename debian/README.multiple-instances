@@ -1,35 +1,33 @@
+Setup
+=====
+
 The scripts apache2ctl, a2enmod, a2ensite, ... and the init script have some
 support for handling multiple instances of apache2 running on the same machine.
 
-The basic idea is to copy /etc/apache2 to /etc/apache2-xxx:
+The basic idea is to copy /etc/apache2 to /etc/apache2-xxx. An example script
+that demonstrates what else needs to be done can be found in
+/usr/share/doc/apache2.2-common/examples/setup-instance. Use with:
 
-# the SUFFIX must not contain spaces or shell meta characters
-SUFFIX=xxx
-# copy configuration
-cp -a /etc/apache2 /etc/apache2-$SUFFIX
-# symlink skripts
-ln -s apache2 /etc/init.d/apache2-$SUFFIX
-for a in a2enmod a2dismod a2ensite a2dissite apache2ctl ; do
-	ln -s /usr/sbin/$a /usr/local/sbin/$a-$SUFFIX
-done
-# setup log dir and logrotate
-cp -a /etc/logrotate.d/apache2 /etc/logrotate.d/apache2-$SUFFIX
-perl -p -i -e s,apache2,apache2-$SUFFIX,g /etc/logrotate.d/apache2-$SUFFIX
-mkdir /var/log/apache2-$SUFFIX
-chmod 750 /var/log/apache2-$SUFFIX
-chown root:adm /var/log/apache2-$SUFFIX
+	sh /usr/share/doc/apache2.2-common/examples/setup-instance xxx
 
-
-Adjust the configuration in /etc/apache2-xxx, especially 'Listen' in ports.conf.
+Adjust the configuration in /etc/apache2-xxx, especially the listen ports in
+ports.conf and in the virtual host directives in
+/etc/apache2-xxx/sites-enabled/*.
 
 You can then use a2enmod-xxx, /etc/init.d/apache2-xxx, ... as usual, and they
 will affect the new instance of apache2.
 
 To start the new apache2 instance on boot, use
-- if you use dependency based boot sequence (the default)
+- if you use dependency based boot sequence (the default):
+  If you don't have ssl keys with passphrases, you may want to set
+  'X-Interactive: false' in /etc/init.d/apache2-xxx to reduce boot time.
+  Then execute:
 	insserv apache2-xxx
 - otherwise:
 	ln -s ../init.d/apache2-xxx /etc/rc2.d/S80apache2-xxx
+
+To make 'apache2ctl-xxx status' work, you need to set APACHE_STATUSURL in
+/etc/apache2-xxx/envvars.
 
 
 Upgrades
@@ -49,6 +47,13 @@ changes.  Possibly ways to deal with this are:
   An advanced scheme may be for every /etc/apache2* dir to be a separate git
   repository so that you can easily pull/push changes from one dir to another.
  
+
+Package removal
+===============
+
+The Apache 2 package will only remove the default configuration files and
+directories.
+
 
 Configuration
 =============
@@ -89,6 +94,6 @@ APACHE_STATUSURL	http://localhost:80/server-status
 MPMs
 ====
 
-You can use different MPMs for different instances by setting APACHE_HTTP to
+You can use different MPMs for different instances by setting APACHE_HTTPD to
 one of /usr/lib/apache2/mpm-*/apache2. Note that some modules like mod_php only
 work with the non-threaded MPMs (prefork, itk).

@@ -12,7 +12,11 @@
 set -e
 
 if [ -n "$APACHE_CONFDIR" ] ; then
-	DIR_SUFFIX=
+	if [ "${APACHE_CONFDIR##/etc/apache2-}" != "$APACHE_CONFDIR}" ] ; then
+		DIR_SUFFIX="${APACHE_CONFDIR##/etc/apache2-}"
+	else
+		DIR_SUFFIX=
+	fi
 elif [ "${0##*/apache2-}" != "$0" ] ; then
 	DIR_SUFFIX="-${0##*/apache2-}"
 	APACHE_CONFDIR=/etc/apache2$DIR_SUFFIX
@@ -253,7 +257,7 @@ case $1 in
 	status)
 		PID=$(pidof_apache) || true
 		if [ -n "$PID" ]; then
-			echo "Apache2 is running (pid $PID)."
+			echo "Apache2$DIR_SUFFIX is running (pid $PID)."
 			exit 0
 		else
 			echo "Apache2$DIR_SUFFIX is NOT running."

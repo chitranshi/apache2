@@ -44,8 +44,8 @@ ARGV="$@"
 #
 # main configuration directory
 if test -z "$APACHE_CONFDIR" ; then
-	if test "${0##*apache2-}" != "$0" ; then
-		APACHE_CONFDIR="/etc/apache2-${0##*apache2-}"
+	if test "${0##*apache2ctl-}" != "$0" ; then
+		APACHE_CONFDIR="/etc/apache2-${0##*apache2ctl-}"
 	else
 		APACHE_CONFDIR=/etc/apache2
 	fi
@@ -147,5 +147,8 @@ fullstatus)
     ERROR=$?
 esac
 
+if [ "$ERROR" != 0 ] ; then
+	echo Action \'"$@"\' failed.
+	echo The Apache error log may have more information.
+fi
 exit $ERROR
-

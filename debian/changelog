@@ -1,6 +1,5 @@
 apache2 (2.2.14-6) UNRELEASED; urgency=low
 
-  * Move ab and logresolve from /usr/sbin to /usr/bin. Closes: #351450, #564061
   * Use environment variables APACHE_RUN_DIR, APACHE_LOCK_DIR, and
     APACHE_LOG_DIR in the default configuration. If you have modified
     /etc/apache2/envvars, make sure that these variables are set and exported.
@@ -9,6 +8,7 @@ apache2 (2.2.14-6) UNRELEASED; urgency=low
     Closes: #353450
   * Set default compiled-in ServerRoot to /etc/apache2 and make paths in
     apache2.conf relative to ServerRoot.
+  * Move ab and logresolve from /usr/sbin to /usr/bin. Closes: #351450, #564061
   * Fix symlinks in apache2-dbg package. Closes: #567076
   * Fix mod_cache CacheIgnoreURLSessionIdentifiers handling. Closes: #556383
   * Add new init script action graceful-stop (LP: #456381)

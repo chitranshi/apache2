@@ -1,3 +1,14 @@
+apache2 (2.2.14-6) unstable; urgency=low
+
+  * Apache now uses the environment variables APACHE_RUN_DIR, APACHE_LOCK_DIR,
+    and APACHE_LOG_DIR in the default configuration.  If you have modified
+    /etc/apache2/envvars, make sure that these variables are set and exported.
+  * There is now some support for running multiple instances of Apache on the
+    same machine. See the documentation in /usr/share/doc/apache2.2-common for
+    details.
+
+ -- Stefan Fritsch <sf@debian.org>  Sun, 07 Feb 2010 13:56:59 +0100
+
 apache2 (2.2.13-2) unstable; urgency=high
 
   * The new support for TLS Server Name Indication added in 2.2.12 causes

@@ -23,6 +23,7 @@ fi
 if [ -z "$APACHE_ENVVARS" ] ; then
 	APACHE_ENVVARS=$APACHE_CONFDIR/envvars
 fi
+export APACHE_CONFDIR APACHE_ENVVARS
 
 ENV="env -i LANG=C PATH=/usr/local/bin:/usr/bin:/bin"
 if [ "$APACHE_CONFDIR" != /etc/apache2 ] ; then

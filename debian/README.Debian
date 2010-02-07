@@ -202,7 +202,7 @@ To create more certificates with different host names, you can use
 
 This will ask you for the hostname and place both SSL key and certificate in
 the file /path/to/cert-file.crt . Use this file with the SSLCertificateFile
-directive in the apache config (you don't need the SSLCertificateKeyFile in
+directive in the Apache config (you don't need the SSLCertificateKeyFile in
 this case as it also contains the key). The file /path/to/cert-file.crt should
 only be readable by root. A good directory to use for the additional
 certificates/keys is /etc/ssl/private .
@@ -229,7 +229,7 @@ Suexec
 Debian ships two version of the suexec helper program required by mod_suexec.
 It is not installed by default, to avoid possible security issues. The package
 apache2-suexec contains the standard version that works only with document root
-/var/www, userdir suffix public_html, and apache run user www-data. The package
+/var/www, userdir suffix public_html, and Apache run user www-data. The package
 apache2-suexec-custom contains a customizable version, that can be configured
 with a config file to use different settings (like /srv/www as document root).
 For more information see the suexec(8) man page in the apache2-suexec-custom
@@ -243,7 +243,7 @@ from apache2-suexec-custom.
 Documentation
 =============
 
-The full apache 2 documentation can be found on the web at
+The full Apache 2 documentation can be found on the web at
 
 http://httpd.apache.org/docs/2.2/
 
@@ -259,14 +259,26 @@ There is also a wiki that contains useful information:
 
 http://wiki.apache.org/httpd/
 
+Some hints about securing Apache 2 on Debian are available at
+
+http://wiki.debian.org/Apache/Hardening
+
 
 Upgrades
 ========
 
-Changes in the apache packages that require manual configuration adjustments
+Changes in the Apache packages that require manual configuration adjustments
 are announced in NEWS.Debian. Installing the apt-listchanges package is
 recommended. It will display the relevant NEWS.Debian sections before
 upgrades.
+
+
+Multiple instances
+==================
+
+There is some support for running multiple instances of Apache2 on the same
+machine. See /usr/share/doc/apache2.2-common/README.multiple-instances for more
+information.
 
 
 Common Problems

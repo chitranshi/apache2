@@ -1,0 +1,94 @@
+The scripts apache2ctl, a2enmod, a2ensite, ... and the init script have some
+support for handling multiple instances of apache2 running on the same machine.
+
+The basic idea is to copy /etc/apache2 to /etc/apache2-xxx:
+
+# the SUFFIX must not contain spaces or shell meta characters
+SUFFIX=xxx
+# copy configuration
+cp -a /etc/apache2 /etc/apache2-$SUFFIX
+# symlink skripts
+ln -s apache2 /etc/init.d/apache2-$SUFFIX
+for a in a2enmod a2dismod a2ensite a2dissite apache2ctl ; do
+	ln -s /usr/sbin/$a /usr/local/sbin/$a-$SUFFIX
+done
+# setup log dir and logrotate
+cp -a /etc/logrotate.d/apache2 /etc/logrotate.d/apache2-$SUFFIX
+perl -p -i -e s,apache2,apache2-$SUFFIX,g /etc/logrotate.d/apache2-$SUFFIX
+mkdir /var/log/apache2-$SUFFIX
+chmod 750 /var/log/apache2-$SUFFIX
+chown root:adm /var/log/apache2-$SUFFIX
+
+
+Adjust the configuration in /etc/apache2-xxx, especially 'Listen' in ports.conf.
+
+You can then use a2enmod-xxx, /etc/init.d/apache2-xxx, ... as usual, and they
+will affect the new instance of apache2.
+
+To start the new apache2 instance on boot, use
+- if you use dependency based boot sequence (the default)
+	insserv apache2-xxx
+- otherwise:
+	ln -s ../init.d/apache2-xxx /etc/rc2.d/S80apache2-xxx
+
+
+Upgrades
+========
+
+Since onle the configuration files in /etc/apache2 are in the package, the
+configuration of other instances won't change if the default configuration
+changes.  Possibly ways to deal with this are:
+
+- Use symlinks to the files in /etc/apache2 where possible instead of copying
+  the files.
+- Don't modify /etc/apache2 at all but use it to track the default
+  configuration. You can then merge the changes into the /etc/apache2-xxx dirs.
+  It may be a good idea to use a version control system for /etc/apache2 to
+  keep track of the changes. See the package etckeeper for keeping the whole
+  /etc dir under version control.
+  An advanced scheme may be for every /etc/apache2* dir to be a separate git
+  repository so that you can easily pull/push changes from one dir to another.
+ 
+
+Configuration
+=============
+
+The init script will try to read /etc/defaults/apache2-xxx. If that does not
+exist, it will use /etc/defaults/apache2 instead.
+
+The following environment variables can be used to influence the scripts.  The
+default apache2 configuration will make use of them, too. Most can be set in
+/etc/apache2-xxx/envvars. Variables set in /etc/apache2-xxx/envvars must be
+exported.
+
+variable		default value
+--------		-------------
+APACHE_CONFDIR		/etc/apache2         or /etc/apache2-xxx
+APACHE_ENVVARS		$APACHE_CONFDIR/envvars
+APACHE_HTTPD		/usr/sbin/apache2
+APACHE_ARGUMENTS	empty if $APACHE_CONFDIR = /etc/apache2
+			"-d $APACHE_CONFDIR" otherwise
+
+APACHE_RUN_USER		www-data
+APACHE_RUN_GROUP	www-data
+
+APACHE_PID_FILE         /var/run/apache2.pid or /var/run/apachd2-xxx.pid
+APACHE_RUN_DIR		/var/run/apache2     or /var/run/apache2-xxx
+APACHE_LOCK_DIR		/var/lock/apache2    or /var/lock/apache2-xxx
+APACHE_LOG_DIR		/var/log/apache2     or /var/log/apache2-xxx
+
+APACHE_MODS_AVAILABLE	$APACHE_CONFDIR/mods-available
+APACHE_MODS_ENABLED	$APACHE_CONFDIR/mods-enabled
+APACHE_SITES_AVAILABLE	$APACHE_CONFDIR/sites-available
+APACHE_SITES_ENABLED	$APACHE_CONFDIR/sites-enabled
+
+APACHE_LYNX		www-browser -dump
+APACHE_STATUSURL	http://localhost:80/server-status
+
+
+MPMs
+====
+
+You can use different MPMs for different instances by setting APACHE_HTTP to
+one of /usr/lib/apache2/mpm-*/apache2. Note that some modules like mod_php only
+work with the non-threaded MPMs (prefork, itk).

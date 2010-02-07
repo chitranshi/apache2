@@ -1,4 +1,4 @@
-apache2 (2.2.14-6) UNRELEASED; urgency=low
+apache2 (2.2.14-6) unstable; urgency=low
 
   * Use environment variables APACHE_RUN_DIR, APACHE_LOCK_DIR, and
     APACHE_LOG_DIR in the default configuration. If you have modified
@@ -24,7 +24,7 @@ apache2 (2.2.14-6) UNRELEASED; urgency=low
   * Bump Standards-Version (no changes).
   * Remove Adam Conrad from Uploaders. Thanks for your work in the past.
 
- -- Stefan Fritsch <sf@debian.org>  Sat, 09 Jan 2010 13:11:11 +0100
+ -- Stefan Fritsch <sf@debian.org>  Sun, 07 Feb 2010 17:29:45 +0100
 
 apache2 (2.2.14-5) unstable; urgency=low
 

@@ -306,10 +306,12 @@ Probably the VirtualHost definitions have not been adjusted after the
 NameVirtualHost directive was changed in ports.conf. 
 See /usr/share/doc/apache2.2-common/NEWS.Debian.gz
 
-4) Message "File does not exist: /htdocs" in error log
+4) Message "File does not exist: /etc/apache2/htdocs" in error log
 
 In most cases this means that no matching VirtualHost definition could be
-found for an incoming request.
+found for an incoming request. Check that the target IP address/port and the
+name in the Host: header of the request actually match one of the virtual
+hosts.
 
 5) Message "Couldn't create pollset in child; check user or system limits" in
   error log

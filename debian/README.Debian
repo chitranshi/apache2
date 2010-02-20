@@ -352,3 +352,16 @@ you can use mod_rewrite:
 	RewriteCond %{HTTP:Authorization} (.*)
 	RewriteRule . - [env=HTTP_AUTHORIZATION:%1]
 
+8) mod_dav is behaving strangely
+
+In general, if you use mod_dav_fs, you need to disable multiviews and script
+execution for that directory. For example:
+
+    <Directory /var/www/dav>
+        Dav on
+        Options -MultiViews -ExecCGI
+        SetHandler none
+        <IfModule mod_php5.c>
+            php_admin_value engine Off
+        </IfModule>
+    </Directory>

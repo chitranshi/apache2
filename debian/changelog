@@ -1,6 +1,8 @@
 apache2 (2.2.14-7) UNRELEASED; urgency=low
 
   * Fix potential memory leaks related to the usage of apr_brigade_destroy().
+  * Add hints about correct mod_dav_fs configuration to README.Debian.
+    Closes: #257945
   * Fix error in Polish translation of 404 error page. Closes: #570228
   * Document ThreadLimit in apache2.conf's comments.
 

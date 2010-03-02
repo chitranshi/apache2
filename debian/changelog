@@ -1,3 +1,10 @@
+apache2 (2.2.14-8) UNRELEASED; urgency=low
+
+  * Fix bash completion for a2ensite if the site name contains 'conf' or
+    'load'. Closes: #572232
+
+ -- Stefan Fritsch <sf@debian.org>  Tue, 02 Mar 2010 20:56:18 +0100
+
 apache2 (2.2.14-7) unstable; urgency=low
 
   * Fix potential memory leaks related to the usage of apr_brigade_destroy().

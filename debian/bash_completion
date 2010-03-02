@@ -4,7 +4,7 @@
 _apache2_modsites()
 {
        COMPREPLY=( $( compgen -W '$( command ls /etc/apache2/$1 2>/dev/null \
-               | sed -e 's/\.load//' -e 's/\.conf//' )' -- $cur  ) )
+               | sed -e 's/[.]load$//' -e 's/[.]conf$//' )' -- $cur  ) )
 }
 
 _a2enmod()

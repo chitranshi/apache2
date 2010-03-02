@@ -2,6 +2,8 @@ apache2 (2.2.14-8) UNRELEASED; urgency=low
 
   * Fix bash completion for a2ensite if the site name contains 'conf' or
     'load'. Closes: #572232
+  * Do a configcheck in the init script before doing a non-graceful restart.
+    Closes: #571461
 
  -- Stefan Fritsch <sf@debian.org>  Tue, 02 Mar 2010 20:56:18 +0100
 

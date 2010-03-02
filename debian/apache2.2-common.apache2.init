@@ -224,6 +224,11 @@ case $1 in
                 fi
 	;;
 	restart)
+		if ! $APACHE2CTL configtest > /dev/null 2>&1; then
+		    $APACHE2CTL configtest || true
+		    log_end_msg 1
+		    exit 1
+		fi
 		if check_htcacheclean ; then
 			log_daemon_msg "Restarting web server" "htcacheclean"
 			stop_htcacheclean

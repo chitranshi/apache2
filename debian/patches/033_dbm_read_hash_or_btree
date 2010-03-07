@@ -17,7 +17,7 @@
  sub usage {
      my $cmds = join "|", sort keys %dbmc::;
 @@ -154,7 +154,9 @@
- my($mode, $flags) = $command =~ 
+ my($mode, $flags) = $command =~
      /^(?:view|check)$/ ? (0644, O_RDONLY) : (0644, O_RDWR|O_CREAT);
  
 -tie (%DB, "AnyDBM_File", $file, $flags, $mode) || die "Can't tie $file: $!";
@@ -28,11 +28,11 @@
  untie %DB;
  
 @@ -168,7 +168,7 @@
- 	srand (time ^ $$ or time ^ ($$ + ($$ << 15)));
+         srand (time ^ $$ or time ^ ($$ + ($$ << 15)));
      }
      else {
--        for (qw(-xlwwa -le)) { 
-+        for (qw(xlwwa -le)) { 
- 	    `ps $_ 2>/dev/null`;
+-        for (qw(-xlwwa -le)) {
++        for (qw(xlwwa -le)) {
+             `ps $_ 2>/dev/null`;
              $psf = $_, last unless $?;
          }

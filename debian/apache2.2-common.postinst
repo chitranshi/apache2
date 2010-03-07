@@ -72,6 +72,11 @@ if dpkg --compare-versions "$2" lt 2.2.14-3~; then
 	rm -f /var/lock/apache2/DAVLock.dir /var/lock/apache2/DAVLock.pag
 fi
 
+# Note, this line catches new installs as well as upgrades
+if dpkg --compare-versions "$2" lt 2.2.15-1~0; then
+	a2enmod -q reqtimeout
+fi
+
 rm -f /etc/apache2/ports.conf.dpkg-apache2.2-common.old
 rm -f /etc/default/apache2.dpkg-apache2.2-common.old
 rm -f /etc/apache2/conf.d/charset.dpkg-apache2.2-common.old

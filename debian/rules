@@ -69,7 +69,7 @@ AP2_MODS_CONFARGS =   --enable-authn-alias=shared --enable-authnz-ldap=shared  \
 		      --enable-actions=shared --enable-speling=shared \
 		      --enable-userdir=shared --enable-alias=shared \
 		      --enable-rewrite=shared --enable-mime=shared \
-		      --enable-substitute=shared
+		      --enable-substitute=shared  --enable-reqtimeout=shared
 
 AP2_CFLAGS = $(CFLAGS) -g -pipe -I/usr/include/xmltok -I/usr/include/openssl -Wall -Wformat -Wformat-security -D_FORTIFY_SOURCE=2 -fstack-protector
 AP2_LDFLAGS = -Wl,--as-needed -Wl,-z,relro

@@ -1,3 +1,14 @@
+apache2 (2.2.15-1) unstable; urgency=low
+
+  * This release adds and enables mod_reqtimeout, which limits the time
+    Apache waits for a client to send a complete request. This helps to
+    mitigate against certain denial of service attacks. In case of problems
+    with slow clients, the timeout values can be adjusted in
+    /etc/apache2/mods-available/reqtimeout.conf , or the module can be
+    disabled with "a2dismod reqtimeout".
+
+ -- Stefan Fritsch <sf@debian.org>  Sun, 07 Mar 2010 23:09:30 +0100
+
 apache2 (2.2.14-6) unstable; urgency=low
 
   * Apache now uses the environment variables APACHE_RUN_DIR, APACHE_LOCK_DIR,

@@ -6,14 +6,14 @@ apache2 (2.2.15-1) UNRELEASED; urgency=low
       prefix injection attack.
     - CVE-2010-0434: mod_headers: Fix potential information leak with threaded
       MPMs.
-    - mod_ssl: Add SSLInsecureRenegotiation directive to allows insecure
-      renegotiation with clients which do not yet support the secure
-      renegotiation protocol. As this requires openssl 0.9.8m, bump
-      build dependency accordingly.
     - mod_reqtimeout: New module limiting the time waiting for receiving
       a request from the client. This is a (partial) mitigation against
       slowloris-type resource exhaustion attacks. The module is enabled by
       default. Closes: #533661
+    - mod_ssl: Add SSLInsecureRenegotiation directive to allows insecure
+      renegotiation with clients which do not yet support the secure
+      renegotiation protocol. As this requires openssl 0.9.8m, bump
+      build dependency accordingly.
   * Fix bash completion for a2ensite if the site name contains 'conf' or
     'load'. Closes: #572232
   * Do a configcheck in the init script before doing a non-graceful restart.

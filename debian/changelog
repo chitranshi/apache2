@@ -1,4 +1,4 @@
-apache2 (2.2.15-1) UNRELEASED; urgency=low
+apache2 (2.2.15-1) unstable; urgency=low
 
   * New upstream version:
     - CVE-2010-0408: mod_proxy_ajp: Fixes denial of service vulnerability
@@ -19,7 +19,7 @@ apache2 (2.2.15-1) UNRELEASED; urgency=low
   * Do a configcheck in the init script before doing a non-graceful restart.
     Closes: #571461
 
- -- Stefan Fritsch <sf@debian.org>  Tue, 02 Mar 2010 20:56:18 +0100
+ -- Stefan Fritsch <sf@debian.org>  Sun, 07 Mar 2010 23:22:56 +0100
 
 apache2 (2.2.14-7) unstable; urgency=low
 

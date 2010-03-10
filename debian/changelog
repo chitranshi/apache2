@@ -1,10 +1,12 @@
-apache2 (2.2.15-2) UNRELEASED; urgency=low
+apache2 (2.2.15-3) UNRELEASED; urgency=low
 
+  * Make the Files ~ "^\.ht" block in apache2.conf more secure by adding
+    Satisfy all. Closes: #572075
   * mod_reqtimeout: Various bug fixes, including:
     - Don't mess up timeouts of mod_proxy's backend connections.
       Closes: #573163
 
- -- Stefan Fritsch <sf@debian.org>  Wed, 10 Mar 2010 20:51:34 +0100
+ -- Stefan Fritsch <sf@debian.org>  Wed, 10 Mar 2010 21:06:06 +0100
 
 apache2 (2.2.15-1) unstable; urgency=low
 

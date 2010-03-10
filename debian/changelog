@@ -1,4 +1,4 @@
-apache2 (2.2.15-3) UNRELEASED; urgency=low
+apache2 (2.2.15-2) unstable; urgency=low
 
   * Make the Files ~ "^\.ht" block in apache2.conf more secure by adding
     Satisfy all. Closes: #572075

@@ -1,3 +1,11 @@
+apache2 (2.2.15-2) UNRELEASED; urgency=low
+
+  * mod_reqtimeout: Various bug fixes, including:
+    - Don't mess up timeouts of mod_proxy's backend connections.
+      Closes: #573163
+
+ -- Stefan Fritsch <sf@debian.org>  Wed, 10 Mar 2010 20:51:34 +0100
+
 apache2 (2.2.15-1) unstable; urgency=low
 
   * New upstream version:

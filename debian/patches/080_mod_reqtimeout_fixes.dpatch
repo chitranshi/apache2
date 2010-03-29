@@ -9,12 +9,13 @@
 ## DP: - Disable body timeout for CONNECT requests.
 @DPATCH@
 diff -urNad '--exclude=CVS' '--exclude=.svn' '--exclude=.git' '--exclude=.arch' '--exclude=.hg' '--exclude=_darcs' '--exclude=.bzr' trunk~/modules/filters/mod_reqtimeout.c trunk/modules/filters/mod_reqtimeout.c
---- trunk~/modules/filters/mod_reqtimeout.c	2010-03-10 20:46:14.000000000 +0100
-+++ trunk/modules/filters/mod_reqtimeout.c	2010-03-29 21:39:55.944233496 +0200
-@@ -20,9 +20,11 @@
+--- trunk~/modules/filters/mod_reqtimeout.c	2010-03-29 21:51:42.000000000 +0200
++++ trunk/modules/filters/mod_reqtimeout.c	2010-03-29 22:22:21.652500789 +0200
+@@ -20,9 +20,12 @@
  #include "http_connection.h"
  #include "http_protocol.h"
  #include "http_log.h"
++#define CORE_PRIVATE
 +#include "http_core.h"
  #include "util_filter.h"
  #define APR_WANT_STRFUNC
@@ -23,7 +24,7 @@ diff -urNad '--exclude=CVS' '--exclude=.svn' '--exclude=.git' '--exclude=.arch' 
  
  module AP_MODULE_DECLARE_DATA reqtimeout_module;
  
-@@ -38,6 +40,7 @@
+@@ -38,6 +41,7 @@
      apr_time_t body_rate_factor;
  } reqtimeout_srv_cfg;
  
@@ -31,7 +32,7 @@ diff -urNad '--exclude=CVS' '--exclude=.svn' '--exclude=.git' '--exclude=.arch' 
  typedef struct
  {
      apr_time_t timeout_at;
-@@ -47,14 +50,11 @@
+@@ -47,14 +51,11 @@
      int new_max_timeout;
      int in_keep_alive;
      char *type;
@@ -48,7 +49,7 @@ diff -urNad '--exclude=CVS' '--exclude=.svn' '--exclude=.git' '--exclude=.arch' 
  static const char *const reqtimeout_filter_name = "reqtimeout";
  
  static void extend_timeout(reqtimeout_con_cfg *ccfg, apr_bucket_brigade *bb)
-@@ -74,24 +74,60 @@
+@@ -74,24 +75,60 @@
      }
  }
  
@@ -117,7 +118,7 @@ diff -urNad '--exclude=CVS' '--exclude=.svn' '--exclude=.git' '--exclude=.arch' 
  
      if (ccfg->in_keep_alive) {
          /* For this read, the normal keep-alive timeout must be used */
-@@ -114,13 +150,14 @@
+@@ -114,13 +151,14 @@
          return ap_get_brigade(f->next, bb, mode, block, readbytes);
      }
  
@@ -137,7 +138,7 @@ diff -urNad '--exclude=CVS' '--exclude=.svn' '--exclude=.git' '--exclude=.arch' 
      if (block == APR_NONBLOCK_READ || mode == AP_MODE_INIT
          || mode == AP_MODE_EATCRLF) {
          rv = ap_get_brigade(f->next, bb, mode, block, readbytes);
-@@ -130,41 +167,103 @@
+@@ -130,41 +168,103 @@
          return rv;
      }
  
@@ -260,7 +261,7 @@ diff -urNad '--exclude=CVS' '--exclude=.svn' '--exclude=.git' '--exclude=.arch' 
      reqtimeout_con_cfg *ccfg;
      reqtimeout_srv_cfg *cfg;
  
-@@ -173,12 +272,9 @@
+@@ -173,12 +273,9 @@
      AP_DEBUG_ASSERT(cfg != NULL);
      if (cfg->header_timeout <= 0 && cfg->body_timeout <= 0) {
          /* not configured for this vhost */
@@ -274,7 +275,7 @@ diff -urNad '--exclude=CVS' '--exclude=.svn' '--exclude=.git' '--exclude=.arch' 
      ccfg = apr_pcalloc(c->pool, sizeof(reqtimeout_con_cfg));
      ccfg->new_timeout = cfg->header_timeout;
      ccfg->new_max_timeout = cfg->header_max_timeout;
-@@ -187,8 +283,9 @@
+@@ -187,8 +284,9 @@
      ccfg->rate_factor = cfg->header_rate_factor;
      ap_set_module_config(c->conn_config, &reqtimeout_module, ccfg);
  
@@ -286,7 +287,7 @@ diff -urNad '--exclude=CVS' '--exclude=.svn' '--exclude=.git' '--exclude=.arch' 
  }
  
  static int reqtimeout_after_headers(request_rec *r)
-@@ -198,7 +295,7 @@
+@@ -198,7 +296,7 @@
          ap_get_module_config(r->connection->conn_config, &reqtimeout_module);
  
      if (ccfg == NULL) {
@@ -295,7 +296,7 @@ diff -urNad '--exclude=CVS' '--exclude=.svn' '--exclude=.git' '--exclude=.arch' 
          return OK;
      }
  
-@@ -208,11 +305,13 @@
+@@ -208,11 +306,13 @@
  
      ccfg->timeout_at = 0;
      ccfg->max_timeout_at = 0;
@@ -314,7 +315,7 @@ diff -urNad '--exclude=CVS' '--exclude=.svn' '--exclude=.git' '--exclude=.arch' 
  
      return OK;
  }
-@@ -224,7 +323,7 @@
+@@ -224,7 +324,7 @@
          ap_get_module_config(r->connection->conn_config, &reqtimeout_module);
  
      if (ccfg == NULL) {
@@ -323,7 +324,7 @@ diff -urNad '--exclude=CVS' '--exclude=.svn' '--exclude=.git' '--exclude=.arch' 
          return OK;
      }
  
-@@ -406,7 +505,16 @@
+@@ -406,7 +506,16 @@
       */
      ap_register_input_filter(reqtimeout_filter_name, reqtimeout_filter, NULL,
                               AP_FTYPE_CONNECTION + 8);
@@ -342,8 +343,8 @@ diff -urNad '--exclude=CVS' '--exclude=.svn' '--exclude=.git' '--exclude=.arch' 
                                APR_HOOK_MIDDLE);
      ap_hook_log_transaction(reqtimeout_after_body, NULL, NULL,
 diff -urNad '--exclude=CVS' '--exclude=.svn' '--exclude=.git' '--exclude=.arch' '--exclude=.hg' '--exclude=_darcs' '--exclude=.bzr' trunk~/server/connection.c trunk/server/connection.c
---- trunk~/server/connection.c	2006-07-12 05:38:44.000000000 +0200
-+++ trunk/server/connection.c	2010-03-29 21:39:55.940231846 +0200
+--- trunk~/server/connection.c	2010-03-29 21:51:42.000000000 +0200
++++ trunk/server/connection.c	2010-03-29 22:22:07.100030216 +0200
 @@ -154,8 +154,20 @@
              break;
  

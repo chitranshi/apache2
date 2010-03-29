@@ -2,6 +2,7 @@ apache2 (2.2.15-3) UNRELEASED; urgency=low
 
   * mod_reqtimeout: backport bugfixes from upstream trunk up to r928881,
     including a fix for mod_proxy CONNECT requests.
+  * mod_dav_fs: Use correct permissions when creating new files. LP: #540747
 
  -- Stefan Fritsch <sf@debian.org>  Mon, 29 Mar 2010 21:44:32 +0200
 

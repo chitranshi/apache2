@@ -1,3 +1,10 @@
+apache2 (2.2.15-3) UNRELEASED; urgency=low
+
+  * mod_reqtimeout: backport bugfixes from upstream trunk up to r928881,
+    including a fix for mod_proxy CONNECT requests.
+
+ -- Stefan Fritsch <sf@debian.org>  Mon, 29 Mar 2010 21:44:32 +0200
+
 apache2 (2.2.15-2) unstable; urgency=low
 
   * Make the Files ~ "^\.ht" block in apache2.conf more secure by adding

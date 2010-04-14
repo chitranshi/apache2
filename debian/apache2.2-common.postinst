@@ -77,6 +77,15 @@ if dpkg --compare-versions "$2" lt 2.2.15-1~0; then
 	a2enmod -q reqtimeout
 fi
 
+# The definition of other_vhost_access.log has been moved.
+# Disable the new definition if the admin has changed the old
+# one (as determined by preinst).
+if [ -e /etc/apache2/disable-other-vhost-access-log.dpkg-apache2.2-common ] ; then
+	echo "Disabling /etc/apache2/conf.d/other-vhosts-access-log"
+	perl -p -i -e 's/^(CustomLog.*)$/#$1/' /etc/apache2/conf.d/other-vhosts-access-log
+	rm  /etc/apache2/disable-other-vhost-access-log.dpkg-apache2.2-common
+fi
+
 rm -f /etc/apache2/ports.conf.dpkg-apache2.2-common.old
 rm -f /etc/default/apache2.dpkg-apache2.2-common.old
 rm -f /etc/apache2/conf.d/charset.dpkg-apache2.2-common.old

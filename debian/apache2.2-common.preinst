@@ -14,4 +14,15 @@ if [ -n "$2" ] && dpkg --compare-versions "$2" lt 2.2.4-2; then
 	mv_conffile /etc/apache2/conf.d/charset 641239a7d2d172856cb1413a47d2e142
 fi
 
+if [ -n "$2" ] && dpkg --compare-versions "$2" lt 2.2.15-4~ ; then
+	# The definition of other_vhosts_access.log has been moved from
+	# apache2.conf to conf.d/other-vhosts-access-log. If the admin has
+	# removed it from apache2.conf, mark it to be disabled in
+	# conf.d/other-vhosts-access-log in the postinst.
+	if !egrep '^ *CustomLog.*other_vhosts_access.log vhost_combined$' /etc/apache2/apache2.conf
+	then
+		touch /etc/apache2/disable-other-vhost-access-log.dpkg-apache2.2-common
+	fi
+fi
+
 #DEBHELPER#

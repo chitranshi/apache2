@@ -1,0 +1,28 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## 081_apxs_perl_5.12.dpatch
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: fix apxs for perl 5.12, submitted by Roderich Schupp
+## DP: Debian bug #577239
+## DP: upstream: http://svn.apache.org/viewvc?view=revision&revision=932791
+@DPATCH@
+diff -urNad '--exclude=CVS' '--exclude=.svn' '--exclude=.git' '--exclude=.arch' '--exclude=.hg' '--exclude=_darcs' '--exclude=.bzr' httpd-2.2.15~/support/apxs.in httpd-2.2.15/support/apxs.in
+--- httpd-2.2.15~/support/apxs.in	2010-04-14 22:25:37.344175682 +0200
++++ httpd-2.2.15/support/apxs.in	2010-04-14 22:25:53.211177881 +0200
+@@ -83,7 +83,6 @@
+     my ($argumentative, @ARGV) = @_;
+     my $errs = 0;
+     local $_;
+-    local $[ = 0;
+ 
+     my @args = split / */, $argumentative;
+     while (@ARGV && ($_ = $ARGV[0]) =~ /^-(.)(.*)/) {
+@@ -93,7 +92,7 @@
+             last;
+         }
+         my $pos = index($argumentative,$first);
+-        if ($pos >= $[) {
++        if ($pos >= 0) {
+             if ($pos < $#args && $args[$pos+1] eq ':') {
+                 shift @ARGV;
+                 if ($rest eq '') {

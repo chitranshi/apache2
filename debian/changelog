@@ -3,6 +3,10 @@ apache2 (2.2.15-4) UNRELEASED; urgency=low
   * Move definition of other_vhosts_access.log to new config file
     /etc/apache2/conf.d/other-vhosts-access-log, but disable it
     if it has been disabled by the admin. Closes: #576572. LP: #507616
+  * Comment out the contents of mods-available/proxy.conf, as it just
+    is a nuisance for use of apache2 as a reverse proxy, which is much
+    more common than the use as forward proxy. Extend the comments
+    in the file.
   * Simplify logrotate script. Closes: #576105
   * Remove empty directory /usr/lib/debug/usr/sbin in mpm packages.
     Closes: #576089

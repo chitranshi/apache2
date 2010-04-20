@@ -47,7 +47,7 @@ if [ -n "$2" ] && dpkg --compare-versions "$2" lt 2.2.15-4~ ; then
 	echo activating new config files ...
 	for a in ldap proxy_balancer proxy_ftp ; do 
 		if mod_is_enabled $a && [ ! -e /etc/apache2/mods-enabled/$a.conf ] ; then
-			a2enmod $a
+			a2enmod -q $a
 		fi
 	done
 	echo " done."

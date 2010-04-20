@@ -43,12 +43,11 @@ if dpkg --compare-versions "$2" lt 2.2.3-3.1; then
 
 fi
 
-if [ -n "$2" ] && dpkg --compare-versions "$2" lt 2.2.4-2; then
-	echo -n activating new config files ...
-	for a in actions alias autoindex info mime negotiation setenvif status ; do 
+if [ -n "$2" ] && dpkg --compare-versions "$2" lt 2.2.15-4~ ; then
+	echo activating new config files ...
+	for a in ldap proxy_balancer proxy_ftp ; do 
 		if mod_is_enabled $a && [ ! -e /etc/apache2/mods-enabled/$a.conf ] ; then
-			ln -sf 	../mods-available/$a.conf /etc/apache2/mods-enabled/$a.conf
-			echo -n " $a.conf"
+			a2enmod $a
 		fi
 	done
 	echo " done."

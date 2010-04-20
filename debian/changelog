@@ -1,4 +1,4 @@
-apache2 (2.2.15-4) UNRELEASED; urgency=low
+apache2 (2.2.15-4) unstable; urgency=low
 
   * Move definition of other_vhosts_access.log to new config file
     /etc/apache2/conf.d/other-vhosts-access-log, but disable it
@@ -28,7 +28,7 @@ apache2 (2.2.15-4) UNRELEASED; urgency=low
   * Fix apxs2 to work with perl 5.12rc3. Closes: #577239
   * Add source/format file to make lintian happy.
 
- -- Stefan Fritsch <sf@debian.org>  Tue, 20 Apr 2010 23:07:25 +0200
+ -- Stefan Fritsch <sf@debian.org>  Tue, 20 Apr 2010 23:11:09 +0200
 
 apache2 (2.2.15-3) unstable; urgency=low
 

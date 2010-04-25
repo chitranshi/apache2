@@ -19,7 +19,7 @@ if [ -n "$2" ] && dpkg --compare-versions "$2" lt 2.2.15-4~ ; then
 	# apache2.conf to conf.d/other-vhosts-access-log. If the admin has
 	# removed it from apache2.conf, mark it to be disabled in
 	# conf.d/other-vhosts-access-log in the postinst.
-	if ! egrep '^ *CustomLog.*other_vhosts_access.log vhost_combined$' /etc/apache2/apache2.conf
+	if ! egrep -q '^ *CustomLog.*other_vhosts_access.log vhost_combined$' /etc/apache2/apache2.conf
 	then
 		touch /etc/apache2/disable-other-vhost-access-log.dpkg-apache2.2-common
 	fi

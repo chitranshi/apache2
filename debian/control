@@ -15,7 +15,7 @@ Architecture: any
 Depends: ${misc:Depends}, apache2.2-bin (= ${binary:Version}), apache2-utils, libmagic1, mime-support, lsb-base, procps [!hurd-i386], perl
 Recommends: ssl-cert
 Suggests: www-browser, apache2-doc, apache2-suexec | apache2-suexec-custom
-Conflicts: apache2-common, libapache2-mod-php5 (<= 5.1.6-3), libapache2-mod-php4 (<= 4:4.4.4-2), libapache2-mod-mime-xattr (<= 0.3-2), libapache2-mod-mono (<= 1.1.17-3), libapache2-mod-proxy-html (<= 2.4.3-2), libapache2-mod-scgi (<= 1.11-1), libapache2-mod-speedycgi (<= 2.22-3), libapache2-modxslt (<= 2005072700-1), libapache2-redirtoservername (<= 0.1-1), libapache2-webauth (<= 3.5.3-1), libapache2-webkdc (<= 3.5.3-1)
+Conflicts: apache2-common, apache
 Replaces: apache2-common
 Description: Apache HTTP Server common files
  The Apache Software Foundation's goal is to build a secure, efficient and

@@ -98,7 +98,7 @@ start_htcacheclean() {
 }
 
 stop_htcacheclean() {
-	pkill -P 1 -f "htcacheclean.*\\<-p$HTCACHECLEAN_PATH\\>" 2> /dev/null || echo ...not running
+	pkill -P 1 -f "htcacheclean.* -p$HTCACHECLEAN_PATH " 2> /dev/null || echo ...not running
 }
 
 pidof_apache() {

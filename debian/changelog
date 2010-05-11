@@ -1,3 +1,9 @@
+apache2 (2.2.15-6) UNRELEASED; urgency=low
+
+  * Fix init script not correctly killing htcacheclean. Closes: #580971
+
+ -- Stefan Fritsch <sf@debian.org>  Tue, 11 May 2010 21:22:48 +0200
+
 apache2 (2.2.15-5) unstable; urgency=low
 
   * Conflict with apache package as we now include apachectl. Closes: #579065

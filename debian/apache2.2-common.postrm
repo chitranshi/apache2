@@ -67,10 +67,13 @@ if [ "$1" = abort-upgrade ] ; then
 fi
 
 if [ "$1" = remove ] ; then
-	if [ "`md5sum /var/www/index.html 2>/dev/null | cut -d ' ' -f 1`" \
-	     = "5388f60d7695cb57b87c799ee62d20b2" ] ; then
-		rm /var/www/index.html
-	fi
+	MD5SUM="`md5sum /var/www/index.html 2>/dev/null | cut -d ' ' -f 1`"
+	case "$MD5SUM" in
+		5388f60d7695cb57b87c799ee62d20b2|\
+		21dde95d9d269cbb2fa6560309dca40c)
+			rm -f /var/www/index.html
+			;;
+	esac
 fi
 
 #DEBHELPER#

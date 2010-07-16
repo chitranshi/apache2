@@ -3,6 +3,7 @@ apache2 (2.2.15-6) UNRELEASED; urgency=low
   * Fix init script not correctly killing htcacheclean. Closes: #580971
   * Add a separate entry in README.Debian about the need to use apache2ctl
     for starting instead of calling apache2 directly. Closes: #580445
+  * Fix debug info to allow gdb loading it automatically. Closes: #581514
   * Build as PIE, since gdb in squeeze now supports it.
   * Update the postrm script to also purge the version of /var/www/index.html
     introduced in 2.2.11-7.

@@ -1,4 +1,4 @@
-apache2 (2.2.15-6) UNRELEASED; urgency=low
+apache2 (2.2.15-6) unstable; urgency=low
 
   * Fix init script not correctly killing htcacheclean. Closes: #580971
   * Add a separate entry in README.Debian about the need to use apache2ctl
@@ -14,7 +14,7 @@ apache2 (2.2.15-6) UNRELEASED; urgency=low
     introduced in 2.2.11-7.
   * Bump Standards-Version (no changes).
 
- -- Stefan Fritsch <sf@debian.org>  Tue, 11 May 2010 21:22:48 +0200
+ -- Stefan Fritsch <sf@debian.org>  Fri, 16 Jul 2010 23:41:08 +0200
 
 apache2 (2.2.15-5) unstable; urgency=low
 

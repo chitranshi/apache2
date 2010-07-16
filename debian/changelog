@@ -7,6 +7,8 @@ apache2 (2.2.15-6) UNRELEASED; urgency=low
   * Fix install target in Makefile created by apxs2 -n. Closes: #588787
   * Fix ab sending more requests than specified by the -n parameter.
     Closes: #541158
+  * Add apache2 monit configuration to apache2.2-commons examples dir.
+    Closes: #583127
   * Build as PIE, since gdb in squeeze now supports it.
   * Update the postrm script to also purge the version of /var/www/index.html
     introduced in 2.2.11-7.

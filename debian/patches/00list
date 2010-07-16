@@ -25,6 +25,7 @@
 079_polish_translation.dpatch
 080_mod_reqtimeout_fixes.dpatch
 081_apxs_perl_5.12.dpatch
+082_ab_num_requests
 099_config_guess_sub_update
 200_cp_suexec.dpatch
 201_build_suexec-custom.dpatch

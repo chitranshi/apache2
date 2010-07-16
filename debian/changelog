@@ -5,6 +5,8 @@ apache2 (2.2.15-6) UNRELEASED; urgency=low
     for starting instead of calling apache2 directly. Closes: #580445
   * Fix debug info to allow gdb loading it automatically. Closes: #581514
   * Fix install target in Makefile created by apxs2 -n. Closes: #588787
+  * Fix ab sending more requests than specified by the -n parameter.
+    Closes: #541158
   * Build as PIE, since gdb in squeeze now supports it.
   * Update the postrm script to also purge the version of /var/www/index.html
     introduced in 2.2.11-7.

@@ -5,8 +5,9 @@
 ## DP: Make apxs2 use httpd.conf, instead of apache2.conf, plus other random fixes.
 
 @DPATCH@
---- apache2/support/apxs.in	2005-06-10 10:18:14.000000000 +0100
-+++ apache2/support/apxs.in	2006-01-26 16:50:17.000000000 +0000
+diff -urNad trunk~/support/apxs.in trunk/support/apxs.in
+--- trunk~/support/apxs.in	2010-07-16 20:24:58.337788441 +0200
++++ trunk/support/apxs.in	2010-07-16 20:25:13.333807240 +0200
 @@ -190,7 +190,7 @@
  my $httpd = get_vars("sbindir") . "/" . get_vars("progname");
  $httpd = eval qq("$httpd");
@@ -16,7 +17,7 @@
  $envvars = eval qq("$envvars");
  $envvars = eval qq("$envvars");
  
-@@ -331,6 +331,7 @@
+@@ -293,6 +293,7 @@
      $data =~ s|%TARGET%|$CFG_TARGET|sg;
      $data =~ s|%PREFIX%|$prefix|sg;
      $data =~ s|%INSTALLBUILDDIR%|$installbuilddir|sg;
@@ -24,7 +25,7 @@
  
      my ($mkf, $mods, $src) = ($data =~ m|^(.+)-=#=-\n(.+)-=#=-\n(.+)|s);
  
-@@ -480,7 +480,7 @@
+@@ -481,7 +482,7 @@
          if ($opt_i) {
  	    push(@cmds, "$installbuilddir/instdso.sh SH_LIBTOOL='" .
                   "$libtool' $f $CFG_LIBEXECDIR");
@@ -33,7 +34,7 @@
          }
  
          #   determine module symbolname and filename
-@@ -516,7 +516,8 @@
+@@ -517,7 +518,8 @@
              $filename = "mod_${name}.c";
          }
          my $dir = $CFG_LIBEXECDIR;
@@ -43,7 +44,7 @@
          $dir =~ s|(.)$|$1/|;
  	$t =~ s|\.la$|.so|;
          push(@lmd, sprintf("LoadModule %-18s %s", "${name}_module", "$dir$t"));
-@@ -527,17 +528,17 @@
+@@ -528,17 +530,17 @@
  
      #   activate module via LoadModule/AddModule directive
      if ($opt_a or $opt_A) {
@@ -65,7 +66,7 @@
              error("At least one `LoadModule' directive already has to exist.");
              exit(1);
          }
-@@ -613,15 +614,15 @@
+@@ -614,15 +616,15 @@
                  $content =~ s|^(.*\n)#?\s*$lmd[^\n]*\n|$1$c$lmd\n|s;
              }
              $lmd =~ m|LoadModule\s+(.+?)_module.*|;
@@ -86,11 +87,13 @@
              } else {
                  notice("unable to open configuration file");
              }
-@@ -694,7 +695,7 @@
+@@ -646,8 +648,8 @@
+ ##
  
  builddir=.
- top_srcdir=%PREFIX%
+-top_srcdir=%PREFIX%
 -top_builddir=%PREFIX%
++top_srcdir=%DATADIR%
 +top_builddir=%DATADIR%
  include %INSTALLBUILDDIR%/special.mk
  

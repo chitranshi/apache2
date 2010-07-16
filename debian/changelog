@@ -8,6 +8,7 @@ apache2 (2.2.15-6) UNRELEASED; urgency=low
   * Build as PIE, since gdb in squeeze now supports it.
   * Update the postrm script to also purge the version of /var/www/index.html
     introduced in 2.2.11-7.
+  * Bump Standards-Version (no changes).
 
  -- Stefan Fritsch <sf@debian.org>  Tue, 11 May 2010 21:22:48 +0200
 

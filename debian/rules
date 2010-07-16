@@ -34,7 +34,8 @@ AP2_COMMON_CONFARGS = --enable-layout=Debian --enable-so \
 		      --enable-log-config=static --enable-logio=static \
 		      --with-apr=/usr/bin/apr-1-config \
 		      --with-apr-util=/usr/bin/apu-1-config \
-		      --with-pcre=yes
+		      --with-pcre=yes \
+		      --enable-pie
 
 AP2_MODS_CONFARGS =   --enable-authn-alias=shared --enable-authnz-ldap=shared  \
 		      --enable-disk-cache=shared --enable-cache=shared \

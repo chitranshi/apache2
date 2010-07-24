@@ -6,6 +6,8 @@ apache2 (2.2.16-1) UNRELEASED; urgency=low
     - mod_dir: add FallbackResource directive, to enable admin to specify
       an action to happen when a URL maps to no file, without resorting
       to ErrorDocument or mod_rewrite
+  * Fix mod_ssl header line corruption because of using memcpy for overlapping
+    buffers. PR 45444. LP: #609290, #589611, #595116
 
  -- Stefan Fritsch <sf@debian.org>  Sat, 24 Jul 2010 21:00:10 +0200
 

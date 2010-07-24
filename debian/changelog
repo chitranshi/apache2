@@ -1,4 +1,4 @@
-apache2 (2.2.16-1) UNRELEASED; urgency=medium
+apache2 (2.2.16-1) unstable; urgency=medium
 
   * Urgency medium for security fix.
   * New upstream release:
@@ -10,7 +10,7 @@ apache2 (2.2.16-1) UNRELEASED; urgency=medium
   * Fix mod_ssl header line corruption because of using memcpy for overlapping
     buffers. PR 45444. LP: #609290, #589611, #595116
 
- -- Stefan Fritsch <sf@debian.org>  Sat, 24 Jul 2010 21:00:10 +0200
+ -- Stefan Fritsch <sf@debian.org>  Sat, 24 Jul 2010 22:18:43 +0200
 
 apache2 (2.2.15-6) unstable; urgency=low
 

@@ -1,3 +1,14 @@
+apache2 (2.2.16-1) UNRELEASED; urgency=low
+
+  * New upstream release:
+    - CVE-2010-1452: mod_dav, mod_cache: Fix denial of service vulnerability
+      due to incorrect handling of requests without a path segment.
+    - mod_dir: add FallbackResource directive, to enable admin to specify
+      an action to happen when a URL maps to no file, without resorting
+      to ErrorDocument or mod_rewrite
+
+ -- Stefan Fritsch <sf@debian.org>  Sat, 24 Jul 2010 21:00:10 +0200
+
 apache2 (2.2.15-6) unstable; urgency=low
 
   * Fix init script not correctly killing htcacheclean. Closes: #580971

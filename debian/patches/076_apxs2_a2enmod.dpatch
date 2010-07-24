@@ -8,7 +8,7 @@
 diff -urNad trunk~/support/apxs.in trunk/support/apxs.in
 --- trunk~/support/apxs.in	2010-01-02 21:52:57.828866228 +0100
 +++ trunk/support/apxs.in	2010-01-02 21:55:48.375597120 +0100
-@@ -522,7 +522,7 @@
+@@ -521,7 +521,7 @@
  	# $dir =~ s|^$CFG_PREFIX/?||;
          $dir =~ s|(.)$|$1/|;
  	$t =~ s|\.la$|.so|;
@@ -17,15 +17,17 @@ diff -urNad trunk~/support/apxs.in trunk/support/apxs.in
      }
  
      #   execute the commands
-@@ -530,105 +530,35 @@
+@@ -529,108 +529,35 @@
  
      #   activate module via LoadModule/AddModule directive
      if ($opt_a or $opt_A) {
 -        if (not -f "$CFG_SYSCONFDIR/httpd.conf") {
 -            error("Config file $CFG_SYSCONFDIR/httpd.conf not found");
--            exit(1);
--        }
--
++        if (not -d "$CFG_SYSCONFDIR/mods-available") {
++            error("Config file $CFG_SYSCONFDIR/mods-available not found");
+             exit(1);
+         }
+ 
 -        open(FP, "<$CFG_SYSCONFDIR/httpd.conf") || die;
 -        my $content = join('', <FP>);
 -        close(FP);
@@ -33,17 +35,18 @@ diff -urNad trunk~/support/apxs.in trunk/support/apxs.in
 -        if ($content !~ m|\n#?\s*LoadModule\s+|) {
 -            error("Activation failed for custom $CFG_SYSCONFDIR/httpd.conf file.");
 -            error("At least one `LoadModule' directive already has to exist.");
-+        if (not -d "$CFG_SYSCONFDIR/mods-available") {
-+            error("Config file $CFG_SYSCONFDIR/mods-available not found");
-             exit(1);
-         }
- 
+-            exit(1);
+-        }
+-
 -        my $lmd;
 -        my $c = '';
 -        $c = '#' if ($opt_A);
 -        foreach $lmd (@lmd) {
 -            my $what = $opt_A ? "preparing" : "activating";
--            if ($content !~ m|\n#?\s*$lmd|) {
+-            my $lmd_re = $lmd;
+-            $lmd_re =~ s/\s+/\\s+/g;
+-
+-            if ($content !~ m|\n#?\s*$lmd_re|) {
 -                # check for open <containers>, so that the new LoadModule
 -                # directive always appears *outside* of an <container>.
 -
@@ -63,15 +66,7 @@ diff -urNad trunk~/support/apxs.in trunk/support/apxs.in
 -                    error('Configuration file is not valid. There are sections'
 -                          . ' closed before opened.');
 -                    exit(1);
-+        my $entry;
-+        foreach $entry (@lmd) {
-+            my ($name, $lmd) = @{$entry};
-+            my $filename = "$CFG_SYSCONFDIR/mods-available/$name.load";
-+            if (-f $filename) {
-+                my $cmd = "mv $filename $filename.bak~";
-+                if (system($cmd) != 0) {
-+                    die "'$cmd' failed\n";
-                 }
+-                }
 -                else {
 -                    # put our cmd after the section containing the last
 -                    # LoadModule.
@@ -102,31 +97,41 @@ diff -urNad trunk~/support/apxs.in trunk/support/apxs.in
 -                                                     # be repeated $cntopen
 -                                                     # times. That's it.
 -                                                     # Simple, eh? ;-)
-+            }
- 
+-
 -                                  )                  # capture end
 -                                 !$1$c$lmd\n!mx;
-+            notice("[preparing module `$name' in $filename]");
-+            open(FP, ">$filename") || die;
-+            print FP "$lmd\n";
-+            close(FP);
- 
+-
 -                    unless ($found) {
 -                        error('Configuration file is not valid. There are '
 -                              . 'sections opened and not closed.');
 -                        exit(1);
 -                    }
-+            if ($opt_a) {
-+                my $cmd = "a2enmod $name";
++        my $entry;
++        foreach $entry (@lmd) {
++            my ($name, $lmd) = @{$entry};
++            my $filename = "$CFG_SYSCONFDIR/mods-available/$name.load";
++            if (-f $filename) {
++                my $cmd = "mv $filename $filename.bak~";
 +                if (system($cmd) != 0) {
 +                    die "'$cmd' failed\n";
                  }
 -            } else {
 -                # replace already existing LoadModule line
--                $content =~ s|^(.*\n)#?\s*$lmd[^\n]*\n|$1$c$lmd\n|s;
--            }
+-                $content =~ s|^(.*\n)#?\s*$lmd_re[^\n]*\n|$1$c$lmd\n|s;
+             }
 -            $lmd =~ m|LoadModule\s+(.+?)_module.*|;
 -            notice("[$what module `$1' in $CFG_SYSCONFDIR/httpd.conf]");
++
++            notice("[preparing module `$name' in $filename]");
++            open(FP, ">$filename") || die;
++            print FP "$lmd\n";
++            close(FP);
++
++            if ($opt_a) {
++                my $cmd = "a2enmod $name";
++                if (system($cmd) != 0) {
++                    die "'$cmd' failed\n";
++                }
 +            }               
 +
          }

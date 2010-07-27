@@ -167,6 +167,24 @@ apache_wait_stop() {
 	fi
 }
 
+# After starting, apache2 needs some time until it accepts SIGHUP/SIGUSR1.
+# Check if it has just been started. If yes, wait a bit.
+apache_wait_before_reload() {
+	# modtime of pidfile in seconds since epoch
+	START=$(stat -c %Y "$PIDFILE" 2>/dev/null || true)
+	[ -n "$START" ] || return 0
+	# now in seconds since epoch
+	NOW=$(date +%s)
+	if [ $(( $NOW - $START )) -le 2 ] ; then
+		echo -n " ... waiting "
+		sleep 2
+	fi
+
+	# Reloading shortly after the last reload is racy.
+	# To be save, force a wait on the next reload.
+	touch "$PIDFILE"
+}
+
 case $1 in
 	start)
 		log_daemon_msg "Starting web server" "apache2"
@@ -202,13 +220,14 @@ case $1 in
 		else
 			log_daemon_msg "Stopping web server" "apache2"
 		fi
+		apache_wait_before_reload
 		if $APACHE2CTL graceful-stop; then
                         log_end_msg 0
                 else
                         log_end_msg 1
                 fi
 	;;
-	reload | force-reload)
+	reload | force-reload | graceful)
 		if ! $APACHE2CTL configtest > /dev/null 2>&1; then
                     $APACHE2CTL configtest || true
                     log_end_msg 1
@@ -216,6 +235,7 @@ case $1 in
                 fi
                 log_daemon_msg "Reloading web server config" "apache2"
 		if pidof_apache > /dev/null ; then
+                    apache_wait_before_reload
                     if $APACHE2CTL graceful $2 ; then
                         log_end_msg 0
                     else

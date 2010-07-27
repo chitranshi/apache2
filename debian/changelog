@@ -4,6 +4,9 @@ apache2 (2.2.16-2) UNRELEASED; urgency=low
     action, wait a bit to allow apache2 to start and register its signal
     handlers. Closes: #589386, LP: #603192
   * Support 'graceful' as alias for 'reload' in the init script.
+  * In README.Debian, suggest an Apache configuration change to get rid of the
+    "Could not reliably determine the server's fully qualified domain name"
+    warning, as alternative to changing DNS or /etc/hosts.  Closes: #590528
 
  -- Stefan Fritsch <sf@debian.org>  Tue, 27 Jul 2010 20:58:40 +0200
 

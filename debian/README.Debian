@@ -290,7 +290,8 @@ using 127.0.0.1 for ServerName" during start
 This can usually be ignored but it means that Apache httpd was unable to obtain
 a fully-qualified hostname by doing a reverse lookup on your server's IP
 address. You may want to add the fully-qualified hostname to /etc/hosts .
-
+An alternative is to specify "ServerName 127.0.0.1" in the global server
+context of the configuration, e.g. in /etc/apache2/conf.d/servername.local .
 
 2) Error message "mod_rewrite: could not create rewrite_log_lock"
 

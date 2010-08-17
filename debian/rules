@@ -159,8 +159,9 @@ mpm-%.scripts-stamp: debian/mpms.postinst debian/mpms.preinst debian/mpms.prerm 
 install-worker: mpm-worker
 	dh_testdir
 	dh_testroot
+	# force one process since mkdir.sh used by 'make install' is not reliable otherwise
 	cd $(BUILD)/worker ;\
-	$(MAKE) DESTDIR=$(REALCURDIR)/debian/tmp install
+	$(MAKE) DESTDIR=$(REALCURDIR)/debian/tmp -j 1 install
 	for m in logresolve ab; do d=$(REALCURDIR)/debian/tmp/usr/share/man/ ;\
 	    perl -p -e 's/^([.]TH.*?) 8 (.*)/$$1 1 $$2/' < $$d/man8/$$m.8 > $$d/man1/$$m.1 ;\
 	done
@@ -169,8 +170,9 @@ install-worker: mpm-worker
 install-prefork: mpm-prefork
 	dh_testdir
 	dh_testroot
+	# force one process since mkdir.sh used by 'make install' is not reliable otherwise
 	cd $(BUILD)/prefork ;\
-	$(MAKE) DESTDIR=$(REALCURDIR)/debian/tmp-prefork install
+	$(MAKE) DESTDIR=$(REALCURDIR)/debian/tmp-prefork -j 1 install
 
 install-dev: install-worker install-prefork
 	dh_testdir

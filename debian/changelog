@@ -1,5 +1,6 @@
 apache2 (2.2.16-2) UNRELEASED; urgency=low
 
+  * Force -j1 for 'make install' to fix occasional FTBFS. Closes: #593036
   * If the init script's reload action is called immediately after the start
     action, wait a bit to allow apache2 to start and register its signal
     handlers. Closes: #589386, LP: #603192

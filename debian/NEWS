@@ -12,6 +12,17 @@ apache2 (2.2.15-4) unstable; urgency=low
 
 apache2 (2.2.15-1) unstable; urgency=low
 
+  * To fix a security vulnerability in the design of the SSL/TLS protocol
+    (CVE-2009-3555), the protocol had to be extended (RFC 5746). By default,
+    session renegotiation is no longer supported with old clients that do not
+    implement this extension. This breaks certain configurations with client
+    certificate authentication. If you still need to support old clients, you
+    may restore the old (insecure) behaviour by uncommenting the
+
+        SSLInsecureRenegotiation on
+
+    line in /etc/apache2/mods-available/ssl.conf
+
   * This release adds and enables mod_reqtimeout, which limits the time
     Apache waits for a client to send a complete request. This helps to
     mitigate against certain denial of service attacks. In case of problems
@@ -19,7 +30,7 @@ apache2 (2.2.15-1) unstable; urgency=low
     /etc/apache2/mods-available/reqtimeout.conf , or the module can be
     disabled with "a2dismod reqtimeout".
 
- -- Stefan Fritsch <sf@debian.org>  Sun, 07 Mar 2010 23:09:30 +0100
+ -- Stefan Fritsch <sf@debian.org>  Sat, 28 Aug 2010 20:49:30 +0100
 
 apache2 (2.2.14-6) unstable; urgency=low
 

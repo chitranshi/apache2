@@ -4,6 +4,8 @@ apache2 (2.2.16-2) UNRELEASED; urgency=low
   * If the init script's reload action is called immediately after the start
     action, wait a bit to allow apache2 to start and register its signal
     handlers. Closes: #589386, LP: #603192
+  * Add a note about the new behaviour of SSL/TLS renegotiation and the new
+    directive SSLInsecureRenegotiation to NEWS.Debian. Closes: #593334
   * Support 'graceful' as alias for 'reload' in the init script.
   * In README.Debian, suggest an Apache configuration change to get rid of the
     "Could not reliably determine the server's fully qualified domain name"

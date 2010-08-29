@@ -1,4 +1,4 @@
-apache2 (2.2.16-2) UNRELEASED; urgency=low
+apache2 (2.2.16-2) unstable; urgency=low
 
   * Force -j1 for 'make install' to fix occasional FTBFS. Closes: #593036
   * Add a note about the new behaviour of SSL/TLS renegotiation and the new
@@ -7,9 +7,10 @@ apache2 (2.2.16-2) UNRELEASED; urgency=low
   * In README.Debian, suggest an Apache configuration change to get rid of the
     "Could not reliably determine the server's fully qualified domain name"
     warning, as alternative to changing DNS or /etc/hosts.  Closes: #590528
+  * Add notes to README.Debian on how to reduce memory usage.
   * Bump Standards-Version (no changes).
 
- -- Stefan Fritsch <sf@debian.org>  Tue, 27 Jul 2010 20:58:40 +0200
+ -- Stefan Fritsch <sf@debian.org>  Sun, 29 Aug 2010 15:29:21 +0200
 
 apache2 (2.2.16-1) unstable; urgency=medium
 

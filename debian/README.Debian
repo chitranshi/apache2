@@ -371,3 +371,16 @@ execution for that directory. For example:
    directly
 
 Use apache2ctl (it accepts all options of apache2).
+
+10) Apache is using a lot of memory and is not freeing it even when idle
+
+By default, Apache will not give back unused memory but keep it around for
+later use.
+
+  * Tune StartServers, MaxRequestsPerChild, MinSpareThreads/MinSpareServers,
+    MaxSpareThreads/MaxSpareServers in /etc/apache2/apache2.conf
+
+  * If you are really starved for memory, try adding 'MaxMemFree 4' to your
+    Apache configuration. This will reduce Apache's performance.
+    Because of the way Apache's memory allocator interacts with glibc's malloc,
+    higher values of MaxMemFree don't have much effect.

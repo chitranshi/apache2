@@ -1,3 +1,10 @@
+apache2 (2.2.16-3) UNRELEASED; urgency=low
+
+  * Fix "Could not reliably determine the server's ..." error message in
+    README.Debian, to make it easier to search for it.  Closes: #590528
+
+ -- Stefan Fritsch <sf@debian.org>  Sun, 05 Sep 2010 08:53:25 +0200
+
 apache2 (2.2.16-2) unstable; urgency=low
 
   * Force -j1 for 'make install' to fix occasional FTBFS. Closes: #593036

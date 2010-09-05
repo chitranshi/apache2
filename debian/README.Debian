@@ -284,8 +284,8 @@ information.
 Common Problems
 ===============
 
-1) Error message "Could not determine the server's fully qualified domain name,
-using 127.0.0.1 for ServerName" during start
+1) Error message "Could not reliably determine the server's fully qualified 
+domain name, using 127.0.0.1 for ServerName" during start
 
 This can usually be ignored but it means that Apache httpd was unable to obtain
 a fully-qualified hostname by doing a reverse lookup on your server's IP

@@ -1,5 +1,6 @@
 apache2 (2.2.16-3) UNRELEASED; urgency=low
 
+  * CVE-2010-1623: mod_reqtimeout: Fix potential DoS by high memory usage.
   * Fix "Could not reliably determine the server's ..." error message in
     README.Debian, to make it easier to search for it.  Closes: #590528
 

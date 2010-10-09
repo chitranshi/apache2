@@ -26,6 +26,7 @@
 080_mod_reqtimeout_fixes.dpatch
 082_ab_num_requests
 083_mod_ssl_memcpy.dpatch
+084_mod_reqtimeout_CVE-2010-1623.dpatch
 099_config_guess_sub_update
 200_cp_suexec.dpatch
 201_build_suexec-custom.dpatch

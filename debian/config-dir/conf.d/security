@@ -3,7 +3,7 @@
 # are explicitly allowed later.
 #
 # This currently breaks the configurations that come with some web application
-# Debian packages. It will be made the default for the release after lenny.
+# Debian packages.
 #
 #<Directory />
 #	AllowOverride None

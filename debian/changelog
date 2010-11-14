@@ -1,9 +1,11 @@
 apache2 (2.2.16-4) UNRELEASED; urgency=low
 
+  * Increase the mod_reqtimeout default timeouts to avoid potential problems
+    with CRL-requesting browsers. Also extend the comments in reqtimeout.conf.
   * Remove bogus comment in conf.d/security about default in the "release
     after Lenny".
 
- -- Stefan Fritsch <sf@debian.org>  Mon, 08 Nov 2010 21:20:46 +0100
+ -- Stefan Fritsch <sf@debian.org>  Sun, 14 Nov 2010 18:56:05 +0100
 
 apache2 (2.2.16-3) unstable; urgency=high
 

@@ -1,4 +1,4 @@
-apache2 (2.2.16-4) UNRELEASED; urgency=low
+apache2 (2.2.16-4) unstable; urgency=medium
 
   * Increase the mod_reqtimeout default timeouts to avoid potential problems
     with CRL-requesting browsers. Also extend the comments in reqtimeout.conf.
@@ -6,7 +6,7 @@ apache2 (2.2.16-4) UNRELEASED; urgency=low
     after Lenny".
   * Clarify comments in suexec-custom's default config file. LP: #673289
 
- -- Stefan Fritsch <sf@debian.org>  Sun, 14 Nov 2010 18:56:05 +0100
+ -- Stefan Fritsch <sf@debian.org>  Sun, 14 Nov 2010 19:05:55 +0100
 
 apache2 (2.2.16-3) unstable; urgency=high
 

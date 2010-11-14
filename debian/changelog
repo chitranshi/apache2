@@ -4,6 +4,7 @@ apache2 (2.2.16-4) UNRELEASED; urgency=low
     with CRL-requesting browsers. Also extend the comments in reqtimeout.conf.
   * Remove bogus comment in conf.d/security about default in the "release
     after Lenny".
+  * Clarify comments in suexec-custom's default config file. LP: #673289
 
  -- Stefan Fritsch <sf@debian.org>  Sun, 14 Nov 2010 18:56:05 +0100
 

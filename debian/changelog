@@ -1,3 +1,10 @@
+apache2 (2.2.16-5) UNRELEASED; urgency=low
+
+  * Update outdated description of /etc/apache2/magic in README.Debian.
+    Closes: #603586
+
+ -- Stefan Fritsch <sf@debian.org>  Tue, 16 Nov 2010 23:53:44 +0100
+
 apache2 (2.2.16-4) unstable; urgency=medium
 
   * Increase the mod_reqtimeout default timeouts to avoid potential problems

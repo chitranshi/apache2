@@ -80,7 +80,8 @@ httpd.conf
 
 magic
 
-	Empty file.
+	Patterns for mod_mime_magic. This is not compatible with the format
+	used by current versions of the file/libmagic packages.
 
 mods-available/
 

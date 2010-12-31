@@ -1,11 +1,11 @@
-apache2 (2.2.16-5) UNRELEASED; urgency=low
+apache2 (2.2.16-5) unstable; urgency=medium
 
   * Add $named to the init script dependency header, since apache depends on
     DNS in some configurations. Closes: #608437
   * Update outdated description of /etc/apache2/magic in README.Debian.
     Closes: #603586
 
- -- Stefan Fritsch <sf@debian.org>  Fri, 31 Dec 2010 01:17:11 +0100
+ -- Stefan Fritsch <sf@debian.org>  Fri, 31 Dec 2010 01:22:19 +0100
 
 apache2 (2.2.16-4) unstable; urgency=medium
 

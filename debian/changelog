@@ -1,3 +1,9 @@
+apache2 (2.2.16-6) UNRELEASED; urgency=low
+
+  * Also add $named to the secondary-init-script example.
+
+ -- Stefan Fritsch <sf@debian.org>  Fri, 31 Dec 2010 12:37:30 +0100
+
 apache2 (2.2.16-5) unstable; urgency=medium
 
   * Add $named to the init script dependency header, since apache depends on

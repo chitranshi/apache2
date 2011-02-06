@@ -1,3 +1,9 @@
+apache2 (2.2.17-1) UNRELEASED; urgency=low
+
+  * New upstream version
+
+ -- Stefan Fritsch <sf@debian.org>  Sun, 06 Feb 2011 15:23:35 +0100
+
 apache2 (2.2.16-6) unstable; urgency=low
 
   * Also add $named to the secondary-init-script example.

@@ -8,7 +8,6 @@
 033_dbm_read_hash_or_btree
 034_apxs2_libtool_fixtastic
 038_no_LD_LIBRARY_PATH
-042_htdigest_CAN-2005-1344
 045_suexec_log_cloexec.dpatch
 047_fix_usage_message.dpatch
 052_logresolve_linelength.dpatch
@@ -23,10 +22,7 @@
 076_apxs2_a2enmod.dpatch
 077_CacheIgnoreURLSessionIdentifiers.dpatch
 079_polish_translation.dpatch
-080_mod_reqtimeout_fixes.dpatch
 082_ab_num_requests
-083_mod_ssl_memcpy.dpatch
-084_mod_reqtimeout_CVE-2010-1623.dpatch
 099_config_guess_sub_update
 200_cp_suexec.dpatch
 201_build_suexec-custom.dpatch

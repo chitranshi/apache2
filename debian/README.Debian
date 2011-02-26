@@ -385,3 +385,9 @@ later use.
     Apache configuration. This will reduce Apache's performance.
     Because of the way Apache's memory allocator interacts with glibc's malloc,
     higher values of MaxMemFree don't have much effect.
+
+11) A PUT with mod_dav_fs fails with "Unable to PUT new contents for /...
+[403, #0]" even if Apache has permission to write the file.
+
+Apache also needs write permission to the directory containing the file, in
+order to replace it atomically.

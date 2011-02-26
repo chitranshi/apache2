@@ -266,7 +266,11 @@ case $1 in
 			exit 0
 		else
 			echo "Apache2$DIR_SUFFIX is NOT running."
-			exit 1
+			if [ -e "$PIDFILE" ]; then
+				exit 1
+			else
+				exit 3
+			fi
 		fi
 	;;
 	*)

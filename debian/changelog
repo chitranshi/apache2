@@ -1,5 +1,7 @@
 apache2 (2.2.17-2) UNRELEASED; urgency=low
 
+  * Make exit code of '/etc/init.d/apache2 status' more LSB compatible.
+    Closes: #613969
   * Add hint in README.Debian about 403 error with mod_dav PUT. Closes: #613438
 
  -- Stefan Fritsch <sf@debian.org>  Sat, 26 Feb 2011 15:04:45 +0100

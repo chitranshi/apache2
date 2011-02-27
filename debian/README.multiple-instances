@@ -33,7 +33,7 @@ To make 'apache2ctl-xxx status' work, you need to set APACHE_STATUSURL in
 Upgrades
 ========
 
-Since onle the configuration files in /etc/apache2 are in the package, the
+Since only the configuration files in /etc/apache2 are in the package, the
 configuration of other instances won't change if the default configuration
 changes.  Possibly ways to deal with this are:
 

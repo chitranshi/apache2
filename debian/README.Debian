@@ -48,7 +48,8 @@ envvars
 	This contains environment variables that may be used in the
 	configuration. Some settings, like user and pid file, need to
 	go in here so that other scripts can use them. It can also
-	be used to change some default settings used by apache2ctl.
+	be used to change some default settings used by apache2ctl,
+	including the ulimit value for the max number of open files.
 	Here is also the default LANG=C setting that can be changed
 	to a different language.
 

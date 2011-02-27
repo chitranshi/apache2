@@ -78,7 +78,7 @@ STATUSURL="${APACHE_STATUSURL:-http://localhost:80/server-status}"
 # number of file descriptors allowed per child process. This is
 # critical for configurations that use many file descriptors,
 # such as mass vhosting, or a multithreaded server.
-ULIMIT_MAX_FILES="${APACHE_ULIMIT_MAX_FILES:-ulimit -S -n `ulimit -H -n`}"
+ULIMIT_MAX_FILES="${APACHE_ULIMIT_MAX_FILES:-ulimit -n 8192}"
 # --------------------                              --------------------
 # ||||||||||||||||||||   END CONFIGURATION SECTION  ||||||||||||||||||||
 

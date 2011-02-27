@@ -3,7 +3,7 @@ Section: httpd
 Priority: optional
 Maintainer: Debian Apache Maintainers <debian-apache@lists.debian.org>
 Uploaders: Tollef Fog Heen <tfheen@debian.org>, Thom May <thom@debian.org>, Peter Samuelson <peter@p12n.org>, Stefan Fritsch <sf@debian.org>, Steinar H. Gunderson <sesse@debian.org>
-Build-Depends: debhelper (>= 7.4.3), dpatch, lsb-release, libaprutil1-dev (>= 1.3.4), libapr1-dev (>= 1.2.7-6), openssl, libpcre3-dev, mawk, zlib1g-dev, libssl-dev (>= 0.9.8m), sharutils, libcap-dev [!kfreebsd-i386 !kfreebsd-amd64 !hurd-i386], autoconf
+Build-Depends: debhelper (>= 7.4.3), dpatch, lsb-release, libaprutil1-dev (>= 1.3.4), libapr1-dev, openssl, libpcre3-dev, mawk, zlib1g-dev, libssl-dev (>= 0.9.8m), sharutils, libcap-dev [!kfreebsd-i386 !kfreebsd-amd64 !hurd-i386], autoconf
 Build-Conflicts: autoconf2.13
 Standards-Version: 3.9.1
 Vcs-Browser: http://svn.debian.org/wsvn/pkg-apache/trunk/apache2
@@ -12,7 +12,7 @@ Homepage: http://httpd.apache.org/
 
 Package: apache2.2-common
 Architecture: any
-Depends: ${misc:Depends}, apache2.2-bin (= ${binary:Version}), apache2-utils, libmagic1, mime-support, lsb-base, procps [!hurd-i386], perl
+Depends: ${misc:Depends}, apache2.2-bin (= ${binary:Version}), apache2-utils, mime-support, lsb-base, procps [!hurd-i386], perl
 Recommends: ssl-cert
 Suggests: www-browser, apache2-doc, apache2-suexec | apache2-suexec-custom
 Conflicts: apache2-common, apache
@@ -46,7 +46,6 @@ Architecture: any
 Depends: ${misc:Depends}, apache2.2-common (= ${binary:Version}), apache2.2-bin (= ${binary:Version})
 Provides: apache2-mpm, apache2, httpd, httpd-cgi
 Conflicts: apache2-mpm, apache2-common
-Replaces: apache2-mpm-threadpool (<< 2.0.53), apache2-mpm-perchild (<< 2.2.0)
 Description: Apache HTTP Server - high speed threaded model
  Each Apache Multi-Processing Module provides a different "flavor" of
  web server binary, compiled with a different processing model.

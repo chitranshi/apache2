@@ -12,7 +12,7 @@
 set -e
 
 if [ -n "$APACHE_CONFDIR" ] ; then
-	if [ "${APACHE_CONFDIR##/etc/apache2-}" != "$APACHE_CONFDIR}" ] ; then
+	if [ "${APACHE_CONFDIR##/etc/apache2-}" != "${APACHE_CONFDIR}" ] ; then
 		DIR_SUFFIX="${APACHE_CONFDIR##/etc/apache2-}"
 	else
 		DIR_SUFFIX=

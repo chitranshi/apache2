@@ -1,4 +1,4 @@
-apache2 (2.2.17-2) UNRELEASED; urgency=high
+apache2 (2.2.17-2) unstable; urgency=high
 
   * New mpm_itk upstream version 2.2.17-01:
     - Fix CVE-2011-1176: If NiceValue was set, the default with no
@@ -14,7 +14,7 @@ apache2 (2.2.17-2) UNRELEASED; urgency=high
   * Add hint in README.Debian about 403 error with mod_dav PUT. Closes: #613438
   * Remove some obsolete Depends and Replaces.
 
- -- Stefan Fritsch <sf@debian.org>  Sat, 26 Feb 2011 15:04:45 +0100
+ -- Stefan Fritsch <sf@debian.org>  Mon, 21 Mar 2011 23:01:17 +0100
 
 apache2 (2.2.17-1) unstable; urgency=low
 

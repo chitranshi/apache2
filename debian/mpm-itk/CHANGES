@@ -1,3 +1,15 @@
+apache2.2-mpm-itk 2.2.17-01, released 2011-03-21:
+
+  * Fixed CVE-2011-1176: If NiceValue was set, the default with no
+    AssignUserID was to run as root:root instead of the default Apache user
+    and group, due to the configuration merger having an incorrect default
+    configuration.
+  * Rebase against Apache 2.2.17.
+  * Fix an issue where users can sometimes get spurious 403s on persistent
+    connections, if the .htaccess files are not world readable.
+  * In the config merger, don't reallocate the username, since it's already
+    in the correct pool. (This is not a memory leak, only a small inefficiency.)
+
 apache2.2-mpm-itk 2.2.11-02, released 2009-04-14:
 
   * Really fix the waitpid() code; thanks to Dave Cundiff for spotting the typo.

@@ -1,10 +1,10 @@
 Add the base functionality of mpm_itk over prefork; parse the new configuration
 options, fork on each new connection, and setuid() as required.
 
-Index: httpd-2.2.11/server/mpm/experimental/itk/itk.c
+Index: httpd-2.2.17/server/mpm/experimental/itk/itk.c
 ===================================================================
---- httpd-2.2.11.orig/server/mpm/experimental/itk/itk.c	2009-03-21 23:52:01.000000000 +0100
-+++ httpd-2.2.11/server/mpm/experimental/itk/itk.c	2009-04-14 23:27:51.000000000 +0200
+--- httpd-2.2.17.orig/server/mpm/experimental/itk/itk.c
++++ httpd-2.2.17/server/mpm/experimental/itk/itk.c
 @@ -26,6 +26,11 @@
  #include "apr_thread_proc.h"
  #include "apr_signal.h"
@@ -25,7 +25,7 @@ Index: httpd-2.2.11/server/mpm/experimental/itk/itk.c
  #include "scoreboard.h"
  #include "ap_mpm.h"
  #include "unixd.h"
-@@ -146,6 +152,15 @@
+@@ -146,6 +152,15 @@ char tpf_server_name[INETD_SERVNAME_LENG
  
  static volatile int die_now = 0;
  
@@ -41,7 +41,7 @@ Index: httpd-2.2.11/server/mpm/experimental/itk/itk.c
  #ifdef GPROF
  /*
   * change directory for gprof to plop the gmon.out file
-@@ -512,10 +527,6 @@
+@@ -512,10 +527,6 @@ static void child_main(int child_num_arg
          clean_child_exit(APEXIT_CHILDFATAL);
      }
  
@@ -52,7 +52,7 @@ Index: httpd-2.2.11/server/mpm/experimental/itk/itk.c
      ap_run_child_init(pchild, ap_server_conf);
  
      ap_create_sb_handle(&sbh, pchild, my_child_num, 0);
-@@ -651,10 +662,38 @@
+@@ -663,10 +674,38 @@ static void child_main(int child_num_arg
           * socket options, file descriptors, and read/write buffers.
           */
  
@@ -95,7 +95,7 @@ Index: httpd-2.2.11/server/mpm/experimental/itk/itk.c
          }
  
          /* Check the pod and the generation number after processing a
-@@ -672,6 +711,10 @@
+@@ -684,6 +723,10 @@ static void child_main(int child_num_arg
               */
              die_now = 1;
          }
@@ -104,9 +104,9 @@ Index: httpd-2.2.11/server/mpm/experimental/itk/itk.c
 +        if (getuid())
 +            die_now = 1;
      }
-     clean_child_exit(0);
- }
-@@ -1334,6 +1377,56 @@
+     /* This apr_pool_clear call is redundant, should be redundant, but compensates
+      * a flaw in the apr reslist code.  This should be removed once that flaw has
+@@ -1351,6 +1394,56 @@ static int itk_pre_config(apr_pool_t *p,
      return OK;
  }
  
@@ -163,7 +163,7 @@ Index: httpd-2.2.11/server/mpm/experimental/itk/itk.c
  static void itk_hooks(apr_pool_t *p)
  {
      /* The itk open_logs phase must run before the core's, or stderr
-@@ -1351,6 +1444,9 @@
+@@ -1368,6 +1461,9 @@ static void itk_hooks(apr_pool_t *p)
       * to retrieve it, so register as REALLY_FIRST
       */
      ap_hook_pre_config(itk_pre_config, NULL, NULL, APR_HOOK_REALLY_FIRST);
@@ -173,7 +173,7 @@ Index: httpd-2.2.11/server/mpm/experimental/itk/itk.c
  }
  
  static const char *set_daemons_to_start(cmd_parms *cmd, void *dummy, const char *arg)
-@@ -1463,6 +1559,15 @@
+@@ -1480,6 +1576,15 @@ static const char *set_server_limit (cmd
      return NULL;
  }
  
@@ -189,7 +189,7 @@ Index: httpd-2.2.11/server/mpm/experimental/itk/itk.c
  static const command_rec itk_cmds[] = {
  UNIX_DAEMON_COMMANDS,
  LISTEN_COMMANDS,
-@@ -1476,14 +1581,25 @@
+@@ -1493,14 +1598,25 @@ AP_INIT_TAKE1("MaxClients", set_max_clie
                "Maximum number of children alive at the same time"),
  AP_INIT_TAKE1("ServerLimit", set_server_limit, NULL, RSRC_CONF,
                "Maximum value of MaxClients for this run of Apache"),

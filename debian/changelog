@@ -1,5 +1,10 @@
-apache2 (2.2.17-2) UNRELEASED; urgency=low
+apache2 (2.2.17-2) UNRELEASED; urgency=high
 
+  * New mpm_itk upstream version 2.2.17-01:
+    - Fix CVE-2011-1176: If NiceValue was set, the default with no
+      AssignUserID was to run as root:root instead of the default Apache user
+      and group, due to the configuration merger having an incorrect default
+      configuration. Closes: #618857
   * Make exit code of '/etc/init.d/apache2 status' more LSB compatible.
     Closes: #613969
   * Set the default file descriptor limit to 8192 instead of whatever the

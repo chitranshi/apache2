@@ -8,3 +8,4 @@
 08-max-clients-per-vhost.patch
 09-capabilities.patch
 10-nice.patch
+11-fix-htaccess-reads-for-persistent-connections.patch

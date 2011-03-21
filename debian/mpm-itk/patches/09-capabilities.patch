@@ -3,10 +3,10 @@ all root privilegies except the ability to setuid. An attacker capable of inject
 code will still be able to run as any (normal) user on the system, but at least
 he/she cannot directly load kernel code etc.
 
-Index: httpd-2.2.11/server/mpm/experimental/itk/itk.c
+Index: httpd-2.2.17/server/mpm/experimental/itk/itk.c
 ===================================================================
---- httpd-2.2.11.orig/server/mpm/experimental/itk/itk.c	2009-04-14 23:28:02.000000000 +0200
-+++ httpd-2.2.11/server/mpm/experimental/itk/itk.c	2009-04-14 23:29:16.000000000 +0200
+--- httpd-2.2.17.orig/server/mpm/experimental/itk/itk.c
++++ httpd-2.2.17/server/mpm/experimental/itk/itk.c
 @@ -71,6 +71,10 @@
  #include <sys/processor.h> /* for bindprocessor() */
  #endif
@@ -18,7 +18,7 @@ Index: httpd-2.2.11/server/mpm/experimental/itk/itk.c
  #include <signal.h>
  #include <sys/times.h>
  
-@@ -501,6 +505,15 @@
+@@ -501,6 +505,15 @@ static void child_main(int child_num_arg
      apr_bucket_alloc_t *bucket_alloc;
      int last_poll_idx = 0;
  
@@ -34,7 +34,7 @@ Index: httpd-2.2.11/server/mpm/experimental/itk/itk.c
      mpm_state = AP_MPMQ_STARTING; /* for benefit of any hooks that run as this
                                     * child initializes
                                     */
-@@ -554,6 +567,22 @@
+@@ -558,6 +571,22 @@ static void child_main(int child_num_arg
          (void) apr_pollset_add(pollset, &pfd);
      }
  
@@ -57,11 +57,11 @@ Index: httpd-2.2.11/server/mpm/experimental/itk/itk.c
      mpm_state = AP_MPMQ_RUNNING;
  
      bucket_alloc = apr_bucket_alloc_create(pchild);
-Index: httpd-2.2.11/server/mpm/config.m4
+Index: httpd-2.2.17/server/mpm/config.m4
 ===================================================================
---- httpd-2.2.11.orig/server/mpm/config.m4	2009-04-14 23:26:41.000000000 +0200
-+++ httpd-2.2.11/server/mpm/config.m4	2009-04-14 23:28:03.000000000 +0200
-@@ -66,6 +66,11 @@
+--- httpd-2.2.17.orig/server/mpm/config.m4
++++ httpd-2.2.17/server/mpm/config.m4
+@@ -66,6 +66,11 @@ if ap_mpm_is_experimental; then
  else
    MPM_SUBDIR_NAME=$MPM_NAME
  fi

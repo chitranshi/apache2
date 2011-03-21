@@ -2,11 +2,11 @@ Enforce the per-vhost server limit. Note that this is per-vhost, not
 per-directory (since it works by reading the scoreboard), so we need to add
 per-server configuration data.
 
-Index: httpd-2.2.11/server/mpm/experimental/itk/itk.c
+Index: httpd-2.2.17/server/mpm/experimental/itk/itk.c
 ===================================================================
---- httpd-2.2.11.orig/server/mpm/experimental/itk/itk.c	2009-03-21 13:03:45.000000000 +0100
-+++ httpd-2.2.11/server/mpm/experimental/itk/itk.c	2009-03-21 13:03:50.000000000 +0100
-@@ -159,6 +159,11 @@
+--- httpd-2.2.17.orig/server/mpm/experimental/itk/itk.c
++++ httpd-2.2.17/server/mpm/experimental/itk/itk.c
+@@ -159,6 +159,11 @@ typedef struct
      char *username;
  } itk_per_dir_conf;
  
@@ -18,7 +18,7 @@ Index: httpd-2.2.11/server/mpm/experimental/itk/itk.c
  module AP_MODULE_DECLARE_DATA mpm_itk_module;
  
  #ifdef GPROF
-@@ -1383,6 +1388,26 @@
+@@ -1400,6 +1405,26 @@ static int itk_post_perdir_config(reques
      gid_t wanted_gid;
      const char *wanted_username;
      int err = 0;
@@ -45,7 +45,7 @@ Index: httpd-2.2.11/server/mpm/experimental/itk/itk.c
  
      itk_per_dir_conf *dconf =
          (itk_per_dir_conf *) ap_get_module_config(r->per_dir_config, &mpm_itk_module);
-@@ -1568,6 +1593,14 @@
+@@ -1585,6 +1610,14 @@ static const char *assign_user_id (cmd_p
      return NULL;
  }
  
@@ -60,7 +60,7 @@ Index: httpd-2.2.11/server/mpm/experimental/itk/itk.c
  static const command_rec itk_cmds[] = {
  UNIX_DAEMON_COMMANDS,
  LISTEN_COMMANDS,
-@@ -1583,6 +1616,8 @@
+@@ -1600,6 +1633,8 @@ AP_INIT_TAKE1("ServerLimit", set_server_
                "Maximum value of MaxClients for this run of Apache"),
  AP_INIT_TAKE2("AssignUserID", assign_user_id, NULL, RSRC_CONF|ACCESS_CONF,
                "Tie a virtual host to a specific child process."),
@@ -69,7 +69,7 @@ Index: httpd-2.2.11/server/mpm/experimental/itk/itk.c
  AP_GRACEFUL_SHUTDOWN_TIMEOUT_COMMAND,
  { NULL }
  };
-@@ -1596,12 +1631,21 @@
+@@ -1613,12 +1648,21 @@ static void *itk_create_dir_config(apr_p
      return c;
  }
  

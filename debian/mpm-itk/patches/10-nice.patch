@@ -1,11 +1,11 @@
 Support a per-location nice value. Note that since we now have two different settings
 in the per-dir configuration, we need to introduce a merge function.
 
-Index: httpd-2.2.11/server/mpm/experimental/itk/itk.c
+Index: httpd-2.2.17/server/mpm/experimental/itk/itk.c
 ===================================================================
---- httpd-2.2.11.orig/server/mpm/experimental/itk/itk.c	2009-04-14 23:29:16.000000000 +0200
-+++ httpd-2.2.11/server/mpm/experimental/itk/itk.c	2009-04-14 23:31:05.000000000 +0200
-@@ -156,11 +156,14 @@
+--- httpd-2.2.17.orig/server/mpm/experimental/itk/itk.c
++++ httpd-2.2.17/server/mpm/experimental/itk/itk.c
+@@ -156,11 +156,14 @@ char tpf_server_name[INETD_SERVNAME_LENG
  
  static volatile int die_now = 0;
  
@@ -20,7 +20,7 @@ Index: httpd-2.2.11/server/mpm/experimental/itk/itk.c
  } itk_per_dir_conf;
  
  typedef struct
-@@ -511,6 +514,7 @@
+@@ -511,6 +514,7 @@ static void child_main(int child_num_arg
          CAP_SETUID,
          CAP_SETGID,
  	CAP_DAC_READ_SEARCH,
@@ -28,7 +28,7 @@ Index: httpd-2.2.11/server/mpm/experimental/itk/itk.c
      };
  #endif    
  
-@@ -1444,6 +1448,12 @@
+@@ -1461,6 +1465,12 @@ static int itk_post_perdir_config(reques
      strncpy(ap_scoreboard_image->servers[my_child_num][0].vhost, r->server->server_hostname, 31);
      ap_scoreboard_image->servers[my_child_num][0].vhost[31] = 0;
  
@@ -41,7 +41,7 @@ Index: httpd-2.2.11/server/mpm/experimental/itk/itk.c
      wanted_uid = dconf->uid;
      wanted_gid = dconf->gid;
      wanted_username = dconf->username;
-@@ -1454,7 +1464,7 @@
+@@ -1471,7 +1481,7 @@ static int itk_post_perdir_config(reques
          wanted_username = unixd_config.user_name;
      }
  
@@ -50,7 +50,7 @@ Index: httpd-2.2.11/server/mpm/experimental/itk/itk.c
          if (setgid(wanted_gid)) {
              _DBG("setgid(%d): %s", wanted_gid, strerror(errno));
              err = 1;
-@@ -1474,7 +1484,7 @@
+@@ -1491,7 +1501,7 @@ static int itk_post_perdir_config(reques
       */
      if (err) {
          ap_log_error(APLOG_MARK, APLOG_WARNING, 0, NULL, \
@@ -59,7 +59,7 @@ Index: httpd-2.2.11/server/mpm/experimental/itk/itk.c
          ap_lingering_close(r->connection);
          exit(0);
      }
-@@ -1630,6 +1640,27 @@
+@@ -1647,6 +1657,27 @@ static const char *set_max_clients_vhost
      return NULL;
  }
  
@@ -87,7 +87,7 @@ Index: httpd-2.2.11/server/mpm/experimental/itk/itk.c
  static const command_rec itk_cmds[] = {
  UNIX_DAEMON_COMMANDS,
  LISTEN_COMMANDS,
-@@ -1647,6 +1678,8 @@
+@@ -1664,6 +1695,8 @@ AP_INIT_TAKE2("AssignUserID", assign_use
                "Tie a virtual host to a specific child process."),
  AP_INIT_TAKE1("MaxClientsVHost", set_max_clients_vhost, NULL, RSRC_CONF,
                "Maximum number of children alive at the same time for this virtual host."),
@@ -96,7 +96,7 @@ Index: httpd-2.2.11/server/mpm/experimental/itk/itk.c
  AP_GRACEFUL_SHUTDOWN_TIMEOUT_COMMAND,
  { NULL }
  };
-@@ -1657,6 +1690,32 @@
+@@ -1674,6 +1707,32 @@ static void *itk_create_dir_config(apr_p
      itk_per_dir_conf *c = (itk_per_dir_conf *)
          apr_pcalloc(p, sizeof(itk_per_dir_conf));
      c->uid = c->gid = -1;
@@ -108,16 +108,16 @@ Index: httpd-2.2.11/server/mpm/experimental/itk/itk.c
 +static void *itk_merge_dir_config(apr_pool_t *p, void *parent_ptr, void *child_ptr)
 +{
 +    itk_per_dir_conf *c = (itk_per_dir_conf *)
-+        apr_pcalloc(p, sizeof(itk_per_dir_conf));
++        itk_create_dir_config(p, NULL);
 +    itk_per_dir_conf *parent = (itk_per_dir_conf *) parent_ptr;
 +    itk_per_dir_conf *child = (itk_per_dir_conf *) child_ptr;
 +
 +    if (child->username != NULL) {
-+      c->username = apr_pstrdup(p, child->username);
++      c->username = child->username;
 +      c->uid = child->uid;
 +      c->gid = child->gid;
-+    } else if (parent->username != NULL) {
-+      c->username = apr_pstrdup(p, parent->username);
++    } else {
++      c->username = parent->username;
 +      c->uid = parent->uid;
 +      c->gid = parent->gid;
 +    }
@@ -129,7 +129,7 @@ Index: httpd-2.2.11/server/mpm/experimental/itk/itk.c
      return c;
  }
  
-@@ -1673,7 +1732,7 @@
+@@ -1690,7 +1749,7 @@ module AP_MODULE_DECLARE_DATA mpm_itk_mo
      MPM20_MODULE_STUFF,
      ap_mpm_rewrite_args,        /* hook to run before apache parses args */
      itk_create_dir_config,      /* create per-directory config structure */

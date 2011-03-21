@@ -1,9 +1,9 @@
 Rename prefork to itk in the copy that was created in 01-copy-prefork.patch.
 
-Index: httpd-2.2.11/server/mpm/experimental/itk/Makefile.in
+Index: httpd-2.2.17/server/mpm/experimental/itk/Makefile.in
 ===================================================================
---- httpd-2.2.11.orig/server/mpm/experimental/itk/Makefile.in	2009-03-17 21:38:54.000000000 +0100
-+++ httpd-2.2.11/server/mpm/experimental/itk/Makefile.in	2009-03-17 21:39:03.000000000 +0100
+--- httpd-2.2.17.orig/server/mpm/experimental/itk/Makefile.in
++++ httpd-2.2.17/server/mpm/experimental/itk/Makefile.in
 @@ -1,5 +1,5 @@
  
 -LTLIBRARY_NAME    = libprefork.la
@@ -12,20 +12,20 @@ Index: httpd-2.2.11/server/mpm/experimental/itk/Makefile.in
 +LTLIBRARY_SOURCES = itk.c
  
  include $(top_srcdir)/build/ltlib.mk
-Index: httpd-2.2.11/server/mpm/experimental/itk/config.m4
+Index: httpd-2.2.17/server/mpm/experimental/itk/config.m4
 ===================================================================
---- httpd-2.2.11.orig/server/mpm/experimental/itk/config.m4	2009-03-17 21:38:53.000000000 +0100
-+++ httpd-2.2.11/server/mpm/experimental/itk/config.m4	2009-03-17 21:39:03.000000000 +0100
+--- httpd-2.2.17.orig/server/mpm/experimental/itk/config.m4
++++ httpd-2.2.17/server/mpm/experimental/itk/config.m4
 @@ -1,3 +1,3 @@
 -if test "$MPM_NAME" = "prefork" ; then
 +if test "$MPM_NAME" = "itk" ; then
      APACHE_FAST_OUTPUT(server/mpm/$MPM_NAME/Makefile)
  fi
-Index: httpd-2.2.11/server/mpm/experimental/itk/itk.c
+Index: httpd-2.2.17/server/mpm/experimental/itk/itk.c
 ===================================================================
---- httpd-2.2.11.orig/server/mpm/experimental/itk/itk.c	2009-03-17 21:38:54.000000000 +0100
-+++ httpd-2.2.11/server/mpm/experimental/itk/itk.c	2009-03-17 21:39:03.000000000 +0100
-@@ -1250,7 +1250,7 @@
+--- httpd-2.2.17.orig/server/mpm/experimental/itk/itk.c
++++ httpd-2.2.17/server/mpm/experimental/itk/itk.c
+@@ -1267,7 +1267,7 @@ int ap_mpm_run(apr_pool_t *_pconf, apr_p
  /* This really should be a post_config hook, but the error log is already
   * redirected by that point, so we need to do this in the open_logs phase.
   */
@@ -34,7 +34,7 @@ Index: httpd-2.2.11/server/mpm/experimental/itk/itk.c
  {
      apr_status_t rv;
  
-@@ -1271,7 +1271,7 @@
+@@ -1288,7 +1288,7 @@ static int prefork_open_logs(apr_pool_t
      return OK;
  }
  
@@ -43,7 +43,7 @@ Index: httpd-2.2.11/server/mpm/experimental/itk/itk.c
  {
      static int restart_num = 0;
      int no_detach, debug, foreground;
-@@ -1328,9 +1328,9 @@
+@@ -1345,9 +1345,9 @@ static int prefork_pre_config(apr_pool_t
      return OK;
  }
  
@@ -55,7 +55,7 @@ Index: httpd-2.2.11/server/mpm/experimental/itk/itk.c
       * will be redirected to a file, and the messages won't print to the
       * console.
       */
-@@ -1340,11 +1340,11 @@
+@@ -1357,11 +1357,11 @@ static void prefork_hooks(apr_pool_t *p)
      (void) set42sig();
  #endif
  
@@ -69,7 +69,7 @@ Index: httpd-2.2.11/server/mpm/experimental/itk/itk.c
  }
  
  static const char *set_daemons_to_start(cmd_parms *cmd, void *dummy, const char *arg)
-@@ -1457,7 +1457,7 @@
+@@ -1474,7 +1474,7 @@ static const char *set_server_limit (cmd
      return NULL;
  }
  
@@ -78,7 +78,7 @@ Index: httpd-2.2.11/server/mpm/experimental/itk/itk.c
  UNIX_DAEMON_COMMANDS,
  LISTEN_COMMANDS,
  AP_INIT_TAKE1("StartServers", set_daemons_to_start, NULL, RSRC_CONF,
-@@ -1474,13 +1474,13 @@
+@@ -1491,13 +1491,13 @@ AP_GRACEFUL_SHUTDOWN_TIMEOUT_COMMAND,
  { NULL }
  };
  
@@ -95,10 +95,10 @@ Index: httpd-2.2.11/server/mpm/experimental/itk/itk.c
 +    itk_cmds,                   /* command apr_table_t */
 +    itk_hooks,                  /* register hooks */
  };
-Index: httpd-2.2.11/server/mpm/experimental/itk/mpm.h
+Index: httpd-2.2.17/server/mpm/experimental/itk/mpm.h
 ===================================================================
---- httpd-2.2.11.orig/server/mpm/experimental/itk/mpm.h	2009-03-17 21:38:54.000000000 +0100
-+++ httpd-2.2.11/server/mpm/experimental/itk/mpm.h	2009-03-17 21:39:03.000000000 +0100
+--- httpd-2.2.17.orig/server/mpm/experimental/itk/mpm.h
++++ httpd-2.2.17/server/mpm/experimental/itk/mpm.h
 @@ -15,10 +15,10 @@
   */
  
@@ -137,10 +137,10 @@ Index: httpd-2.2.11/server/mpm/experimental/itk/mpm.h
 -#endif /* APACHE_MPM_PREFORK_H */
 +#endif /* APACHE_MPM_ITK_H */
  /** @} */
-Index: httpd-2.2.11/server/mpm/experimental/itk/mpm_default.h
+Index: httpd-2.2.17/server/mpm/experimental/itk/mpm_default.h
 ===================================================================
---- httpd-2.2.11.orig/server/mpm/experimental/itk/mpm_default.h	2009-03-17 21:38:54.000000000 +0100
-+++ httpd-2.2.11/server/mpm/experimental/itk/mpm_default.h	2009-03-17 21:39:03.000000000 +0100
+--- httpd-2.2.17.orig/server/mpm/experimental/itk/mpm_default.h
++++ httpd-2.2.17/server/mpm/experimental/itk/mpm_default.h
 @@ -15,10 +15,10 @@
   */
  

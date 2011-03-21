@@ -3,11 +3,11 @@ This makes sure we are able to setuid() as early as possible (that
 is, as soon as know what uid/gid to use for this location), so we
 won't run all sorts of subrequests and other stuff as root.
 
-Index: httpd-2.2.11/include/http_request.h
+Index: httpd-2.2.17/include/http_request.h
 ===================================================================
---- httpd-2.2.11.orig/include/http_request.h	2009-03-21 13:03:31.000000000 +0100
-+++ httpd-2.2.11/include/http_request.h	2009-03-21 13:03:41.000000000 +0100
-@@ -356,6 +356,15 @@
+--- httpd-2.2.17.orig/include/http_request.h
++++ httpd-2.2.17/include/http_request.h
+@@ -356,6 +356,15 @@ AP_DECLARE_HOOK(int,auth_checker,(reques
   */
  AP_DECLARE_HOOK(void,insert_filter,(request_rec *r))
  
@@ -23,11 +23,11 @@ Index: httpd-2.2.11/include/http_request.h
  AP_DECLARE(int) ap_location_walk(request_rec *r);
  AP_DECLARE(int) ap_directory_walk(request_rec *r);
  AP_DECLARE(int) ap_file_walk(request_rec *r);
-Index: httpd-2.2.11/server/request.c
+Index: httpd-2.2.17/server/request.c
 ===================================================================
---- httpd-2.2.11.orig/server/request.c	2009-03-21 13:03:13.000000000 +0100
-+++ httpd-2.2.11/server/request.c	2009-03-21 13:03:41.000000000 +0100
-@@ -67,6 +67,7 @@
+--- httpd-2.2.17.orig/server/request.c
++++ httpd-2.2.17/server/request.c
+@@ -67,6 +67,7 @@ APR_HOOK_STRUCT(
      APR_HOOK_LINK(auth_checker)
      APR_HOOK_LINK(insert_filter)
      APR_HOOK_LINK(create_request)
@@ -35,7 +35,7 @@ Index: httpd-2.2.11/server/request.c
  )
  
  AP_IMPLEMENT_HOOK_RUN_FIRST(int,translate_name,
-@@ -86,6 +87,8 @@
+@@ -86,6 +87,8 @@ AP_IMPLEMENT_HOOK_RUN_FIRST(int,auth_che
  AP_IMPLEMENT_HOOK_VOID(insert_filter, (request_rec *r), (r))
  AP_IMPLEMENT_HOOK_RUN_ALL(int, create_request,
                            (request_rec *r), (r), OK, DECLINED)
@@ -44,7 +44,7 @@ Index: httpd-2.2.11/server/request.c
  
  
  static int decl_die(int status, char *phase, request_rec *r)
-@@ -164,6 +167,13 @@
+@@ -164,6 +167,13 @@ AP_DECLARE(int) ap_process_request_inter
          return access_status;
      }
  

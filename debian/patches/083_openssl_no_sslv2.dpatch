@@ -1,0 +1,83 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+@DPATCH@
+diff --git a/modules/ssl/ssl_engine_config.c b/modules/ssl/ssl_engine_config.c
+index d800bb6..8d3b99d 100644
+--- a/modules/ssl/ssl_engine_config.c
++++ b/modules/ssl/ssl_engine_config.c
+@@ -1273,6 +1273,11 @@ static const char *ssl_cmd_protocol_parse(cmd_parms *parms,
+         }
+ 
+         if (strcEQ(w, "SSLv2")) {
++#ifdef OPENSSL_NO_SSL2
++            if (action != '-') {
++                return "SSLv2 not supported by this version of OpenSSL";
++            }
++#endif
+             thisopt = SSL_PROTOCOL_SSLV2;
+         }
+         else if (strcEQ(w, "SSLv3")) {
+diff --git a/modules/ssl/ssl_engine_init.c b/modules/ssl/ssl_engine_init.c
+index e97a105..3453541 100644
+--- a/modules/ssl/ssl_engine_init.c
++++ b/modules/ssl/ssl_engine_init.c
+@@ -465,13 +465,16 @@ static void ssl_init_ctx_protocol(server_rec *s,
+     ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, s,
+                  "Creating new SSL context (protocols: %s)", cp);
+ 
++#ifndef OPENSSL_NO_SSL2
+     if (protocol == SSL_PROTOCOL_SSLV2) {
+         method = mctx->pkp ?
+             SSLv2_client_method() : /* proxy */
+             SSLv2_server_method();  /* server */
+         ctx = SSL_CTX_new(method);  /* only SSLv2 is left */
+     }
+-    else {
++    else
++#endif
++    {
+         method = mctx->pkp ?
+             SSLv23_client_method() : /* proxy */
+             SSLv23_server_method();  /* server */
+diff --git a/modules/ssl/ssl_private.h b/modules/ssl/ssl_private.h
+index af6d0f7..15deb8f 100644
+--- a/modules/ssl/ssl_private.h
++++ b/modules/ssl/ssl_private.h
+@@ -218,7 +218,11 @@ typedef int ssl_opt_t;
+ #define SSL_PROTOCOL_SSLV2 (1<<0)
+ #define SSL_PROTOCOL_SSLV3 (1<<1)
+ #define SSL_PROTOCOL_TLSV1 (1<<2)
++#ifndef OPENSSL_NO_SSL2
+ #define SSL_PROTOCOL_ALL   (SSL_PROTOCOL_SSLV2|SSL_PROTOCOL_SSLV3|SSL_PROTOCOL_TLSV1)
++#else
++#define SSL_PROTOCOL_ALL   (SSL_PROTOCOL_SSLV3|SSL_PROTOCOL_TLSV1)
++#endif
+ typedef int ssl_proto_t;
+ 
+ /**
+diff --git a/support/ab.c b/support/ab.c
+index ce8b209..3744864 100644
+--- a/support/ab.c
++++ b/support/ab.c
+@@ -1876,7 +1876,11 @@ static void usage(const char *progname)
+     fprintf(stderr, "    -h              Display usage information (this message)\n");
+ #ifdef USE_SSL
+     fprintf(stderr, "    -Z ciphersuite  Specify SSL/TLS cipher suite (See openssl ciphers)\n");
++#ifndef OPENSSL_NO_SSL2
+     fprintf(stderr, "    -f protocol     Specify SSL/TLS protocol (SSL2, SSL3, TLS1, or ALL)\n");
++#else
++    fprintf(stderr, "    -f protocol     Specify SSL/TLS protocol (SSL3, TLS1, or ALL)\n");
++#endif
+ #endif
+     exit(EINVAL);
+ }
+@@ -2209,8 +2213,10 @@ int main(int argc, const char * const argv[])
+             case 'f':
+                 if (strncasecmp(optarg, "ALL", 3) == 0) {
+                     meth = SSLv23_client_method();
++#ifndef OPENSSL_NO_SSL2
+                 } else if (strncasecmp(optarg, "SSL2", 4) == 0) {
+                     meth = SSLv2_client_method();
++#endif
+                 } else if (strncasecmp(optarg, "SSL3", 4) == 0) {
+                     meth = SSLv3_client_method();
+                 } else if (strncasecmp(optarg, "TLS1", 4) == 0) {

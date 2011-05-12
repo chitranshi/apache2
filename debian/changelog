@@ -1,6 +1,8 @@
 apache2 (2.2.17-4) UNRELEASED; urgency=low
 
   * Make a2enmod's restart hint more cut'n'paste friendly. LP: #770204
+  * Make it clear in README.multiple-instances that the MPMs are shipped
+    in the apache2.2-bin package.
 
  -- Stefan Fritsch <sf@debian.org>  Mon, 25 Apr 2011 21:03:39 +0200
 

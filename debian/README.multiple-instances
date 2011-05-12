@@ -95,5 +95,10 @@ MPMs
 ====
 
 You can use different MPMs for different instances by setting APACHE_HTTPD to
-one of /usr/lib/apache2/mpm-*/apache2. Note that some modules like mod_php only
-work with the non-threaded MPMs (prefork, itk).
+one of /usr/lib/apache2/mpm-*/apache2. The MPM binaries are shipped in the
+apache2.2-bin package, it is not necessary to have the apache2-mpm-* pacakges
+installed for this to work. Those packages only provide the /usr/sbin/apache2
+symlink for the default MPM.
+
+Note that some modules like mod_php only work with the non-threaded MPMs
+(prefork, itk).

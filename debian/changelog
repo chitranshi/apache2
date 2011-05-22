@@ -1,10 +1,19 @@
-apache2 (2.2.17-4) UNRELEASED; urgency=low
+apache2 (2.2.19-1) unstable; urgency=low
 
+  * New upstream release.
+    - Makes apr-md5 the default algorithm for htpasswd, removing the 8
+      character limit of the crypt()-algorithm. Closes: #539246
+    - Fixes merging of IndexOptions. Closes: #394688
+    - Documents why order of ProxyPass and <Proxy> blocks matters in the
+      configuration. See "Workers" section in the mod_proxy documentation.
+      Closes: #560020
+  * For multiple instance setups, correctly determine the config dir in the
+    init script if it is called via a start/stop link. Closes: #627061
   * Make a2enmod's restart hint more cut'n'paste friendly. LP: #770204
   * Make it clear in README.multiple-instances that the MPMs are shipped
     in the apache2.2-bin package.
 
- -- Stefan Fritsch <sf@debian.org>  Mon, 25 Apr 2011 21:03:39 +0200
+ -- Stefan Fritsch <sf@debian.org>  Sun, 22 May 2011 10:21:21 +0200
 
 apache2 (2.2.17-3) unstable; urgency=low
 

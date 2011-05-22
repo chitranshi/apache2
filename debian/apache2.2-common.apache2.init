@@ -11,14 +11,16 @@
 
 set -e
 
+SCRIPTNAME="${0##*/}"
+SCRIPTNAME="${SCRIPTNAME##[KS][0-9][0-9]}"
 if [ -n "$APACHE_CONFDIR" ] ; then
 	if [ "${APACHE_CONFDIR##/etc/apache2-}" != "${APACHE_CONFDIR}" ] ; then
 		DIR_SUFFIX="${APACHE_CONFDIR##/etc/apache2-}"
 	else
 		DIR_SUFFIX=
 	fi
-elif [ "${0##*/apache2-}" != "$0" ] ; then
-	DIR_SUFFIX="-${0##*/apache2-}"
+elif [ "${SCRIPTNAME##apache2-}" != "$SCRIPTNAME" ] ; then
+	DIR_SUFFIX="-${SCRIPTNAME##apache2-}"
 	APACHE_CONFDIR=/etc/apache2$DIR_SUFFIX
 else
 	DIR_SUFFIX=

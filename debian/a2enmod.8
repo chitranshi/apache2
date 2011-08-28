@@ -40,6 +40,11 @@ Likewise,
 disables a module by removing those symlinks.  It is not an error to
 enable a module which is already enabled, or to disable one which is
 already disabled.
+.PP
+Note that many modules have, in addition to a .load file, an
+associated .conf file.  Enabling the module puts the configuration
+directives in the .conf file as directives into the main server context of
+.B apache2
 .SH EXAMPLES
 .RS
 .B "a2enmod imagemap"

@@ -1,5 +1,7 @@
-apache2 (2.2.19-2) UNRELEASED; urgency=low
+apache2 (2.2.19-2) UNRELEASED; urgency=high
 
+  * Fix CVE-2011-3192: DoS by high memory usage for a large number of
+    overlapping ranges.
   * Reduce default KeepAliveTimeout from 15 to 5 seconds. 
   * Use "linux-any" in build-deps. Closes: #634709
   * Improve description of the prefork MPM. Closes: #634242

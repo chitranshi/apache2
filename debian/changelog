@@ -4,6 +4,7 @@ apache2 (2.2.19-2) UNRELEASED; urgency=high
     overlapping ranges.
   * Reduce default KeepAliveTimeout from 15 to 5 seconds. 
   * Use "linux-any" in build-deps. Closes: #634709
+  * Improve reload message of a2enmod. Closes: #639291
   * Improve description of the prefork MPM. Closes: #634242
 
  -- Stefan Fritsch <sf@debian.org>  Sun, 22 May 2011 22:01:06 +0200

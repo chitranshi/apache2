@@ -84,7 +84,7 @@ foreach my $acton (@objs) {
     doit($acton) or $rc = 1;
 }
 
-info("To to activate the new configuration, you need to run:\n  /etc/init.d/apache2 $reload\n")
+info("To activate the new configuration, you need to run:\n  service apache2 $reload\n")
     if $request_reload;
 
 exit($rc);

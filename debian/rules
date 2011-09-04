@@ -101,6 +101,9 @@ clean: unpatch
 	rm -rf debian/tmp-worker debian/tmp-prefork
 	dh_clean
 
+build-arch: build
+build-indep: build
+
 build: patch-stamp build-stamp 
 build-stamp: patch-stamp mpm-worker mpm-prefork mpm-event mpm-itk
 	for mpm in prefork event itk ; do \

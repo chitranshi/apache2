@@ -22,6 +22,7 @@
 077_CacheIgnoreURLSessionIdentifiers.dpatch
 079_polish_translation.dpatch
 082_ab_num_requests
+083_range_regressions.dpatch
 099_config_guess_sub_update
 200_cp_suexec.dpatch
 201_build_suexec-custom.dpatch

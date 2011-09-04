@@ -4,7 +4,7 @@
 ## All lines beginning with `## DP:' are a description of the patch.
 ## DP: Make libtool happier
 
---- support/apxs.in
+--- apache2/support/apxs.in
 +++ apache2/support/apxs.in
 @@ -409,7 +409,7 @@
          $la =~ s|\.c$|.la|;

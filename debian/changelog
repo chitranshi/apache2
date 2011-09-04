@@ -1,3 +1,9 @@
+apache2 (2.2.20-1) UNRELEASED; urgency=low
+
+  * New upstream release.
+
+ -- Stefan Fritsch <sf@debian.org>  Sun, 04 Sep 2011 20:29:20 +0200
+
 apache2 (2.2.19-2) unstable; urgency=high
 
   * Fix CVE-2011-3192: DoS by high memory usage for a large number of

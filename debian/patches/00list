@@ -14,7 +14,6 @@
 057_disablemods.dpatch
 058_suexec-CVE-2007-1742.dpatch
 067_fix_segfault_in_ab.dpatch
-069_no_deflate_for_HEAD.dpatch
 071_fix_cacheenable.dpatch
 073_mod_dav_trunk_fixes.dpatch
 074_link_support_progs_with_lcrypt.dpatch
@@ -23,7 +22,6 @@
 077_CacheIgnoreURLSessionIdentifiers.dpatch
 079_polish_translation.dpatch
 082_ab_num_requests
-083_CVE-2011-3192.dpatch
 099_config_guess_sub_update
 200_cp_suexec.dpatch
 201_build_suexec-custom.dpatch

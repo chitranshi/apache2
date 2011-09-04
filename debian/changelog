@@ -3,6 +3,7 @@ apache2 (2.2.20-1) UNRELEASED; urgency=low
   * New upstream release.
   * Fix some regressions related to Range requests caused by the CVE-2011-3192
     fix. Closes: #639825
+  * Bump Standards-Version (no changes).
 
  -- Stefan Fritsch <sf@debian.org>  Sun, 04 Sep 2011 20:29:20 +0200
 

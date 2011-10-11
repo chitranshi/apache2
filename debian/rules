@@ -235,8 +235,6 @@ install: build install-dev
 	chmod 4754 debian/apache2-suexec/usr/lib/apache2/suexec 
 	chgrp www-data debian/apache2-suexec/usr/lib/apache2/suexec
 
-	chmod 644 debian/apache2.2-bin/usr/lib/apache2/modules/mod_suexec.so
-
 	# configurable suexec
 	cp debian/build-tree/worker/support/suexec-custom debian/apache2-suexec-custom/usr/lib/apache2/suexec
 	cp debian/suexec-custom.config debian/apache2-suexec-custom/etc/apache2/suexec/www-data
@@ -311,7 +309,7 @@ install: build install-dev
 	dh_link
 	dh_installexamples
 	dh_compress
-	dh_fixperms -Xsuexec
+	dh_fixperms -Xusr/lib/apache2/suexec
 	chown -R www-data:www-data debian/apache2.2-common/var/cache/apache2
 	chown root:adm debian/apache2.2-common/var/log/apache2
 	chmod o-rx debian/apache2.2-common/var/log/apache2

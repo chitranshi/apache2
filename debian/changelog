@@ -1,3 +1,10 @@
+apache2 (2.2.21-2) UNRELEASED; urgency=low
+
+  * Correctly set permissions of suexec.load even if umask is 0002 during
+    build. LP: #872000
+
+ -- Stefan Fritsch <sf@debian.org>  Tue, 11 Oct 2011 22:28:24 +0200
+
 apache2 (2.2.21-1) unstable; urgency=low
 
   * New upstream release.

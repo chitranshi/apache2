@@ -1,5 +1,7 @@
-apache2 (2.2.21-2) UNRELEASED; urgency=low
+apache2 (2.2.21-2) UNRELEASED; urgency=high
 
+  * Fix CVE-2011-3368: Prevent unintended pattern expansion in some
+    reverse proxy configurations by strictly validating the request-URI.
   * Correctly set permissions of suexec.load even if umask is 0002 during
     build. LP: #872000
 

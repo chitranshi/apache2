@@ -1,3 +1,10 @@
+apache2 (2.2.21-3) UNRELEASED; urgency=low
+
+  * Remove Tollef Fog Heen, Thom May, and Peter Samuelson from uploaders.
+    Thanks for your work in the past.
+
+ -- Stefan Fritsch <sf@debian.org>  Sun, 23 Oct 2011 10:03:26 +0200
+
 apache2 (2.2.21-2) unstable; urgency=high
 
   * Fix CVE-2011-3368: Prevent unintended pattern expansion in some

@@ -77,13 +77,13 @@ sub conv {
 	$file =~ s{href="([^:"]*/)"}{href="${1}index.html"}g;
 
 	# style and images now one level up
-	$file =~ s{(src|href)="../(style|images)}{$1="../../$2}g;
-	$file =~ s{(src|href)="./(style|images)}{$1="../$2}g;
+	$file =~ s{(src|href)="\.\./(style|images)}{$1="../../$2}g;
+	$file =~ s{(src|href)="(?:\./)?(style|images)}{$1="../$2}g;
 
 	foreach my $l (values %lpath) {
 		# language directories one level up
 		$file =~ s{href="\.\./$l}{href="../../$l}g;
-		$file =~ s{href="\./$l}{href="../$l}g;
+		$file =~ s{href="(?:\./)?$l}{href="../$l}g;
 	}
 
 	# Debian tweaks

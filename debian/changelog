@@ -1,14 +1,16 @@
-apache2 (2.2.21-3) UNRELEASED; urgency=low
+apache2 (2.2.21-4) UNRELEASED; urgency=low
 
   * Fix CVE-2011-4317: Prevent unintended pattern expansion in some
     reverse proxy configurations. (Similar to CVE-2011-3368, but different
     attack vector.)
+  * Fix CVE-2011-3607: Integer overflow in ap_pregsub could cause segfault
+    via malicious .htaccess. 
   * Mention dpkg-statoverride for changing permissions of suexec. LP: #897120
   * Fix broken link in docs. Closes: #650528
   * Remove Tollef Fog Heen, Thom May, and Peter Samuelson from uploaders.
     Thanks for your work in the past.
 
- -- Stefan Fritsch <sf@debian.org>  Sun, 23 Oct 2011 10:03:26 +0200
+ -- Stefan Fritsch <sf@debian.org>  Sat, 03 Dec 2011 18:48:43 +0100
 
 apache2 (2.2.21-2) unstable; urgency=high
 

@@ -1,4 +1,4 @@
-apache2 (2.2.21-4) UNRELEASED; urgency=low
+apache2 (2.2.21-3) unstable; urgency=medium
 
   * Fix CVE-2011-4317: Prevent unintended pattern expansion in some
     reverse proxy configurations. (Similar to CVE-2011-3368, but different
@@ -10,7 +10,7 @@ apache2 (2.2.21-4) UNRELEASED; urgency=low
   * Remove Tollef Fog Heen, Thom May, and Peter Samuelson from uploaders.
     Thanks for your work in the past.
 
- -- Stefan Fritsch <sf@debian.org>  Sat, 03 Dec 2011 18:48:43 +0100
+ -- Stefan Fritsch <sf@debian.org>  Sat, 03 Dec 2011 18:54:03 +0100
 
 apache2 (2.2.21-2) unstable; urgency=high
 

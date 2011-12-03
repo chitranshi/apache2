@@ -41,7 +41,8 @@ package.
 If suexec is called by a user with name 'username', it will look into
 /etc/apache2/suexec/username for configuration. If the file does not exist,
 suexec will abort. By creating several config files, you can allow several
-different apache run users to use suexec.
+different apache run users to use suexec. You may need to change the
+permissions of /usr/lib/apache2/suexec with dpkg-statoverride.
 .PP
 The first line in the file is used as the document root (/var/www in the
 standard suexec) and the second line in the file is used as the suffix that is
@@ -64,4 +65,5 @@ was built.  No other action is taken.
 .BR /etc/apache2/suexec/www-data
 .SH SEE ALSO
 .BR apache2(8) ,
-.BR /usr/share/doc/apache2.2-common/README.Debian.gz
+.BR /usr/share/doc/apache2.2-common/README.Debian.gz ,
+.BR dpkg-statoverride(8)

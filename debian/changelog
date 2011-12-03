@@ -1,5 +1,8 @@
 apache2 (2.2.21-3) UNRELEASED; urgency=low
 
+  * Fix CVE-2011-4317: Prevent unintended pattern expansion in some
+    reverse proxy configurations. (Similar to CVE-2011-3368, but different
+    attack vector.)
   * Fix broken link in docs. Closes: #650528
   * Remove Tollef Fog Heen, Thom May, and Peter Samuelson from uploaders.
     Thanks for your work in the past.

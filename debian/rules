@@ -10,7 +10,9 @@
 #    MPM in any other. Hence, we build modules only for the worker MPM and reuse
 #    it for all the remaining MPMs. The worker $(DEFAULT_MPM) is the basic
 #    installation path where packages are being built from. From the remaining
-#    MPMs only the respective binaries are taken.
+#    MPMs only the respective binaries are taken. Development header are
+#    similary taken from the prefork MPM, although the threaded MPMs need their
+#    own headers partially.
 # 3) The ITK MPM needs modification in the source tree. Hence it is absolutely
 #    necessary to copy the source tree before applying patches which enable the
 #    ITK. For the remaining MPMs that's not stricly necessary
@@ -23,7 +25,7 @@
 #    (future) binary packages.See various dh_install* overrides to get the idea.
 
 # Uncomment this to turn on verbose mode.
-export DH_VERBOSE=1
+#export DH_VERBOSE=1
 
 BUILD_DIR=debian/build-tree
 INSTALL_DIR_RELATIVE=install-tree
@@ -115,9 +117,9 @@ override_dh_auto_clean: unapply-custom-suexec
 	rm -f debian/tmp
 
 build-%:
-	@set -ex
 	mkdir "$(BUILD_DIR)/$*"
 	cp -a `find . -maxdepth 1 -mindepth 1 -not -name debian` $(BUILD_DIR)/$*
+	set -ex	;										\
 	if [ $* = itk ] ; then                                                                  \
 		cd $(BUILD_DIR)/$* ;                                                            \
 		mkdir server/mpm/experimental/itk/ ;                                            \
@@ -145,6 +147,7 @@ build-%:
 
 
 install-dev: build-worker build-prefork
+	set -ex ; \
 	for i in worker prefork; do \
 		if [ "$$i" = "prefork" ]; then \
 			TARGET=prefork ;\
@@ -169,14 +172,12 @@ install-dev: build-worker build-prefork
 	done
 
 undo-mpm-%-maintainer-scripts:
-	@set -ex
 	for f in postinst preinst prerm links dirs ; do \
 		rm -f debian/apache2-mpm-$*.$$f ;\
 	done
 	rm -f debian/apache2-mpm-$*.lintian-overrides
 
 mpm-%-maintainer-scripts: debian/mpms.postinst debian/mpms.preinst debian/mpms.prerm debian/mpms.lintian-overrides debian/mpms.dirs debian/mpms.links
-	@set -ex
 	for f in postinst preinst prerm links dirs ; do \
 		perl -p -e "s/MPMXXX/$*/g" < debian/mpms.$$f > debian/apache2-mpm-$*.$$f ;\
 	done
@@ -222,11 +223,9 @@ override_dh_install:
 	cp debian/default-index.html debian/apache2.2-common/usr/share/apache2/default-site/index.html
 	cp debian/bash_completion debian/apache2.2-common/etc/bash_completion.d/apache2.2-common
 	cp debian/apache2-doc.conf debian/apache2-doc/etc/apache2/conf.d/apache2-doc
-	cp debian/default-index.html debian/apache2.2-common/usr/share/apache2/default-site/index.html
 	perl debian/convert_docs debian/apache2-doc/usr/share/doc/apache2-doc/manual
 
 override_dh_fixperms:
-	@set -ex
 	# standard suexec
 	chmod 4754 debian/apache2-suexec/usr/lib/apache2/suexec
 	chgrp www-data debian/apache2-suexec/usr/lib/apache2/suexec
@@ -254,7 +253,6 @@ override_dh_installdocs:
 	cp debian/mpm-itk/README debian/apache2.2-common/usr/share/doc/apache2.2-common/README.mpm-itk
 	cp debian/mpm-itk/CHANGES debian/apache2.2-common/usr/share/doc/apache2.2-common/changelog.mpm-itk
 	cp debian/mpm-itk/debian/changelog debian/apache2.2-common/usr/share/doc/apache2.2-common/changelog.mpm-itk.Debian
-	@set -ex
 	for p in apache2-prefork-dev apache2-threaded-dev apache2-mpm-prefork apache2-mpm-event \
 		apache2-mpm-worker apache2-mpm-itk apache2; \
 	do \
@@ -272,6 +270,7 @@ override_dh_installchangelogs:
 
 override_dh_strip:
 	dh_strip --dbg-package=apache2-dbg -Napache2-dbg -Xusr/lib/apache2/mpm
+	set -e \
 	if [ "$(LSB_RELEASE)" != "Ubuntu" ] && [ -n "$(DEB_BUILD_STRIP)" ] ; then \
 		for i in $(MPMS); do \
 			MPM=usr/lib/apache2/mpm-$$i/apache2 ;\

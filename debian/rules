@@ -97,6 +97,10 @@ ifeq (,$(findstring nostrip,$(DEB_BUILD_OPTIONS)))
 DEB_BUILD_STRIP = yes
 endif
 
+ifneq (,$(filter parallel=%,$(DEB_BUILD_OPTIONS)))
+  NUMJOBS = $(patsubst parallel=%,%,$(filter parallel=%,$(DEB_BUILD_OPTIONS)))
+  BUILDMAKEFLAGS = -j$(NUMJOBS)
+endif
 
 prepare-custom-suexec:
 	cp support/suexec.c support/suexec-custom.c
@@ -110,13 +114,7 @@ override_dh_auto_clean: unapply-custom-suexec
 	rm -rf $(INSTALL_DIR)
 	rm -f debian/tmp
 
-$(BUILD_DIR):
-	mkdir $(BUILD_DIR)
-
-$(INSTALL_DIR):
-	mkdir $(INSTALL_DIR)
-
-configure-%: $(BUILD_DIR)
+build-%:
 	@set -ex
 	mkdir "$(BUILD_DIR)/$*"
 	cp -a `find . -maxdepth 1 -mindepth 1 -not -name debian` $(BUILD_DIR)/$*
@@ -138,18 +136,15 @@ configure-%: $(BUILD_DIR)
 	cd $(BUILD_DIR)/$* && ./configure \
 		$(AP2_COMMON_CONFARGS) --with-mpm=$* $(AP2_$(*)_CONFARGS) $(CONFFLAGS) \
 		CFLAGS="$(AP2_CFLAGS)" CPPFLAGS="$(AP2_CPPFLAGS)" LDFLAGS="$(AP2_LDFLAGS)"
-
-build-%:
 	dh_auto_build -D "$(BUILD_DIR)/$*"
 	cd "$(BUILD_DIR)/$*" && ./apache2 -l |grep -v $* > mods.list
-
-
-auto-install-%: $(INSTALL_DIR)
-        # force one process since mkdir.sh used by 'make install' is not
+	# force one process since mkdir.sh used by 'make install' is not
 	# reliable otherwise
 	dh_auto_install -D "$(BUILD_DIR)/$*" --destdir="$(INSTALL_DIR)/$*" -- -j1
+	install -m 755 $(BUILD_DIR)/$*/apache2 debian/apache2.2-bin/usr/lib/apache2/mpm-$*/apache2
 
-install-dev:
+
+install-dev: build-worker build-prefork
 	for i in worker prefork; do \
 		if [ "$$i" = "prefork" ]; then \
 			TARGET=prefork ;\
@@ -173,10 +168,6 @@ install-dev:
 		mv tmp_config_vars.mk config_vars.mk ) ; \
 	done
 
-install-%:
-	install -m 755 $(BUILD_DIR)/$*/apache2 debian/apache2.2-bin/usr/lib/apache2/mpm-$*/apache2
-
-
 undo-mpm-%-maintainer-scripts:
 	@set -ex
 	for f in postinst preinst prerm links dirs ; do \
@@ -192,23 +183,26 @@ mpm-%-maintainer-scripts: debian/mpms.postinst debian/mpms.preinst debian/mpms.p
 	perl -p -e "s/^/apache2-mpm-$*: /" < debian/mpms.lintian-overrides > debian/apache2-mpm-$*.lintian-overrides
 
 
-
 %:
 	dh $@ --parallel
 
-override_dh_auto_configure: prepare-custom-suexec $(patsubst %, configure-%, $(MPMS))
+override_dh_auto_configure: prepare-custom-suexec $(patsubst %, mpm-%-maintainer-scripts, $(MPMS))
+	mkdir $(BUILD_DIR)
+	mkdir $(INSTALL_DIR)
 
-override_dh_auto_build: $(patsubst %, mpm-%-maintainer-scripts, $(MPMS)) $(patsubst %, build-%, $(MPMS))
-	@set -ex
+
+override_dh_auto_build:
+
+override_dh_auto_install:
+
+override_dh_install:
+	$(MAKE) $(BUILDMAKEFLAGS) -f $(CURDIR)/debian/rules $(patsubst %, build-%, $(MPMS)) install-dev
 	for mpm in $(filter-out worker, $(MPMS)) ; do \
 		if ! diff -u $(BUILD_DIR)/$$mpm/mods.list $(BUILD_DIR)/worker/mods.list ; then \
 			echo Different modules built into httpd binaries, will not proceed ;\
 			exit 1 ;\
 		fi \
 	done
-
-
-override_dh_auto_install: $(patsubst %, auto-install-%, $(MPMS)) install-dev
 	cd debian && ln -s $(INSTALL_DIR_RELATIVE)/worker tmp
 	for m in logresolve ab; do d=debian/tmp/usr/share/man/ ;\
 		perl -p -e 's/^([.]TH.*?) 8 (.*)/$$1 1 $$2/' < $$d/man8/$$m.8 > $$d/man1/$$m.1 ;\
@@ -221,8 +215,6 @@ override_dh_auto_install: $(patsubst %, auto-install-%, $(MPMS)) install-dev
 	rm -f $(DEFAULT_MPM)/usr/sbin/apxs $(DEFAULT_MPM)/usr/sbin/apache2 debian/tmp/usr/sbin/apachectl
 	mv $(DEFAULT_MPM)/usr/share/man/man8/apxs.8 $(DEFAULT_MPM)/usr/share/man/man8/apxs2.8
 	mv $(DEFAULT_MPM)/usr/share/man/man8/apachectl.8 $(DEFAULT_MPM)/usr/share/man/man8/apache2ctl.8
-
-override_dh_install: $(patsubst %, install-%, $(MPMS))
 	dh_install --list-missing
 	# DO NOT FALL FOR THE TEMPTATION TO MV INTO PACKAGES OR DOOM
 	# WILL FIND YOU.  Use dh_install, this is just because dh_install

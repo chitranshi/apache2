@@ -1,5 +1,7 @@
 apache2 (2.2.21-4) unstable; urgency=low
 
+  [Arno Töll]
+
   * Upgrade package to 3.0/quilt.
     + Remove uuencoded images, keep them in their binary format in debian/icons
     + Upgrade to quilt from dpatch and refresh all patches by keeping all hunks
@@ -30,7 +32,12 @@ apache2 (2.2.21-4) unstable; urgency=low
     instead of being forced to treat a given file according to our default type
     (Closes: #440058)
 
- -- Arno Töll <debian@toell.net>  Mon, 05 Dec 2011 19:22:53 +0100
+  [Stefan Fritsch]
+
+  * Optimize debian/rules again to improve build time by doing most work in a
+    parallelized "build-and-install-%" target.
+
+ -- Arno Töll <debian@toell.net>  Tue, 13 Dec 2011 19:49:08 +0100
 
 apache2 (2.2.21-3) unstable; urgency=medium
 

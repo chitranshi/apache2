@@ -3,11 +3,16 @@
 use strict;
 use File::Path;
 use Fatal qw/mkpath symlink open close/;
+use File::Copy;
+use File::Find;
 
-scalar @ARGV == 2 or die;
 
-my $SRC=$ARGV[0];
-my $TGT=$ARGV[1];
+scalar @ARGV == 1 or die;
+
+my $TGT=$ARGV[0];
+my $SRC=$TGT.".orig";
+
+move($TGT, $SRC);
 
 # list of languages
 my @lang = glob("$SRC/index.html.*") or die;
@@ -21,10 +26,8 @@ foreach my $l (@lang) {
 	$lpath{$l}="$t/";
 }
 
-
-my @html=`find $SRC -name *.html` or die;
-chomp(@html);
-map { s{^$SRC/}{} } @html;
+my @html;
+find(sub { $File::Find::name =~ s/^$SRC\///; push(@html, $File::Find::name) if $File::Find::name =~ /\.html$/; }, $SRC);
 
 foreach my $h (@html) {
 	my $dir="";
@@ -61,6 +64,13 @@ foreach my $l (sort values %lpath) {
 }
 print $out '</table></body></html>';
 
+move("$SRC/images", "$TGT/images");
+move("$SRC/style", "$TGT/style");
+rmdir("$TGT/style/lang");
+rmdir("$TGT/style/xsl/util");
+rmdir("$TGT/style/xsl");
+rmtree("$SRC");
+
 
 ### END
 
@@ -84,11 +94,14 @@ sub conv {
 		# language directories one level up
 		$file =~ s{href="\.\./$l}{href="../../$l}g;
 		$file =~ s{href="(?:\./)?$l}{href="../$l}g;
+		$file =~ s{apachectl(?!\.html)}{apache2ctl}g;
 	}
 
 	# Debian tweaks
 	$file =~ s{/usr/local/apache2/conf/httpd[.]conf}{/etc/apache2/apache2.conf}g;
 	$file =~ s{httpd[.]conf}{apache2.conf}g;
+	$file =~ s{apachectl(?!\.html)}{apache2ctl}g;
+
 
 	open(my $out, ">", $new);
 	print $out $file;

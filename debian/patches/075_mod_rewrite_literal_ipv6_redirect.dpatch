@@ -5,10 +5,9 @@
 ## DP: Add [] to literal ipv6 hosts in URLs (bug #557015)
 
 @DPATCH@
-diff -urNad trunk~/modules/mappers/mod_rewrite.c trunk/modules/mappers/mod_rewrite.c
---- trunk~/modules/mappers/mod_rewrite.c	2009-07-10 14:20:45.000000000 +0200
-+++ trunk/modules/mappers/mod_rewrite.c	2009-12-06 00:10:57.468047872 +0100
-@@ -833,6 +833,23 @@
+--- a/modules/mappers/mod_rewrite.c
++++ b/modules/mappers/mod_rewrite.c
+@@ -840,6 +840,23 @@
  }
  
  /*
@@ -32,7 +31,7 @@ diff -urNad trunk~/modules/mappers/mod_rewrite.c trunk/modules/mappers/mod_rewri
   * add 'http[s]://ourhost[:ourport]/' to URI
   * if URI is still not fully qualified
   */
-@@ -843,7 +860,7 @@
+@@ -853,7 +870,7 @@
          char *thisport;
          int port;
  
@@ -41,7 +40,7 @@ diff -urNad trunk~/modules/mappers/mod_rewrite.c trunk/modules/mappers/mod_rewri
          port = ap_get_server_port(r);
          thisport = ap_is_default_port(port, r)
                     ? ""
-@@ -4271,7 +4288,7 @@
+@@ -4290,7 +4307,7 @@
       */
  
      /* add the canonical URI of this URL */

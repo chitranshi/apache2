@@ -1,3 +1,37 @@
+apache2 (2.2.21-4) unstable; urgency=low
+
+  * Upgrade package to 3.0/quilt.
+    + Remove uuencoded images, keep them in their binary format in debian/icons
+    + Upgrade to quilt from dpatch and refresh all patches by keeping all hunks
+      unchanged. Remove the `001_branding' patch by supplying -DPLATFORM at
+      build time where needed Move the 200_cp_suexec.dpatch patch and
+      202_suexec-custom.dpatch patch to debian/rules. 200_cp_suexec.dpatch was a
+      script, not a patch which is not supported by quilt.
+  * Rewrite debian/rules and base it on dh(1).
+    + use overrides where possible, replace some debhelper calls by our own
+      implementation where needed. That's required since the Apache package is
+      compiled in parts several times for each MPM once.
+    + move some install operations to the their respective .install files
+    + Support dpkg-buildflags now, which also enables by default hardening
+      flags. Thus, remove them from their explicit appearance in debian/rules
+    + Remove DEB_BUILD_OPTIONS legacy support. It comes for free when using
+      dh(1)/dpkg-buildflags(1).
+  * Push debhelper compatibility to 8
+  * Remove unused Lintian overrides for the Debian source package remove and
+    redundant priorities in debian/control.
+  * Fix "add pre-rotate hook to logrotate script" execute scripts in
+    /etc/logrotate.d/httpd-prerotate if available (Closes: #590096).
+  * Fix "Hide /icons index" Disables indexes on the icon directory. By upgrading
+    to Debian's 3.0/quilt source format also images don't need to be generated
+    at build time anymore. Hence, the icon date can no longer lead to
+    information disclosure (Closes: #649888).
+  * Fix "Suggest removing DefaultType from apache2.conf" change the DefaultType
+    from text/plain to None. This lets the browser guess a proper MIME type
+    instead of being forced to treat a given file according to our default type
+    (Closes: #440058)
+
+ -- Arno Töll <debian@toell.net>  Mon, 05 Dec 2011 19:22:53 +0100
+
 apache2 (2.2.21-3) unstable; urgency=medium
 
   * Fix CVE-2011-4317: Prevent unintended pattern expansion in some

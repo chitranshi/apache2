@@ -5,8 +5,8 @@
 ## DP: Avoid including dpkg droppings in globbed includes.
 
 @DPATCH@
---- apache2-2.2.0/server/config.c	2005-11-17 13:39:15.000000000 +0000
-+++ apache2-2.2.0/server/config.c	2006-01-27 17:06:19.000000000 +0000
+--- a/server/config.c
++++ b/server/config.c
 @@ -34,6 +34,7 @@
  #include "apr_portable.h"
  #include "apr_file_io.h"
@@ -15,7 +15,7 @@
  
  #define APR_WANT_STDIO
  #define APR_WANT_STRFUNC
-@@ -1521,6 +1522,30 @@
+@@ -1543,6 +1544,30 @@
      return strcmp(f1->fname,f2->fname);
  }
  
@@ -46,7 +46,7 @@
  static const char *process_resource_config_nofnmatch(server_rec *s,
                                                       const char *fname,
                                                       ap_directive_t **conftree,
-@@ -1564,7 +1589,8 @@
+@@ -1586,7 +1611,8 @@
          while (apr_dir_read(&dirent, APR_FINFO_DIRENT, dirp) == APR_SUCCESS) {
              /* strip out '.' and '..' */
              if (strcmp(dirent.name, ".")
@@ -56,7 +56,7 @@
                  fnew = (fnames *) apr_array_push(candidates);
                  fnew->fname = ap_make_full_path(p, path, dirent.name);
              }
-@@ -1692,7 +1718,8 @@
+@@ -1714,7 +1740,8 @@
              if (strcmp(dirent.name, ".")
                  && strcmp(dirent.name, "..")
                  && (apr_fnmatch(pattern, dirent.name,

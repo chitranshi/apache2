@@ -5,11 +5,9 @@
 ## DP: r892289, r897705 from upstream svn. Debian bug #556383
 
 @DPATCH@
-diff --git a/modules/cache/cache_storage.c b/modules/cache/cache_storage.c
-index c122bdd..a44b9e4 100644
 --- a/modules/cache/cache_storage.c
 +++ b/modules/cache/cache_storage.c
-@@ -498,28 +498,60 @@ apr_status_t cache_generate_key_default(request_rec *r, apr_pool_t* p,
+@@ -505,28 +505,60 @@
                  && (*(param + len + 1) == '=')
                  && !strchr(param + len + 2, '/')) {
                  path = apr_pstrndup(p, path, param - path);

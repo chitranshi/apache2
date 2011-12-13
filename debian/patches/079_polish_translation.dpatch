@@ -5,10 +5,9 @@
 ## DP: #570228
 
 @DPATCH@
-diff -urNad '--exclude=CVS' '--exclude=.svn' '--exclude=.git' '--exclude=.arch' '--exclude=.hg' '--exclude=_darcs' '--exclude=.bzr' trunk~/docs/error/HTTP_NOT_FOUND.html.var trunk/docs/error/HTTP_NOT_FOUND.html.var
---- trunk~/docs/error/HTTP_NOT_FOUND.html.var	2005-11-13 14:22:28.000000000 +0100
-+++ trunk/docs/error/HTTP_NOT_FOUND.html.var	2010-02-20 11:37:08.229021346 +0100
-@@ -292,7 +292,7 @@
+--- a/docs/error/HTTP_NOT_FOUND.html.var
++++ b/docs/error/HTTP_NOT_FOUND.html.var
+@@ -289,7 +289,7 @@
      o problemie.
  
    <!--#else -->

@@ -1,4 +1,3 @@
-001_branding
 004_usr_bin_perl_0wnz_j00
 008_make_include_safe
 009_apache2_has_dso
@@ -21,11 +20,15 @@
 076_apxs2_a2enmod.dpatch
 077_CacheIgnoreURLSessionIdentifiers.dpatch
 079_polish_translation.dpatch
-082_ab_num_requests
+082_ab_num_requests.dpatch
 083_CVE-2011-3368.dpatch
 084_CVE-2011-4317.dpatch
 085_CVE-2011-3607.dpatch
-099_config_guess_sub_update
-200_cp_suexec.dpatch
+099_config_guess_sub_update.dpatch
 201_build_suexec-custom.dpatch
-202_suexec-custom.dpatch
+# The patch below must not be applied by quilt at extraction time.  It depends
+# on some script-fu to be executed before. Have a look
+# to debian/rules' prepare-custom-suexec target.
+# If you're aware of that you can uncomment it at any time later and work on it
+# as you wish.
+#202_suexec-custom.dpatch

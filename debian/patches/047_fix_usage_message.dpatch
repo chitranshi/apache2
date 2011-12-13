@@ -5,9 +5,8 @@
 ## DP: Add -X to the help message
 
 @DPATCH@
-diff -urNad trunk~/server/main.c trunk/server/main.c
---- trunk~/server/main.c	2011-02-06 15:33:27.000000000 +0100
-+++ trunk/server/main.c	2011-02-06 15:38:54.900628737 +0100
+--- a/server/main.c
++++ b/server/main.c
 @@ -353,7 +353,7 @@
  #endif /* AP_MPM_WANT_SET_GRACEFUL_SHUTDOWN */
  #endif

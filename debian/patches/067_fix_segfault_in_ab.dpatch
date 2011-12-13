@@ -7,10 +7,9 @@
 ## Forwarded: https://issues.apache.org/bugzilla/show_bug.cgi?id=46393
 
 @DPATCH@
-diff -urNad apache2-2.2.9~/support/ab.c apache2-2.2.9/support/ab.c
---- apache2-2.2.9~/support/ab.c	2008-05-28 05:58:01.000000000 -0700
-+++ apache2-2.2.9/support/ab.c	2008-11-29 15:47:41.000000000 -0800
-@@ -535,7 +535,6 @@
+--- a/support/ab.c
++++ b/support/ab.c
+@@ -548,7 +548,6 @@
          for (i=1; i<count; i++) {
              cert = (X509 *)SK_VALUE(sk, i);
              ssl_print_cert_info(bio_out, cert);

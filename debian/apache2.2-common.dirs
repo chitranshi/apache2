@@ -4,6 +4,7 @@ etc/apache2/conf.d
 etc/bash_completion.d
 etc/logrotate.d
 usr/lib/cgi-bin
+usr/share/apache2
 usr/share/apache2/build
 usr/share/apache2/default-site
 usr/share/bug/apache2.2-common

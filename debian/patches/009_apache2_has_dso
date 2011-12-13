@@ -5,9 +5,9 @@
 ## DP: Make apxs usable without having apache2 installed.
 
 @DPATCH@
---- apache2/support/apxs.in	2003-04-05 11:07:55.000000000 +0200
-+++ apache2/support/apxs.in	2003-04-05 11:25:19.000000000 +0200
-@@ -237,18 +237,19 @@
+--- a/support/apxs.in
++++ b/support/apxs.in
+@@ -198,18 +198,19 @@
      ($httpd = $0) =~ s:support/apxs$::;
  }
  
@@ -15,7 +15,12 @@
 -	error("$httpd not found or not executable");
 -	exit 1;
 -}
--
++#commented out for Debian GNU/Linux. We know that apache2 has dso support
++#unless (-x "$httpd") {
++#	error("$httpd not found or not executable");
++#	exit 1;
++#}
+ 
 -unless (grep /mod_so/, `. $envvars && $httpd -l`) {
 -    error("Sorry, no shared object support for Apache");
 -    error("available under your platform. Make sure");
@@ -23,12 +28,6 @@
 -    error("your server binary `$httpd'.");
 -    exit 1;
 -}
-+#commented out for Debian GNU/Linux. We know that apache2 has dso support
-+#unless (-x "$httpd") {
-+#	error("$httpd not found or not executable");
-+#	exit 1;
-+#}
-+
 +#unless (grep /mod_so/, `. $envvars && $httpd -l`) {
 +#    error("Sorry, no shared object support for Apache");
 +#    error("available under your platform. Make sure");

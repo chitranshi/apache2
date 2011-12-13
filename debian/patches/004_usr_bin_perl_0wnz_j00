@@ -5,8 +5,8 @@
 ## DP: Call /usr/bin/perl in printenv, not /usr/local/bin/perl
 
 @DPATCH@
---- apache2/docs/cgi-examples/printenv.orig	Fri Sep 21 17:31:24 2001
-+++ apache2/docs/cgi-examples/printenv	Fri Sep 21 17:31:29 2001
+--- a/docs/cgi-examples/printenv
++++ b/docs/cgi-examples/printenv
 @@ -1,4 +1,4 @@
 -#!/usr/local/bin/perl
 +#!/usr/bin/perl

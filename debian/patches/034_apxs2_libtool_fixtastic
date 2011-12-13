@@ -4,9 +4,9 @@
 ## All lines beginning with `## DP:' are a description of the patch.
 ## DP: Make libtool happier
 
---- apache2/support/apxs.in
-+++ apache2/support/apxs.in
-@@ -409,7 +409,7 @@
+--- a/support/apxs.in
++++ b/support/apxs.in
+@@ -410,7 +410,7 @@
          $la =~ s|\.c$|.la|;
          my $o = $s;
          $o =~ s|\.c$|.o|;
@@ -15,7 +15,7 @@
          unshift(@objs, $lo);
      }
  
-@@ -446,7 +446,7 @@
+@@ -447,7 +447,7 @@
          $opt .= " -rpath $CFG_LIBEXECDIR -module -avoid-version $apr_ldflags";
      }
  

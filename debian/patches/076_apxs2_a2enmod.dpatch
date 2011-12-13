@@ -5,9 +5,8 @@
 ## DP: Make apxs2 use a2enmod and /etc/apache2/mods-available
 
 @DPATCH@
-diff -urNad trunk~/support/apxs.in trunk/support/apxs.in
---- trunk~/support/apxs.in	2010-01-02 21:52:57.828866228 +0100
-+++ trunk/support/apxs.in	2010-01-02 21:55:48.375597120 +0100
+--- a/support/apxs.in
++++ b/support/apxs.in
 @@ -521,7 +521,7 @@
  	# $dir =~ s|^$CFG_PREFIX/?||;
          $dir =~ s|(.)$|$1/|;

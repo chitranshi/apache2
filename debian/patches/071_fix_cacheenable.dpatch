@@ -5,11 +5,9 @@
 ## DP: r821333,r821538,r821539 from upstream svn
 
 @DPATCH@
-diff --git a/modules/cache/cache_util.c b/modules/cache/cache_util.c
-index ec2d749..aec7b09 100644
 --- a/modules/cache/cache_util.c
 +++ b/modules/cache/cache_util.c
-@@ -27,41 +27,78 @@ extern module AP_MODULE_DECLARE_DATA cache_module;
+@@ -29,41 +29,78 @@
  /* Determine if "url" matches the hostname, scheme and port and path
   * in "filter". All but the path comparisons are case-insensitive.
   */
@@ -26,7 +24,13 @@ index ec2d749..aec7b09 100644
 -    }
 +static int uri_meets_conditions(const apr_uri_t filter, const int pathlen,
 +        const apr_uri_t url) {
-+
+ 
+-    /* Compare the schemes */
+-    if(filter.scheme) {
+-        if (!url.scheme) {
+-            return 0;
+-        }
+-        else if (strcasecmp(filter.scheme, url.scheme)) {
 +    /* Scheme, hostname port and local part. The filter URI and the
 +     * URI we test may have the following shapes:
 +     *   /<path>
@@ -39,13 +43,7 @@ index ec2d749..aec7b09 100644
 +     * Note that this means that "/<path>" only matches local paths,
 +     * and to match proxied paths one *must* specify the scheme.
 +     */
- 
--    /* Compare the schemes */
--    if(filter.scheme) {
--        if (!url.scheme) {
--            return 0;
--        }
--        else if (strcasecmp(filter.scheme, url.scheme)) {
++
 +    /* Is the filter is just for a local path or a proxy URI? */
 +    if (!filter.scheme) {
 +        if (url.scheme || url.hostname) {

@@ -5,9 +5,8 @@
 ## DP: No description.
 
 @DPATCH@
-diff -urNad apache2-2.2.3~/config.guess apache2-2.2.3/config.guess
---- apache2-2.2.3~/config.guess	1970-01-01 01:00:00.000000000 +0100
-+++ apache2-2.2.3/config.guess	2006-09-27 21:50:35.000000000 +0200
+--- /dev/null
++++ b/config.guess
 @@ -0,0 +1,1500 @@
 +#! /bin/sh
 +# Attempt to guess a canonical system name.
@@ -1509,9 +1508,8 @@ diff -urNad apache2-2.2.3~/config.guess apache2-2.2.3/config.guess
 +# time-stamp-format: "%:y-%02m-%02d"
 +# time-stamp-end: "'"
 +# End:
-diff -urNad apache2-2.2.3~/config.sub apache2-2.2.3/config.sub
---- apache2-2.2.3~/config.sub	1970-01-01 01:00:00.000000000 +0100
-+++ apache2-2.2.3/config.sub	2006-09-27 21:50:35.000000000 +0200
+--- /dev/null
++++ b/config.sub
 @@ -0,0 +1,1608 @@
 +#! /bin/sh
 +# Configuration validation subroutine script.

@@ -5,10 +5,9 @@
 ## DP: add suexec-custom to the build system
 
 @DPATCH@
-diff -urNad trunk~/Makefile.in trunk/Makefile.in
---- trunk~/Makefile.in	2007-04-24 13:08:01.000000000 +0200
-+++ trunk/Makefile.in	2008-04-02 23:03:53.928260185 +0200
-@@ -221,7 +221,7 @@
+--- a/Makefile.in
++++ b/Makefile.in
+@@ -225,7 +225,7 @@
  	fi
  
  suexec:
@@ -17,9 +16,8 @@ diff -urNad trunk~/Makefile.in trunk/Makefile.in
  
  x-local-distclean:
  	@rm -rf autom4te.cache
-diff -urNad trunk~/support/Makefile.in trunk/support/Makefile.in
---- trunk~/support/Makefile.in	2008-04-02 23:03:30.000000000 +0200
-+++ trunk/support/Makefile.in	2008-04-02 23:03:39.188260967 +0200
+--- a/support/Makefile.in
++++ b/support/Makefile.in
 @@ -1,7 +1,7 @@
  DISTCLEAN_TARGETS = apxs apachectl dbmmanage log_server_status \
  	logresolve.pl phf_abuse_log.cgi split-logfile envvars-std
@@ -27,7 +25,7 @@ diff -urNad trunk~/support/Makefile.in trunk/support/Makefile.in
 -CLEAN_TARGETS = suexec
 +CLEAN_TARGETS = suexec suexec-custom
  
- PROGRAMS = htpasswd htdigest rotatelogs logresolve ab checkgid htdbm htcacheclean httxt2dbm
+ PROGRAMS = htpasswd htdigest rotatelogs logresolve ab htdbm htcacheclean httxt2dbm $(NONPORTABLE_SUPPORT)
  TARGETS  = $(PROGRAMS)
 @@ -62,6 +62,10 @@
  suexec: $(suexec_OBJECTS)

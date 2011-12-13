@@ -1,4 +1,5 @@
 usr/share/apache2/icons
+debian/icons/*.png	usr/share/apache2/icons
 usr/share/apache2/error
 usr/sbin/envvars-std	usr/share/apache2/build
 etc/apache2		usr/share/doc/apache2.2-common/examples

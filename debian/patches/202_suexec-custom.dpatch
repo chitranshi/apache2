@@ -5,9 +5,8 @@
 ## DP: the actual patch to make suexec-custom read a config file
 
 @DPATCH@
-diff -urNad trunk~/support/suexec-custom.c trunk/support/suexec-custom.c
---- trunk~/support/suexec-custom.c	2008-05-04 19:41:30.559379143 +0200
-+++ trunk/support/suexec-custom.c	2008-05-04 19:42:30.817574842 +0200
+--- a/support/suexec-custom.c
++++ b/support/suexec-custom.c
 @@ -29,6 +29,7 @@
   *
   *
@@ -177,7 +176,7 @@ diff -urNad trunk~/support/suexec-custom.c trunk/support/suexec-custom.c
       * Error out if the target username is invalid.
       */
      if (strspn(target_uname, "1234567890") != strlen(target_uname)) {
-@@ -506,7 +564,7 @@
+@@ -508,7 +566,7 @@
  
      if (userdir) {
          if (((chdir(target_homedir)) != 0) ||
@@ -186,7 +185,7 @@ diff -urNad trunk~/support/suexec-custom.c trunk/support/suexec-custom.c
              ((getcwd(dwd, AP_MAXPATH)) == NULL) ||
              ((fchdir(cwdh)) != 0)) {
              log_err("cannot get docroot information (%s)\n", target_homedir);
-@@ -514,10 +572,10 @@
+@@ -516,10 +574,10 @@
          }
      }
      else {

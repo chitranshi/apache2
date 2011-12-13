@@ -5,9 +5,8 @@
 ## DP: remove limit of 1024 bytes per line #331631
 
 @DPATCH@
-diff -urNad trunk~/support/logresolve.c trunk/support/logresolve.c
---- trunk~/support/logresolve.c	2006-07-12 05:38:44.000000000 +0200
-+++ trunk/support/logresolve.c	2007-09-27 20:12:47.093217594 +0200
+--- a/support/logresolve.c
++++ b/support/logresolve.c
 @@ -82,7 +82,7 @@
  #endif
  

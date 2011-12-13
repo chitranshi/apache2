@@ -10,4 +10,9 @@
 	postrotate
 		/etc/init.d/apache2 reload > /dev/null
 	endscript
+	prerotate
+		if [ -d /etc/logrotate.d/httpd-prerotate ]; then \
+			run-parts /etc/logrotate.d/httpd-prerotate; \
+		fi; \
+	endscript
 }

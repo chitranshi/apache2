@@ -1,9 +1,9 @@
-/* Copyright 2000-2005 The Apache Software Foundation or its licensors, as
- * applicable.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+/* Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -79,7 +79,7 @@ static apr_socket_t *setup_socket(abts_case *tc)
     apr_sockaddr_t *sa;
     apr_socket_t *sock;
 
-    rv = apr_sockaddr_info_get(&sa, NULL, APR_INET, 8021, 0, p);
+    rv = apr_sockaddr_info_get(&sa, "127.0.0.1", APR_INET, 8021, 0, p);
     APR_ASSERT_SUCCESS(tc, "Problem generating sockaddr", rv);
 
     rv = apr_socket_create(&sock, sa->family, SOCK_STREAM, APR_PROTO_TCP, p);
@@ -231,12 +231,18 @@ static void test_get_addr(abts_case *tc, void *data)
      * succeed (if the connection can be established synchronously),
      * but if it does, this test cannot proceed.  */
     rv = apr_socket_connect(cd, sa);
+    if (rv == APR_SUCCESS) {
+        apr_socket_close(ld);
+        apr_socket_close(cd);
+        ABTS_NOT_IMPL(tc, "Cannot test if connect completes "
+                      "synchronously");
+        return;
+    }
+
     if (!APR_STATUS_IS_EINPROGRESS(rv)) {
         apr_socket_close(ld);
         apr_socket_close(cd);
         APR_ASSERT_SUCCESS(tc, "connect to listener", rv);
-        ABTS_NOT_IMPL(tc, "Cannot test if connect completes "
-                      "synchronously");
         return;
     }
 

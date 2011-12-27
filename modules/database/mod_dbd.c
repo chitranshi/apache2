@@ -25,6 +25,7 @@
 #include "http_protocol.h"
 #include "http_config.h"
 #include "http_log.h"
+#include "http_request.h"
 #include "apr_reslist.h"
 #include "apr_strings.h"
 #include "apr_dbd.h"
@@ -147,12 +148,11 @@ DBD_DECLARE_NONSTD(void) ap_dbd_prepare(server_rec *s, const char *query,
                                         const char *label)
 {
     dbd_prepared *prepared = apr_pcalloc(s->process->pool, sizeof(dbd_prepared));
+    const char *key = apr_psprintf(s->process->pool, "%pp", s);
     prepared->label = label;
     prepared->query = query;
-    prepared->next = apr_hash_get(dbd_prepared_defns, s->server_hostname,
-                                  APR_HASH_KEY_STRING);
-    apr_hash_set(dbd_prepared_defns, s->server_hostname, APR_HASH_KEY_STRING,
-                 prepared);
+    prepared->next = apr_hash_get(dbd_prepared_defns, key, APR_HASH_KEY_STRING);
+    apr_hash_set(dbd_prepared_defns, key, APR_HASH_KEY_STRING, prepared);
 }
 static const char *dbd_prepare(cmd_parms *cmd, void *cfg, const char *query,
                                const char *label)
@@ -361,6 +361,15 @@ static apr_status_t dbd_setup_init(apr_pool_t *pool, server_rec *s)
     svr_cfg *svr = ap_get_module_config(s->module_config, &dbd_module);
     apr_status_t rv;
 
+    /* dbd_setup in 2.2.3 and under was causing spurious error messages
+     * when dbd isn't configured.  We can stop that with a quick check here
+     * together with a similar check in ap_dbd_open (where being
+     * unconfigured is a genuine error that must be reported).
+     */
+    if (svr->name == no_dbdriver) {
+        return APR_SUCCESS;
+    }
+
     if (!svr->persist) {
         return APR_SUCCESS;
     }
@@ -442,6 +451,12 @@ DBD_DECLARE_NONSTD(ap_dbd_t*) ap_dbd_open(apr_pool_t *pool, server_rec *s)
     apr_status_t rv = APR_SUCCESS;
     const char *errmsg;
 
+    /* If nothing is configured, we shouldn't be here */
+    if (svr->name == no_dbdriver) {
+        ap_log_perror(APLOG_MARK, APLOG_ERR, 0, pool, "DBD: not configured");
+        return NULL;
+    }
+
     if (!svr->persist) {
         /* Return a once-only connection */
         rv = dbd_construct(&rec, svr, s->process->pool);
@@ -479,6 +494,12 @@ DBD_DECLARE_NONSTD(ap_dbd_t*) ap_dbd_open(apr_pool_t *pool, server_rec *s)
     const char *errmsg;
     void *rec = NULL;
     svr_cfg *svr = ap_get_module_config(s->module_config, &dbd_module);
+
+    /* If nothing is configured, we shouldn't be here */
+    if (svr->name == no_dbdriver) {
+        ap_log_perror(APLOG_MARK, APLOG_ERR, 0, pool, "DBD: not configured");
+        return NULL;
+    }
 
     if (!svr->persist) {
         /* Return a once-only connection */
@@ -525,7 +546,18 @@ static apr_status_t dbd_release(void *REQ)
 DBD_DECLARE_NONSTD(ap_dbd_t *) ap_dbd_acquire(request_rec *r)
 {
     svr_cfg *svr;
-    dbd_pool_rec *req = ap_get_module_config(r->request_config, &dbd_module);
+    dbd_pool_rec *req;
+
+    while (!ap_is_initial_req(r)) {
+        if (r->prev) {
+            r = r->prev;
+        }
+        else if (r->main) {
+            r = r->main;
+        }
+    }
+
+    req = ap_get_module_config(r->request_config, &dbd_module);
     if (!req) {
         req = apr_palloc(r->pool, sizeof(dbd_pool_rec));
         req->conn = ap_dbd_open(r->pool, r->server);
@@ -572,7 +604,18 @@ DBD_DECLARE_NONSTD(ap_dbd_t *) ap_dbd_cacquire(conn_rec *c)
 DBD_DECLARE_NONSTD(ap_dbd_t *) ap_dbd_acquire(request_rec *r)
 {
     svr_cfg *svr;
-    ap_dbd_t *ret = ap_get_module_config(r->request_config, &dbd_module);
+    ap_dbd_t *ret;
+
+    while (!ap_is_initial_req(r)) {
+        if (r->prev) {
+            r = r->prev;
+        }
+        else if (r->main) {
+            r = r->main;
+        }
+    }
+
+    ret = ap_get_module_config(r->request_config, &dbd_module);
     if (!ret) {
         svr = ap_get_module_config(r->server->module_config, &dbd_module);
         ret = ap_dbd_open(r->pool, r->server);
@@ -618,8 +661,9 @@ static int dbd_post_config(apr_pool_t *pconf, apr_pool_t *plog,
     svr_cfg *svr;
     server_rec *sp;
     for (sp = s; sp; sp = sp->next) {
+        const char *key = apr_psprintf(s->process->pool, "%pp", s);
         svr = ap_get_module_config(sp->module_config, &dbd_module);
-        svr->prepared = apr_hash_get(dbd_prepared_defns, sp->server_hostname,
+        svr->prepared = apr_hash_get(dbd_prepared_defns, key,
                                      APR_HASH_KEY_STRING);
     }
     return OK;

@@ -219,7 +219,7 @@ typedef struct {
     apr_uint32_t flags;     /* Conection flags */
     int          close;     /* Close 'this' connection */
     int          close_on_recycle; /* Close the connection when returning to pool */
-    proxy_worker *worker;   /* Connection pool this connection belogns to */
+    proxy_worker *worker;   /* Connection pool this connection belongs to */
     void         *data;     /* per scheme connection data */
 #if APR_HAS_THREADS
     int          inreslist; /* connection in apr_reslist? */
@@ -241,15 +241,26 @@ struct proxy_conn_pool {
     proxy_conn_rec *conn;   /* Single connection for prefork mpm's */
 };
 
-/* woker status flags */
+/* worker status flags */
 #define PROXY_WORKER_INITIALIZED    0x0001
 #define PROXY_WORKER_IGNORE_ERRORS  0x0002
 #define PROXY_WORKER_IN_SHUTDOWN    0x0010
 #define PROXY_WORKER_DISABLED       0x0020
 #define PROXY_WORKER_STOPPED        0x0040
 #define PROXY_WORKER_IN_ERROR       0x0080
+#define PROXY_WORKER_HOT_STANDBY    0x0100
 
-#define PROXY_WORKER_IS_USABLE(f)   (!((f)->s->status & 0x00F0))
+#define PROXY_WORKER_NOT_USABLE_BITMAP ( PROXY_WORKER_IN_SHUTDOWN | \
+PROXY_WORKER_DISABLED | PROXY_WORKER_STOPPED | PROXY_WORKER_IN_ERROR )
+
+#define PROXY_WORKER_IS_INITIALIZED(f)   ( (f)->s->status & \
+  PROXY_WORKER_INITIALIZED )
+
+#define PROXY_WORKER_IS_STANDBY(f)   ( (f)->s->status & \
+  PROXY_WORKER_HOT_STANDBY )
+
+#define PROXY_WORKER_IS_USABLE(f)   ( !((f)->s->status & \
+  (PROXY_WORKER_NOT_USABLE_BITMAP)) && PROXY_WORKER_IS_INITIALIZED(f) )
 
 /* default worker retry timeout in seconds */
 #define PROXY_WORKER_DEFAULT_RETRY  60
@@ -268,6 +279,8 @@ typedef struct {
     char            route[PROXY_WORKER_MAX_ROUTE_SIZ+1];
     char            redirect[PROXY_WORKER_MAX_ROUTE_SIZ+1];
     void            *context;   /* general purpose storage */
+    apr_size_t      busy;       /* busyness factor */
+    int             lbset;      /* load balancer cluster set */
 } proxy_worker_stat;
 
 /* Worker configuration */
@@ -288,29 +301,32 @@ struct proxy_worker {
     apr_interval_time_t ttl;    /* maximum amount of time in seconds a connection
                                  * may be available while exceeding the soft limit */
     apr_interval_time_t timeout; /* connection timeout */
-    char                timeout_set;
+    char            timeout_set;
     apr_interval_time_t acquire; /* acquire timeout when the maximum number of connections is exceeded */
-    char                acquire_set;
-    apr_size_t          recv_buffer_size;
-    char                recv_buffer_size_set;
-    apr_size_t          io_buffer_size;
-    char                io_buffer_size_set;
-    char                keepalive;
-    char                keepalive_set;
+    char            acquire_set;
+    apr_size_t      recv_buffer_size;
+    char            recv_buffer_size_set;
+    apr_size_t      io_buffer_size;
+    char            io_buffer_size_set;
+    char            keepalive;
+    char            keepalive_set;
     proxy_conn_pool     *cp;        /* Connection pool to use */
     proxy_worker_stat   *s;         /* Shared data */
-    void                *opaque;    /* per scheme worker data */
-    int                 is_address_reusable;
+    void            *opaque;    /* per scheme worker data */
+    int             is_address_reusable;
 #if APR_HAS_THREADS
     apr_thread_mutex_t  *mutex;  /* Thread lock for updating address cache */
 #endif
-    void                *context;   /* general purpose storage */
+    void            *context;   /* general purpose storage */
     enum {
          flush_off,
          flush_on,
          flush_auto
     } flush_packets;           /* control AJP flushing */
-    int                 flush_wait;  /* poll wait time in microseconds if flush_auto */
+    int             flush_wait;  /* poll wait time in microseconds if flush_auto */
+    int             lbset;      /* load balancer cluster set */
+    apr_interval_time_t ping_timeout;
+    char ping_timeout_set;
 };
 
 /*

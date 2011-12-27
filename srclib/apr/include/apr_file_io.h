@@ -1,9 +1,9 @@
-/* Copyright 2000-2005 The Apache Software Foundation or its licensors, as
- * applicable.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+/* Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -213,6 +213,9 @@ typedef struct apr_file_t         apr_file_t;
  * @param pool The pool to use.
  * @remark If perm is APR_OS_DEFAULT and the file is being created,
  * appropriate default permissions will be used.
+ * @remark By default, the returned file descriptor will not be
+ * inherited by child processes created by apr_proc_create().  This
+ * can be changed using apr_file_inherit_set().
  */
 APR_DECLARE(apr_status_t) apr_file_open(apr_file_t **newf, const char *fname,
                                         apr_int32_t flag, apr_fileperms_t perm,
@@ -552,6 +555,9 @@ APR_DECLARE(apr_status_t) apr_file_seek(apr_file_t *thefile,
  * @param in The file descriptor to use as input to the pipe.
  * @param out The file descriptor to use as output from the pipe.
  * @param pool The pool to operate on.
+ * @remark By default, the returned file descriptors will be inherited
+ * by child processes created using apr_proc_create().  This can be
+ * changed using apr_file_inherit_unset().
  */
 APR_DECLARE(apr_status_t) apr_file_pipe_create(apr_file_t **in, 
                                                apr_file_t **out,

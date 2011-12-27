@@ -93,6 +93,7 @@ static int init_balancer_members(proxy_server_conf *conf, server_rec *s,
         /* Set to the original configuration */
         workers[i].s->lbstatus = workers[i].s->lbfactor =
           (workers[i].lbfactor ? workers[i].lbfactor : 1);
+        workers[i].s->lbset = workers[i].lbset;
     }
     /* Set default number of attempts to the number of
      * workers.
@@ -121,9 +122,7 @@ static char *get_path_param(apr_pool_t *pool, char *url,
             ++path;
             if (strlen(path)) {
                 char *q;
-                path = apr_pstrdup(pool, path);
-                if ((q = strchr(path, '?')))
-                    *q = '\0';
+                path = apr_strtok(apr_pstrdup(pool, path), "?&", &q);
                 return path;
             }
         }
@@ -169,15 +168,65 @@ static char *get_cookie_param(request_rec *r, const char *name)
 /* Find the worker that has the 'route' defined
  */
 static proxy_worker *find_route_worker(proxy_balancer *balancer,
-                                       const char *route)
+                                       const char *route, request_rec *r)
 {
     int i;
-    proxy_worker *worker = (proxy_worker *)balancer->workers->elts;
-    for (i = 0; i < balancer->workers->nelts; i++) {
-        if (*(worker->s->route) && strcmp(worker->s->route, route) == 0) {
-            return worker;
+    int checking_standby;
+    int checked_standby;
+    
+    proxy_worker *worker;
+
+    checking_standby = checked_standby = 0;
+    while (!checked_standby) {
+        worker = (proxy_worker *)balancer->workers->elts;
+        for (i = 0; i < balancer->workers->nelts; i++, worker++) {
+            if ( (checking_standby ? !PROXY_WORKER_IS_STANDBY(worker) : PROXY_WORKER_IS_STANDBY(worker)) )
+                continue;
+            if (*(worker->s->route) && strcmp(worker->s->route, route) == 0) {
+                if (worker && PROXY_WORKER_IS_USABLE(worker)) {
+                    return worker;
+                } else {
+                    /*
+                     * If the worker is in error state run
+                     * retry on that worker. It will be marked as
+                     * operational if the retry timeout is elapsed.
+                     * The worker might still be unusable, but we try
+                     * anyway.
+                     */
+                    ap_proxy_retry_worker("BALANCER", worker, r->server);
+                    if (PROXY_WORKER_IS_USABLE(worker)) {
+                            return worker;
+                    } else {
+                        /*
+                         * We have a worker that is unusable.
+                         * It can be in error or disabled, but in case
+                         * it has a redirection set use that redirection worker.
+                         * This enables to safely remove the member from the
+                         * balancer. Of course you will need some kind of
+                         * session replication between those two remote.
+                         */
+                        if (*worker->s->redirect) {
+                            proxy_worker *rworker = NULL;
+                            rworker = find_route_worker(balancer, worker->s->redirect, r);
+                            /* Check if the redirect worker is usable */
+                            if (rworker && !PROXY_WORKER_IS_USABLE(rworker)) {
+                                /*
+                                 * If the worker is in error state run
+                                 * retry on that worker. It will be marked as
+                                 * operational if the retry timeout is elapsed.
+                                 * The worker might still be unusable, but we try
+                                 * anyway.
+                                 */
+                                ap_proxy_retry_worker("BALANCER", rworker, r->server);
+                            }
+                            if (rworker && PROXY_WORKER_IS_USABLE(rworker))
+                                return rworker;
+                        }
+                    }
+                }
+            }
         }
-        worker++;
+        checked_standby = checking_standby++;
     }
     return NULL;
 }
@@ -210,20 +259,16 @@ static proxy_worker *find_session_route(proxy_balancer *balancer,
         /* We have a route in path or in cookie
          * Find the worker that has this route defined.
          */
-        worker = find_route_worker(balancer, *route);
-        if (worker && !PROXY_WORKER_IS_USABLE(worker)) {
-            /* We have a worker that is unusable.
-             * It can be in error or disabled, but in case
-             * it has a redirection set use that redirection worker.
-             * This enables to safely remove the member from the
-             * balancer. Of course you will need a some kind of
-             * session replication between those two remote.
+        worker = find_route_worker(balancer, *route, r);
+        if (worker && strcmp(*route, worker->s->route)) {
+            /*
+             * Notice that the route of the worker chosen is different from
+             * the route supplied by the client.
              */
-            if (*worker->s->redirect)
-                worker = find_route_worker(balancer, worker->s->redirect);
-            /* Check if the redirect worker is usable */
-            if (worker && !PROXY_WORKER_IS_USABLE(worker))
-                worker = NULL;
+            apr_table_setn(r->subprocess_env, "BALANCER_ROUTE_CHANGED", "1");
+            ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server,
+                         "proxy: BALANCER: Route changed from %s to %s",
+                         *route, worker->s->route);
         }
         return worker;
     }
@@ -235,18 +280,28 @@ static proxy_worker *find_best_worker(proxy_balancer *balancer,
                                       request_rec *r)
 {
     proxy_worker *candidate = NULL;
+    apr_status_t rv;
 
-    if (PROXY_THREAD_LOCK(balancer) != APR_SUCCESS)
+    if ((rv = PROXY_THREAD_LOCK(balancer)) != APR_SUCCESS) {
+        ap_log_error(APLOG_MARK, APLOG_ERR, rv, r->server,
+        "proxy: BALANCER: (%s). Lock failed for find_best_worker()", balancer->name);
         return NULL;
+    }
 
     candidate = (*balancer->lbmethod->finder)(balancer, r);
+
+    if (candidate)
+        candidate->s->elected++;
 
 /*
         PROXY_THREAD_UNLOCK(balancer);
         return NULL;
 */
 
-    PROXY_THREAD_UNLOCK(balancer);
+    if ((rv = PROXY_THREAD_UNLOCK(balancer)) != APR_SUCCESS) {
+        ap_log_error(APLOG_MARK, APLOG_ERR, rv, r->server,
+        "proxy: BALANCER: (%s). Unlock failed for find_best_worker()", balancer->name);
+    }
 
     if (candidate == NULL) {
         /* All the workers are in error state or disabled.
@@ -334,7 +389,8 @@ static int proxy_balancer_pre_request(proxy_worker **worker,
      */
     if ((rv = PROXY_THREAD_LOCK(*balancer)) != APR_SUCCESS) {
         ap_log_error(APLOG_MARK, APLOG_ERR, rv, r->server,
-                     "proxy: BALANCER: lock");
+                     "proxy: BALANCER: (%s). Lock failed for pre_request",
+                     (*balancer)->name);
         return DECLINED;
     }
     if (runtime) {
@@ -349,6 +405,9 @@ static int proxy_balancer_pre_request(proxy_worker **worker,
         for (i = 0; i < (*balancer)->workers->nelts; i++) {
             /* Take into calculation only the workers that are
              * not in error state or not disabled.
+             *
+             * TODO: Abstract the below, since this is dependent
+             *       on the LB implementation
              */
             if (PROXY_WORKER_IS_USABLE(workers)) {
                 workers->s->lbstatus += workers->s->lbfactor;
@@ -365,11 +424,19 @@ static int proxy_balancer_pre_request(proxy_worker **worker,
         ap_log_error(APLOG_MARK, APLOG_ERR, 0, r->server,
                      "proxy: BALANCER: (%s). All workers are in error state for route (%s)",
                      (*balancer)->name, route);
-        PROXY_THREAD_UNLOCK(*balancer);
+        if ((rv = PROXY_THREAD_UNLOCK(*balancer)) != APR_SUCCESS) {
+            ap_log_error(APLOG_MARK, APLOG_ERR, rv, r->server,
+                         "proxy: BALANCER: (%s). Unlock failed for pre_request",
+                         (*balancer)->name);
+        }
         return HTTP_SERVICE_UNAVAILABLE;
     }
 
-    PROXY_THREAD_UNLOCK(*balancer);
+    if ((rv = PROXY_THREAD_UNLOCK(*balancer)) != APR_SUCCESS) {
+        ap_log_error(APLOG_MARK, APLOG_ERR, rv, r->server,
+                     "proxy: BALANCER: (%s). Unlock failed for pre_request",
+                     (*balancer)->name);
+    }
     if (!*worker) {
         runtime = find_best_worker(*balancer, r);
         if (!runtime) {
@@ -379,8 +446,27 @@ static int proxy_balancer_pre_request(proxy_worker **worker,
 
             return HTTP_SERVICE_UNAVAILABLE;
         }
+        if ((*balancer)->sticky && runtime) {
+            /*
+             * This balancer has sticky sessions and the client either has not
+             * supplied any routing information or all workers for this route
+             * including possible redirect and hotstandby workers are in error
+             * state, but we have found another working worker for this
+             * balancer where we can send the request. Thus notice that we have
+             * changed the route to the backend.
+             */
+            apr_table_setn(r->subprocess_env, "BALANCER_ROUTE_CHANGED", "1");
+        }
         *worker = runtime;
     }
+
+    /* Add balancer/worker info to env. */
+    apr_table_setn(r->subprocess_env,
+                   "BALANCER_NAME", (*balancer)->name);
+    apr_table_setn(r->subprocess_env,
+                   "BALANCER_WORKER_NAME", (*worker)->name);
+    apr_table_setn(r->subprocess_env,
+                   "BALANCER_WORKER_ROUTE", (*worker)->s->route);
 
     /* Rewrite the url from 'balancer://url'
      * to the 'worker_scheme://worker_hostname[:worker_port]/url'
@@ -392,6 +478,12 @@ static int proxy_balancer_pre_request(proxy_worker **worker,
     if (route) {
         apr_table_setn(r->notes, "session-sticky", (*balancer)->sticky);
         apr_table_setn(r->notes, "session-route", route);
+
+        /* Add session info to env. */
+        apr_table_setn(r->subprocess_env,
+                       "BALANCER_SESSION_STICKY", (*balancer)->sticky);
+        apr_table_setn(r->subprocess_env,
+                       "BALANCER_SESSION_ROUTE", route);
     }
     ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server,
                  "proxy: BALANCER (%s) worker (%s) rewritten to %s",
@@ -409,7 +501,8 @@ static int proxy_balancer_post_request(proxy_worker *worker,
 
     if ((rv = PROXY_THREAD_LOCK(balancer)) != APR_SUCCESS) {
         ap_log_error(APLOG_MARK, APLOG_ERR, rv, r->server,
-            "proxy: BALANCER: lock");
+            "proxy: BALANCER: (%s). Lock failed for post_request",
+            balancer->name);
         return HTTP_INTERNAL_SERVER_ERROR;
     }
     /* TODO: calculate the bytes transferred
@@ -420,7 +513,11 @@ static int proxy_balancer_post_request(proxy_worker *worker,
      * track on that.
      */
 
-    PROXY_THREAD_UNLOCK(balancer);
+    if ((rv = PROXY_THREAD_UNLOCK(balancer)) != APR_SUCCESS) {
+        ap_log_error(APLOG_MARK, APLOG_ERR, rv, r->server,
+            "proxy: BALANCER: (%s). Unlock failed for post_request",
+            balancer->name);
+    }
     ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server,
                  "proxy_balancer_post_request for (%s)", balancer->name);
 
@@ -564,6 +661,12 @@ static int balancer_handler(request_rec *r)
             else if (!strcasecmp(val, "Enable"))
                 wsel->s->status &= ~PROXY_WORKER_DISABLED;
         }
+        if ((val = apr_table_get(params, "ls"))) {
+            int ival = atoi(val);
+            if (ival >= 0 && ival <= 99) {
+                wsel->s->lbset = ival;
+             }
+        }
 
     }
     if (apr_table_get(params, "xml")) {
@@ -602,7 +705,7 @@ static int balancer_handler(request_rec *r)
         ap_rputs("<body><h1>Load Balancer Manager for ", r);
         ap_rvputs(r, ap_get_server_name(r), "</h1>\n\n", NULL);
         ap_rvputs(r, "<dl><dt>Server Version: ",
-                  ap_get_server_version(), "</dt>\n", NULL);
+                  ap_get_server_description(), "</dt>\n", NULL);
         ap_rvputs(r, "<dt>Server Built: ",
                   ap_get_server_built(), "\n</dt></dl>\n", NULL);
         balancer = (proxy_balancer *)conf->balancers->elts;
@@ -626,12 +729,13 @@ static int balancer_handler(request_rec *r)
             ap_rputs("\n\n<table border=\"0\" style=\"text-align: left;\"><tr>"
                 "<th>Worker URL</th>"
                 "<th>Route</th><th>RouteRedir</th>"
-                "<th>Factor</th><th>Status</th>"
+                "<th>Factor</th><th>Set</th><th>Status</th>"
+                "<th>Elected</th><th>To</th><th>From</th>"
                 "</tr>\n", r);
 
             worker = (proxy_worker *)balancer->workers->elts;
             for (n = 0; n < balancer->workers->nelts; n++) {
-
+                char fbuf[50];
                 ap_rvputs(r, "<tr>\n<td><a href=\"", r->uri, "?b=",
                           balancer->name + sizeof("balancer://") - 1, "&w=",
                           ap_escape_uri(r->pool, worker->name),
@@ -639,15 +743,25 @@ static int balancer_handler(request_rec *r)
                 ap_rvputs(r, worker->name, "</a></td>", NULL);
                 ap_rvputs(r, "<td>", worker->s->route, NULL);
                 ap_rvputs(r, "</td><td>", worker->s->redirect, NULL);
-                ap_rprintf(r, "</td><td>%d</td><td>", worker->s->lbfactor);
+                ap_rprintf(r, "</td><td>%d</td>", worker->s->lbfactor);
+                ap_rprintf(r, "<td>%d</td><td>", worker->s->lbset);
                 if (worker->s->status & PROXY_WORKER_DISABLED)
-                    ap_rputs("Dis", r);
-                else if (worker->s->status & PROXY_WORKER_IN_ERROR)
-                    ap_rputs("Err", r);
-                else if (worker->s->status & PROXY_WORKER_INITIALIZED)
+                   ap_rputs("Dis ", r);
+                if (worker->s->status & PROXY_WORKER_IN_ERROR)
+                   ap_rputs("Err ", r);
+                if (worker->s->status & PROXY_WORKER_STOPPED)
+                   ap_rputs("Stop ", r);
+                if (worker->s->status & PROXY_WORKER_HOT_STANDBY)
+                   ap_rputs("Stby ", r);
+                if (PROXY_WORKER_IS_USABLE(worker))
                     ap_rputs("Ok", r);
-                else
+                if (!PROXY_WORKER_IS_INITIALIZED(worker))
                     ap_rputs("-", r);
+                ap_rputs("</td>", r);
+                ap_rprintf(r, "<td>%" APR_SIZE_T_FMT "</td><td>", worker->s->elected);
+                ap_rputs(apr_strfsize(worker->s->transferred, fbuf), r);
+                ap_rputs("</td><td>", r);
+                ap_rputs(apr_strfsize(worker->s->read, fbuf), r);
                 ap_rputs("</td></tr>\n", r);
 
                 ++worker;
@@ -662,20 +776,22 @@ static int balancer_handler(request_rec *r)
             ap_rvputs(r, "<form method=\"GET\" action=\"", NULL);
             ap_rvputs(r, r->uri, "\">\n<dl>", NULL);
             ap_rputs("<table><tr><td>Load factor:</td><td><input name=\"lf\" type=text ", r);
-            ap_rprintf(r, "value=\"%d\"></td><tr>\n", wsel->s->lbfactor);
+            ap_rprintf(r, "value=\"%d\"></td></tr>\n", wsel->s->lbfactor);
+            ap_rputs("<tr><td>LB Set:</td><td><input name=\"ls\" type=text ", r);
+            ap_rprintf(r, "value=\"%d\"></td></tr>\n", wsel->s->lbset);
             ap_rputs("<tr><td>Route:</td><td><input name=\"wr\" type=text ", r);
             ap_rvputs(r, "value=\"", wsel->route, NULL);
-            ap_rputs("\"></td><tr>\n", r);
+            ap_rputs("\"></td></tr>\n", r);
             ap_rputs("<tr><td>Route Redirect:</td><td><input name=\"rr\" type=text ", r);
             ap_rvputs(r, "value=\"", wsel->redirect, NULL);
-            ap_rputs("\"></td><tr>\n", r);
+            ap_rputs("\"></td></tr>\n", r);
             ap_rputs("<tr><td>Status:</td><td>Disabled: <input name=\"dw\" value=\"Disable\" type=radio", r);
             if (wsel->s->status & PROXY_WORKER_DISABLED)
                 ap_rputs(" checked", r);
             ap_rputs("> | Enabled: <input name=\"dw\" value=\"Enable\" type=radio", r);
             if (!(wsel->s->status & PROXY_WORKER_DISABLED))
                 ap_rputs(" checked", r);
-            ap_rputs("></td><tr>\n", r);
+            ap_rputs("></td></tr>\n", r);
             ap_rputs("<tr><td colspan=2><input type=submit value=\"Submit\"></td></tr>\n", r);
             ap_rvputs(r, "</table>\n<input type=hidden name=\"w\" ",  NULL);
             ap_rvputs(r, "value=\"", ap_escape_uri(r->pool, wsel->name), "\">\n", NULL);
@@ -796,39 +912,56 @@ static proxy_worker *find_best_byrequests(proxy_balancer *balancer,
 {
     int i;
     int total_factor = 0;
-    proxy_worker *worker = (proxy_worker *)balancer->workers->elts;
+    proxy_worker *worker;
     proxy_worker *mycandidate = NULL;
-
-
+    int cur_lbset = 0;
+    int max_lbset = 0;
+    int checking_standby;
+    int checked_standby;
+    
     ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server,
                  "proxy: Entering byrequests for BALANCER (%s)",
                  balancer->name);
 
     /* First try to see if we have available candidate */
-    for (i = 0; i < balancer->workers->nelts; i++) {
-        /* If the worker is in error state run
-         * retry on that worker. It will be marked as
-         * operational if the retry timeout is elapsed.
-         * The worker might still be unusable, but we try
-         * anyway.
-         */
-        if (!PROXY_WORKER_IS_USABLE(worker))
-            ap_proxy_retry_worker("BALANCER", worker, r->server);
-        /* Take into calculation only the workers that are
-         * not in error state or not disabled.
-         */
-        if (PROXY_WORKER_IS_USABLE(worker)) {
-            worker->s->lbstatus += worker->s->lbfactor;
-            total_factor += worker->s->lbfactor;
-            if (!mycandidate || worker->s->lbstatus > mycandidate->s->lbstatus)
-                mycandidate = worker;
+    do {
+        checking_standby = checked_standby = 0;
+        while (!mycandidate && !checked_standby) {
+            worker = (proxy_worker *)balancer->workers->elts;
+            for (i = 0; i < balancer->workers->nelts; i++, worker++) {
+                if (!checking_standby) {    /* first time through */
+                    if (worker->s->lbset > max_lbset)
+                        max_lbset = worker->s->lbset;
+                }
+                if (worker->s->lbset > cur_lbset)
+                    continue;
+                if ( (checking_standby ? !PROXY_WORKER_IS_STANDBY(worker) : PROXY_WORKER_IS_STANDBY(worker)) )
+                    continue;
+                /* If the worker is in error state run
+                 * retry on that worker. It will be marked as
+                 * operational if the retry timeout is elapsed.
+                 * The worker might still be unusable, but we try
+                 * anyway.
+                 */
+                if (!PROXY_WORKER_IS_USABLE(worker))
+                    ap_proxy_retry_worker("BALANCER", worker, r->server);
+                /* Take into calculation only the workers that are
+                 * not in error state or not disabled.
+                 */
+                if (PROXY_WORKER_IS_USABLE(worker)) {
+                    worker->s->lbstatus += worker->s->lbfactor;
+                    total_factor += worker->s->lbfactor;
+                    if (!mycandidate || worker->s->lbstatus > mycandidate->s->lbstatus)
+                        mycandidate = worker;
+                }
+            }
+            checked_standby = checking_standby++;
         }
-        worker++;
-    }
+        cur_lbset++;
+    } while (cur_lbset <= max_lbset && !mycandidate);
 
     if (mycandidate) {
         mycandidate->s->lbstatus -= total_factor;
-        mycandidate->s->elected++;
     }
 
     return mycandidate;
@@ -857,40 +990,55 @@ static proxy_worker *find_best_bytraffic(proxy_balancer *balancer,
     int i;
     apr_off_t mytraffic = 0;
     apr_off_t curmin = 0;
-    proxy_worker *worker = (proxy_worker *)balancer->workers->elts;
+    proxy_worker *worker;
     proxy_worker *mycandidate = NULL;
+    int cur_lbset = 0;
+    int max_lbset = 0;
+    int checking_standby;
+    int checked_standby;
 
     ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server,
                  "proxy: Entering bytraffic for BALANCER (%s)",
                  balancer->name);
 
     /* First try to see if we have available candidate */
-    for (i = 0; i < balancer->workers->nelts; i++) {
-        /* If the worker is in error state run
-         * retry on that worker. It will be marked as
-         * operational if the retry timeout is elapsed.
-         * The worker might still be unusable, but we try
-         * anyway.
-         */
-        if (!PROXY_WORKER_IS_USABLE(worker))
-            ap_proxy_retry_worker("BALANCER", worker, r->server);
-        /* Take into calculation only the workers that are
-         * not in error state or not disabled.
-         */
-        if (PROXY_WORKER_IS_USABLE(worker)) {
-            mytraffic = (worker->s->transferred/worker->s->lbfactor) +
-                        (worker->s->read/worker->s->lbfactor);
-            if (!mycandidate || mytraffic < curmin) {
-                mycandidate = worker;
-                curmin = mytraffic;
+    do {
+        checking_standby = checked_standby = 0;
+        while (!mycandidate && !checked_standby) {
+            worker = (proxy_worker *)balancer->workers->elts;
+            for (i = 0; i < balancer->workers->nelts; i++, worker++) {
+                if (!checking_standby) {    /* first time through */
+                    if (worker->s->lbset > max_lbset)
+                        max_lbset = worker->s->lbset;
+                }
+                if (worker->s->lbset > cur_lbset)
+                    continue;
+                if ( (checking_standby ? !PROXY_WORKER_IS_STANDBY(worker) : PROXY_WORKER_IS_STANDBY(worker)) )
+                    continue;
+                /* If the worker is in error state run
+                 * retry on that worker. It will be marked as
+                 * operational if the retry timeout is elapsed.
+                 * The worker might still be unusable, but we try
+                 * anyway.
+                 */
+                if (!PROXY_WORKER_IS_USABLE(worker))
+                    ap_proxy_retry_worker("BALANCER", worker, r->server);
+                /* Take into calculation only the workers that are
+                 * not in error state or not disabled.
+                 */
+                if (PROXY_WORKER_IS_USABLE(worker)) {
+                    mytraffic = (worker->s->transferred/worker->s->lbfactor) +
+                                (worker->s->read/worker->s->lbfactor);
+                    if (!mycandidate || mytraffic < curmin) {
+                        mycandidate = worker;
+                        curmin = mytraffic;
+                    }
+                }
             }
+            checked_standby = checking_standby++;
         }
-        worker++;
-    }
-
-    if (mycandidate) {
-        mycandidate->s->elected++;
-    }
+        cur_lbset++;
+    } while (cur_lbset <= max_lbset && !mycandidate);
 
     return mycandidate;
 }

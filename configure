@@ -310,7 +310,7 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS exp_exec_prefix rel_exec_prefix exp_bindir rel_bindir exp_sbindir rel_sbindir exp_libdir rel_libdir exp_libexecdir rel_libexecdir exp_mandir rel_mandir exp_sysconfdir rel_sysconfdir exp_datadir rel_datadir exp_installbuilddir rel_installbuilddir exp_errordir rel_errordir exp_iconsdir rel_iconsdir exp_htdocsdir rel_htdocsdir exp_manualdir rel_manualdir exp_cgidir rel_cgidir exp_includedir rel_includedir exp_localstatedir rel_localstatedir exp_runtimedir rel_runtimedir exp_logfiledir rel_logfiledir exp_proxycachedir rel_proxycachedir build build_cpu build_vendor build_os host host_cpu host_vendor host_os target target_cpu target_vendor target_os CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT CPP PCRE_CONFIG SHLTCFLAGS LTCFLAGS RM PKGCONFIG RSYNC AWK LN_S RANLIB ac_ct_RANLIB LYNX_PATH MKINSTALLDIRS INSTALL EGREP MKDEP PICFLAGS PILDFLAGS MOD_AUTHN_FILE_LDADD MOD_AUTHN_DBM_LDADD MOD_AUTHN_ANON_LDADD MOD_AUTHN_DBD_LDADD MOD_AUTHN_DEFAULT_LDADD MOD_AUTHN_ALIAS_LDADD MOD_AUTHZ_HOST_LDADD MOD_AUTHZ_GROUPFILE_LDADD MOD_AUTHZ_USER_LDADD MOD_AUTHZ_DBM_LDADD MOD_AUTHZ_OWNER_LDADD MOD_AUTHNZ_LDAP_LDADD MOD_AUTHZ_DEFAULT_LDADD MOD_AUTH_BASIC_LDADD MOD_AUTH_DIGEST_LDADD MOD_ISAPI_LDADD MOD_FILE_CACHE_LDADD MOD_CACHE_LDADD MOD_DISK_CACHE_LDADD MOD_MEM_CACHE_LDADD MOD_DBD_LDADD MOD_BUCKETEER_LDADD MOD_DUMPIO_LDADD MOD_ECHO_LDADD MOD_EXAMPLE_LDADD MOD_CASE_FILTER_LDADD MOD_CASE_FILTER_IN_LDADD MOD_EXT_FILTER_LDADD MOD_INCLUDE_LDADD MOD_FILTER_LDADD MOD_CHARSET_LITE_LDADD MOD_DEFLATE_LDADD MOD_LDAP_LDADD MOD_LOG_CONFIG_LDADD MOD_LOG_FORENSIC_LDADD MOD_LOGIO_LDADD MOD_ENV_LDADD MOD_MIME_MAGIC_LDADD MOD_CERN_META_LDADD MOD_EXPIRES_LDADD MOD_HEADERS_LDADD MOD_IDENT_LDADD MOD_USERTRACK_LDADD MOD_UNIQUE_ID_LDADD MOD_SETENVIF_LDADD MOD_VERSION_LDADD MOD_PROXY_LDADD MOD_PROXY_CONNECT_LDADD MOD_PROXY_FTP_LDADD MOD_PROXY_HTTP_LDADD MOD_PROXY_AJP_LDADD MOD_PROXY_BALANCER_LDADD SSL_LIBS MOD_SSL_LDADD MOD_OPTIONAL_HOOK_EXPORT_LDADD MOD_OPTIONAL_HOOK_IMPORT_LDADD MOD_OPTIONAL_FN_IMPORT_LDADD MOD_OPTIONAL_FN_EXPORT_LDADD MPM_NAME MPM_SUBDIR_NAME htpasswd_LTFLAGS htdigest_LTFLAGS rotatelogs_LTFLAGS logresolve_LTFLAGS htdbm_LTFLAGS ab_LTFLAGS checkgid_LTFLAGS APACHECTL_ULIMIT MOD_HTTP_LDADD MOD_MIME_LDADD MOD_DAV_LDADD MOD_STATUS_LDADD MOD_AUTOINDEX_LDADD MOD_ASIS_LDADD MOD_INFO_LDADD MOD_SUEXEC_LDADD MOD_CGID_LDADD MOD_CGI_LDADD MOD_DAV_FS_LDADD MOD_DAV_LOCK_LDADD MOD_VHOST_ALIAS_LDADD MOD_NEGOTIATION_LDADD MOD_DIR_LDADD MOD_IMAGEMAP_LDADD MOD_ACTIONS_LDADD MOD_SPELING_LDADD MOD_USERDIR_LDADD MOD_ALIAS_LDADD MOD_REWRITE_LDADD INSTALL_DSO MOD_SO_LDADD progname MPM_LIB OS OS_DIR BUILTIN_LIBS SHLIBPATH_VAR OS_SPECIFIC_VARS PRE_SHARED_CMDS POST_SHARED_CMDS shared_build AP_LIBS AP_BUILD_SRCLIB_DIRS AP_CLEAN_SRCLIB_DIRS EXTRA_CPPFLAGS EXTRA_CFLAGS EXTRA_CXXFLAGS EXTRA_LDFLAGS EXTRA_LIBS EXTRA_INCLUDES abs_srcdir cgidir logfiledir htdocsdir manualdir errordir iconsdir installbuilddir runtimedir proxycachedir other_targets CXX CXXFLAGS LTFLAGS LT_LDFLAGS SH_LDFLAGS HTTPD_LDFLAGS UTIL_LDFLAGS INCLUDES NOTEST_CPPFLAGS NOTEST_CFLAGS NOTEST_CXXFLAGS NOTEST_LDFLAGS NOTEST_LIBS LIBTOOL MODULE_DIRS MODULE_CLEANDIRS PORT nonssl_listen_stmt_1 nonssl_listen_stmt_2 CORE_IMPLIB_FILE CORE_IMPLIB SH_LIBS SH_LIBTOOL MK_IMPLIB INSTALL_PROG_FLAGS DSO_MODULES APR_BINDIR APR_INCLUDEDIR APR_VERSION APR_CONFIG APU_BINDIR APU_INCLUDEDIR APU_VERSION APU_CONFIG perlbin ap_make_include ap_make_delimiter HTTPD_VERSION LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS exp_exec_prefix rel_exec_prefix exp_bindir rel_bindir exp_sbindir rel_sbindir exp_libdir rel_libdir exp_libexecdir rel_libexecdir exp_mandir rel_mandir exp_sysconfdir rel_sysconfdir exp_datadir rel_datadir exp_installbuilddir rel_installbuilddir exp_errordir rel_errordir exp_iconsdir rel_iconsdir exp_htdocsdir rel_htdocsdir exp_manualdir rel_manualdir exp_cgidir rel_cgidir exp_includedir rel_includedir exp_localstatedir rel_localstatedir exp_runtimedir rel_runtimedir exp_logfiledir rel_logfiledir exp_proxycachedir rel_proxycachedir build build_cpu build_vendor build_os host host_cpu host_vendor host_os target target_cpu target_vendor target_os CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT CPP PCRE_CONFIG SHLTCFLAGS LTCFLAGS RM PKGCONFIG RSYNC AWK LN_S RANLIB ac_ct_RANLIB LYNX_PATH MKINSTALLDIRS INSTALL EGREP MKDEP PICFLAGS PILDFLAGS MOD_AUTHN_FILE_LDADD MOD_AUTHN_DBM_LDADD MOD_AUTHN_ANON_LDADD MOD_AUTHN_DBD_LDADD MOD_AUTHN_DEFAULT_LDADD MOD_AUTHN_ALIAS_LDADD MOD_AUTHZ_HOST_LDADD MOD_AUTHZ_GROUPFILE_LDADD MOD_AUTHZ_USER_LDADD MOD_AUTHZ_DBM_LDADD MOD_AUTHZ_OWNER_LDADD MOD_AUTHNZ_LDAP_LDADD MOD_AUTHZ_DEFAULT_LDADD MOD_AUTH_BASIC_LDADD MOD_AUTH_DIGEST_LDADD MOD_ISAPI_LDADD MOD_FILE_CACHE_LDADD MOD_CACHE_LDADD MOD_DISK_CACHE_LDADD MOD_MEM_CACHE_LDADD MOD_DBD_LDADD MOD_BUCKETEER_LDADD MOD_DUMPIO_LDADD MOD_ECHO_LDADD MOD_EXAMPLE_LDADD MOD_CASE_FILTER_LDADD MOD_CASE_FILTER_IN_LDADD MOD_EXT_FILTER_LDADD MOD_INCLUDE_LDADD MOD_FILTER_LDADD MOD_CHARSET_LITE_LDADD MOD_DEFLATE_LDADD MOD_LDAP_LDADD MOD_LOG_CONFIG_LDADD MOD_LOG_FORENSIC_LDADD MOD_LOGIO_LDADD MOD_ENV_LDADD MOD_MIME_MAGIC_LDADD MOD_CERN_META_LDADD MOD_EXPIRES_LDADD MOD_HEADERS_LDADD MOD_IDENT_LDADD MOD_USERTRACK_LDADD MOD_UNIQUE_ID_LDADD MOD_SETENVIF_LDADD MOD_VERSION_LDADD MOD_PROXY_LDADD MOD_PROXY_CONNECT_LDADD MOD_PROXY_FTP_LDADD MOD_PROXY_HTTP_LDADD MOD_PROXY_AJP_LDADD MOD_PROXY_BALANCER_LDADD SSL_LIBS MOD_SSL_LDADD MOD_OPTIONAL_HOOK_EXPORT_LDADD MOD_OPTIONAL_HOOK_IMPORT_LDADD MOD_OPTIONAL_FN_IMPORT_LDADD MOD_OPTIONAL_FN_EXPORT_LDADD MPM_NAME MPM_SUBDIR_NAME htpasswd_LTFLAGS htdigest_LTFLAGS rotatelogs_LTFLAGS logresolve_LTFLAGS htdbm_LTFLAGS ab_LTFLAGS checkgid_LTFLAGS htcacheclean_LTFLAGS httxt2dbm_LTFLAGS APACHECTL_ULIMIT MOD_HTTP_LDADD MOD_MIME_LDADD MOD_DAV_LDADD MOD_STATUS_LDADD MOD_AUTOINDEX_LDADD MOD_ASIS_LDADD MOD_INFO_LDADD MOD_SUEXEC_LDADD MOD_CGID_LDADD MOD_CGI_LDADD MOD_DAV_FS_LDADD MOD_DAV_LOCK_LDADD MOD_VHOST_ALIAS_LDADD MOD_NEGOTIATION_LDADD MOD_DIR_LDADD MOD_IMAGEMAP_LDADD MOD_ACTIONS_LDADD MOD_SPELING_LDADD MOD_USERDIR_LDADD MOD_ALIAS_LDADD MOD_REWRITE_LDADD INSTALL_DSO MOD_SO_LDADD progname MPM_LIB OS OS_DIR BUILTIN_LIBS SHLIBPATH_VAR OS_SPECIFIC_VARS PRE_SHARED_CMDS POST_SHARED_CMDS shared_build AP_LIBS AP_BUILD_SRCLIB_DIRS AP_CLEAN_SRCLIB_DIRS EXTRA_CPPFLAGS EXTRA_CFLAGS EXTRA_CXXFLAGS EXTRA_LDFLAGS EXTRA_LIBS EXTRA_INCLUDES abs_srcdir cgidir logfiledir htdocsdir manualdir errordir iconsdir installbuilddir runtimedir proxycachedir other_targets CXX CXXFLAGS LTFLAGS LT_LDFLAGS SH_LDFLAGS HTTPD_LDFLAGS UTIL_LDFLAGS INCLUDES NOTEST_CPPFLAGS NOTEST_CFLAGS NOTEST_CXXFLAGS NOTEST_LDFLAGS NOTEST_LIBS LIBTOOL MODULE_DIRS MODULE_CLEANDIRS PORT nonssl_listen_stmt_1 nonssl_listen_stmt_2 CORE_IMPLIB_FILE CORE_IMPLIB SH_LIBS SH_LIBTOOL MK_IMPLIB INSTALL_PROG_FLAGS DSO_MODULES APR_BINDIR APR_INCLUDEDIR APR_VERSION APR_CONFIG APU_BINDIR APU_INCLUDEDIR APU_VERSION APU_CONFIG perlbin ap_make_include ap_make_delimiter HTTPD_VERSION LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -936,6 +936,10 @@ Optional Features:
   --enable-static-ab      Build a statically linked version of ab
   --enable-static-checkgid
                           Build a statically linked version of checkgid
+  --enable-static-htcacheclean
+                          Build a statically linked version of htcacheclean
+  --enable-static-httxt2dbm
+                          Build a statically linked version of httxt2dbm
   --enable-http           HTTP protocol handling
   --disable-mime          mapping of file-extension to MIME
   --enable-dav            WebDAV protocol handling
@@ -1662,6 +1666,10 @@ echo "${ECHO_T}$layout_name" >&6
 
 
 ac_prev=
+# Retrieve the command-line arguments.  The eval is needed because
+# the arguments are quoted to preserve accuracy.
+eval "set x $ac_configure_args"
+shift
 for ac_option
 do
   # If the previous option needs an argument, assign it.
@@ -2432,7 +2440,12 @@ EOF
     echo "NOTEST_LIBS=\"$NOTEST_LIBS\"; export NOTEST_LIBS" >> config.nice
   fi
 
-  for arg in $0 "$@"; do
+  # Retrieve command-line arguments.
+  eval "set x $0 $ac_configure_args"
+  shift
+
+  for arg
+  do
 
 ap_last=
 ap_cur="$arg"
@@ -2651,7 +2664,7 @@ else
           apr_config="$apr_temp_apr_config_file"
           break
         else
-                    for lookdir in /usr /usr/local /usr/local/apr /opt/apr /usr/local/apache2; do
+                    for lookdir in /usr /usr/local /usr/local/apr /opt/apr; do
             if $TEST_X "$lookdir/bin/$apr_temp_apr_config_file"; then
               apr_found="yes"
               apr_config="$lookdir/bin/$apr_temp_apr_config_file"
@@ -12392,7 +12405,7 @@ EOF
 proxy_connect_objs="mod_proxy_connect.lo"
 proxy_ftp_objs="mod_proxy_ftp.lo"
 proxy_http_objs="mod_proxy_http.lo"
-proxy_ajp_objs="mod_proxy_ajp.lo ajp_header.lo ajp_link.lo ajp_msg.lo"
+proxy_ajp_objs="mod_proxy_ajp.lo ajp_header.lo ajp_link.lo ajp_msg.lo ajp_utils.lo"
 proxy_balancer_objs="mod_proxy_balancer.lo"
 
 case "$host" in
@@ -16394,6 +16407,8 @@ logresolve_LTFLAGS=""
 htdbm_LTFLAGS=""
 ab_LTFLAGS=""
 checkgid_LTFLAGS=""
+htcacheclean_LTFLAGS=""
+httxt2dbm_LTFLAGS=""
 
 # Check whether --enable-static-support or --disable-static-support was given.
 if test "${enable_static_support+set}" = set; then
@@ -16543,6 +16558,48 @@ if test "$enableval" = "yes" ; then
       if test $apr_addto_duplicate = "0"; then
         test "x$silent" != "xyes" && echo "  adding \"$i\" to checkgid_LTFLAGS"
         checkgid_LTFLAGS="$checkgid_LTFLAGS $i"
+      fi
+    done
+  fi
+
+
+  if test "x$htcacheclean_LTFLAGS" = "x"; then
+    test "x$silent" != "xyes" && echo "  setting htcacheclean_LTFLAGS to \"-static\""
+    htcacheclean_LTFLAGS="-static"
+  else
+    apr_addto_bugger="-static"
+    for i in $apr_addto_bugger; do
+      apr_addto_duplicate="0"
+      for j in $htcacheclean_LTFLAGS; do
+        if test "x$i" = "x$j"; then
+          apr_addto_duplicate="1"
+          break
+        fi
+      done
+      if test $apr_addto_duplicate = "0"; then
+        test "x$silent" != "xyes" && echo "  adding \"$i\" to htcacheclean_LTFLAGS"
+        htcacheclean_LTFLAGS="$htcacheclean_LTFLAGS $i"
+      fi
+    done
+  fi
+
+
+  if test "x$httxt2dbm_LTFLAGS" = "x"; then
+    test "x$silent" != "xyes" && echo "  setting httxt2dbm_LTFLAGS to \"-static\""
+    httxt2dbm_LTFLAGS="-static"
+  else
+    apr_addto_bugger="-static"
+    for i in $apr_addto_bugger; do
+      apr_addto_duplicate="0"
+      for j in $httxt2dbm_LTFLAGS; do
+        if test "x$i" = "x$j"; then
+          apr_addto_duplicate="1"
+          break
+        fi
+      done
+      if test $apr_addto_duplicate = "0"; then
+        test "x$silent" != "xyes" && echo "  adding \"$i\" to httxt2dbm_LTFLAGS"
+        httxt2dbm_LTFLAGS="$httxt2dbm_LTFLAGS $i"
       fi
     done
   fi
@@ -16933,6 +16990,116 @@ fi
 fi;
 
   APACHE_VAR_SUBST="$APACHE_VAR_SUBST checkgid_LTFLAGS"
+
+
+
+# Check whether --enable-static-htcacheclean or --disable-static-htcacheclean was given.
+if test "${enable_static_htcacheclean+set}" = set; then
+  enableval="$enable_static_htcacheclean"
+
+if test "$enableval" = "yes" ; then
+
+  if test "x$htcacheclean_LTFLAGS" = "x"; then
+    test "x$silent" != "xyes" && echo "  setting htcacheclean_LTFLAGS to \"-static\""
+    htcacheclean_LTFLAGS="-static"
+  else
+    apr_addto_bugger="-static"
+    for i in $apr_addto_bugger; do
+      apr_addto_duplicate="0"
+      for j in $htcacheclean_LTFLAGS; do
+        if test "x$i" = "x$j"; then
+          apr_addto_duplicate="1"
+          break
+        fi
+      done
+      if test $apr_addto_duplicate = "0"; then
+        test "x$silent" != "xyes" && echo "  adding \"$i\" to htcacheclean_LTFLAGS"
+        htcacheclean_LTFLAGS="$htcacheclean_LTFLAGS $i"
+      fi
+    done
+  fi
+
+else
+
+  if test "x$htcacheclean_LTFLAGS" = "x-static"; then
+    test "x$silent" != "xyes" && echo "  nulling htcacheclean_LTFLAGS"
+    htcacheclean_LTFLAGS=""
+  else
+    apr_new_bugger=""
+    apr_removed=0
+    for i in $htcacheclean_LTFLAGS; do
+      if test "x$i" != "x-static"; then
+        apr_new_bugger="$apr_new_bugger $i"
+      else
+        apr_removed=1
+      fi
+    done
+    if test $apr_removed = "1"; then
+      test "x$silent" != "xyes" && echo "  removed \"-static\" from htcacheclean_LTFLAGS"
+      htcacheclean_LTFLAGS=$apr_new_bugger
+    fi
+  fi
+
+fi
+
+fi;
+
+  APACHE_VAR_SUBST="$APACHE_VAR_SUBST htcacheclean_LTFLAGS"
+
+
+
+# Check whether --enable-static-httxt2dbm or --disable-static-httxt2dbm was given.
+if test "${enable_static_httxt2dbm+set}" = set; then
+  enableval="$enable_static_httxt2dbm"
+
+if test "$enableval" = "yes" ; then
+
+  if test "x$httxt2dbm_LTFLAGS" = "x"; then
+    test "x$silent" != "xyes" && echo "  setting httxt2dbm_LTFLAGS to \"-static\""
+    httxt2dbm_LTFLAGS="-static"
+  else
+    apr_addto_bugger="-static"
+    for i in $apr_addto_bugger; do
+      apr_addto_duplicate="0"
+      for j in $httxt2dbm_LTFLAGS; do
+        if test "x$i" = "x$j"; then
+          apr_addto_duplicate="1"
+          break
+        fi
+      done
+      if test $apr_addto_duplicate = "0"; then
+        test "x$silent" != "xyes" && echo "  adding \"$i\" to httxt2dbm_LTFLAGS"
+        httxt2dbm_LTFLAGS="$httxt2dbm_LTFLAGS $i"
+      fi
+    done
+  fi
+
+else
+
+  if test "x$httxt2dbm" = "x-static"; then
+    test "x$silent" != "xyes" && echo "  nulling httxt2dbm"
+    httxt2dbm=""
+  else
+    apr_new_bugger=""
+    apr_removed=0
+    for i in $httxt2dbm; do
+      if test "x$i" != "x-static"; then
+        apr_new_bugger="$apr_new_bugger $i"
+      else
+        apr_removed=1
+      fi
+    done
+    if test $apr_removed = "1"; then
+      test "x$silent" != "xyes" && echo "  removed \"-static\" from httxt2dbm"
+      httxt2dbm=$apr_new_bugger
+    fi
+  fi
+
+fi
+
+fi;
+
+  APACHE_VAR_SUBST="$APACHE_VAR_SUBST httxt2dbm_LTFLAGS"
 
 
 
@@ -21491,6 +21658,8 @@ s,@logresolve_LTFLAGS@,$logresolve_LTFLAGS,;t t
 s,@htdbm_LTFLAGS@,$htdbm_LTFLAGS,;t t
 s,@ab_LTFLAGS@,$ab_LTFLAGS,;t t
 s,@checkgid_LTFLAGS@,$checkgid_LTFLAGS,;t t
+s,@htcacheclean_LTFLAGS@,$htcacheclean_LTFLAGS,;t t
+s,@httxt2dbm_LTFLAGS@,$httxt2dbm_LTFLAGS,;t t
 s,@APACHECTL_ULIMIT@,$APACHECTL_ULIMIT,;t t
 s,@MOD_HTTP_LDADD@,$MOD_HTTP_LDADD,;t t
 s,@MOD_MIME_LDADD@,$MOD_MIME_LDADD,;t t

@@ -1,9 +1,9 @@
-/* Copyright 2000-2005 The Apache Software Foundation or its licensors, as
- * applicable.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+/* Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -142,7 +142,7 @@ static int gettemp(char *path, apr_file_t **doopen, apr_int32_t flags, apr_pool_
         if ((rv = apr_file_open(doopen, path, flags,
                                 APR_UREAD | APR_UWRITE, p)) == APR_SUCCESS)
             return APR_SUCCESS;
-        if (rv != APR_EEXIST)
+        if (!APR_STATUS_IS_EEXIST(rv))
             return rv;
 
         /* If we have a collision, cycle through the space of filenames */

@@ -630,6 +630,8 @@ static apr_ssize_t send_response_header(isapi_cid *cid,
 {
     int head_present = 1;
     int termarg;
+    int res;
+    int old_status;
     const char *termch;
     apr_size_t ate = 0;
 
@@ -680,7 +682,7 @@ static apr_ssize_t send_response_header(isapi_cid *cid,
              * or the http/x.x xxx message format
              */
             if (toklen && apr_isdigit(*stattok)) {
-                statlen -= toklen;
+                statlen = toklen;
                 stat = stattok;
             }
         }
@@ -709,29 +711,71 @@ static apr_ssize_t send_response_header(isapi_cid *cid,
      *
      * Parse them out, or die trying
      */
+    old_status = cid->r->status;
+
     if (stat) {
-        cid->r->status = ap_scan_script_header_err_strs(cid->r, NULL,
-                                        &termch, &termarg, stat, head, NULL);
+        res = ap_scan_script_header_err_strs(cid->r, NULL, &termch, &termarg,
+                stat, head, NULL);
+    }
+    else {
+        res = ap_scan_script_header_err_strs(cid->r, NULL, &termch, &termarg,
+                head, NULL);
+    }
+
+    /* Set our status. */
+    if (res) {
+        /* This is an immediate error result from the parser
+         */
+        cid->r->status = res;
+        cid->r->status_line = ap_get_status_line(cid->r->status);
+        cid->ecb->dwHttpStatusCode = cid->r->status;
+    }
+    else if (cid->r->status) {
+        /* We have a status in r->status, so let's just use it.
+         * This is likely to be the Status: parsed above, and
+         * may also be a delayed error result from the parser.
+         * If it was filled in, status_line should also have
+         * been filled in.
+         */
+        cid->ecb->dwHttpStatusCode = cid->r->status;
+    }
+    else if (cid->ecb->dwHttpStatusCode
+              && cid->ecb->dwHttpStatusCode != HTTP_OK) {
+        /* Now we fall back on dwHttpStatusCode if it appears
+         * ap_scan_script_header fell back on the default code.
+         * Any other results set dwHttpStatusCode to the decoded
+         * status value.
+         */
+        cid->r->status = cid->ecb->dwHttpStatusCode;
+        cid->r->status_line = ap_get_status_line(cid->r->status);
+    }
+    else if (old_status) {
+        /* Well... either there is no dwHttpStatusCode or it's HTTP_OK.
+         * In any case, we don't have a good status to return yet...
+         * Perhaps the one we came in with will be better. Let's use it,
+         * if we were given one (note this is a pendantic case, it would
+         * normally be covered above unless the scan script code unset
+         * the r->status). Should there be a check here as to whether
+         * we are setting a valid response code?
+         */
+        cid->r->status = old_status;
+        cid->r->status_line = ap_get_status_line(cid->r->status);
         cid->ecb->dwHttpStatusCode = cid->r->status;
     }
     else {
-        cid->r->status = ap_scan_script_header_err_strs(cid->r, NULL,
-                                        &termch, &termarg, head, NULL);
-        if (cid->ecb->dwHttpStatusCode && cid->r->status == HTTP_OK
-                && cid->ecb->dwHttpStatusCode != HTTP_OK) {
-            /* We tried every way to Sunday to get the status...
-             * so now we fall back on dwHttpStatusCode if it appears
-             * ap_scan_script_header fell back on the default code.
-             * Any other results set dwHttpStatusCode to the decoded
-             * status value.
-             */
-            cid->r->status = cid->ecb->dwHttpStatusCode;
-            cid->r->status_line = ap_get_status_line(cid->r->status);
-        }
-        else {
-            cid->ecb->dwHttpStatusCode = cid->r->status;
-        }
+        /* None of dwHttpStatusCode, the parser's r->status nor the 
+         * old value of r->status were helpful, and nothing was decoded
+         * from Status: string passed to us.  Let's just say HTTP_OK 
+         * and get the data out, this was the isapi dev's oversight.
+         */
+        cid->r->status = HTTP_OK;
+        cid->r->status_line = ap_get_status_line(cid->r->status);
+        cid->ecb->dwHttpStatusCode = cid->r->status;
+        ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, cid->r,
+                "ISAPI: Could not determine HTTP response code; using %d",
+                cid->r->status);
     }
+
     if (cid->r->status == HTTP_INTERNAL_SERVER_ERROR) {
         return -1;
     }
@@ -771,7 +815,7 @@ int APR_THREAD_FUNC WriteClient(isapi_cid    *cid,
     char *buf_data = (char*)buf_ptr;
     apr_bucket_brigade *bb;
     apr_bucket *b;
-    apr_status_t rv;
+    apr_status_t rv = APR_SUCCESS;
 
     if (!cid->headers_set) {
         /* It appears that the foxisapi module and other clients
@@ -797,10 +841,14 @@ int APR_THREAD_FUNC WriteClient(isapi_cid    *cid,
         APR_BRIGADE_INSERT_TAIL(bb, b);
         rv = ap_pass_brigade(r->output_filters, bb);
         cid->response_sent = 1;
+        if (rv != APR_SUCCESS)
+            ap_log_rerror(APLOG_MARK, APLOG_DEBUG, rv, r,
+                          "ISAPI: WriteClient ap_pass_brigade "
+                          "failed: %s", r->filename);
     }
 
     if ((flags & HSE_IO_ASYNC) && cid->completion) {
-        if (rv == OK) {
+        if (rv == APR_SUCCESS) {
             cid->completion(cid->ecb, cid->completion_arg,
                             *size_arg, ERROR_SUCCESS);
         }
@@ -809,7 +857,7 @@ int APR_THREAD_FUNC WriteClient(isapi_cid    *cid,
                             *size_arg, ERROR_WRITE_FAULT);
         }
     }
-    return (rv == OK);
+    return (rv == APR_SUCCESS);
 }
 
 int APR_THREAD_FUNC ServerSupportFunction(isapi_cid    *cid,
@@ -822,6 +870,7 @@ int APR_THREAD_FUNC ServerSupportFunction(isapi_cid    *cid,
     conn_rec *c = r->connection;
     char *buf_data = (char*)buf_ptr;
     request_rec *subreq;
+    apr_status_t rv;
 
     switch (HSE_code) {
     case HSE_REQ_SEND_URL_REDIRECT_RESP:
@@ -881,9 +930,19 @@ int APR_THREAD_FUNC ServerSupportFunction(isapi_cid    *cid,
             APR_BRIGADE_INSERT_TAIL(bb, b);
             b = apr_bucket_flush_create(c->bucket_alloc);
             APR_BRIGADE_INSERT_TAIL(bb, b);
-            ap_pass_brigade(cid->r->output_filters, bb);
+            rv = ap_pass_brigade(cid->r->output_filters, bb);
             cid->response_sent = 1;
+            if (rv != APR_SUCCESS)
+                ap_log_rerror(APLOG_MARK, APLOG_DEBUG, rv, r,
+                              "ISAPI: ServerSupport function "
+                              "HSE_REQ_SEND_RESPONSE_HEADER "
+                              "ap_pass_brigade failed: %s", r->filename);
+            return (rv == APR_SUCCESS);
         }
+        /* Deliberately hold off sending 'just the headers' to begin to
+         * accumulate the body and speed up the overall response, or at
+         * least wait for the end the session.
+         */
         return 1;
     }
 
@@ -909,20 +968,33 @@ int APR_THREAD_FUNC ServerSupportFunction(isapi_cid    *cid,
         /* Map a URL to a filename */
         char *file = (char *)buf_data;
         apr_uint32_t len;
-        subreq = ap_sub_req_lookup_uri(apr_pstrndup(r->pool, file, *buf_size),
-                                       r, NULL);
+        subreq = ap_sub_req_lookup_uri(
+                     apr_pstrndup(cid->r->pool, file, *buf_size), r, NULL);
 
-        len = apr_cpystrn(file, subreq->filename, *buf_size) - file;
-
-
-        /* IIS puts a trailing slash on directories, Apache doesn't */
-        if (subreq->finfo.filetype == APR_DIR) {
-            if (len < *buf_size - 1) {
-                file[len++] = '\\';
-                file[len] = '\0';
-            }
+        if (!subreq->filename) {
+            ap_destroy_sub_req(subreq);
+            return 0;
         }
-        *buf_size = len;
+
+        len = (apr_uint32_t)strlen(r->filename);
+
+        if ((subreq->finfo.filetype == APR_DIR)
+              && (!subreq->path_info)
+              && (file[len - 1] != '/'))
+            file = apr_pstrcat(cid->r->pool, subreq->filename, "/", NULL);
+        else
+            file = apr_pstrcat(cid->r->pool, subreq->filename, 
+                                              subreq->path_info, NULL);
+
+        ap_destroy_sub_req(subreq);
+
+#ifdef WIN32
+        /* We need to make this a real Windows path name */
+        apr_filepath_merge(&file, "", file, APR_FILEPATH_NATIVE, r->pool);
+#endif
+
+        *buf_size = apr_cpystrn(buf_data, file, *buf_size) - buf_data;
+
         return 1;
     }
 
@@ -976,7 +1048,6 @@ int APR_THREAD_FUNC ServerSupportFunction(isapi_cid    *cid,
         HSE_TF_INFO *tf = (HSE_TF_INFO*)buf_data;
         apr_uint32_t sent = 0;
         apr_ssize_t ate = 0;
-        apr_status_t rv;
         apr_bucket_brigade *bb;
         apr_bucket *b;
         apr_file_t *fd;
@@ -1050,28 +1121,7 @@ int APR_THREAD_FUNC ServerSupportFunction(isapi_cid    *cid,
         }
 
         sent += (apr_uint32_t)fsize;
-#if APR_HAS_LARGE_FILES
-        if (r->finfo.size > AP_MAX_SENDFILE) {
-            /* APR_HAS_LARGE_FILES issue; must split into mutiple buckets,
-             * no greater than MAX(apr_size_t), and more granular than that
-             * in case the brigade code/filters attempt to read it directly.
-             */
-            b = apr_bucket_file_create(fd, tf->Offset, AP_MAX_SENDFILE,
-                                       r->pool, c->bucket_alloc);
-            while (fsize > AP_MAX_SENDFILE) {
-                apr_bucket *bc;
-                apr_bucket_copy(b, &bc);
-                APR_BRIGADE_INSERT_TAIL(bb, bc);
-                b->start += AP_MAX_SENDFILE;
-                fsize -= AP_MAX_SENDFILE;
-            }
-            b->length = (apr_size_t)fsize; /* Resize just the last bucket */
-        }
-        else
-#endif
-            b = apr_bucket_file_create(fd, tf->Offset, (apr_size_t)fsize,
-                                       r->pool, c->bucket_alloc);
-        APR_BRIGADE_INSERT_TAIL(bb, b);
+        apr_brigade_insert_file(bb, fd, tf->Offset, fsize, r->pool);
 
         if (tf->pTail && tf->TailLength) {
             sent += tf->TailLength;
@@ -1082,15 +1132,20 @@ int APR_THREAD_FUNC ServerSupportFunction(isapi_cid    *cid,
 
         b = apr_bucket_flush_create(c->bucket_alloc);
         APR_BRIGADE_INSERT_TAIL(bb, b);
-        ap_pass_brigade(r->output_filters, bb);
+        rv = ap_pass_brigade(r->output_filters, bb);
         cid->response_sent = 1;
+        if (rv != APR_SUCCESS)
+            ap_log_rerror(APLOG_MARK, APLOG_DEBUG, rv, r,
+                          "ISAPI: ServerSupport function "
+                          "HSE_REQ_TRANSMIT_FILE "
+                          "ap_pass_brigade failed: %s", r->filename);
 
         /* Use tf->pfnHseIO + tf->pContext, or if NULL, then use cid->fnIOComplete
          * pass pContect to the HseIO callback.
          */
         if (tf->dwFlags & HSE_IO_ASYNC) {
             if (tf->pfnHseIO) {
-                if (rv == OK) {
+                if (rv == APR_SUCCESS) {
                     tf->pfnHseIO(cid->ecb, tf->pContext,
                                  ERROR_SUCCESS, sent);
                 }
@@ -1100,7 +1155,7 @@ int APR_THREAD_FUNC ServerSupportFunction(isapi_cid    *cid,
                 }
             }
             else if (cid->completion) {
-                if (rv == OK) {
+                if (rv == APR_SUCCESS) {
                     cid->completion(cid->ecb, cid->completion_arg,
                                     sent, ERROR_SUCCESS);
                 }
@@ -1110,7 +1165,7 @@ int APR_THREAD_FUNC ServerSupportFunction(isapi_cid    *cid,
                 }
             }
         }
-        return (rv == OK);
+        return (rv == APR_SUCCESS);
     }
 
     case HSE_REQ_REFRESH_ISAPI_ACL:
@@ -1150,6 +1205,14 @@ int APR_THREAD_FUNC ServerSupportFunction(isapi_cid    *cid,
         }
 
         if ((*data_type & HSE_IO_ASYNC) && cid->completion) {
+            /* XXX: Many authors issue their next HSE_REQ_ASYNC_READ_CLIENT
+             * within the completion logic.  An example is MS's own PSDK
+             * sample web/iis/extensions/io/ASyncRead.  This potentially
+             * leads to stack exhaustion.  To refactor, the notification 
+             * logic needs to move to isapi_handler() - differentiating
+             * the cid->completed event with a new flag to indicate 
+             * an async-notice versus the async request completed.
+             */
             if (res >= 0) {
                 cid->completion(cid->ecb, cid->completion_arg,
                                 read, ERROR_SUCCESS);
@@ -1282,9 +1345,19 @@ int APR_THREAD_FUNC ServerSupportFunction(isapi_cid    *cid,
             APR_BRIGADE_INSERT_TAIL(bb, b);
             b = apr_bucket_flush_create(c->bucket_alloc);
             APR_BRIGADE_INSERT_TAIL(bb, b);
-            ap_pass_brigade(cid->r->output_filters, bb);
+            rv = ap_pass_brigade(cid->r->output_filters, bb);
             cid->response_sent = 1;
+            if (rv != APR_SUCCESS)
+                ap_log_rerror(APLOG_MARK, APLOG_DEBUG, rv, r,
+                              "ISAPI: ServerSupport function "
+                              "HSE_REQ_SEND_RESPONSE_HEADER_EX "
+                              "ap_pass_brigade failed: %s", r->filename);
+            return (rv == APR_SUCCESS);
         }
+        /* Deliberately hold off sending 'just the headers' to begin to
+         * accumulate the body and speed up the overall response, or at
+         * least wait for the end the session.
+         */
         return 1;
     }
 
@@ -1380,7 +1453,7 @@ apr_status_t isapi_handler (request_rec *r)
     ap_add_common_vars(r);
     ap_add_cgi_vars(r);
     apr_table_setn(e, "UNMAPPED_REMOTE_USER", "REMOTE_USER");
-    if ((val = apr_table_get(e, "HTTPS")) && strcmp(val, "on"))
+    if ((val = apr_table_get(e, "HTTPS")) && (strcmp(val, "on") == 0))
         apr_table_setn(e, "SERVER_PORT_SECURE", "1");
     else
         apr_table_setn(e, "SERVER_PORT_SECURE", "0");
@@ -1554,21 +1627,23 @@ apr_status_t isapi_handler (request_rec *r)
         case HSE_STATUS_ERROR:
             /* end response if we have yet to do so.
              */
+            ap_log_rerror(APLOG_MARK, APLOG_WARNING, apr_get_os_error(), r,
+                          "ISAPI: HSE_STATUS_ERROR result from "
+                          "HttpExtensionProc(): %s", r->filename);
             r->status = HTTP_INTERNAL_SERVER_ERROR;
             break;
 
         default:
-            /* TODO: log unrecognized retval for debugging
-             */
-             ap_log_rerror(APLOG_MARK, APLOG_WARNING, 0, r,
-                           "ISAPI: return code %d from HttpExtensionProc() "
-                           "was not not recognized", rv);
+            ap_log_rerror(APLOG_MARK, APLOG_WARNING, apr_get_os_error(), r,
+                          "ISAPI: unrecognized result code %d "
+                          "from HttpExtensionProc(): %s ", 
+                          rv, r->filename);
             r->status = HTTP_INTERNAL_SERVER_ERROR;
             break;
     }
 
     /* Flush the response now, including headers-only responses */
-    if (cid->headers_set) {
+    if (cid->headers_set || cid->response_sent) {
         conn_rec *c = r->connection;
         apr_bucket_brigade *bb;
         apr_bucket *b;
@@ -1577,12 +1652,16 @@ apr_status_t isapi_handler (request_rec *r)
         bb = apr_brigade_create(r->pool, c->bucket_alloc);
         b = apr_bucket_eos_create(c->bucket_alloc);
         APR_BRIGADE_INSERT_TAIL(bb, b);
-        b = apr_bucket_flush_create(c->bucket_alloc);
-        APR_BRIGADE_INSERT_TAIL(bb, b);
         rv = ap_pass_brigade(r->output_filters, bb);
         cid->response_sent = 1;
 
-        return OK;  /* NOT r->status or cid->r->status, even if it has changed. */
+        if (rv != APR_SUCCESS) {
+            ap_log_rerror(APLOG_MARK, APLOG_DEBUG, rv, r,
+                          "ISAPI: ap_pass_brigade failed to "
+                          "complete the response: %s ", r->filename);
+        }
+
+        return OK; /* NOT r->status, even if it has changed. */
     }
 
     /* As the client returned no error, and if we did not error out
@@ -1592,8 +1671,8 @@ apr_status_t isapi_handler (request_rec *r)
         r->status = cid->ecb->dwHttpStatusCode;
     }
 
-    /* For all missing-response situations simply return the status.
-     * and let the core deal respond to the client.
+    /* For all missing-response situations simply return the status,
+     * and let the core respond to the client.
      */
     return r->status;
 }

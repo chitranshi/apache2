@@ -1,4 +1,165 @@
                                                         -*- coding: utf-8 -*-
+Changes with Apache 2.2.4
+
+  *) mod_isapi: Correctly present SERVER_PORT_SECURE.
+     PR: 40573.  [Matt Eaton <asf divinehawk.com>]
+
+  *) Allow htcacheclean, httxt2dbm, and fcgistarter to link apr/apr-util
+     statically like the older support programs.
+     [Eric Covener <covener gmail.com>]
+
+  *) core: Fix NONBLOCK status of listening sockets on restart/graceful
+     PR 37680.  [Darius Davis <darius-abz free-range.com.au>]
+
+  *) mod_deflate: Rework inflate output and deflate output filter to fix several
+     issues: Incorrect handling of flush buckets, potential memory leaks,
+     excessive memory usage in inflate output filter for large compressed
+     content. PR 39854. [Ruediger Pluem, Nick Kew, Justin Erenkrantz]
+
+  *) mod_mem_cache: Memory leak fix: Unconditionally free the buffer.
+     [Davi Arnaut <davi haxent.com.br>]
+
+  *) Allow mod_dumpio to log at other than DEBUG levels via
+     the new DumpIOLogLevel directive. [Jim Jagielski]
+
+  *) rotatelogs: Improve error message for open failures.  PR 39487.
+     [Joe Orton]
+
+  *) mod_dbd: share per-request database handles across subrequests
+     and internal redirects [Chris Darroch]
+
+  *) mod_dbd: key connection pools to virtual hosts correctly even when 
+     ServerName is unset/unavailable [Graham Leggett]
+
+  *) Better detection and clean up of ldap connection that has been
+     terminated by the ldap server.  PR 40878.
+     [Rob Baily <rbaily servicebench com>]
+
+  *) mod_mem_cache: Convert mod_mem_cache to use APR memory pool functions
+     by creating a root pool for object persistence across requests. This
+     also eliminates the need for custom serialization code.
+     [Davi Arnaut <davi haxent.com.br>]
+
+  *) mod_authnz_ldap: Add an AuthLDAPRemoteUserAttribute directive. If
+     set, REMOTE_USER will be set to this attribute, rather than the
+     username supplied by the user. Useful for example when you want users
+     to log in using an email address, but need to supply a userid instead
+     to the backend.  [Graham Leggett]
+
+  *) mod_cgi and mod_cgid: Don't use apr_status_t error return
+     from input filters as HTTP return value from the handler.
+     PR 31579.  [Nick Kew]
+
+  *) mod_cache: Eliminate a bogus error in the log when a filter returns
+     AP_FILTER_ERROR.  [Niklas Edmundsson <nikke acc.umu.se>]
+
+  *) core: Fix issue which could cause piped loggers to be orphaned and never
+     terminate after a graceful restart.  PR 40651.  [Joe Orton, Ruediger Pluem]
+
+  *) core: Fix address-in-use startup failure caused by corruption of the list
+     of listen sockets in some configurations with multiple generic Listen
+     directives.  [Jeff Trawick]
+
+  *) mod_headers: Support regexp-based editing of HTTP headers.  [Nick Kew]
+
+  *) mod_proxy: Add explicit flushing feature. When Servlet container sends AJP
+     body message with size 0, this means that Servlet container has asked for
+     an explicit flush. Create flush bucket in that case. This feature has been
+     added to the recent Tomcat versions without breaking the AJP protocol.
+     [Mladen Turk]
+
+  *) mod_proxy_balancer: Set the new environment variable BALANCER_ROUTE_CHANGED
+     if a worker with a route different from the one supplied by the client
+     had been chosen or if the client supplied no routing information for
+     a balancer with sticky sessions.  [Ruediger Pluem]
+
+  *) mod_proxy_balancer: Add information about the route, the sticky session
+     and the worker used during a request as environment variables. PR 39806.
+     [Brian <brectanu gmail.com>]
+
+  *) mod_proxy: Don't try to use dead backend connection. PR 37770.
+     [Olivier BOEL <ob dorrboel.com>] 
+
+  *) mod_proxy_balancer: Extract stickysession routing information contained as
+     parameter in the URL correctly. PR 40400.
+     [Ruediger Pluem, Tomokazu Harada <harada sysrdc.ns-sol.co.jp>]
+
+  *) mod_proxy_ajp: Added cping/cpong support for the AJP protocol.
+     A new worker directive ping=timeout will cause CPING packet
+     to be send expecting CPONG packet within defined timeout.  
+     In case the backend is too busy this will fail instead
+     sending the full header.  [Mladen Turk]
+
+  *) mod_disk_cache: Make sure that only positive integers are accepted
+     for the CacheMaxFileSize and CacheMinFileSize parameters in the
+     config file. PR39380.  [Niklas Edmundsson <nikke acc.umu.se>]
+
+  *) mod_cache: From RFC3986 (section 6.2.3.) if a URI contains an
+     authority component and an empty path, the empty path is to be equivalent
+     to "/". It explicitly cites the following four URIs as equivalents:
+       http://example.com
+       http://example.com/
+       http://example.com:/
+       http://example.com:80/
+     [Davi Arnaut <davi haxent.com.br>]
+
+  *) mod_cache: Don't cache requests with a expires date in the past;
+     otherwise mod_cache will always try to cache the URL. This bug
+     might lead to numerous rename() errors on win32 if the URL was
+     previously cached. [Davi Arnaut <davi haxent.com.br>]
+
+  *) core: Deal with the widespread use of apr_status_t return values
+     as HTTP status codes, as documented in PR#31759 (a bug shared by
+     the default handler, mod_cgi, mod_cgid, mod_proxy, and probably
+     others). PR31759.  [Jeff Trawick, Ruediger Pluem, Joe Orton]
+
+  *) mod_ext_filter: Handle filter names which include capital letters.
+     PR 40323.  [Jeff Trawick]
+
+  *) mod_isapi: Avoid double trailing slashes in HSE_REQ_MAP_URL_TO_PATH
+     support.  Also corrects the slashes for Windows.
+     PR 15993.  [William Rowe]
+
+  *) mod_isapi: Handle "HTTP/1.1 200 OK" style status lines correctly, the
+     token parser worked while the resulting length was misinterpreted.
+     PR 29098.  [Brock Bland <bbland serena.com>]
+
+  *) mod_isapi: Return 0 (failure) for more of the various ap_pass_brigade
+     attempts to stream the response at the client.  Log these as well.
+     PR 30022, 40470.  [William Rowe, Matt Eaton <asf divinehawk.com>]
+
+  *) mod_isapi: Ensure we walk through all the methods the developer may have
+     employed to report their HTTP status result code.
+     PR 16637 30033 28089.  [Matt Lewandowsky <matt iamcode.net>, William Rowe]
+
+  *) mod_echo: Fix precedence problem in if statement. PR 40658.
+     [Larry Cipriani <lvc lucent.com>]
+
+  *) mod_mime_magic: Fix precedence problem in if statement. PR 40656.
+     [Larry Cipriani <lvc lucent.com>]
+
+  *) The full server version information is now included in the error log at
+     startup as well as server status reports, irrespective of the setting
+     of the ServerTokens directive.  ap_get_server_version() is now deprecated,
+     and is replaced by ap_get_server_banner() and ap_get_server_description().
+     [Jeff Trawick]
+
+  *) mod_proxy_balancer: Workers can now be defined as part of
+     a balancer cluster "set" in which members of a lower-numbered set
+     are preferred over higher numbered ones.  [Jim Jagielski]
+
+  *) mod_proxy_balancer: Workers can now be defined as "hot standby" which
+     will only be used if all other workers are unusable (eg: in
+     error or disabled). Also, the balancer-manager displays the election
+     count and I/O counts of all workers.  [Jim Jagielski]
+
+  *) mod_proxy_ajp: Close connection to backend if reading of request body
+     fails. PR 40310.  [Ian Abel <ianabel mxtelecom.com>]
+
+  *) mod_proxy_balancer: Retry worker chosen by route / redirect worker if
+     it is in error state before sending "Service Temporarily Unavailable".
+     PR 38962.  [Christian Boitel <cboitel lfdj.com>]
+
 Changes with Apache 2.2.3
 
   *) SECURITY: CVE-2006-3747 (cve.mitre.org)
@@ -6,7 +167,7 @@ Changes with Apache 2.2.3
      handling.  For some RewriteRules this could lead to a pointer being
      written out of bounds.  Reported by Mark Dowd of McAfee.
      [Mark Cox]
-  
+
   *) Win32: Minor fixes to build more cleanly under Visual Studio 2005
      with command line builds.  [William Rowe]
 

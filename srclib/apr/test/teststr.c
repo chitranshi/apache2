@@ -1,9 +1,9 @@
-/* Copyright 2000-2005 The Apache Software Foundation or its licensors, as
- * applicable.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+/* Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -349,6 +349,26 @@ static void string_strfsize(abts_case *tc, void *data)
     }
 }
 
+static void snprintf_overflow(abts_case *tc, void *data)
+{
+    char buf[4];
+    int rv;
+    
+    buf[2] = '4';
+    buf[3] = '2';
+
+    rv = apr_snprintf(buf, 2, "%s", "a");
+    ABTS_INT_EQUAL(tc, 1, rv);
+
+    rv = apr_snprintf(buf, 2, "%s", "abcd");
+    ABTS_INT_EQUAL(tc, 1, rv);
+
+    ABTS_STR_EQUAL(tc, buf, "a");
+
+    /* Check the buffer really hasn't been overflowed. */
+    ABTS_TRUE(tc, buf[2] == '4' && buf[3] == '2');
+}
+
 abts_suite *teststr(abts_suite *suite)
 {
     suite = ADD_SUITE(suite)
@@ -364,6 +384,7 @@ abts_suite *teststr(abts_suite *suite)
     abts_run_test(suite, string_strtoff, NULL);
     abts_run_test(suite, overflow_strfsize, NULL);
     abts_run_test(suite, string_strfsize, NULL);
+    abts_run_test(suite, snprintf_overflow, NULL);
 
     return suite;
 }

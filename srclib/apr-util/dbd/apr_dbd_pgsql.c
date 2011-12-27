@@ -18,10 +18,16 @@
 
 #if APU_HAVE_PGSQL
 
+#include "apu_config.h"
+
 #include <ctype.h>
 #include <stdlib.h>
 
+#ifdef HAVE_LIBPQ_FE_H
 #include <libpq-fe.h>
+#elif defined(HAVE_POSTGRESQL_LIBPQ_FE_H)
+#include <postgresql/libpq-fe.h>
+#endif
 
 #include "apr_strings.h"
 #include "apr_time.h"
@@ -57,11 +63,18 @@ struct apr_dbd_row_t {
 struct apr_dbd_prepared_t {
     const char *name;
     int prepared;
+    int nargs;
 };
 
 #define dbd_pgsql_is_success(x) (((x) == PGRES_EMPTY_QUERY) \
                                  || ((x) == PGRES_COMMAND_OK) \
                                  || ((x) == PGRES_TUPLES_OK))
+
+static apr_status_t clear_result(void *data)
+{
+    PQclear(data);
+    return APR_SUCCESS;
+}
 
 static int dbd_pgsql_select(apr_pool_t *pool, apr_dbd_t *sql,
                             apr_dbd_results_t **results,
@@ -97,7 +110,7 @@ static int dbd_pgsql_select(apr_pool_t *pool, apr_dbd_t *sql,
         (*results)->ntuples = PQntuples(res);
         (*results)->sz = PQnfields(res);
         (*results)->random = seek;
-        apr_pool_cleanup_register(pool, res, (void*)PQclear,
+        apr_pool_cleanup_register(pool, res, clear_result,
                                   apr_pool_cleanup_null);
     }
     else {
@@ -140,8 +153,7 @@ static int dbd_pgsql_get_row(apr_pool_t *pool, apr_dbd_results_t *res,
     if (res->random) {
         if (row->n >= res->ntuples) {
             *rowp = NULL;
-            apr_pool_cleanup_kill(pool, res->res, (void*)PQclear);
-            PQclear(res->res);
+            apr_pool_cleanup_run(pool, res->res, clear_result);
             res->res = NULL;
             return -1;
         }
@@ -221,7 +233,7 @@ static const char *dbd_pgsql_escape(apr_pool_t *pool, const char *arg,
                                     apr_dbd_t *sql)
 {
     size_t len = strlen(arg);
-    char *ret = apr_palloc(pool, len + 1);
+    char *ret = apr_palloc(pool, 2*(len + 1));
     PQescapeString(ret, arg, len);
     return ret;
 }
@@ -236,7 +248,6 @@ static int dbd_pgsql_prepare(apr_pool_t *pool, apr_dbd_t *sql,
     size_t i = 0;
     const char *args[QUERY_MAX_ARGS];
     size_t alen;
-    int nargs = 0;
     int ret;
     PGresult *res;
     char *pgquery;
@@ -245,11 +256,12 @@ static int dbd_pgsql_prepare(apr_pool_t *pool, apr_dbd_t *sql,
     if (!*statement) {
         *statement = apr_palloc(pool, sizeof(apr_dbd_prepared_t));
     }
+    (*statement)->nargs = 0;
     /* Translate from apr_dbd to native query format */
     for (sqlptr = (char*)query; *sqlptr; ++sqlptr) {
         if (sqlptr[0] == '%') {
             if (isalpha(sqlptr[1])) {
-                ++nargs;
+                ++(*statement)->nargs;
             }
             else if (sqlptr[1] == '%') {
                 ++sqlptr;
@@ -257,8 +269,8 @@ static int dbd_pgsql_prepare(apr_pool_t *pool, apr_dbd_t *sql,
         }
     }
     length = strlen(query) + 1;
-    if (nargs > 8) {
-        length += nargs - 8;
+    if ((*statement)->nargs > 8) {
+        length += (*statement)->nargs - 8;
     }
     pgptr = pgquery = apr_palloc(pool, length) ;
 
@@ -313,10 +325,10 @@ static int dbd_pgsql_prepare(apr_pool_t *pool, apr_dbd_t *sql,
     length = strlen(label);
     memcpy(sqlptr, label, length);
     sqlptr += length;
-    if (nargs > 0) {
+    if ((*statement)->nargs > 0) {
         memcpy(sqlptr, " (",2);
         sqlptr += 2;
-        for (i=0; i<nargs; ++i) {
+        for (i=0; i < (*statement)->nargs; ++i) {
             alen = strlen(args[i]);
             memcpy(sqlptr, args[i], alen);
             sqlptr += alen;
@@ -353,6 +365,11 @@ static int dbd_pgsql_pquery(apr_pool_t *pool, apr_dbd_t *sql,
 {
     int ret;
     PGresult *res;
+
+    if (sql->trans && sql->trans->errnum) {
+        return sql->trans->errnum;
+    }
+
     if (statement->prepared) {
         res = PQexecPrepared(sql->conn, statement->name, nargs, values, 0, 0,
                              0);
@@ -366,6 +383,7 @@ static int dbd_pgsql_pquery(apr_pool_t *pool, apr_dbd_t *sql,
         if (dbd_pgsql_is_success(ret)) {
             ret = 0;
         }
+	*nrows = atoi(PQcmdTuples(res));
         PQclear(res);
     }
     else {
@@ -382,22 +400,21 @@ static int dbd_pgsql_pvquery(apr_pool_t *pool, apr_dbd_t *sql,
                              int *nrows, apr_dbd_prepared_t *statement,
                              va_list args)
 {
-    const char *arg;
-    int nargs = 0;
-    const char *values[QUERY_MAX_ARGS];
+    const char **values;
+    int i;
 
     if (sql->trans && sql->trans->errnum) {
         return sql->trans->errnum;
     }
-    while ( arg = va_arg(args, const char*), arg ) {
-        if ( nargs >= QUERY_MAX_ARGS) {
-            va_end(args);
-            return -1;
-        }
-        values[nargs++] = apr_pstrdup(pool, arg);
+
+    values = apr_palloc(pool, sizeof(*values) * statement->nargs);
+
+    for (i = 0; i < statement->nargs; i++) {
+        values[i] = apr_pstrdup(pool, va_arg(args, const char*));
     }
-    values[nargs] = NULL;
-    return dbd_pgsql_pquery(pool, sql, nrows, statement, nargs, values);
+
+    return dbd_pgsql_pquery(pool, sql, nrows, statement,
+                            statement->nargs, values);
 }
 
 static int dbd_pgsql_pselect(apr_pool_t *pool, apr_dbd_t *sql,
@@ -408,6 +425,11 @@ static int dbd_pgsql_pselect(apr_pool_t *pool, apr_dbd_t *sql,
     PGresult *res;
     int rv;
     int ret = 0;
+
+    if (sql->trans && sql->trans->errnum) {
+        return sql->trans->errnum;
+    }
+
     if (seek) { /* synchronous query */
         if (statement->prepared) {
             res = PQexecPrepared(sql->conn, statement->name, nargs, values, 0,
@@ -442,7 +464,7 @@ static int dbd_pgsql_pselect(apr_pool_t *pool, apr_dbd_t *sql,
         (*results)->ntuples = PQntuples(res);
         (*results)->sz = PQnfields(res);
         (*results)->random = seek;
-        apr_pool_cleanup_register(pool, res, (void*)PQclear,
+        apr_pool_cleanup_register(pool, res, clear_result,
                                   apr_pool_cleanup_null);
     }
     else {
@@ -478,23 +500,21 @@ static int dbd_pgsql_pvselect(apr_pool_t *pool, apr_dbd_t *sql,
                               apr_dbd_prepared_t *statement,
                               int seek, va_list args)
 {
-    const char *arg;
-    int nargs = 0;
-    const char *values[QUERY_MAX_ARGS];
+    const char **values;
+    int i;
 
     if (sql->trans && sql->trans->errnum) {
         return sql->trans->errnum;
     }
 
-    while (arg = va_arg(args, const char*), arg) {
-        if ( nargs >= QUERY_MAX_ARGS) {
-            va_end(args);
-            return -1;
-        }
-        values[nargs++] = apr_pstrdup(pool, arg);
+    values = apr_palloc(pool, sizeof(*values) * statement->nargs);
+
+    for (i = 0; i < statement->nargs; i++) {
+        values[i] = apr_pstrdup(pool, va_arg(args, const char*));
     }
+
     return dbd_pgsql_pselect(pool, sql, results, statement,
-                             seek, nargs, values) ;
+                             seek, statement->nargs, values) ;
 }
 
 static int dbd_pgsql_start_transaction(apr_pool_t *pool, apr_dbd_t *handle,

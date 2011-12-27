@@ -225,10 +225,12 @@ static int cache_url_handler(request_rec *r, int lookup)
     out = apr_brigade_create(r->pool, r->connection->bucket_alloc);
     rv = ap_pass_brigade(r->output_filters, out);
     if (rv != APR_SUCCESS) {
-        ap_log_error(APLOG_MARK, APLOG_ERR, rv, r->server,
-                     "cache: error returned while trying to return %s "
-                     "cached data",
-                     cache->provider_name);
+        if (rv != AP_FILTER_ERROR) {
+            ap_log_error(APLOG_MARK, APLOG_ERR, rv, r->server,
+                         "cache: error returned while trying to return %s "
+                         "cached data",
+                         cache->provider_name);
+        }
         return rv;
     }
 
@@ -425,6 +427,11 @@ static int cache_save_filter(ap_filter_t *f, apr_bucket_brigade *in)
     else if (exps != NULL && exp == APR_DATE_BAD) {
         /* if a broken Expires header is present, don't cache it */
         reason = apr_pstrcat(p, "Broken expires header: ", exps, NULL);
+    }
+    else if (exp != APR_DATE_BAD && exp < r->request_time)
+    {
+        /* if a Expires header is in the past, don't cache it */
+        reason = "Expires header already expired, not cacheable";
     }
     else if (r->args && exps == NULL) {
         /* if query string present but no expiration time, don't cache it

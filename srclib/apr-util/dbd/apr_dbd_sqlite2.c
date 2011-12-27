@@ -67,6 +67,11 @@ struct apr_dbd_prepared_t {
 		} \
 	} while(0);
 
+static apr_status_t free_table(void *data)
+{
+    sqlite_free_table(data); 
+    return APR_SUCCESS;
+}
 
 static int dbd_sqlite_select(apr_pool_t * pool, apr_dbd_t * sql,
                              apr_dbd_results_t ** results, const char *query,
@@ -92,17 +97,12 @@ static int dbd_sqlite_select(apr_pool_t * pool, apr_dbd_t * sql,
         }
 
         (*results)->res = result;
-        if (seek) {
-            (*results)->ntuples = tuples;
-        }
-        else {
-            (*results)->ntuples = -1;
-        }
+        (*results)->ntuples = tuples;
         (*results)->sz = fields;
         (*results)->random = seek;
 
         if (tuples > 0)
-            apr_pool_cleanup_register(pool, result, (void *) free,
+            apr_pool_cleanup_register(pool, result, free_table,
                                       apr_pool_cleanup_null);
 
         ret = 0;
@@ -137,7 +137,7 @@ static int dbd_sqlite_get_row(apr_pool_t * pool, apr_dbd_results_t * res,
 
     if (row->n >= res->ntuples) {
         *rowp = NULL;
-        apr_pool_cleanup_kill(pool, res->res, (void *) free);
+        apr_pool_cleanup_run(pool, res->res, free_table);
         res->res = NULL;
         return -1;
     }
@@ -212,12 +212,17 @@ static int dbd_sqlite_query(apr_dbd_t * sql, int *nrows, const char *query)
     return ret;
 }
 
+static apr_status_t free_mem(void *data)
+{
+    sqlite_freemem(data);
+    return APR_SUCCESS;
+}
+
 static const char *dbd_sqlite_escape(apr_pool_t * pool, const char *arg,
                                      apr_dbd_t * sql)
 {
     char *ret = sqlite_mprintf("%q", arg);
-    apr_pool_cleanup_register(pool, ret, (void *) sqlite_freemem,
-                              apr_pool_cleanup_null);
+    apr_pool_cleanup_register(pool, ret, free_mem, apr_pool_cleanup_null);
     return ret;
 }
 
@@ -303,7 +308,7 @@ static apr_dbd_t *dbd_sqlite_open(apr_pool_t * pool, const char *params_)
 {
     apr_dbd_t *sql;
     sqlite *conn = NULL;
-    char *filename, *perm;
+    char *perm;
     int iperms = 600;
     char* params = apr_pstrdup(pool, params_);
     /* params = "[filename]:[permissions]"

@@ -1,9 +1,9 @@
-/* Copyright 2000-2005 The Apache Software Foundation or its licensors, as
- * applicable.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+/* Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -242,8 +242,8 @@ apr_status_t more_finfo(apr_finfo_t *finfo, const void *ufile,
             }
             rv = GetNamedSecurityInfoW(wfile + fix, 
                                  SE_FILE_OBJECT, sinf,
-                                 ((wanted & APR_FINFO_USER) ? &user : NULL),
-                                 ((wanted & APR_FINFO_GROUP) ? &grp : NULL),
+                                 ((wanted & (APR_FINFO_USER | APR_FINFO_UPROT)) ? &user : NULL),
+                                 ((wanted & (APR_FINFO_GROUP | APR_FINFO_GPROT)) ? &grp : NULL),
                                  ((wanted & APR_FINFO_PROT) ? &dacl : NULL),
                                  NULL, &pdesc);
             if (fix == 6)
@@ -252,15 +252,15 @@ apr_status_t more_finfo(apr_finfo_t *finfo, const void *ufile,
         else if (whatfile == MORE_OF_FSPEC)
             rv = GetNamedSecurityInfoA((char*)ufile, 
                                  SE_FILE_OBJECT, sinf,
-                                 ((wanted & APR_FINFO_USER) ? &user : NULL),
-                                 ((wanted & APR_FINFO_GROUP) ? &grp : NULL),
+                                 ((wanted & (APR_FINFO_USER | APR_FINFO_UPROT)) ? &user : NULL),
+                                 ((wanted & (APR_FINFO_GROUP | APR_FINFO_GPROT)) ? &grp : NULL),
                                  ((wanted & APR_FINFO_PROT) ? &dacl : NULL),
                                  NULL, &pdesc);
         else if (whatfile == MORE_OF_HANDLE)
             rv = GetSecurityInfo((HANDLE)ufile, 
                                  SE_FILE_OBJECT, sinf,
-                                 ((wanted & APR_FINFO_USER) ? &user : NULL),
-                                 ((wanted & APR_FINFO_GROUP) ? &grp : NULL),
+                                 ((wanted & (APR_FINFO_USER | APR_FINFO_UPROT)) ? &user : NULL),
+                                 ((wanted & (APR_FINFO_GROUP | APR_FINFO_GPROT)) ? &grp : NULL),
                                  ((wanted & APR_FINFO_PROT) ? &dacl : NULL),
                                  NULL, &pdesc);
         else

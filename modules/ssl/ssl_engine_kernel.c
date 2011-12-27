@@ -35,6 +35,29 @@ static void ssl_configure_env(request_rec *r, SSLConnRec *sslconn);
 static int ssl_find_vhost(void *servername, conn_rec *c, server_rec *s);
 #endif
 
+/* Perform a speculative (and non-blocking) read from the connection
+ * filters for the given request, to determine whether there is any
+ * pending data to read.  Return non-zero if there is, else zero. */
+static int has_buffered_data(request_rec *r) 
+{
+    apr_bucket_brigade *bb;
+    apr_off_t len;
+    apr_status_t rv;
+    int result;
+    
+    bb = apr_brigade_create(r->pool, r->connection->bucket_alloc);
+    
+    rv = ap_get_brigade(r->connection->input_filters, bb, AP_MODE_SPECULATIVE,
+                        APR_NONBLOCK_READ, 1); 
+    result = rv == APR_SUCCESS
+        && apr_brigade_length(bb, 1, &len) == APR_SUCCESS
+        && len > 0;
+    
+    apr_brigade_destroy(bb);
+    
+    return result;
+}
+
 /*
  *  Post Read Request Handler
  */
@@ -720,21 +743,50 @@ int ssl_hook_Access(request_rec *r)
         else {
             request_rec *id = r->main ? r->main : r;
 
-            /* do a full renegotiation */
+            /* Additional mitigation for CVE-2009-3555: At this point,
+             * before renegotiating, an (entire) request has been read
+             * from the connection.  An attacker may have sent further
+             * data to "prefix" any subsequent request by the victim's
+             * client after the renegotiation; this data may already
+             * have been read and buffered.  Forcing a connection
+             * closure after the response ensures such data will be
+             * discarded.  Legimately pipelined HTTP requests will be
+             * retried anyway with this approach. */
+            if (has_buffered_data(r)) {
+                ap_log_rerror(APLOG_MARK, APLOG_ERR, 0, r,
+                              "insecure SSL re-negotiation required, but "
+                              "a pipelined request is present; keepalive "
+                              "disabled");
+                r->connection->keepalive = AP_CONN_CLOSE;
+            }
+
+            /* Perform a full renegotiation. */
             ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r,
-                          "Performing full renegotiation: "
-                          "complete handshake protocol");
+                          "Performing full renegotiation: complete handshake "
+                          "protocol (%s support secure renegotiation)",
+#if defined(SSL_get_secure_renegotiation_support)
+                          SSL_get_secure_renegotiation_support(ssl) ? 
+                          "client does" : "client does not"
+#else
+                          "server does not"
+#endif
+                );
 
             SSL_set_session_id_context(ssl,
                                        (unsigned char *)&id,
                                        sizeof(id));
 
+            /* Toggle the renegotiation state to allow the new
+             * handshake to proceed. */
+            sslconn->reneg_state = RENEG_ALLOW;
+            
             SSL_renegotiate(ssl);
             SSL_do_handshake(ssl);
 
             if (SSL_get_state(ssl) != SSL_ST_OK) {
                 ap_log_rerror(APLOG_MARK, APLOG_ERR, 0, r,
                               "Re-negotiation request failed");
+                ssl_log_ssl_error(APLOG_MARK, APLOG_ERR, r->server);
 
                 r->connection->aborted = 1;
                 return HTTP_FORBIDDEN;
@@ -749,6 +801,8 @@ int ssl_hook_Access(request_rec *r)
              */
             SSL_set_state(ssl, SSL_ST_ACCEPT);
             SSL_do_handshake(ssl);
+
+            sslconn->reneg_state = RENEG_REJECT;
 
             if (SSL_get_state(ssl) != SSL_ST_OK) {
                 ap_log_rerror(APLOG_MARK, APLOG_ERR, 0, r,
@@ -1021,6 +1075,7 @@ static const char *ssl_hook_Fixup_vars[] = {
     "SSL_VERSION_INTERFACE",
     "SSL_VERSION_LIBRARY",
     "SSL_PROTOCOL",
+    "SSL_SECURE_RENEG",
     "SSL_COMPRESS_METHOD",
     "SSL_CIPHER",
     "SSL_CIPHER_EXPORT",
@@ -1033,33 +1088,7 @@ static const char *ssl_hook_Fixup_vars[] = {
     "SSL_CLIENT_V_END",
     "SSL_CLIENT_V_REMAIN",
     "SSL_CLIENT_S_DN",
-    "SSL_CLIENT_S_DN_C",
-    "SSL_CLIENT_S_DN_ST",
-    "SSL_CLIENT_S_DN_L",
-    "SSL_CLIENT_S_DN_O",
-    "SSL_CLIENT_S_DN_OU",
-    "SSL_CLIENT_S_DN_CN",
-    "SSL_CLIENT_S_DN_T",
-    "SSL_CLIENT_S_DN_I",
-    "SSL_CLIENT_S_DN_G",
-    "SSL_CLIENT_S_DN_S",
-    "SSL_CLIENT_S_DN_D",
-    "SSL_CLIENT_S_DN_UID",
-    "SSL_CLIENT_S_DN_Email",
     "SSL_CLIENT_I_DN",
-    "SSL_CLIENT_I_DN_C",
-    "SSL_CLIENT_I_DN_ST",
-    "SSL_CLIENT_I_DN_L",
-    "SSL_CLIENT_I_DN_O",
-    "SSL_CLIENT_I_DN_OU",
-    "SSL_CLIENT_I_DN_CN",
-    "SSL_CLIENT_I_DN_T",
-    "SSL_CLIENT_I_DN_I",
-    "SSL_CLIENT_I_DN_G",
-    "SSL_CLIENT_I_DN_S",
-    "SSL_CLIENT_I_DN_D",
-    "SSL_CLIENT_I_DN_UID",
-    "SSL_CLIENT_I_DN_Email",
     "SSL_CLIENT_A_KEY",
     "SSL_CLIENT_A_SIG",
     "SSL_SERVER_M_VERSION",
@@ -1067,33 +1096,7 @@ static const char *ssl_hook_Fixup_vars[] = {
     "SSL_SERVER_V_START",
     "SSL_SERVER_V_END",
     "SSL_SERVER_S_DN",
-    "SSL_SERVER_S_DN_C",
-    "SSL_SERVER_S_DN_ST",
-    "SSL_SERVER_S_DN_L",
-    "SSL_SERVER_S_DN_O",
-    "SSL_SERVER_S_DN_OU",
-    "SSL_SERVER_S_DN_CN",
-    "SSL_SERVER_S_DN_T",
-    "SSL_SERVER_S_DN_I",
-    "SSL_SERVER_S_DN_G",
-    "SSL_SERVER_S_DN_S",
-    "SSL_SERVER_S_DN_D",
-    "SSL_SERVER_S_DN_UID",
-    "SSL_SERVER_S_DN_Email",
     "SSL_SERVER_I_DN",
-    "SSL_SERVER_I_DN_C",
-    "SSL_SERVER_I_DN_ST",
-    "SSL_SERVER_I_DN_L",
-    "SSL_SERVER_I_DN_O",
-    "SSL_SERVER_I_DN_OU",
-    "SSL_SERVER_I_DN_CN",
-    "SSL_SERVER_I_DN_T",
-    "SSL_SERVER_I_DN_I",
-    "SSL_SERVER_I_DN_G",
-    "SSL_SERVER_I_DN_S",
-    "SSL_SERVER_I_DN_D",
-    "SSL_SERVER_I_DN_UID",
-    "SSL_SERVER_I_DN_Email",
     "SSL_SERVER_A_KEY",
     "SSL_SERVER_A_SIG",
     "SSL_SESSION_ID",
@@ -1140,6 +1143,8 @@ int ssl_hook_Fixup(request_rec *r)
 
     /* standard SSL environment variables */
     if (dc->nOptions & SSL_OPT_STDENVVARS) {
+        modssl_var_extract_dns(env, sslconn->ssl, r->pool);
+
         for (i = 0; ssl_hook_Fixup_vars[i]; i++) {
             var = (char *)ssl_hook_Fixup_vars[i];
             val = ssl_var_lookup(r->pool, r->server, r->connection, r, var);
@@ -1174,6 +1179,12 @@ int ssl_hook_Fixup(request_rec *r)
             }
         }
     }
+
+
+#ifdef SSL_get_secure_renegotiation_support
+    apr_table_setn(r->notes, "ssl-secure-reneg", 
+                   SSL_get_secure_renegotiation_support(ssl) ? "1" : "0");
+#endif
 
     return DECLINED;
 }
@@ -1844,75 +1855,54 @@ void ssl_callback_DelSessionCacheEntry(SSL_CTX *ctx,
     return;
 }
 
-/*
- * This callback function is executed while OpenSSL processes the
- * SSL handshake and does SSL record layer stuff. We use it to
- * trace OpenSSL's processing in out SSL logfile.
- */
-void ssl_callback_LogTracingState(MODSSL_INFO_CB_ARG_TYPE ssl, int where, int rc)
+/* Dump debugginfo trace to the log file. */
+static void log_tracing_state(MODSSL_INFO_CB_ARG_TYPE ssl, conn_rec *c, 
+                              server_rec *s, int where, int rc)
 {
-    conn_rec *c;
-    server_rec *s;
-    SSLSrvConfigRec *sc;
-
-    /*
-     * find corresponding server
-     */
-    if (!(c = (conn_rec *)SSL_get_app_data((SSL *)ssl))) {
-        return;
-    }
-
-    s = mySrvFromConn(c);
-    if (!(sc = mySrvConfig(s))) {
-        return;
-    }
-
     /*
      * create the various trace messages
      */
-    if (s->loglevel >= APLOG_DEBUG) {
-        if (where & SSL_CB_HANDSHAKE_START) {
+    if (where & SSL_CB_HANDSHAKE_START) {
+        ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, s,
+                     "%s: Handshake: start", SSL_LIBRARY_NAME);
+    }
+    else if (where & SSL_CB_HANDSHAKE_DONE) {
+        ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, s,
+                     "%s: Handshake: done", SSL_LIBRARY_NAME);
+    }
+    else if (where & SSL_CB_LOOP) {
+        ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, s,
+                     "%s: Loop: %s",
+                     SSL_LIBRARY_NAME, SSL_state_string_long(ssl));
+    }
+    else if (where & SSL_CB_READ) {
+        ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, s,
+                     "%s: Read: %s",
+                     SSL_LIBRARY_NAME, SSL_state_string_long(ssl));
+    }
+    else if (where & SSL_CB_WRITE) {
+        ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, s,
+                     "%s: Write: %s",
+                     SSL_LIBRARY_NAME, SSL_state_string_long(ssl));
+    }
+    else if (where & SSL_CB_ALERT) {
+        char *str = (where & SSL_CB_READ) ? "read" : "write";
+        ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, s,
+                     "%s: Alert: %s:%s:%s",
+                     SSL_LIBRARY_NAME, str,
+                     SSL_alert_type_string_long(rc),
+                     SSL_alert_desc_string_long(rc));
+    }
+    else if (where & SSL_CB_EXIT) {
+        if (rc == 0) {
             ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, s,
-                         "%s: Handshake: start", SSL_LIBRARY_NAME);
-        }
-        else if (where & SSL_CB_HANDSHAKE_DONE) {
-            ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, s,
-                         "%s: Handshake: done", SSL_LIBRARY_NAME);
-        }
-        else if (where & SSL_CB_LOOP) {
-            ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, s,
-                         "%s: Loop: %s",
+                         "%s: Exit: failed in %s",
                          SSL_LIBRARY_NAME, SSL_state_string_long(ssl));
         }
-        else if (where & SSL_CB_READ) {
+        else if (rc < 0) {
             ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, s,
-                         "%s: Read: %s",
+                         "%s: Exit: error in %s",
                          SSL_LIBRARY_NAME, SSL_state_string_long(ssl));
-        }
-        else if (where & SSL_CB_WRITE) {
-            ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, s,
-                         "%s: Write: %s",
-                         SSL_LIBRARY_NAME, SSL_state_string_long(ssl));
-        }
-        else if (where & SSL_CB_ALERT) {
-            char *str = (where & SSL_CB_READ) ? "read" : "write";
-            ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, s,
-                         "%s: Alert: %s:%s:%s",
-                         SSL_LIBRARY_NAME, str,
-                         SSL_alert_type_string_long(rc),
-                         SSL_alert_desc_string_long(rc));
-        }
-        else if (where & SSL_CB_EXIT) {
-            if (rc == 0) {
-                ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, s,
-                             "%s: Exit: failed in %s",
-                             SSL_LIBRARY_NAME, SSL_state_string_long(ssl));
-            }
-            else if (rc < 0) {
-                ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, s,
-                             "%s: Exit: error in %s",
-                             SSL_LIBRARY_NAME, SSL_state_string_long(ssl));
-            }
         }
     }
 
@@ -1930,6 +1920,52 @@ void ssl_callback_LogTracingState(MODSSL_INFO_CB_ARG_TYPE ssl, int where, int rc
                      ssl_var_lookup(NULL, s, c, NULL, "SSL_CIPHER"),
                      ssl_var_lookup(NULL, s, c, NULL, "SSL_CIPHER_USEKEYSIZE"),
                      ssl_var_lookup(NULL, s, c, NULL, "SSL_CIPHER_ALGKEYSIZE"));
+    }
+}
+
+/*
+ * This callback function is executed while OpenSSL processes the SSL
+ * handshake and does SSL record layer stuff.  It's used to trap
+ * client-initiated renegotiations, and for dumping everything to the
+ * log.
+ */
+void ssl_callback_Info(MODSSL_INFO_CB_ARG_TYPE ssl, int where, int rc)
+{
+    conn_rec *c;
+    server_rec *s;
+    SSLConnRec *scr;
+
+    /* Retrieve the conn_rec and the associated SSLConnRec. */
+    if ((c = (conn_rec *)SSL_get_app_data((SSL *)ssl)) == NULL) {
+        return;
+    }
+
+    if ((scr = myConnConfig(c)) == NULL) {
+        return;
+    }
+
+    /* If the reneg state is to reject renegotiations, check the SSL
+     * state machine and move to ABORT if a Client Hello is being
+     * read. */
+    if ((where & SSL_CB_ACCEPT_LOOP) && scr->reneg_state == RENEG_REJECT) {
+        int state = SSL_get_state(ssl);
+        
+        if (state == SSL3_ST_SR_CLNT_HELLO_A 
+            || state == SSL23_ST_SR_CLNT_HELLO_A) {
+            scr->reneg_state = RENEG_ABORT;
+            ap_log_cerror(APLOG_MARK, APLOG_ERR, 0, c,
+                          "rejecting client initiated renegotiation");
+        }
+    }
+    /* If the first handshake is complete, change state to reject any
+     * subsequent client-initated renegotiation. */
+    else if ((where & SSL_CB_HANDSHAKE_DONE) && scr->reneg_state == RENEG_INIT) {
+        scr->reneg_state = RENEG_REJECT;
+    }
+
+    s = mySrvFromConn(c);
+    if (s && s->loglevel >= APLOG_DEBUG) {
+        log_tracing_state(ssl, c, s, where, rc);
     }
 }
 

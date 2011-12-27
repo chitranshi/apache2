@@ -106,7 +106,7 @@ endif
 
 prepare-custom-suexec:
 	cp support/suexec.c support/suexec-custom.c
-	patch -p1 < debian/patches/202_suexec-custom.dpatch
+	patch -p1 < debian/patches/202_suexec-custom
 
 unapply-custom-suexec:
 	rm -f support/suexec-custom.c

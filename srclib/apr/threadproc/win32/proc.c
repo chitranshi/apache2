@@ -32,6 +32,10 @@
 #include <process.h>
 #endif
 
+#ifndef LOGON32_LOGON_NETWORK
+#define LOGON32_LOGON_NETWORK 3
+#endif
+
 #ifdef _WIN32_WCE
 #ifndef DETACHED_PROCESS
 #define DETACHED_PROCESS 0
@@ -201,6 +205,7 @@ APR_DECLARE(apr_status_t) apr_procattr_detach_set(apr_procattr_t *attr,
     return APR_SUCCESS;
 }
 
+#ifndef _WIN32_WCE
 static apr_status_t attr_cleanup(void *theattr)
 {
     apr_procattr_t *attr = (apr_procattr_t *)theattr;    
@@ -209,6 +214,7 @@ static apr_status_t attr_cleanup(void *theattr)
     attr->user_token = NULL;
     return APR_SUCCESS;
 }
+#endif
 
 APR_DECLARE(apr_status_t) apr_procattr_user_set(apr_procattr_t *attr, 
                                                 const char *username,
@@ -294,7 +300,7 @@ APR_DECLARE(apr_status_t) apr_procattr_user_set(apr_procattr_t *attr,
         attr->sa = apr_palloc(attr->pool, sizeof(SECURITY_ATTRIBUTES));
         attr->sa->nLength = sizeof (SECURITY_ATTRIBUTES);
         attr->sa->lpSecurityDescriptor = attr->sd;
-        attr->sa->bInheritHandle = TRUE;
+        attr->sa->bInheritHandle = FALSE;
 
         /* register the cleanup */
         apr_pool_cleanup_register(attr->pool, (void *)attr,
@@ -376,6 +382,47 @@ APR_DECLARE(apr_status_t) apr_procattr_addrspace_set(apr_procattr_t *attr,
     /* won't ever be used on this platform, so don't save the flag */
     return APR_SUCCESS;
 }
+
+#if APR_HAS_UNICODE_FS && !defined(_WIN32_WCE)
+
+/* Used only for the NT code path, a critical section is the fastest
+ * implementation available.
+ */
+static CRITICAL_SECTION proc_lock;
+
+static apr_status_t threadproc_global_cleanup(void *ignored)
+{
+    DeleteCriticalSection(&proc_lock);
+    return APR_SUCCESS;
+}
+
+/* Called from apr_initialize, we need a critical section to handle
+ * the pipe inheritance on win32.  This will mutex any process create
+ * so as we change our inherited pipes, we prevent another process from
+ * also inheriting those alternate handles, and prevent the other process
+ * from failing to inherit our standard handles.
+ */
+apr_status_t apr_threadproc_init(apr_pool_t *pool)
+{
+    IF_WIN_OS_IS_UNICODE
+    {
+        InitializeCriticalSection(&proc_lock);
+        /* register the cleanup */
+        apr_pool_cleanup_register(pool, &proc_lock,
+                                  threadproc_global_cleanup,
+                                  apr_pool_cleanup_null);
+    }
+    return APR_SUCCESS;
+}
+
+#else /* !APR_HAS_UNICODE_FS || defined(_WIN32_WCE) */
+
+apr_status_t apr_threadproc_init(apr_pool_t *pool)
+{
+    return APR_SUCCESS;
+}
+
+#endif
 
 APR_DECLARE(apr_status_t) apr_proc_create(apr_proc_t *new,
                                           const char *progname,
@@ -499,6 +546,9 @@ APR_DECLARE(apr_status_t) apr_proc_create(apr_proc_t *new,
     else 
 #endif
     {
+#if defined(_WIN32_WCE)
+        {
+#else
         /* Win32 is _different_ than unix.  While unix will find the given
          * program since it's already chdir'ed, Win32 cannot since the parent
          * attempts to open the program with it's own path.
@@ -556,6 +606,7 @@ APR_DECLARE(apr_status_t) apr_proc_create(apr_proc_t *new,
             }
         }
         else {
+#endif
             /* A simple command we are directly invoking.  Do not pass
              * the first arg to CreateProc() for APR_PROGRAM_PATH
              * invocation, since it would need to be a literal and
@@ -647,6 +698,9 @@ APR_DECLARE(apr_status_t) apr_proc_create(apr_proc_t *new,
     IF_WIN_OS_IS_UNICODE
     {
         STARTUPINFOW si;
+        DWORD stdin_reset = 0;
+        DWORD stdout_reset = 0;
+        DWORD stderr_reset = 0;
         apr_wchar_t *wprg = NULL;
         apr_wchar_t *wcmd = NULL;
         apr_wchar_t *wcwd = NULL;
@@ -710,25 +764,65 @@ APR_DECLARE(apr_status_t) apr_proc_create(apr_proc_t *new,
         }
 
 #ifndef _WIN32_WCE
+        /* LOCK CRITICAL SECTION 
+         * before we begin to manipulate the inherited handles
+         */
+        EnterCriticalSection(&proc_lock);
+
         if ((attr->child_in && attr->child_in->filehand)
             || (attr->child_out && attr->child_out->filehand)
             || (attr->child_err && attr->child_err->filehand))
         {
             si.dwFlags |= STARTF_USESTDHANDLES;
 
-            si.hStdInput = (attr->child_in) 
-                              ? attr->child_in->filehand
-                              : INVALID_HANDLE_VALUE;
+            si.hStdInput = GetStdHandle(STD_INPUT_HANDLE);
+            if (attr->child_in && attr->child_in->filehand)
+            {
+                if (GetHandleInformation(si.hStdInput,
+                                         &stdin_reset)
+                        && (stdin_reset &= HANDLE_FLAG_INHERIT))
+                    SetHandleInformation(si.hStdInput,
+                                         HANDLE_FLAG_INHERIT, 0);
 
-            si.hStdOutput = (attr->child_out)
-                              ? attr->child_out->filehand
-                              : INVALID_HANDLE_VALUE;
+                si.hStdInput = attr->child_in->filehand;
+                SetHandleInformation(si.hStdInput, HANDLE_FLAG_INHERIT,
+                                                   HANDLE_FLAG_INHERIT);
+            }
+            
+            si.hStdOutput = GetStdHandle(STD_OUTPUT_HANDLE);
+            if (attr->child_out && attr->child_out->filehand)
+            {
+                if (GetHandleInformation(si.hStdOutput,
+                                         &stdout_reset)
+                        && (stdout_reset &= HANDLE_FLAG_INHERIT))
+                    SetHandleInformation(si.hStdOutput,
+                                         HANDLE_FLAG_INHERIT, 0);
 
-            si.hStdError = (attr->child_err)
-                              ? attr->child_err->filehand
-                              : INVALID_HANDLE_VALUE;
+                si.hStdOutput = attr->child_out->filehand;
+                SetHandleInformation(si.hStdOutput, HANDLE_FLAG_INHERIT,
+                                                    HANDLE_FLAG_INHERIT);
+            }
+
+            si.hStdError = GetStdHandle(STD_ERROR_HANDLE);
+            if (attr->child_err && attr->child_err->filehand)
+            {
+                if (GetHandleInformation(si.hStdError,
+                                         &stderr_reset)
+                        && (stderr_reset &= HANDLE_FLAG_INHERIT))
+                    SetHandleInformation(si.hStdError,
+                                         HANDLE_FLAG_INHERIT, 0);
+
+                si.hStdError = attr->child_err->filehand;
+                SetHandleInformation(si.hStdError, HANDLE_FLAG_INHERIT,
+                                                   HANDLE_FLAG_INHERIT);
+            }
         }
         if (attr->user_token) {
+            /* XXX: for terminal services, handles can't be cannot be
+             * inherited across sessions.  This process must be created 
+             * in our existing session.  lpDesktop assignment appears
+             * to be wrong according to these rules.
+             */
             si.lpDesktop = L"Winsta0\\Default";
             if (!ImpersonateLoggedOnUser(attr->user_token)) {
             /* failed to impersonate the logged user */
@@ -758,7 +852,29 @@ APR_DECLARE(apr_status_t) apr_proc_create(apr_proc_t *new,
                                 wcwd,              /* Current directory name */
                                 &si, &pi);
         }
-#else
+
+        if ((attr->child_in && attr->child_in->filehand)
+            || (attr->child_out && attr->child_out->filehand)
+            || (attr->child_err && attr->child_err->filehand))
+        {
+            if (stdin_reset)
+                SetHandleInformation(GetStdHandle(STD_INPUT_HANDLE),
+                                     stdin_reset, stdin_reset);
+
+            if (stdout_reset)
+                SetHandleInformation(GetStdHandle(STD_OUTPUT_HANDLE),
+                                     stdout_reset, stdout_reset);
+
+            if (stderr_reset)
+                SetHandleInformation(GetStdHandle(STD_ERROR_HANDLE),
+                                     stderr_reset, stderr_reset);
+        }
+        /* RELEASE CRITICAL SECTION 
+         * The state of the inherited handles has been restored.
+         */
+        LeaveCriticalSection(&proc_lock);
+
+#else /* defined(_WIN32_WCE) */
         rv = CreateProcessW(wprg, wcmd,        /* Executable & Command line */
                             NULL, NULL,        /* Proc & thread security attributes */
                             FALSE,             /* must be 0 */
@@ -790,15 +906,15 @@ APR_DECLARE(apr_status_t) apr_proc_create(apr_proc_t *new,
 
             si.hStdInput = (attr->child_in) 
                               ? attr->child_in->filehand
-                              : INVALID_HANDLE_VALUE;
+                              : GetStdHandle(STD_INPUT_HANDLE);
 
             si.hStdOutput = (attr->child_out)
                               ? attr->child_out->filehand
-                              : INVALID_HANDLE_VALUE;
+                              : GetStdHandle(STD_OUTPUT_HANDLE);
 
             si.hStdError = (attr->child_err)
                               ? attr->child_err->filehand
-                              : INVALID_HANDLE_VALUE;
+                              : GetStdHandle(STD_ERROR_HANDLE);
         }
 
         rv = CreateProcessA(progname, cmdline, /* Command line */

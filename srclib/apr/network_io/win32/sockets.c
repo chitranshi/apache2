@@ -114,7 +114,7 @@ APR_DECLARE(apr_status_t) apr_socket_create(apr_socket_t **new, int family,
      * purposes, always transform the socket() created as a non-inherited
      * handle
      */
-#if APR_HAS_UNICODE_FS
+#if APR_HAS_UNICODE_FS && !defined(_WIN32_WCE)
     IF_WIN_OS_IS_UNICODE {
         /* A different approach.  Many users report errors such as 
          * (32538)An operation was attempted on something that is not 
@@ -129,7 +129,7 @@ APR_DECLARE(apr_status_t) apr_socket_create(apr_socket_t **new, int family,
                              HANDLE_FLAG_INHERIT, 0);
     }
 #endif
-#if APR_HAS_ANSI_FS
+#if APR_HAS_ANSI_FS || defined(_WIN32_WCE)
     ELSE_WIN_OS_IS_ANSI {
         HANDLE hProcess = GetCurrentProcess();
         HANDLE dup;
@@ -451,9 +451,7 @@ APR_DECLARE(apr_status_t) apr_os_sock_make(apr_socket_t **apr_sock,
         (*apr_sock)->remote_addr->pool = cont;
         /* XXX IPv6 - this assumes sin_port and sin6_port at same offset */
         (*apr_sock)->remote_addr->port = ntohs((*apr_sock)->remote_addr->sa.sin.sin_port);
-    }
-    else {
-        (*apr_sock)->remote_addr_unknown = 1;
+        (*apr_sock)->remote_addr_unknown = 0;
     }
         
     apr_pool_cleanup_register((*apr_sock)->pool, (void *)(*apr_sock), 

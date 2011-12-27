@@ -219,6 +219,12 @@ static const char *set_worker_param(apr_pool_t *p,
                 else
                     worker->status &= ~PROXY_WORKER_HOT_STANDBY;
             }
+	    else if (*v == 'I' || *v == 'i') {
+	    	if (mode)
+		    worker->status |= PROXY_WORKER_IGNORE_ERRORS;
+		else
+		    worker->status &= ~PROXY_WORKER_IGNORE_ERRORS;
+	    }
             else {
                 return "Unknown status parameter option";
             }
@@ -432,6 +438,8 @@ static int proxy_trans(request_rec *r)
     (proxy_server_conf *) ap_get_module_config(sconf, &proxy_module);
     int i, len;
     struct proxy_alias *ent = (struct proxy_alias *) conf->aliases->elts;
+    ap_regmatch_t regm[AP_MAX_REG_MATCH];
+    char *found = NULL;
 
     if (r->proxyreq) {
         /* someone has already set up the proxy, it was possibly ourselves
@@ -446,19 +454,53 @@ static int proxy_trans(request_rec *r)
      */
 
     for (i = 0; i < conf->aliases->nelts; i++) {
-        len = alias_match(r->uri, ent[i].fake);
+        if (ent[i].regex) {
+            if (!ap_regexec(ent[i].regex, r->uri, AP_MAX_REG_MATCH, regm, 0)) {
+                if ((ent[i].real[0] == '!') && (ent[i].real[1] == '\0')) {
+                    return DECLINED;
+                }
+                found = ap_pregsub(r->pool, ent[i].real, r->uri, AP_MAX_REG_MATCH,
+                                   regm);
+                /* Note: The strcmp() below catches cases where there
+                 * was no regex substitution. This is so cases like:
+                 *
+                 *    ProxyPassMatch \.gif balancer://foo
+                 *
+                 * will work "as expected". The upshot is that the 2
+                 * directives below act the exact same way (ie: $1 is implied):
+                 *
+                 *    ProxyPassMatch ^(/.*\.gif)$ balancer://foo
+                 *    ProxyPassMatch ^(/.*\.gif)$ balancer://foo$1
+                 *
+                 * which may be confusing.
+                 */
+                if (found && strcmp(found, ent[i].real)) {
+                    found = apr_pstrcat(r->pool, "proxy:", found, NULL);
+                }
+                else {
+                    found = apr_pstrcat(r->pool, "proxy:", ent[i].real, r->uri,
+                                        NULL);
+                }
+            }
+        }
+        else {
+            len = alias_match(r->uri, ent[i].fake);
 
-       if (len > 0) {
-           if ((ent[i].real[0] == '!') && (ent[i].real[1] == 0)) {
-               return DECLINED;
-           }
+            if (len > 0) {
+                if ((ent[i].real[0] == '!') && (ent[i].real[1] == '\0')) {
+                    return DECLINED;
+                }
 
-           r->filename = apr_pstrcat(r->pool, "proxy:", ent[i].real,
-                                     r->uri + len, NULL);
-           r->handler = "proxy-server";
-           r->proxyreq = PROXYREQ_REVERSE;
-           return OK;
-       }
+                found = apr_pstrcat(r->pool, "proxy:", ent[i].real,
+                                    r->uri + len, NULL);
+            }
+        }
+        if (found) {
+            r->filename = found;
+            r->handler = "proxy-server";
+            r->proxyreq = PROXYREQ_REVERSE;
+            return OK;
+        }
     }
     return DECLINED;
 }
@@ -894,15 +936,25 @@ static void * merge_proxy_config(apr_pool_t *p, void *basev, void *overridesv)
 
     ps->domain = (overrides->domain == NULL) ? base->domain : overrides->domain;
     ps->viaopt = (overrides->viaopt_set == 0) ? base->viaopt : overrides->viaopt;
+    ps->viaopt_set = overrides->viaopt_set || base->viaopt_set;
     ps->req = (overrides->req_set == 0) ? base->req : overrides->req;
+    ps->req_set = overrides->req_set || base->req_set;
     ps->recv_buffer_size = (overrides->recv_buffer_size_set == 0) ? base->recv_buffer_size : overrides->recv_buffer_size;
+    ps->recv_buffer_size_set = overrides->recv_buffer_size_set || base->recv_buffer_size_set;
     ps->io_buffer_size = (overrides->io_buffer_size_set == 0) ? base->io_buffer_size : overrides->io_buffer_size;
+    ps->io_buffer_size_set = overrides->io_buffer_size_set || base->io_buffer_size_set;
     ps->maxfwd = (overrides->maxfwd_set == 0) ? base->maxfwd : overrides->maxfwd;
+    ps->maxfwd_set = overrides->maxfwd_set || base->maxfwd_set;
     ps->error_override = (overrides->error_override_set == 0) ? base->error_override : overrides->error_override;
+    ps->error_override_set = overrides->error_override_set || base->error_override_set;
     ps->preserve_host = (overrides->preserve_host_set == 0) ? base->preserve_host : overrides->preserve_host;
+    ps->preserve_host_set = overrides->preserve_host_set || base->preserve_host_set;
     ps->timeout= (overrides->timeout_set == 0) ? base->timeout : overrides->timeout;
+    ps->timeout_set = overrides->timeout_set || base->timeout_set;
     ps->badopt = (overrides->badopt_set == 0) ? base->badopt : overrides->badopt;
+    ps->badopt_set = overrides->badopt_set || base->badopt_set;
     ps->proxy_status = (overrides->proxy_status_set == 0) ? base->proxy_status : overrides->proxy_status;
+    ps->proxy_status_set = overrides->proxy_status_set || base->proxy_status_set;
     ps->pool = p;
     return ps;
 }
@@ -1021,7 +1073,7 @@ static const char *
 }
 
 static const char *
-    add_pass(cmd_parms *cmd, void *dummy, const char *arg)
+    add_pass(cmd_parms *cmd, void *dummy, const char *arg, int is_regex)
 {
     server_rec *s = cmd->server;
     proxy_server_conf *conf =
@@ -1034,21 +1086,39 @@ static const char *
     const apr_array_header_t *arr;
     const apr_table_entry_t *elts;
     int i;
+    int use_regex = is_regex;
 
     while (*arg) {
         word = ap_getword_conf(cmd->pool, &arg);
-        if (!f)
+        if (!f) {
+            if (!strcmp(word, "~")) {
+                if (is_regex) {
+                    return "ProxyPassMatch invalid syntax ('~' usage).";
+                }
+                use_regex = 1;
+                continue;
+            }
             f = word;
+        }
         else if (!r)
             r = word;
         else {
             char *val = strchr(word, '=');
             if (!val) {
-                if (cmd->path)
-                    return "Invalid ProxyPass parameter.  Parameter must be "
-                           "in the form 'key=value'";
-                else
-                    return "ProxyPass can not have a path when defined in a location";
+                if (cmd->path) {
+                    if (*r == '/') {
+                        return "ProxyPass|ProxyPassMatch can not have a path when defined in "
+                               "a location.";
+                    }
+                    else {
+                        return "Invalid ProxyPass|ProxyPassMatch parameter. Parameter must "
+                               "be in the form 'key=value'.";
+                    }
+                }
+                else {
+                    return "Invalid ProxyPass|ProxyPassMatch parameter. Parameter must be "
+                           "in the form 'key=value'.";
+                }
             }
             else
                 *val++ = '\0';
@@ -1057,11 +1127,20 @@ static const char *
     };
 
     if (r == NULL)
-        return "ProxyPass needs a path when not defined in a location";
+        return "ProxyPass|ProxyPassMatch needs a path when not defined in a location";
 
     new = apr_array_push(conf->aliases);
     new->fake = apr_pstrdup(cmd->pool, f);
     new->real = apr_pstrdup(cmd->pool, r);
+    if (use_regex) {
+        new->regex = ap_pregcomp(cmd->pool, f, AP_REG_EXTENDED);
+        if (new->regex == NULL)
+            return "Regular expression could not be compiled.";
+    }
+    else {
+        new->regex = NULL;
+    }
+
     if (r[0] == '!' && r[1] == '\0')
         return NULL;
 
@@ -1102,6 +1181,19 @@ static const char *
     }
     return NULL;
 }
+
+static const char *
+    add_pass_noregex(cmd_parms *cmd, void *dummy, const char *arg)
+{
+    return add_pass(cmd, dummy, arg, 0);
+}
+
+static const char *
+    add_pass_regex(cmd_parms *cmd, void *dummy, const char *arg)
+{
+    return add_pass(cmd, dummy, arg, 1);
+}
+
 
 static const char *
     add_pass_reverse(cmd_parms *cmd, void *dconf, const char *f, const char *r)
@@ -1427,7 +1519,7 @@ static const char*
         psf->proxy_status = status_full;
     else {
         return "ProxyStatus must be one of: "
-            "off | on | block";
+            "off | on | full";
     }
 
     psf->proxy_status_set = 1;
@@ -1519,6 +1611,7 @@ static const char *
     proxy_balancer *balancer = NULL;
     proxy_worker *worker = NULL;
     const char *err;
+    int in_proxy_section = 0;
 
     if (cmd->directive->parent &&
         strncasecmp(cmd->directive->parent->directive,
@@ -1530,6 +1623,7 @@ static const char *
         name = ap_getword_conf(cmd->temp_pool, &pargs);
         if ((word = ap_strchr(name, '>')))
             *word = '\0';
+        in_proxy_section = 1;
     }
     else {
         /* Standard set directive with worker/balancer
@@ -1541,15 +1635,32 @@ static const char *
     if (strncasecmp(name, "balancer:", 9) == 0) {
         balancer = ap_proxy_get_balancer(cmd->pool, conf, name);
         if (!balancer) {
-            return apr_pstrcat(cmd->temp_pool, "ProxySet can not find '",
-                               name, "' Balancer.", NULL);
+            if (in_proxy_section) {
+                err = ap_proxy_add_balancer(&balancer,
+                                            cmd->pool,
+                                            conf, name);
+                if (err)
+                    return apr_pstrcat(cmd->temp_pool, "ProxySet ",
+                                       err, NULL);
+            }
+            else
+                return apr_pstrcat(cmd->temp_pool, "ProxySet can not find '",
+                                   name, "' Balancer.", NULL);
         }
     }
     else {
         worker = ap_proxy_get_worker(cmd->temp_pool, conf, name);
         if (!worker) {
-            return apr_pstrcat(cmd->temp_pool, "ProxySet can not find '",
-                               name, "' Worker.", NULL);
+            if (in_proxy_section) {
+                err = ap_proxy_add_worker(&worker, cmd->pool,
+                                          conf, name);
+                if (err)
+                    return apr_pstrcat(cmd->temp_pool, "ProxySet ",
+                                       err, NULL);
+            }
+            else
+                return apr_pstrcat(cmd->temp_pool, "ProxySet can not find '",
+                                   name, "' Worker.", NULL);
         }
     }
 
@@ -1593,9 +1704,15 @@ static const char *proxysection(cmd_parms *cmd, void *mconfig, const char *arg)
     ap_conf_vector_t *new_dir_conf = ap_create_per_dir_config(cmd->pool);
     ap_regex_t *r = NULL;
     const command_rec *thiscmd = cmd->cmd;
+    char *word, *val;
+    proxy_balancer *balancer = NULL;
+    proxy_worker *worker = NULL;
 
     const char *err = ap_check_cmd_context(cmd,
                                            NOT_IN_DIR_LOC_FILE|NOT_IN_LIMIT);
+    proxy_server_conf *sconf =
+    (proxy_server_conf *) ap_get_module_config(cmd->server->module_config, &proxy_module);
+
     if (err != NULL) {
         return err;
     }
@@ -1657,8 +1774,61 @@ static const char *proxysection(cmd_parms *cmd, void *mconfig, const char *arg)
     ap_add_per_proxy_conf(cmd->server, new_dir_conf);
 
     if (*arg != '\0') {
-        return apr_pstrcat(cmd->pool, "Multiple ", thiscmd->name,
-                           "> arguments not (yet) supported.", NULL);
+        if (thiscmd->cmd_data)
+            return "Multiple <ProxyMatch> arguments not (yet) supported.";
+        if (conf->p_is_fnmatch)
+            return apr_pstrcat(cmd->pool, thiscmd->name,
+                               "> arguments are not supported for wildchar url.",
+                               NULL);
+        if (!ap_strchr_c(conf->p, ':'))
+            return apr_pstrcat(cmd->pool, thiscmd->name,
+                               "> arguments are not supported for non url.",
+                               NULL);
+        if (strncasecmp(conf->p, "balancer:", 9) == 0) {
+            balancer = ap_proxy_get_balancer(cmd->pool, sconf, conf->p);
+            if (!balancer) {
+                err = ap_proxy_add_balancer(&balancer,
+                                            cmd->pool,
+                                            sconf, conf->p);
+                if (err)
+                    return apr_pstrcat(cmd->temp_pool, thiscmd->name,
+                                       " ", err, NULL);
+            }
+        }
+        else {
+            worker = ap_proxy_get_worker(cmd->temp_pool, sconf,
+                                         conf->p);
+            if (!worker) {
+                err = ap_proxy_add_worker(&worker, cmd->pool,
+                                          sconf, conf->p);
+                if (err)
+                    return apr_pstrcat(cmd->temp_pool, thiscmd->name,
+                                       " ", err, NULL);
+            }
+        }
+        if (worker == NULL && balancer == NULL) {
+            return apr_pstrcat(cmd->pool, thiscmd->name,
+                               "> arguments are supported only for workers.",
+                               NULL);
+        }
+        while (*arg) {
+            word = ap_getword_conf(cmd->pool, &arg);
+            val = strchr(word, '=');
+            if (!val) {
+                return "Invalid Proxy parameter. Parameter must be "
+                       "in the form 'key=value'";
+            }
+            else
+                *val++ = '\0';
+            if (worker)
+                err = set_worker_param(cmd->pool, worker, word, val);
+            else
+                err = set_balancer_param(sconf, cmd->pool, balancer,
+                                         word, val);
+            if (err)
+                return apr_pstrcat(cmd->temp_pool, thiscmd->name, " ", err, " ",
+                                   word, "=", val, "; ", conf->p, NULL);
+        }
     }
 
     cmd->path = old_path;
@@ -1681,7 +1851,9 @@ static const command_rec proxy_cmds[] =
      "a scheme, partial URL or '*' and a proxy server"),
     AP_INIT_TAKE2("ProxyRemoteMatch", add_proxy_regex, NULL, RSRC_CONF,
      "a regex pattern and a proxy server"),
-    AP_INIT_RAW_ARGS("ProxyPass", add_pass, NULL, RSRC_CONF|ACCESS_CONF,
+    AP_INIT_RAW_ARGS("ProxyPass", add_pass_noregex, NULL, RSRC_CONF|ACCESS_CONF,
+     "a virtual path and a URL"),
+    AP_INIT_RAW_ARGS("ProxyPassMatch", add_pass_regex, NULL, RSRC_CONF|ACCESS_CONF,
      "a virtual path and a URL"),
     AP_INIT_TAKE12("ProxyPassReverse", add_pass_reverse, NULL, RSRC_CONF|ACCESS_CONF,
      "a virtual path and a URL for reverse proxy behaviour"),

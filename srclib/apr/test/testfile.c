@@ -386,6 +386,29 @@ static void test_gets(abts_case *tc, void *data)
     apr_file_close(f);
 }
 
+static void test_gets_buffered(abts_case *tc, void *data)
+{
+    apr_file_t *f = NULL;
+    apr_status_t rv;
+    char *str = apr_palloc(p, 256);
+
+    /* This will deadlock gets before the r524355 fix. */
+    rv = apr_file_open(&f, FILENAME, APR_READ|APR_BUFFERED|APR_XTHREAD, 0, p);
+    ABTS_INT_EQUAL(tc, APR_SUCCESS, rv);
+
+    rv = apr_file_gets(str, 256, f);
+    /* Only one line in the test file, so APR will encounter EOF on the first
+     * call to gets, but we should get APR_SUCCESS on this call and
+     * APR_EOF on the next.
+     */
+    ABTS_INT_EQUAL(tc, APR_SUCCESS, rv);
+    ABTS_STR_EQUAL(tc, TESTSTR, str);
+    rv = apr_file_gets(str, 256, f);
+    ABTS_INT_EQUAL(tc, APR_EOF, rv);
+    ABTS_STR_EQUAL(tc, "", str);
+    apr_file_close(f);
+}
+
 static void test_bigread(abts_case *tc, void *data)
 {
     apr_file_t *f = NULL;
@@ -632,6 +655,75 @@ static void test_writev_full(abts_case *tc, void *data)
 
 }
 
+static void test_writev_buffered(abts_case *tc, void *data)
+{
+    apr_file_t *f;
+    apr_size_t nbytes;
+    struct iovec vec[2];
+    const char *fname = "data/testwritev_buffered.dat";
+
+    APR_ASSERT_SUCCESS(tc, "open file for writing",
+                       apr_file_open(&f, fname,
+                                     APR_WRITE | APR_CREATE | APR_TRUNCATE |
+                                     APR_BUFFERED, APR_OS_DEFAULT, p));
+
+    nbytes = strlen(TESTSTR);
+    APR_ASSERT_SUCCESS(tc, "buffered write",
+                       apr_file_write(f, TESTSTR, &nbytes));
+
+    vec[0].iov_base = LINE1;
+    vec[0].iov_len = strlen(LINE1);
+    vec[1].iov_base = LINE2;
+    vec[1].iov_len = strlen(LINE2);
+
+    APR_ASSERT_SUCCESS(tc, "writev of size 2 to file",
+                       apr_file_writev(f, vec, 2, &nbytes));
+
+    APR_ASSERT_SUCCESS(tc, "close for writing",
+                       apr_file_close(f));
+
+    file_contents_equal(tc, fname, TESTSTR LINE1 LINE2,
+                        strlen(TESTSTR) + strlen(LINE1) + strlen(LINE2));
+}
+
+static void test_writev_buffered_seek(abts_case *tc, void *data)
+{
+    apr_file_t *f;
+    apr_status_t rv;
+    apr_off_t off = 0;
+    struct iovec vec[3];
+    apr_size_t nbytes = strlen(TESTSTR);
+    char *str = apr_pcalloc(p, nbytes+1);
+    const char *fname = "data/testwritev_buffered.dat";
+
+    APR_ASSERT_SUCCESS(tc, "open file for writing",
+                       apr_file_open(&f, fname,
+                                     APR_WRITE | APR_READ | APR_BUFFERED,
+                                     APR_OS_DEFAULT, p));
+
+    rv = apr_file_read(f, str, &nbytes);
+    ABTS_STR_EQUAL(tc, TESTSTR, str);
+    APR_ASSERT_SUCCESS(tc, "buffered seek", apr_file_seek(f, APR_SET, &off));
+
+    vec[0].iov_base = LINE1;
+    vec[0].iov_len = strlen(LINE1);
+    vec[1].iov_base = LINE2;
+    vec[1].iov_len = strlen(LINE2);
+    vec[2].iov_base = TESTSTR;
+    vec[2].iov_len = strlen(TESTSTR);
+
+    APR_ASSERT_SUCCESS(tc, "writev of size 2 to file",
+                       apr_file_writev(f, vec, 3, &nbytes));
+
+    APR_ASSERT_SUCCESS(tc, "close for writing",
+                       apr_file_close(f));
+
+    file_contents_equal(tc, fname, LINE1 LINE2 TESTSTR,
+                        strlen(LINE1) + strlen(LINE2) + strlen(TESTSTR));
+
+    APR_ASSERT_SUCCESS(tc, "remove file", apr_file_remove(fname, p));
+}
+
 static void test_truncate(abts_case *tc, void *data)
 {
     apr_status_t rv;
@@ -853,9 +945,12 @@ abts_suite *testfile(abts_suite *suite)
     abts_run_test(suite, test_getc, NULL);
     abts_run_test(suite, test_ungetc, NULL);
     abts_run_test(suite, test_gets, NULL);
+    abts_run_test(suite, test_gets_buffered, NULL);
     abts_run_test(suite, test_puts, NULL);
     abts_run_test(suite, test_writev, NULL);
     abts_run_test(suite, test_writev_full, NULL);
+    abts_run_test(suite, test_writev_buffered, NULL);
+    abts_run_test(suite, test_writev_buffered_seek, NULL);
     abts_run_test(suite, test_bigread, NULL);
     abts_run_test(suite, test_mod_neg, NULL);
     abts_run_test(suite, test_truncate, NULL);

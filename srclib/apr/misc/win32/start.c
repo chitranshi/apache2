@@ -18,11 +18,12 @@
 #include "apr_general.h"
 #include "apr_pools.h"
 #include "apr_signal.h"
-#include "ShellAPI.h"
+#include "shellapi.h"
 
 #include "apr_arch_misc.h"       /* for WSAHighByte / WSALowByte */
 #include "wchar.h"
-#include "apr_arch_file_io.h"
+#include "apr_arch_file_io.h"    /* bring in unicode-ness */
+#include "apr_arch_threadproc.h" /* bring in apr_threadproc_init */
 #include "crtdbg.h"
 #include "assert.h"
 
@@ -30,6 +31,7 @@
  */
 int APR_DECLARE_DATA apr_app_init_complete = 0;
 
+#if !defined(_WIN32_WCE)
 /* Used by apr_app_initialize to reprocess the environment
  *
  * An internal apr function to convert a double-null terminated set
@@ -87,6 +89,7 @@ static int warrsztoastr(const char * const * *retarr,
     *retarr = newarr;
     return args;
 }
+#endif
 
 /* Reprocess the arguments to main() for a completely apr-ized application
  */
@@ -101,7 +104,9 @@ APR_DECLARE(apr_status_t) apr_app_initialize(int *argc,
         return rv;
     }
 
-#if APR_HAS_UNICODE_FS
+#if defined(_WIN32_WCE)
+    apr_app_init_complete = 1;
+#elif APR_HAS_UNICODE_FS
     IF_WIN_OS_IS_UNICODE
     {
         apr_wchar_t **wstrs;
@@ -200,6 +205,8 @@ APR_DECLARE(apr_status_t) apr_initialize(void)
     }
 
     apr_signal_init(pool);
+
+    apr_threadproc_init(pool);
 
     return APR_SUCCESS;
 }

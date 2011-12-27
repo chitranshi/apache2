@@ -1929,7 +1929,7 @@ URLs</td></tr>
 
     <p>The URL may use wildcards. In a wild-card string, <code>?</code> matches
     any single character, and <code>*</code> matches any sequences of
-    characters.</p>
+    characters. Neither wildcard character matches a / in the URL-path.</p>
 
     <p><a class="glossarylink" href="../glossary.html#regex" title="see glossary">Regular expressions</a>
     can also be used, with the addition of the
@@ -2280,6 +2280,9 @@ directory</td></tr>
       <p>Note also, that this option <strong>gets ignored</strong> if set
       inside a <code class="directive"><a href="#location">&lt;Location&gt;</a></code>
       section.</p>
+      <p>Omitting this option should not be considered a security restriction,
+      since symlink testing is subject to race conditions that make it
+      circumventable.</p>
       </div></dd>
 
       <dt><code>Includes</code></dt>
@@ -2320,8 +2323,11 @@ directory</td></tr>
       target file or directory is owned by the same user id as the
       link.
 
-      <div class="note"><h3>Note</h3> This option gets ignored if
-      set inside a <code class="directive"><a href="#location">&lt;Location&gt;</a></code> section.</div>
+      <div class="note"><h3>Note</h3> <p>This option gets ignored if
+      set inside a <code class="directive"><a href="#location">&lt;Location&gt;</a></code> section.</p>
+      <p>This option should not be considered a security restriction,
+      since symlink testing is subject to race conditions that make it
+      circumventable.</p></div>
       </dd>
     </dl>
 
@@ -2335,6 +2341,12 @@ directory</td></tr>
     options currently in force, and any options preceded by a
     <code>-</code> are removed from the options currently in
     force. </p>
+
+    <div class="warning"><h3>Warning</h3>
+    <p>Mixing <code class="directive">Options</code> with a <code>+</code> or
+    <code>-</code> with those without is not valid syntax, and is likely
+    to cause unexpected results.</p>
+    </div>
 
     <p>For example, without any <code>+</code> and <code>-</code> symbols:</p>
 
@@ -2629,6 +2641,7 @@ later</td></tr>
 
     <div class="example"><p><code>
       Require valid-user<br />
+      Order allow,deny<br />
       Allow from 192.168.1<br />
       Satisfy Any
     </code></p></div>
@@ -2681,6 +2694,12 @@ later</td></tr>
     <code>Shell\Open\Command</code> is used to open the script file. If the
     registry keys cannot be found, Apache falls back to the behavior of the
     <code>Script</code> option.</p>
+
+    <p>For example, the registry setting to have a script with the .pl extension
+    processed via perl would be:</p>
+
+    <div class="example"><p><code><code>HKEY_CLASSES_ROOT\.pl\Shell\ExecCGI\Command\(Default) =&gt; C:\Perl\bin\perl.exe -wT</code></code></p></div>
+
 
     <div class="warning"><h3>Security</h3>
     <p>Be careful when using <code>ScriptInterpreterSource
@@ -2745,7 +2764,8 @@ to name-virtual hosts</td></tr>
 <tr><th><a href="directive-dict.html#Module">Module:</a></th><td>core</td></tr>
 </table>
     <p>The <code class="directive">ServerAlias</code> directive sets the
-    alternate names for a host, for use with <a href="../vhosts/name-based.html">name-based virtual hosts</a>.</p>
+    alternate names for a host, for use with <a href="../vhosts/name-based.html">name-based virtual hosts</a>. The
+    <code class="directive">ServerAlias</code> may include wildcards, if appropriate.</p>
 
     <div class="example"><p><code>
       &lt;VirtualHost *&gt;<br />
@@ -3384,6 +3404,6 @@ hostname or IP address</td></tr>
 <a href="../en/mod/core.html" title="English">&nbsp;en&nbsp;</a> |
 <a href="../ja/mod/core.html" hreflang="ja" rel="alternate" title="Japanese">&nbsp;ja&nbsp;</a></p>
 </div><div id="footer">
-<p class="apache">Copyright 2006 The Apache Software Foundation.<br />Licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
+<p class="apache">Copyright 2007 The Apache Software Foundation.<br />Licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
 <p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="../faq/">FAQ</a> | <a href="../glossary.html">Glossary</a> | <a href="../sitemap.html">Sitemap</a></p></div>
 </body></html>

@@ -39,6 +39,9 @@
 
     <p>Content is stored in and retrieved from the cache using URI based
     keys. Content with access protection is not cached.</p>
+    
+    <div class="note"><h3>Note</h3>In most cases <code class="module"><a href="../mod/mod_disk_cache.html">mod_disk_cache</a></code>
+    should be the preferred choice. This is explained further in the <a href="../caching.html#inmemory">Caching Guide</a>.</div>
 </div>
 <div id="quickview"><h3 class="directives">Directives</h3>
 <ul id="toc">
@@ -151,7 +154,7 @@ before declaring the response uncacheable</td></tr>
 <tr><th><a href="directive-dict.html#Description">Description:</a></th><td>The minimum size (in bytes) of a document to be allowed in the
 cache</td></tr>
 <tr><th><a href="directive-dict.html#Syntax">Syntax:</a></th><td><code>MCacheMinObjectSize <var>bytes</var></code></td></tr>
-<tr><th><a href="directive-dict.html#Default">Default:</a></th><td><code>MCacheMinObjectSize 0</code></td></tr>
+<tr><th><a href="directive-dict.html#Default">Default:</a></th><td><code>MCacheMinObjectSize 1</code></td></tr>
 <tr><th><a href="directive-dict.html#Context">Context:</a></th><td>server config</td></tr>
 <tr><th><a href="directive-dict.html#Status">Status:</a></th><td>Extension</td></tr>
 <tr><th><a href="directive-dict.html#Module">Module:</a></th><td>mod_mem_cache</td></tr>
@@ -231,6 +234,6 @@ KBytes</td></tr>
 <a href="../ja/mod/mod_mem_cache.html" hreflang="ja" rel="alternate" title="Japanese">&nbsp;ja&nbsp;</a> |
 <a href="../ko/mod/mod_mem_cache.html" hreflang="ko" rel="alternate" title="Korean">&nbsp;ko&nbsp;</a></p>
 </div><div id="footer">
-<p class="apache">Copyright 2006 The Apache Software Foundation.<br />Licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
+<p class="apache">Copyright 2007 The Apache Software Foundation.<br />Licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
 <p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="../faq/">FAQ</a> | <a href="../glossary.html">Glossary</a> | <a href="../sitemap.html">Sitemap</a></p></div>
 </body></html>

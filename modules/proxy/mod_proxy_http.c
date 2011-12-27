@@ -333,7 +333,10 @@ static apr_status_t stream_reqbody_cl(apr_pool_t *p,
 
     if (old_cl_val) {
         add_cl(p, bucket_alloc, header_brigade, old_cl_val);
-        cl_val = atol(old_cl_val);
+        if (APR_SUCCESS != (status = apr_strtoff(&cl_val, old_cl_val, NULL,
+                                                 0))) {
+            return status;
+        }
     }
     terminate_headers(bucket_alloc, header_brigade);
 
@@ -951,7 +954,8 @@ apr_status_t ap_proxy_http_request(apr_pool_t *p, request_rec *r,
     else if (old_te_val) {
         if (force10
              || (apr_table_get(r->subprocess_env, "proxy-sendcl")
-                  && !apr_table_get(r->subprocess_env, "proxy-sendchunks"))) {
+                  && !apr_table_get(r->subprocess_env, "proxy-sendchunks")
+                  && !apr_table_get(r->subprocess_env, "proxy-sendchunked"))) {
             rb_method = RB_SPOOL_CL;
         }
         else {
@@ -963,7 +967,8 @@ apr_status_t ap_proxy_http_request(apr_pool_t *p, request_rec *r,
             rb_method = RB_STREAM_CL;
         }
         else if (!force10
-                  && apr_table_get(r->subprocess_env, "proxy-sendchunks")
+                  && (apr_table_get(r->subprocess_env, "proxy-sendchunks")
+                      || apr_table_get(r->subprocess_env, "proxy-sendchunked"))
                   && !apr_table_get(r->subprocess_env, "proxy-sendcl")) {
             rb_method = RB_STREAM_CHUNKED;
         }
@@ -1188,6 +1193,28 @@ static int addit_dammit(void *v, const char *key, const char *val)
 }
 
 static
+apr_status_t ap_proxygetline(apr_bucket_brigade *bb, char *s, int n, request_rec *r,
+                             int fold, int *writen)
+{
+    char *tmp_s = s;
+    apr_status_t rv;
+    apr_size_t len;
+
+    rv = ap_rgetline(&tmp_s, n, &len, r, fold, bb);
+    apr_brigade_cleanup(bb);
+
+    if (rv == APR_SUCCESS) {
+        *writen = (int) len;
+    } else if (rv == APR_ENOSPC) {
+        *writen = n;
+    } else {
+        *writen = -1;
+    }
+
+    return rv;
+}
+
+static
 apr_status_t ap_proxy_http_process_response(apr_pool_t * p, request_rec *r,
                                             proxy_conn_rec *backend,
                                             conn_rec *origin,
@@ -1199,7 +1226,7 @@ apr_status_t ap_proxy_http_process_response(apr_pool_t * p, request_rec *r,
     char keepchar;
     request_rec *rp;
     apr_bucket *e;
-    apr_bucket_brigade *bb;
+    apr_bucket_brigade *bb, *tmp_bb;
     int len, backasswards;
     int interim_response; /* non-zero whilst interim 1xx responses
                            * are being read. */
@@ -1218,16 +1245,19 @@ apr_status_t ap_proxy_http_process_response(apr_pool_t * p, request_rec *r,
      * response.
      */
     rp->proxyreq = PROXYREQ_RESPONSE;
+    tmp_bb = apr_brigade_create(p, c->bucket_alloc);
     do {
+        apr_status_t rc;
+
         apr_brigade_cleanup(bb);
 
-        len = ap_getline(buffer, sizeof(buffer), rp, 0);
+        rc = ap_proxygetline(tmp_bb, buffer, sizeof(buffer), rp, 0, &len);
         if (len == 0) {
             /* handle one potential stray CRLF */
-            len = ap_getline(buffer, sizeof(buffer), rp, 0);
+            rc = ap_proxygetline(tmp_bb, buffer, sizeof(buffer), rp, 0, &len);
         }
         if (len <= 0) {
-            ap_log_rerror(APLOG_MARK, APLOG_ERR, 0, r,
+            ap_log_rerror(APLOG_MARK, APLOG_ERR, rc, r,
                           "proxy: error reading status line from remote "
                           "server %s", backend->hostname);
             return ap_proxyerror(r, HTTP_BAD_GATEWAY,
@@ -1452,7 +1482,7 @@ apr_status_t ap_proxy_http_process_response(apr_pool_t * p, request_rec *r,
              * if we are overriding the errors, we can't put the content
              * of the page into the brigade
              */
-            if (!conf->error_override || ap_is_HTTP_SUCCESS(r->status)) {
+            if (!conf->error_override || !ap_is_HTTP_ERROR(r->status)) {
                 /* read the body, pass it to the output filters */
                 apr_read_type_e mode = APR_NONBLOCK_READ;
                 int finish = FALSE;
@@ -1561,7 +1591,7 @@ apr_status_t ap_proxy_http_process_response(apr_pool_t * p, request_rec *r,
 
     if (conf->error_override) {
         /* the code above this checks for 'OK' which is what the hook expects */
-        if (ap_is_HTTP_SUCCESS(r->status))
+        if (!ap_is_HTTP_ERROR(r->status))
             return OK;
         else {
             /* clear r->status for override error, otherwise ErrorDocument
@@ -1571,7 +1601,8 @@ apr_status_t ap_proxy_http_process_response(apr_pool_t * p, request_rec *r,
             int status = r->status;
             r->status = HTTP_OK;
             /* Discard body, if one is expected */
-            if ((status != HTTP_NO_CONTENT) && /* not 204 */
+            if (!r->header_only && /* not HEAD request */
+                (status != HTTP_NO_CONTENT) && /* not 204 */
                 (status != HTTP_NOT_MODIFIED)) { /* not 304 */
                ap_discard_request_body(rp);
            }

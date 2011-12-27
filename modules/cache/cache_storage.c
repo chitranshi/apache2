@@ -304,6 +304,20 @@ int cache_select(request_rec *r)
                     }
                     cache->stale_handle = h;
                 }
+                else {
+                    int irv;
+
+                    /*
+                     * The copy isn't fresh enough, but we cannot revalidate.
+                     * So it is the same case as if there had not been a cached
+                     * entry at all. Thus delete the entry from cache.
+                     */
+                    irv = cache->provider->remove_url(h, r->pool);
+                    if (irv != OK) {
+                        ap_log_error(APLOG_MARK, APLOG_DEBUG, irv, r->server,
+                                     "cache: attempt to remove url from cache unsuccessful.");
+                    }
+                }
 
                 return DECLINED;
             }
@@ -331,9 +345,37 @@ int cache_select(request_rec *r)
 apr_status_t cache_generate_key_default(request_rec *r, apr_pool_t* p,
                                         char**key)
 {
+    cache_server_conf *conf;
+    cache_request_rec *cache;
     char *port_str, *hn, *lcs;
     const char *hostname, *scheme;
     int i;
+
+    cache = (cache_request_rec *) ap_get_module_config(r->request_config,
+                                                       &cache_module);
+    if (!cache) {
+        /* This should never happen */
+        ap_log_error(APLOG_MARK, APLOG_ERR, 0, r->server,
+                     "cache: No cache request information available for key"
+                     " generation");
+        *key = "";
+        return APR_EGENERAL;
+    }
+    if (cache->key) {
+        /*
+         * We have been here before during the processing of this request.
+         * So return the key we already have.
+         */
+        *key = apr_pstrdup(p, cache->key);
+        return APR_SUCCESS;
+    }
+
+    /*
+     * Get the module configuration. We need this for the CacheIgnoreQueryString
+     * option below.
+     */
+    conf = (cache_server_conf *) ap_get_module_config(r->server->module_config,
+                                                      &cache_module);
 
     /*
      * Use the canonical name to improve cache hit rate, but only if this is
@@ -425,9 +467,25 @@ apr_status_t cache_generate_key_default(request_rec *r, apr_pool_t* p,
         port_str = apr_psprintf(p, ":%u", ap_get_server_port(r));
     }
 
-    /* Key format is a URI */
-    *key = apr_pstrcat(p, scheme, "://", hostname, port_str,
-                       r->parsed_uri.path, "?", r->args, NULL);
+    /* Key format is a URI, optionally without the query-string */
+    if (conf->ignorequerystring) {
+        *key = apr_pstrcat(p, scheme, "://", hostname, port_str,
+                           r->parsed_uri.path, "?", NULL);
+    }
+    else {
+        *key = apr_pstrcat(p, scheme, "://", hostname, port_str,
+                           r->parsed_uri.path, "?", r->parsed_uri.query, NULL);
+    }
+
+    /*
+     * Store the key in the request_config for the cache as r->parsed_uri
+     * might have changed in the time from our first visit here triggered by the
+     * quick handler and our possible second visit triggered by the CACHE_SAVE
+     * filter (e.g. r->parsed_uri got unescaped). In this case we would save the
+     * resource in the cache under a key where it is never found by the quick
+     * handler during following requests.
+     */
+    cache->key = apr_pstrdup(r->pool, *key);
 
     return APR_SUCCESS;
 }

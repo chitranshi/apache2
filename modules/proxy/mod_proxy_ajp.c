@@ -127,19 +127,31 @@ static int ap_proxy_ajp_request(apr_pool_t *p, request_rec *r,
     apr_uint16_t size;
     const char *tenc;
     int havebody = 1;
-    int isok = 1;
+    int output_failed = 0;
+    int backend_failed = 0;
     apr_off_t bb_len;
     int data_sent = 0;
     int rv = 0;
     apr_int32_t conn_poll_fd;
     apr_pollfd_t *conn_poll;
+    proxy_server_conf *psf =
+    ap_get_module_config(r->server->module_config, &proxy_module);
+    apr_size_t maxsize = AJP_MSG_BUFFER_SZ;
 
+    if (psf->io_buffer_size_set)
+       maxsize = psf->io_buffer_size;
+    if (maxsize > AJP_MAX_BUFFER_SZ)
+       maxsize = AJP_MAX_BUFFER_SZ;
+    else if (maxsize < AJP_MSG_BUFFER_SZ)
+       maxsize = AJP_MSG_BUFFER_SZ;
+    maxsize = APR_ALIGN(maxsize, 1024);
+       
     /*
      * Send the AJP request to the remote server
      */
 
     /* send request headers */
-    status = ajp_send_header(conn->sock, r, uri);
+    status = ajp_send_header(conn->sock, r, maxsize, uri);
     if (status != APR_SUCCESS) {
         conn->close++;
         ap_log_error(APLOG_MARK, APLOG_ERR, status, r->server,
@@ -153,6 +165,7 @@ static int ap_proxy_ajp_request(apr_pool_t *p, request_rec *r,
     }
 
     /* allocate an AJP message to store the data of the buckets */
+    bufsiz = maxsize;
     status = ajp_alloc_data_msg(r->pool, &buff, &bufsiz, &msg);
     if (status != APR_SUCCESS) {
         /* We had a failure: Close connection to backend */
@@ -172,7 +185,7 @@ static int ap_proxy_ajp_request(apr_pool_t *p, request_rec *r,
     } else {
         status = ap_get_brigade(r->input_filters, input_brigade,
                                 AP_MODE_READBYTES, APR_BLOCK_READ,
-                                AJP13_MAX_SEND_BODY_SZ);
+                                maxsize - AJP_HEADER_SZ);
 
         if (status != APR_SUCCESS) {
             /* We had a failure: Close connection to backend */
@@ -225,7 +238,7 @@ static int ap_proxy_ajp_request(apr_pool_t *p, request_rec *r,
 
     /* read the response */
     conn->data = NULL;
-    status = ajp_read_header(conn->sock, r,
+    status = ajp_read_header(conn->sock, r, maxsize,
                              (ajp_msg_t **)&(conn->data));
     if (status != APR_SUCCESS) {
         /* We had a failure: Close connection to backend */
@@ -251,8 +264,8 @@ static int ap_proxy_ajp_request(apr_pool_t *p, request_rec *r,
     conn_poll->desc_type = APR_POLL_SOCKET;
     conn_poll->desc.s = conn->sock;
 
-    bufsiz = AJP13_MAX_SEND_BODY_SZ;
-    while (isok) {
+    bufsiz = maxsize;
+    for (;;) {
         switch (result) {
             case CMD_AJP13_GET_BODY_CHUNK:
                 if (havebody) {
@@ -266,14 +279,15 @@ static int ap_proxy_ajp_request(apr_pool_t *p, request_rec *r,
                         status = ap_get_brigade(r->input_filters, input_brigade,
                                                 AP_MODE_READBYTES,
                                                 APR_BLOCK_READ,
-                                                AJP13_MAX_SEND_BODY_SZ);
+                                                maxsize - AJP_HEADER_SZ);
                         if (status != APR_SUCCESS) {
                             ap_log_error(APLOG_MARK, APLOG_DEBUG, status,
                                          r->server,
                                          "ap_get_brigade failed");
+                            output_failed = 1;
                             break;
                         }
-                        bufsiz = AJP13_MAX_SEND_BODY_SZ;
+                        bufsiz = maxsize;
                         status = apr_brigade_flatten(input_brigade, buff,
                                                      &bufsiz);
                         apr_brigade_cleanup(input_brigade);
@@ -281,6 +295,7 @@ static int ap_proxy_ajp_request(apr_pool_t *p, request_rec *r,
                             ap_log_error(APLOG_MARK, APLOG_DEBUG, status,
                                          r->server,
                                          "apr_brigade_flatten failed");
+                            output_failed = 1;
                             break;
                         }
                     }
@@ -291,6 +306,7 @@ static int ap_proxy_ajp_request(apr_pool_t *p, request_rec *r,
                     if (status != APR_SUCCESS) {
                         ap_log_error(APLOG_MARK, APLOG_DEBUG, status, r->server,
                                      "ajp_send_data_msg failed");
+                        backend_failed = 1;
                         break;
                     }
                     conn->worker->s->transferred += bufsiz;
@@ -301,14 +317,14 @@ static int ap_proxy_ajp_request(apr_pool_t *p, request_rec *r,
                      */
                     ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server,
                                  "ap_proxy_ajp_request error read after end");
-                    isok = 0;
+                    backend_failed = 1;
                 }
                 break;
             case CMD_AJP13_SEND_HEADERS:
                 /* AJP13_SEND_HEADERS: process them */
                 status = ajp_parse_header(r, conf, conn->data);
                 if (status != APR_SUCCESS) {
-                    isok = 0;
+                    backend_failed = 1;
                 }
                 break;
             case CMD_AJP13_SEND_BODY_CHUNK:
@@ -343,13 +359,13 @@ static int ap_proxy_ajp_request(apr_pool_t *p, request_rec *r,
                                         output_brigade) != APR_SUCCESS) {
                         ap_log_rerror(APLOG_MARK, APLOG_ERR, 0, r,
                                       "proxy: error processing body");
-                        isok = 0;
+                        output_failed = 1;
                     }
                     data_sent = 1;
                     apr_brigade_cleanup(output_brigade);
                 }
                 else {
-                    isok = 0;
+                    backend_failed = 1;
                 }
                 break;
             case CMD_AJP13_END_RESPONSE:
@@ -358,40 +374,42 @@ static int ap_proxy_ajp_request(apr_pool_t *p, request_rec *r,
                 if (ap_pass_brigade(r->output_filters,
                                     output_brigade) != APR_SUCCESS) {
                     ap_log_rerror(APLOG_MARK, APLOG_ERR, 0, r,
-                                  "proxy: error processing body");
-                    isok = 0;
+                                  "proxy: error processing end");
+                    output_failed = 1;
                 }
                 /* XXX: what about flush here? See mod_jk */
                 data_sent = 1;
                 break;
             default:
-                isok = 0;
+                backend_failed = 1;
                 break;
         }
 
         /*
          * If connection has been aborted by client: Stop working.
          * Nevertheless, we regard our operation so far as a success:
-         * So do not set isok to 0 and set result to CMD_AJP13_END_RESPONSE
+         * So reset output_failed to 0 and set result to CMD_AJP13_END_RESPONSE
          * But: Close this connection to the backend.
          */
         if (r->connection->aborted) {
             conn->close++;
+            output_failed = 0;
             result = CMD_AJP13_END_RESPONSE;
-            break;
         }
 
-        if (!isok)
-            break;
-
-        if (result == CMD_AJP13_END_RESPONSE)
+        /*
+         * We either have finished successfully or we failed.
+         * So bail out
+         */
+        if ((result == CMD_AJP13_END_RESPONSE) || backend_failed
+            || output_failed)
             break;
 
         /* read the response */
-        status = ajp_read_header(conn->sock, r,
+        status = ajp_read_header(conn->sock, r, maxsize,
                                  (ajp_msg_t **)&(conn->data));
         if (status != APR_SUCCESS) {
-            isok = 0;
+            backend_failed = 1;
             ap_log_error(APLOG_MARK, APLOG_DEBUG, status, r->server,
                          "ajp_read_header failed");
             break;
@@ -406,11 +424,28 @@ static int ap_proxy_ajp_request(apr_pool_t *p, request_rec *r,
      */
     apr_brigade_cleanup(output_brigade);
 
-    if (status != APR_SUCCESS) {
+    if (backend_failed || output_failed) {
+        ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server,
+                     "proxy: Processing of request failed backend: %i, "
+                     "output: %i", backend_failed, output_failed);
         /* We had a failure: Close connection to backend */
         conn->close++;
+        /* Return DONE to avoid error messages being added to the stream */
+        if (data_sent) {
+            rv = DONE;
+        }
+    }
+    else {
+        ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server,
+                     "proxy: got response from %pI (%s)",
+                     conn->worker->cp->addr,
+                     conn->worker->hostname);
+        rv = OK;
+    }
+
+    if (backend_failed) {
         ap_log_error(APLOG_MARK, APLOG_ERR, status, r->server,
-                     "proxy: send body failed to %pI (%s)",
+                     "proxy: dialog to %pI (%s) failed",
                      conn->worker->cp->addr,
                      conn->worker->hostname);
         /*
@@ -419,8 +454,6 @@ static int ap_proxy_ajp_request(apr_pool_t *p, request_rec *r,
          */
         if (data_sent) {
             ap_proxy_backend_broke(r, output_brigade);
-            /* Return DONE to avoid error messages being added to the stream */
-            rv = DONE;
         } else
             rv = HTTP_SERVICE_UNAVAILABLE;
     }
@@ -442,27 +475,7 @@ static int ap_proxy_ajp_request(apr_pool_t *p, request_rec *r,
 
     apr_brigade_destroy(output_brigade);
 
-    if (rv)
-        return rv;
-
-    /* Nice we have answer to send to the client */
-    if (result == CMD_AJP13_END_RESPONSE && isok) {
-        ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server,
-                     "proxy: got response from %pI (%s)",
-                     conn->worker->cp->addr,
-                     conn->worker->hostname);
-        return OK;
-    }
-
-    ap_log_error(APLOG_MARK, APLOG_ERR, status, r->server,
-                 "proxy: got bad response (%d) from %pI (%s)",
-                 result,
-                 conn->worker->cp->addr,
-                 conn->worker->hostname);
-
-    /* We had a failure: Close connection to backend */
-    conn->close++;
-    return HTTP_SERVICE_UNAVAILABLE;
+    return rv;
 }
 
 /*

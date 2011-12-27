@@ -1,3 +1,34 @@
+                                                     -*- coding: utf-8 -*-
+Changes with APR-util 1.2.10
+
+  *) Support BerkeleyDB 4.6.  [Arfrever Frehtes Taifersar Arahesis]
+
+  *) Test improvements to validate testmd4 and testdbm, unattended.
+     [Bojan Smojver]
+
+Changes with APR-util 1.2.9
+
+  *) Ensure that an apr_reslist shrinks back to SMAX via the TTL by
+     reorganising the resource list from a queue to a stack.
+     PR 40348.  [Christian BOITEL <christian_boitel yahoo.fr>]
+
+  *) Fix Solaris 2.8+ fdatasync() detection. The fdatasync() function
+     is marked as part of the Realtime library functions.
+     PR 37343.  [Davi Arnaut]
+
+  *) Change configure's expat detection to use standard linker-based
+     tests, fixing build on e.g. biarch Linux systems.  PR 28205.
+     [Joe Orton, Ruediger Pluem]     
+
+  *) Portably implement testdate's long-time constants to solve
+     compilation faults where #LL isn't valid.  [Curt Arnold]
+
+  *) APR_FIND_APU macro no longer checks /usr/local/apache2/.
+     PR 42089.  [Colm MacCárthaigh]
+
+  *) Fix handling of attribute namespaces in apr_xml_to_text() when
+     a namespace map is provided.  PR 41908.  [Joe Orton]
+
 Changes with APR-util 1.2.8
 
   *) Add support for Berkeley DB 4.5 to the configure scripts.

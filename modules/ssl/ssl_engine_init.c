@@ -34,42 +34,21 @@
 **  _________________________________________________________________
 */
 
-static char *ssl_add_version_component(apr_pool_t *p,
-                                       server_rec *s,
-                                       char *name)
-{
-    char *val = ssl_var_lookup(p, s, NULL, NULL, name);
-
-    if (val && *val) {
-        ap_add_version_component(p, val);
-    }
-
-    return val;
-}
-
-static char *version_components[] = {
-    "SSL_VERSION_PRODUCT",
-    "SSL_VERSION_INTERFACE",
-    "SSL_VERSION_LIBRARY",
-    NULL
-};
 
 static void ssl_add_version_components(apr_pool_t *p,
                                        server_rec *s)
 {
-    char *vals[sizeof(version_components)/sizeof(char *)];
-    int i;
+    char *modver = ssl_var_lookup(p, s, NULL, NULL, "SSL_VERSION_INTERFACE");
+    char *libver = ssl_var_lookup(p, s, NULL, NULL, "SSL_VERSION_LIBRARY");
+    char *incver = ssl_var_lookup(p, s, NULL, NULL, 
+                                  "SSL_VERSION_LIBRARY_INTERFACE");
 
-    for (i=0; version_components[i]; i++) {
-        vals[i] = ssl_add_version_component(p, s,
-                                            version_components[i]);
-    }
+    ap_add_version_component(p, modver);
+    ap_add_version_component(p, libver);
 
     ap_log_error(APLOG_MARK, APLOG_INFO, 0, s,
-                 "Server: %s, Interface: %s, Library: %s",
-                 AP_SERVER_BASEVERSION,
-                 vals[1],  /* SSL_VERSION_INTERFACE */
-                 vals[2]); /* SSL_VERSION_LIBRARY */
+                 "%s compiled against Server: %s, Library: %s",
+                 modver, AP_SERVER_BASEVERSION, incver);
 }
 
 
@@ -231,15 +210,15 @@ int ssl_init_Module(apr_pool_t *p, apr_pool_t *plog,
 
     }
 
+#if APR_HAS_THREADS
+    ssl_util_thread_setup(p);
+#endif
+
     /*
      * SSL external crypto device ("engine") support
      */
 #if defined(HAVE_OPENSSL_ENGINE_H) && defined(HAVE_ENGINE_INIT)
     ssl_init_Engine(base_server, p);
-#endif
-
-#if APR_HAS_THREADS
-    ssl_util_thread_setup(p);
 #endif
 
     ap_log_error(APLOG_MARK, APLOG_INFO, 0, s,
@@ -847,14 +826,14 @@ static void ssl_check_public_cert(server_rec *s,
     if (SSL_X509_getCN(ptemp, cert, &cn)) {
         int fnm_flags = APR_FNM_PERIOD|APR_FNM_CASE_BLIND;
 
-        if (apr_fnmatch_test(cn) &&
-            (apr_fnmatch(cn, s->server_hostname,
-                         fnm_flags) == APR_FNM_NOMATCH))
-        {
-            ap_log_error(APLOG_MARK, APLOG_WARNING, 0, s,
-                         "%s server certificate wildcard CommonName (CN) `%s' "
-                         "does NOT match server name!?",
-                         ssl_asn1_keystr(type), cn);
+        if (apr_fnmatch_test(cn)) {
+            if (apr_fnmatch(cn, s->server_hostname,
+                            fnm_flags) == APR_FNM_NOMATCH) {
+                ap_log_error(APLOG_MARK, APLOG_WARNING, 0, s,
+                             "%s server certificate wildcard CommonName "
+                             "(CN) `%s' does NOT match server name!?",
+                             ssl_asn1_keystr(type), cn);
+            }
         }
         else if (strNE(s->server_hostname, cn)) {
             ap_log_error(APLOG_MARK, APLOG_WARNING, 0, s,

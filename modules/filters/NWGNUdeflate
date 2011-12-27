@@ -104,7 +104,7 @@ endif
 # This is used by the link 'name' directive to name the nlm.  If left blank
 # TARGET_nlm (see below) will be used.
 #
-NLM_NAME		= deflate
+NLM_NAME	= deflate
 
 #
 # This is used by the link '-desc ' directive.
@@ -262,7 +262,7 @@ nlms :: libs $(TARGET_nlm)
 # correct place.  (See $(AP_WORK)\build\NWGNUhead.inc for examples)
 #
 install :: nlms FORCE
-	copy $(OBJDIR)\*.nlm $(INSTALL)\Apache2\modules\*.*
+	copy $(OBJDIR)\*.nlm $(INSTALL)\$(BASEDIR)\modules\*.*
 
 #
 # Any specialized rules here
@@ -276,6 +276,5 @@ vpath %.c $(ZLIBSDK)
 #
 
 include $(AP_WORK)\build\NWGNUtail.inc
-
 
 

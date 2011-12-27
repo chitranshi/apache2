@@ -1,8 +1,5 @@
 /* include/private/apu_config.h.in.  Generated from configure.in by autoheader.  */
 
-/* define if Expat 1.0 or 1.1 was found */
-#undef APR_HAVE_OLD_EXPAT
-
 /* Define if the system crypt() function is threadsafe */
 #undef APU_CRYPT_THREADSAFE
 
@@ -23,6 +20,9 @@
 
 /* Define to 1 if you have the file `AC_File'. */
 #undef HAVE_DBD_APR_DBD_MYSQL_C
+
+/* Define if expat.h is available */
+#undef HAVE_EXPAT_H
 
 /* Define to 1 if you have the <iconv.h> header file. */
 #undef HAVE_ICONV_H
@@ -89,6 +89,15 @@
 
 /* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H
+
+/* Define if xmlparse/xmlparse.h is available */
+#undef HAVE_XMLPARSE_XMLPARSE_H
+
+/* Define if xmltok/xmlparse.h is available */
+#undef HAVE_XMLTOK_XMLPARSE_H
+
+/* Define if xml/xmlparse.h is available */
+#undef HAVE_XML_XMLPARSE_H
 
 /* Define to the address where bug reports for this package should be sent. */
 #undef PACKAGE_BUGREPORT

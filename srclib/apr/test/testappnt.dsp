@@ -32,13 +32,13 @@ RSC=rc.exe
 
 # PROP BASE Use_MFC 0
 # PROP BASE Use_Debug_Libraries 0
-# PROP BASE Output_Dir "Release"
-# PROP BASE Intermediate_Dir "Release"
+# PROP BASE Output_Dir "."
+# PROP BASE Intermediate_Dir "."
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 0
-# PROP Output_Dir "Release"
-# PROP Intermediate_Dir "Release"
+# PROP Output_Dir "."
+# PROP Intermediate_Dir "."
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MD /W3 /O2 /D "WIN32" /D "WINNT" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /D "APR_DECLARE_STATIC" /D "APU_DECLARE_STATIC" /FD /c
@@ -51,6 +51,12 @@ BSC32=bscmake.exe
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib advapi32.lib wsock32.lib ws2_32.lib /nologo /subsystem:console
 # ADD LINK32 kernel32.lib advapi32.lib wsock32.lib ws2_32.lib /nologo /entry:"wmainCRTStartup" /subsystem:console
+# Begin Special Build Tool
+TargetPath=.\testappnt.exe
+SOURCE="$(InputPath)"
+PostBuild_Desc=Embed .manifest
+PostBuild_Cmds=if exist $(TargetPath).manifest mt.exe -manifest $(TargetPath).manifest -outputresource:$(TargetPath);2
+# End Special Build Tool
 
 !ELSEIF  "$(CFG)" == "testappnt - Win32 Debug"
 
@@ -75,6 +81,12 @@ BSC32=bscmake.exe
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib advapi32.lib wsock32.lib ws2_32.lib /nologo /subsystem:console /incremental:no /debug
 # ADD LINK32 kernel32.lib advapi32.lib wsock32.lib ws2_32.lib /nologo /entry:"wmainCRTStartup" /subsystem:console /incremental:no /debug
+# Begin Special Build Tool
+TargetPath=.\testappnt.exe
+SOURCE="$(InputPath)"
+PostBuild_Desc=Embed .manifest
+PostBuild_Cmds=if exist $(TargetPath).manifest mt.exe -manifest $(TargetPath).manifest -outputresource:$(TargetPath);2
+# End Special Build Tool
 
 !ENDIF 
 

@@ -61,6 +61,9 @@
 /* Define to 1 if you have the `getgrnam' function. */
 #undef HAVE_GETGRNAM
 
+/* Define to 1 if you have the `getpgid' function. */
+#undef HAVE_GETPGID
+
 /* Define to 1 if you have the `getpwnam' function. */
 #undef HAVE_GETPWNAM
 

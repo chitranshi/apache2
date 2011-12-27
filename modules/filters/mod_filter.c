@@ -200,11 +200,10 @@ static int filter_lookup(ap_filter_t *f, ap_filter_rec_t *filter)
                 match = 0;
             }
         }
-        else if (!provider->match.string) {
-            match = 0;
-        }
+        /* we can't check for NULL in provider as that kills integer 0
+         * so we have to test each string/regexp case in the switch
+         */
         else {
-            /* Now we have no nulls, so we can do string and regexp matching */
             switch (provider->match_type) {
             case STRING_MATCH:
                 if (strcasecmp(str, provider->match.string)) {
@@ -221,7 +220,7 @@ static int filter_lookup(ap_filter_t *f, ap_filter_rec_t *filter)
             case REGEX_MATCH:
                 if (ap_regexec(provider->match.regex, str, 0, NULL, 0)
                     == AP_REG_NOMATCH) {
-                match = 0;
+                    match = 0;
                 }
                 break;
             case INT_EQ:
@@ -229,23 +228,26 @@ static int filter_lookup(ap_filter_t *f, ap_filter_rec_t *filter)
                     match = 0;
                 }
                 break;
+            /* Integer comparisons should be [var] OP [match]
+             * We need to set match = 0 if the condition fails
+             */
             case INT_LT:
-                if (atoi(str) < provider->match.number) {
+                if (atoi(str) >= provider->match.number) {
                     match = 0;
                 }
                 break;
             case INT_LE:
-                if (atoi(str) <= provider->match.number) {
-                    match = 0;
-                }
-                break;
-            case INT_GT:
                 if (atoi(str) > provider->match.number) {
                     match = 0;
                 }
                 break;
+            case INT_GT:
+                if (atoi(str) <= provider->match.number) {
+                    match = 0;
+                }
+                break;
             case INT_GE:
-                if (atoi(str) >= provider->match.number) {
+                if (atoi(str) < provider->match.number) {
                     match = 0;
                 }
                 break;
@@ -589,6 +591,9 @@ static const char *filter_provider(cmd_parms *cmd, void *CFG, const char *args)
                                                          match,
                                                          rxend-match),
                                             flags);
+        if (provider->match.regex == NULL) {
+            return "Bad regexp";
+        }
         break;
     case '*':
         provider->match_type = DEFINED;
@@ -688,12 +693,20 @@ static const char *filter_chain(cmd_parms *cmd, void *CFG, const char *arg)
         break;
 
     case '!':        /* Empty the chain */
-        cfg->chain = NULL;
+                     /** IG: Add a NULL provider to the beginning so that 
+                      *  we can ensure that we'll empty everything before 
+                      *  this when doing config merges later */
+        p = apr_pcalloc(cmd->pool, sizeof(mod_filter_chain));
+        p->fname = NULL;
+        cfg->chain = p;
         break;
 
     case '=':        /* initialise chain with this arg */
+                     /** IG: Prepend a NULL provider to the beginning as above */
         p = apr_pcalloc(cmd->pool, sizeof(mod_filter_chain));
-        p->fname = arg+1;
+        p->fname = NULL;
+        p->next = apr_pcalloc(cmd->pool, sizeof(mod_filter_chain));
+        p->next->fname = arg+1;
         cfg->chain = p;
         break;
 
@@ -738,6 +751,14 @@ static void filter_insert(request_rec *r)
     mod_filter_ctx *ctx = apr_pcalloc(r->pool, sizeof(mod_filter_ctx));
     ap_set_module_config(r->request_config, &filter_module, ctx);
 #endif
+
+    /** IG: Now that we've merged to the final config, go one last time
+     *  through the chain, and prune out the NULL filters */
+
+    for (p = cfg->chain; p; p = p->next) {
+        if (p->fname == NULL) 
+            cfg->chain = p->next;
+    }
 
     for (p = cfg->chain; p; p = p->next) {
         filter = apr_hash_get(cfg->live_filters, p->fname, APR_HASH_KEY_STRING);
@@ -788,7 +809,10 @@ static void *filter_merge(apr_pool_t *pool, void *BASE, void *ADD)
     if (base->chain && add->chain) {
         for (p = base->chain; p; p = p->next) {
             newlink = apr_pmemdup(pool, p, sizeof(mod_filter_chain));
-            if (savelink) {
+            if (newlink->fname == NULL) {
+                conf->chain = savelink = newlink;
+            }
+            else if (savelink) {
                 savelink->next = newlink;
                 savelink = newlink;
             }
@@ -799,8 +823,17 @@ static void *filter_merge(apr_pool_t *pool, void *BASE, void *ADD)
 
         for (p = add->chain; p; p = p->next) {
             newlink = apr_pmemdup(pool, p, sizeof(mod_filter_chain));
-            savelink->next = newlink;
-            savelink = newlink;
+            /** Filter out merged chain resets */
+            if (newlink->fname == NULL) {
+                conf->chain = savelink = newlink;
+            }
+            else if (savelink) {
+                savelink->next = newlink;
+                savelink = newlink;
+            }
+            else {
+                conf->chain = savelink = newlink;
+            }
         }
     }
     else if (add->chain) {

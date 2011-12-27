@@ -110,6 +110,20 @@ struct apr_file_t {
 #endif
 };
 
+#if APR_HAS_THREADS
+#define file_lock(f)   do { \
+                           if ((f)->thlock) \
+                               apr_thread_mutex_lock((f)->thlock); \
+                       } while (0)
+#define file_unlock(f) do { \
+                           if ((f)->thlock) \
+                               apr_thread_mutex_unlock((f)->thlock); \
+                       } while (0)
+#else
+#define file_lock(f)   do {} while (0)
+#define file_unlock(f) do {} while (0)
+#endif
+
 #if APR_HAS_LARGE_FILES && defined(_LARGEFILE64_SOURCE)
 #define stat(f,b) stat64(f,b)
 #define lstat(f,b) lstat64(f,b)
@@ -129,9 +143,14 @@ struct apr_dir_t {
 };
 
 apr_status_t apr_unix_file_cleanup(void *);
+apr_status_t apr_unix_child_file_cleanup(void *);
 
 mode_t apr_unix_perms2mode(apr_fileperms_t perms);
 apr_fileperms_t apr_unix_mode2perms(mode_t mode);
+
+apr_status_t apr_file_flush_locked(apr_file_t *thefile);
+apr_status_t apr_file_info_get_locked(apr_finfo_t *finfo, apr_int32_t wanted,
+                                      apr_file_t *thefile);
 
 
 #endif  /* ! FILE_IO_H */

@@ -15,11 +15,11 @@
  */
 
 #include "apr.h"
+#include <wincrypt.h>
 #include "apr_private.h"
 #include "apr_general.h"
 #include "apr_portable.h"
 #include "apr_arch_misc.h"
-#include <wincrypt.h>
 
 
 APR_DECLARE(apr_status_t) apr_generate_random_bytes(unsigned char * buf,

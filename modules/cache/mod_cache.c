@@ -56,6 +56,8 @@ static int cache_url_handler(request_rec *r, int lookup)
     cache_request_rec *cache;
     cache_server_conf *conf;
     apr_bucket_brigade *out;
+    ap_filter_t *next;
+    ap_filter_rec_t *cache_out_handle;
 
     /* Delay initialization until we know we are handling a GET */
     if (r->method_number != M_GET) {
@@ -213,12 +215,29 @@ static int cache_url_handler(request_rec *r, int lookup)
      * or not.
      */
     if (r->main) {
-        ap_add_output_filter_handle(cache_out_subreq_filter_handle, NULL,
-                                    r, r->connection);
+        cache_out_handle = cache_out_subreq_filter_handle;
     }
     else {
-        ap_add_output_filter_handle(cache_out_filter_handle, NULL,
-                                    r, r->connection);
+        cache_out_handle = cache_out_filter_handle;
+    }
+    ap_add_output_filter_handle(cache_out_handle, NULL, r, r->connection);
+
+    /*
+     * Remove all filters that are before the cache_out filter. This ensures
+     * that we kick off the filter stack with our cache_out filter being the
+     * first in the chain. This make sense because we want to restore things
+     * in the same manner as we saved them.
+     * There may be filters before our cache_out filter, because
+     *
+     * 1. We call ap_set_content_type during cache_select. This causes
+     *    Content-Type specific filters to be added.
+     * 2. We call the insert_filter hook. This causes filters e.g. like
+     *    the ones set with SetOutputFilter to be added.
+     */
+    next = r->output_filters;
+    while (next && (next->frec != cache_out_handle)) {
+        ap_remove_output_filter(next);
+        next = next->next;
     }
 
     /* kick off the filter stack */
@@ -299,7 +318,6 @@ static int cache_out_filter(ap_filter_t *f, apr_bucket_brigade *bb)
 static int cache_save_filter(ap_filter_t *f, apr_bucket_brigade *in)
 {
     int rv = !OK;
-    int date_in_errhdr = 0;
     request_rec *r = f->r;
     cache_request_rec *cache;
     cache_server_conf *conf;
@@ -433,11 +451,12 @@ static int cache_save_filter(ap_filter_t *f, apr_bucket_brigade *in)
         /* if a Expires header is in the past, don't cache it */
         reason = "Expires header already expired, not cacheable";
     }
-    else if (r->args && exps == NULL) {
-        /* if query string present but no expiration time, don't cache it
-         * (RFC 2616/13.9)
+    else if (!conf->ignorequerystring && r->parsed_uri.query && exps == NULL &&
+             !ap_cache_liststr(NULL, cc_out, "max-age", NULL)) {
+        /* if a query string is present but no explicit expiration time,
+         * don't cache it (RFC 2616/13.9 & 13.2.1)
          */
-        reason = "Query string present but no expires header";
+        reason = "Query string present but no explicit expiration time";
     }
     else if (r->status == HTTP_NOT_MODIFIED &&
              !cache->handle && !cache->stale_handle) {
@@ -456,8 +475,8 @@ static int cache_save_filter(ap_filter_t *f, apr_bucket_brigade *in)
          */
         reason = "No Last-Modified, Etag, or Expires headers";
     }
-    else if (r->header_only) {
-        /* HEAD requests */
+    else if (r->header_only && !cache->stale_handle) {
+        /* Forbid HEAD requests unless we have it cached already */
         reason = "HTTP HEAD request";
     }
     else if (!conf->store_nostore &&
@@ -576,7 +595,12 @@ static int cache_save_filter(ap_filter_t *f, apr_bucket_brigade *in)
      * the headers).
      */
 
-    /* Did we have a stale cache entry that really is stale? */
+    /* Did we have a stale cache entry that really is stale?
+     *
+     * Note that for HEAD requests, we won't get the body, so for a stale
+     * HEAD request, we don't remove the entity - instead we let the
+     * CACHE_REMOVE_URL filter remove the stale item from the cache.
+     */
     if (cache->stale_handle) {
         if (r->status == HTTP_NOT_MODIFIED) {
             /* Oh, hey.  It isn't that stale!  Yay! */
@@ -584,7 +608,7 @@ static int cache_save_filter(ap_filter_t *f, apr_bucket_brigade *in)
             info = &cache->handle->cache_obj->info;
             rv = OK;
         }
-        else {
+        else if (!r->header_only) {
             /* Oh, well.  Toss it. */
             cache->provider->remove_entity(cache->stale_handle);
             /* Treat the request as if it wasn't conditional. */
@@ -592,8 +616,8 @@ static int cache_save_filter(ap_filter_t *f, apr_bucket_brigade *in)
         }
     }
 
-    /* no cache handle, create a new entity */
-    if (!cache->handle) {
+    /* no cache handle, create a new entity only for non-HEAD requests */
+    if (!cache->handle && !r->header_only) {
         rv = cache_create_entity(r, size);
         info = apr_pcalloc(r->pool, sizeof(cache_info));
         /* We only set info->status upon the initial creation. */
@@ -628,10 +652,7 @@ static int cache_save_filter(ap_filter_t *f, apr_bucket_brigade *in)
 
     /* Read the date. Generate one if one is not supplied */
     dates = apr_table_get(r->err_headers_out, "Date");
-    if (dates != NULL) {
-        date_in_errhdr = 1;
-    }
-    else {
+    if (dates == NULL) {
         dates = apr_table_get(r->headers_out, "Date");
     }
     if (dates != NULL) {
@@ -643,25 +664,10 @@ static int cache_save_filter(ap_filter_t *f, apr_bucket_brigade *in)
 
     now = apr_time_now();
     if (info->date == APR_DATE_BAD) {  /* No, or bad date */
-        char *dates;
         /* no date header (or bad header)! */
-        /* add one; N.B. use the time _now_ rather than when we were checking
-         * the cache
-         */
-        if (date_in_errhdr == 1) {
-            apr_table_unset(r->err_headers_out, "Date");
-        }
-        date = now;
-        dates = apr_pcalloc(r->pool, MAX_STRING_LEN);
-        apr_rfc822_date(dates, now);
-        apr_table_set(r->headers_out, "Date", dates);
-        ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server,
-                     "cache: Added date header");
-        info->date = date;
+        info->date = now;
     }
-    else {
-        date = info->date;
-    }
+    date = info->date;
 
     /* set response_time for HTTP/1.1 age calculations */
     info->response_time = now;
@@ -681,32 +687,47 @@ static int cache_save_filter(ap_filter_t *f, apr_bucket_brigade *in)
     }
 
     /* if no expiry date then
-     *   if lastmod
+     *   if Cache-Control: max-age present
+     *      expiry date = date + max-age
+     *   else if lastmod
      *      expiry date = date + min((date - lastmod) * factor, maxexpire)
      *   else
      *      expire date = date + defaultexpire
      */
     if (exp == APR_DATE_BAD) {
-        char expire_hdr[APR_RFC822_DATE_LEN];
+        char *max_age_val;
 
-        /* if lastmod == date then you get 0*conf->factor which results in
-         *   an expiration time of now. This causes some problems with
-         *   freshness calculations, so we choose the else path...
-         */
-        if ((lastmod != APR_DATE_BAD) && (lastmod < date)) {
+        if (ap_cache_liststr(r->pool, cc_out, "max-age", &max_age_val) &&
+            max_age_val != NULL) {
+            apr_int64_t x;
+
+            errno = 0;
+            x = apr_atoi64(max_age_val);
+            if (errno) {
+                x = conf->defex;
+            }
+            else {
+                x = x * MSEC_ONE_SEC;
+            }
+            if (x > conf->maxex) {
+                x = conf->maxex;
+            }
+            exp = date + x;
+        }
+        else if ((lastmod != APR_DATE_BAD) && (lastmod < date)) {
+            /* if lastmod == date then you get 0*conf->factor which results in
+             * an expiration time of now. This causes some problems with
+             * freshness calculations, so we choose the else path...
+             */
             apr_time_t x = (apr_time_t) ((date - lastmod) * conf->factor);
 
             if (x > conf->maxex) {
                 x = conf->maxex;
             }
             exp = date + x;
-            apr_rfc822_date(expire_hdr, exp);
-            apr_table_set(r->headers_out, "Expires", expire_hdr);
         }
         else {
             exp = date + conf->defex;
-            apr_rfc822_date(expire_hdr, exp);
-            apr_table_set(r->headers_out, "Expires", expire_hdr);
         }
     }
     info->expire = exp;
@@ -896,6 +917,9 @@ static void * create_cache_config(apr_pool_t *p, server_rec *s)
     /* array of headers that should not be stored in cache */
     ps->ignore_headers = apr_array_make(p, 10, sizeof(char *));
     ps->ignore_headers_set = CACHE_IGNORE_HEADERS_UNSET;
+    /* flag indicating that query-string should be ignored when caching */
+    ps->ignorequerystring = 0;
+    ps->ignorequerystring_set = 0;
     return ps;
 }
 
@@ -941,6 +965,10 @@ static void * merge_cache_config(apr_pool_t *p, void *basev, void *overridesv)
         (overrides->ignore_headers_set == CACHE_IGNORE_HEADERS_UNSET)
         ? base->ignore_headers
         : overrides->ignore_headers;
+    ps->ignorequerystring =
+        (overrides->ignorequerystring_set == 0)
+        ? base->ignorequerystring
+        : overrides->ignorequerystring;
     return ps;
 }
 static const char *set_cache_ignore_no_last_mod(cmd_parms *parms, void *dummy,
@@ -1119,6 +1147,19 @@ static const char *set_cache_factor(cmd_parms *parms, void *dummy,
     return NULL;
 }
 
+static const char *set_cache_ignore_querystring(cmd_parms *parms, void *dummy,
+                                                int flag)
+{
+    cache_server_conf *conf;
+
+    conf =
+        (cache_server_conf *)ap_get_module_config(parms->server->module_config,
+                                                  &cache_module);
+    conf->ignorequerystring = flag;
+    conf->ignorequerystring_set = 1;
+    return NULL;
+}
+
 static int cache_post_config(apr_pool_t *p, apr_pool_t *plog,
                              apr_pool_t *ptemp, server_rec *s)
 {
@@ -1168,6 +1209,9 @@ static const command_rec cache_cmds[] =
     AP_INIT_ITERATE("CacheIgnoreHeaders", add_ignore_header, NULL, RSRC_CONF,
                     "A space separated list of headers that should not be "
                     "stored by the cache"),
+    AP_INIT_FLAG("CacheIgnoreQueryString", set_cache_ignore_querystring,
+                 NULL, RSRC_CONF,
+                 "Ignore query-string when caching"),
     AP_INIT_TAKE1("CacheLastModifiedFactor", set_cache_factor, NULL, RSRC_CONF,
                   "The factor used to estimate Expires date from "
                   "LastModified date"),

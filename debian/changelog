@@ -35,6 +35,7 @@ apache2 (2.2.21-4) unstable; urgency=low
 
   [Stefan Fritsch]
 
+  * Security: Fix broken patch for CVE-2011-3607 (Integer overflow in ap_pregsub).
   * Optimize debian/rules again to improve build time by doing most work in a
     parallelized "build-and-install-%" target.
 

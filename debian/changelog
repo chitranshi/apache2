@@ -1,3 +1,11 @@
+apache2 (2.2.21-5) unstable; urgency=low
+
+  * Fix build failures introduced as regregression by the previous build. Debian
+    buildds aren't rebuilding arch:all packages which caused problems for our
+    unconditional copying into binary package. I was warned.
+
+ -- Arno Töll <debian@toell.net>  Thu, 29 Dec 2011 16:57:20 +0100
+
 apache2 (2.2.21-4) unstable; urgency=low
 
   [ Stefan Fritsch ]

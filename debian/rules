@@ -23,7 +23,9 @@
 # 5) Special care must be taken to avoid having -DPLATFORM defined for apxs2.
 # 6) dh_install is not powerful enough to us. We need to copy and move into
 #    (future) binary packages.See various dh_install* overrides to get the idea.
-
+# 7) BEWARE arch:indep ONLY BUILDS (dpkg-buildpackage -A) ARE KNOWN TO BE BROKEN
+#    FOR NOW
+#
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
 
@@ -192,11 +194,9 @@ override_dh_auto_configure: prepare-custom-suexec $(patsubst %, mpm-%-maintainer
 	mkdir $(INSTALL_DIR)
 
 
-override_dh_auto_build:
+override_dh_auto_build override_dh_auto_install:
 
-override_dh_auto_install:
-
-override_dh_install:
+override_dh_install-arch:
 	$(MAKE) $(BUILDMAKEFLAGS) -f $(CURDIR)/debian/rules $(patsubst %, build-%, $(MPMS)) install-dev
 	for mpm in $(filter-out worker, $(MPMS)) ; do \
 		if ! diff -u $(BUILD_DIR)/$$mpm/mods.list $(BUILD_DIR)/worker/mods.list ; then \
@@ -216,12 +216,16 @@ override_dh_install:
 	rm -f $(DEFAULT_MPM)/usr/sbin/apxs $(DEFAULT_MPM)/usr/sbin/apache2 debian/tmp/usr/sbin/apachectl
 	mv $(DEFAULT_MPM)/usr/share/man/man8/apxs.8 $(DEFAULT_MPM)/usr/share/man/man8/apxs2.8
 	mv $(DEFAULT_MPM)/usr/share/man/man8/apachectl.8 $(DEFAULT_MPM)/usr/share/man/man8/apache2ctl.8
-	dh_install --list-missing
+	dh_install -a --list-missing
 	# DO NOT FALL FOR THE TEMPTATION TO MV INTO PACKAGES OR DOOM
 	# WILL FIND YOU.  Use dh_install, this is just because dh_install
 	# can't rename files
 	cp debian/default-index.html debian/apache2.2-common/usr/share/apache2/default-site/index.html
 	cp debian/bash_completion debian/apache2.2-common/etc/bash_completion.d/apache2.2-common
+
+
+override_dh_install-indep:
+	dh_install -i --list-missing
 	cp debian/apache2-doc.conf debian/apache2-doc/etc/apache2/conf.d/apache2-doc
 	perl debian/convert_docs debian/apache2-doc/usr/share/doc/apache2-doc/manual
 
@@ -249,7 +253,6 @@ override_dh_installdocs:
 	dh_installdocs debian/README.backtrace -papache2.2-bin
 	dh_installdocs debian/README.backtrace debian/README.multiple-instances -papache2.2-common
 	dh_installdocs -Napache2.2-common -Napache2.2-bin
-	cp debian/README.Debian debian/apache2-doc/usr/share/doc/apache2-doc/
 	cp debian/mpm-itk/README debian/apache2.2-common/usr/share/doc/apache2.2-common/README.mpm-itk
 	cp debian/mpm-itk/CHANGES debian/apache2.2-common/usr/share/doc/apache2.2-common/changelog.mpm-itk
 	cp debian/mpm-itk/debian/changelog debian/apache2.2-common/usr/share/doc/apache2.2-common/changelog.mpm-itk.Debian

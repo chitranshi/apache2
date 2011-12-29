@@ -1,12 +1,13 @@
 apache2 (2.2.21-4) unstable; urgency=low
 
-  [Stefan Fritsch]
+  [ Stefan Fritsch ]
 
-  * Security: Fix broken patch for CVE-2011-3607 (Integer overflow in ap_pregsub).
+  * Security: Fix broken patch for CVE-2011-3607 (Integer overflow in
+    ap_pregsub).
   * Optimize debian/rules again to improve build time by doing most work in a
     single parallelized "build-%" target.
 
-  [Arno Töll]
+  [ Arno Töll ]
 
   * Fix "Suggest removing DefaultType from apache2.conf" change the DefaultType
     from text/plain to None. This lets the browser guess a proper MIME type

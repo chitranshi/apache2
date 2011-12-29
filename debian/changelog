@@ -40,7 +40,7 @@ apache2 (2.2.21-4) unstable; urgency=low
     redundant priorities in debian/control.
   * Add myself to Uploaders
 
- -- Arno Töll <debian@toell.net>  Tue, 13 Dec 2011 22:03:09 +0100
+ -- Stefan Fritsch <sf@debian.org>  Thu, 29 Dec 2011 12:09:14 +0100
 
 apache2 (2.2.21-3) unstable; urgency=medium
 

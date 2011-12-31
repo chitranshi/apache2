@@ -1,8 +1,8 @@
-apache2 (2.2.21-6) unstable; urgency=low
+apache2 (2.2.21-6) UNRELEASED; urgency=low
 
   * Fix "typo in /etc/apache2/apache2.conf" (Closes: #653801)
 
- -- Arno Töll <debian@toell.net>  Sat, 31 Dec 2011 09:43:08 +0100
+ -- Arno Töll <debian@toell.net>  Sat, 31 Dec 2011 09:45:14 +0100
 
 apache2 (2.2.21-5) unstable; urgency=low
 

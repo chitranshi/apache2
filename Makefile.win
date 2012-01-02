@@ -18,6 +18,8 @@
 #   SSLPORT     443
 #   SERVERNAME  localhost
 #
+#   ALL         (unset)     Includes additional modules for build testing
+#
 # For example;
 #
 #   nmake -f Makefile.win PORT=80 INSTDIR="d:\Program Files\Apache" installr
@@ -26,9 +28,24 @@
 # so the server root should be given in forward slashes (quoted),
 # preferably with the drive designation!
 
+!IF EXIST("httpd.vcproj") && ([devenv /help > NUL 2>&1] == 0) \
+    && !defined(USEMAK) && !defined(USEDSW)
+USESLN=1
+USEMAK=0
+USEDSW=0
+!ELSEIF EXIST("httpd.mak") && !defined(USEDSW)
+USESLN=0
+USEMAK=1
+USEDSW=0
+!ELSE
+USESLN=0
+USEMAK=0
+USEDSW=1
+!ENDIF
+
 default: _apacher
 
-!IF ("$(CTARGET)" == "") && !EXIST("httpd.mak") && EXIST("Apache.sln")
+!IF ("$(CTARGET)" == "") && ($(USESLN) == 1)
 CTARGET=/build
 !ENDIF
 
@@ -51,14 +68,14 @@ SSLBIN=out32dll
 !ENDIF
 
 _tryssl:
-!IF EXIST("modules\ssl\mod_ssl.mak")
+!IF $(USEMAK) == 1
 	cd modules\ssl
 	$(MAKE) $(MAKEOPT) -f mod_ssl.mak CFG="mod_ssl - Win32 $(LONG)" RECURSE=0 $(CTARGET)
 	cd ..\..
 	cd support
 	$(MAKE) $(MAKEOPT) -f abs.mak CFG="abs - Win32 $(LONG)" RECURSE=0 $(CTARGET)
 	cd ..
-!ELSEIF EXIST("Apache.sln")
+!ELSEIF $(USESLN) == 1
 	devenv Apache.sln /useenv $(CTARGET) $(LONG) /project mod_ssl
 	devenv Apache.sln /useenv $(CTARGET) $(LONG) /project abs
 !ELSE
@@ -75,18 +92,18 @@ _tryssl:
 	@echo mod_ssl and ab/ssl will not build unless openssl is installed
 	@echo in srclib\openssl.  They must be precompiled using the 
 	@echo ms/ntdll.mak file, see srclib\openssl\INSTALL.W32.  The most
-	@echo recent version confirmed to build with mod_ssl and ab is 0.9.6h.
+	@echo recent version confirmed to build with mod_ssl and ab is 0.9.8d.
 	@echo Available from http://www.openssl.org/
 !ENDIF
 
 !IF EXIST("srclib\zlib")
 
 _tryzlib:
-!IF EXIST("modules\filters\mod_deflate.mak")
+!IF $(USEMAK) == 1
 	cd modules\filters
 	$(MAKE) $(MAKEOPT) -f mod_deflate.mak CFG="mod_deflate - Win32 $(LONG)" RECURSE=0 $(CTARGET)
 	cd ..\..
-!ELSEIF EXIST("Apache.sln")
+!ELSEIF $(USESLN) == 1
 	devenv Apache.sln /useenv $(CTARGET) $(LONG) /project mod_deflate
 !ELSE
 	@msdev Apache.dsw /USEENV /MAKE \
@@ -167,7 +184,7 @@ clean:	_cleanr _cleand
 y
 <<
 
-!IF EXIST("httpd.mak")
+!IF $(USEMAK) == 1
 
 _cleanr:
 	$(MAKE) $(MAKEOPT) -f Makefile.win SHORT=R LONG=Release CTARGET=CLEAN _build
@@ -222,17 +239,19 @@ _build:
 	cd modules\aaa
 	 $(MAKE) $(MAKEOPT) -f mod_auth_basic.mak  CFG="mod_auth_basic - Win32 $(LONG)" RECURSE=0 $(CTARGET)
 	 $(MAKE) $(MAKEOPT) -f mod_auth_digest.mak CFG="mod_auth_digest - Win32 $(LONG)" RECURSE=0 $(CTARGET)
+	 $(MAKE) $(MAKEOPT) -f mod_authn_alias.mak CFG="mod_authn_alias - Win32 $(LONG)" RECURSE=0 $(CTARGET)
 	 $(MAKE) $(MAKEOPT) -f mod_authn_anon.mak  CFG="mod_authn_anon - Win32 $(LONG)" RECURSE=0 $(CTARGET)
 	 $(MAKE) $(MAKEOPT) -f mod_authn_dbd.mak   CFG="mod_authn_dbd - Win32 $(LONG)" RECURSE=0 $(CTARGET)
 	 $(MAKE) $(MAKEOPT) -f mod_authn_dbm.mak   CFG="mod_authn_dbm - Win32 $(LONG)" RECURSE=0 $(CTARGET)
 	 $(MAKE) $(MAKEOPT) -f mod_authn_default.mak CFG="mod_authn_default - Win32 $(LONG)" RECURSE=0 $(CTARGET)
 	 $(MAKE) $(MAKEOPT) -f mod_authn_file.mak  CFG="mod_authn_file - Win32 $(LONG)" RECURSE=0 $(CTARGET)
+	 $(MAKE) $(MAKEOPT) -f mod_authnz_ldap.mak CFG="mod_authnz_ldap - Win32 $(LONG)" RECURSE=0 $(CTARGET)
 	 $(MAKE) $(MAKEOPT) -f mod_authz_dbm.mak   CFG="mod_authz_dbm - Win32 $(LONG)" RECURSE=0 $(CTARGET)
 	 $(MAKE) $(MAKEOPT) -f mod_authz_default.mak CFG="mod_authz_default - Win32 $(LONG)" RECURSE=0 $(CTARGET)
 	 $(MAKE) $(MAKEOPT) -f mod_authz_groupfile.mak CFG="mod_authz_groupfile - Win32 $(LONG)" RECURSE=0 $(CTARGET)
 	 $(MAKE) $(MAKEOPT) -f mod_authz_host.mak  CFG="mod_authz_host - Win32 $(LONG)" RECURSE=0 $(CTARGET)
+	 $(MAKE) $(MAKEOPT) -f mod_authz_owner.mak CFG="mod_authz_owner - Win32 $(LONG)" RECURSE=0 $(CTARGET)
 	 $(MAKE) $(MAKEOPT) -f mod_authz_user.mak  CFG="mod_authz_user - Win32 $(LONG)" RECURSE=0 $(CTARGET)
-	 $(MAKE) $(MAKEOPT) -f mod_authnz_ldap.mak CFG="mod_authnz_ldap - Win32 $(LONG)" RECURSE=0 $(CTARGET)
 	cd ..\..
 	cd modules\arch\win32
 	 $(MAKE) $(MAKEOPT) -f mod_isapi.mak       CFG="mod_isapi - Win32 $(LONG)" RECURSE=0 $(CTARGET)
@@ -249,11 +268,26 @@ _build:
 	cd modules\dav\fs
 	 $(MAKE) $(MAKEOPT) -f mod_dav_fs.mak      CFG="mod_dav_fs - Win32 $(LONG)" RECURSE=0 $(CTARGET)
 	cd ..\..\..
+	cd modules\dav\lock
+	 $(MAKE) $(MAKEOPT) -f mod_dav_lock.mak    CFG="mod_dav_lock - Win32 $(LONG)" RECURSE=0 $(CTARGET)
+	cd ..\..\..
 	cd modules\debug
+!IFDEF ALL
 	 $(MAKE) $(MAKEOPT) -f mod_bucketeer.mak   CFG="mod_bucketeer - Win32 $(LONG)" RECURSE=0 $(CTARGET)
+!ENDIF
 	 $(MAKE) $(MAKEOPT) -f mod_dumpio.mak      CFG="mod_dumpio - Win32 $(LONG)" RECURSE=0 $(CTARGET)
 	cd ..\..
+	cd modules\echo
+!IFDEF ALL
+	 $(MAKE) $(MAKEOPT) -f mod_echo.mak        CFG="mod_echo - Win32 $(LONG)" RECURSE=0 $(CTARGET)
+!ENDIF
+	cd ..\..
 	cd modules\experimental
+!IFDEF ALL
+	 $(MAKE) $(MAKEOPT) -f mod_case_filter.mak CFG="mod_case_filter - Win32 $(LONG)" RECURSE=0 $(CTARGET)
+	 $(MAKE) $(MAKEOPT) -f mod_case_filter_in.mak CFG="mod_case_filter_in - Win32 $(LONG)" RECURSE=0 $(CTARGET)
+	 $(MAKE) $(MAKEOPT) -f mod_example.mak     CFG="mod_example - Win32 $(LONG)" RECURSE=0 $(CTARGET)
+!ENDIF
 	cd ..\..
 	cd modules\filters
 	 $(MAKE) $(MAKEOPT) -f mod_charset_lite.mak CFG="mod_charset_lite - Win32 $(LONG)" RECURSE=0 $(CTARGET)
@@ -261,6 +295,7 @@ _build:
 	 $(MAKE) $(MAKEOPT) -f mod_deflate.mak     CFG="mod_deflate - Win32 $(LONG)" RECURSE=0 $(CTARGET)
 !ENDIF
 	 $(MAKE) $(MAKEOPT) -f mod_ext_filter.mak  CFG="mod_ext_filter - Win32 $(LONG)" RECURSE=0 $(CTARGET)
+	 $(MAKE) $(MAKEOPT) -f mod_filter.mak      CFG="mod_filter - Win32 $(LONG)" RECURSE=0 $(CTARGET)
 	 $(MAKE) $(MAKEOPT) -f mod_include.mak     CFG="mod_include - Win32 $(LONG)" RECURSE=0 $(CTARGET)
 	cd ..\..
 	cd modules\generators
@@ -323,6 +358,7 @@ _build:
 	 $(MAKE) $(MAKEOPT) -f htdbm.mak           CFG="htdbm - Win32 $(LONG)" RECURSE=0 $(CTARGET)
 	 $(MAKE) $(MAKEOPT) -f htdigest.mak        CFG="htdigest - Win32 $(LONG)" RECURSE=0 $(CTARGET)
 	 $(MAKE) $(MAKEOPT) -f htpasswd.mak        CFG="htpasswd - Win32 $(LONG)" RECURSE=0 $(CTARGET)
+	 $(MAKE) $(MAKEOPT) -f httxt2dbm.mak       CFG="httxt2dbm - Win32 $(LONG)" RECURSE=0 $(CTARGET)
 	 $(MAKE) $(MAKEOPT) -f logresolve.mak      CFG="logresolve - Win32 $(LONG)" RECURSE=0 $(CTARGET)
 	 $(MAKE) $(MAKEOPT) -f rotatelogs.mak      CFG="rotatelogs - Win32 $(LONG)" RECURSE=0 $(CTARGET)
 	cd ..
@@ -331,7 +367,7 @@ _build:
 	 $(MAKE) $(MAKEOPT) -f wintty.mak          CFG="wintty - Win32 $(LONG)" RECURSE=0 $(CTARGET)
 	cd ..\..
 
-!ELSEIF EXIST("Apache.sln")
+!ELSEIF $(USESLN) == 1
 
 _cleanr:  
 	$(MAKE) $(MAKEOPT) -f Makefile.win SHORT=R LONG=Release CTARGET="/clean" _build
@@ -341,7 +377,11 @@ _cleand:
 
 _build:
 	echo Building Win32 $(LONG) targets ($(SHORT) suffixes)
+!IFDEF ALL
+	devenv Apache.sln /useenv $(CTARGET) $(LONG) /project BuildAll
+!ELSE
 	devenv Apache.sln /useenv $(CTARGET) $(LONG) /project BuildBin
+!ENDIF
 !IF EXIST("srclib\openssl")
 	devenv Apache.sln /useenv $(CTARGET) $(LONG) /project mod_ssl
 	devenv Apache.sln /useenv $(CTARGET) $(LONG) /project abs
@@ -360,8 +400,13 @@ _cleand:
 
 _build:
 	@echo Building Win32 $(LONG) targets ($(SHORT) suffixes)
+!IFDEF ALL
+	@msdev Apache.dsw /USEENV /MAKE \
+		"BuildAll - Win32 $(LONG)" $(CTARGET)
+!ELSE
 	@msdev Apache.dsw /USEENV /MAKE \
 		"BuildBin - Win32 $(LONG)" $(CTARGET)
+!ENDIF
 !IF "$(CTARGET)" == "/CLEAN"
 	@cd srclib\apr-iconv
 	@$(MAKE) $(MAKEOPT) -f build\modules.mk.win clean \
@@ -389,17 +434,19 @@ _copybin:
 	copy srclib\apr-util\$(LONG)\libaprutil-1.$(src_dll) 	"$(inst_dll)" <.y
 	copy modules\aaa\$(LONG)\mod_auth_basic.$(src_so) 	"$(inst_so)" <.y
 	copy modules\aaa\$(LONG)\mod_auth_digest.$(src_so) 	"$(inst_so)" <.y
+	copy modules\aaa\$(LONG)\mod_authn_alias.$(src_so) 	"$(inst_so)" <.y
 	copy modules\aaa\$(LONG)\mod_authn_anon.$(src_so) 	"$(inst_so)" <.y
 	copy modules\aaa\$(LONG)\mod_authn_dbd.$(src_so) 	"$(inst_so)" <.y
 	copy modules\aaa\$(LONG)\mod_authn_dbm.$(src_so) 	"$(inst_so)" <.y
 	copy modules\aaa\$(LONG)\mod_authn_default.$(src_so) 	"$(inst_so)" <.y
 	copy modules\aaa\$(LONG)\mod_authn_file.$(src_so) 	"$(inst_so)" <.y
+	copy modules\aaa\$(LONG)\mod_authnz_ldap.$(src_so)	"$(inst_so)" <.y
 	copy modules\aaa\$(LONG)\mod_authz_dbm.$(src_so) 	"$(inst_so)" <.y
 	copy modules\aaa\$(LONG)\mod_authz_default.$(src_so) 	"$(inst_so)" <.y
 	copy modules\aaa\$(LONG)\mod_authz_groupfile.$(src_so) 	"$(inst_so)" <.y
 	copy modules\aaa\$(LONG)\mod_authz_host.$(src_so) 	"$(inst_so)" <.y
+	copy modules\aaa\$(LONG)\mod_authz_owner.$(src_so) 	"$(inst_so)" <.y
 	copy modules\aaa\$(LONG)\mod_authz_user.$(src_so) 	"$(inst_so)" <.y
-	copy modules\aaa\$(LONG)\mod_authnz_ldap.$(src_so)	"$(inst_so)" <.y
 	copy modules\arch\win32\$(LONG)\mod_isapi.$(src_so) 	"$(inst_so)" <.y
 	copy modules\cache\$(LONG)\mod_cache.$(src_so)		"$(inst_so)" <.y
 	copy modules\cache\$(LONG)\mod_file_cache.$(src_so) 	"$(inst_so)" <.y
@@ -407,9 +454,18 @@ _copybin:
 	copy modules\cache\$(LONG)\mod_disk_cache.$(src_so)	"$(inst_so)" <.y
 	copy modules\database\$(LONG)\mod_dbd.$(src_so)		"$(inst_so)" <.y
 	copy modules\dav\fs\$(LONG)\mod_dav_fs.$(src_so) 	"$(inst_so)" <.y
+	copy modules\dav\lock\$(LONG)\mod_dav_lock.$(src_so) 	"$(inst_so)" <.y
 	copy modules\dav\main\$(LONG)\mod_dav.$(src_so)		"$(inst_so)" <.y
+!IFDEF ALL
 	copy modules\debug\$(LONG)\mod_bucketeer.$(src_so)	"$(inst_so)" <.y
+!ENDIF
 	copy modules\debug\$(LONG)\mod_dumpio.$(src_so)		"$(inst_so)" <.y
+!IFDEF ALL
+	copy modules\echo\$(LONG)\mod_echo.$(src_so)		"$(inst_so)" <.y
+	copy modules\experimental\$(LONG)\mod_case_filter.$(src_so)	"$(inst_so)" <.y
+	copy modules\experimental\$(LONG)\mod_case_filter_in.$(src_so)	"$(inst_so)" <.y
+	copy modules\experimental\$(LONG)\mod_example.$(src_so)	"$(inst_so)" <.y
+!ENDIF
 	copy modules\filters\$(LONG)\mod_charset_lite.$(src_so)	"$(inst_so)" <.y
 !IF EXIST("srclib\zlib")
 	copy modules\filters\$(LONG)\mod_deflate.$(src_so) 	"$(inst_so)" <.y
@@ -418,6 +474,7 @@ _copybin:
 !ENDIF
 !ENDIF
 	copy modules\filters\$(LONG)\mod_ext_filter.$(src_so) 	"$(inst_so)" <.y
+	copy modules\filters\$(LONG)\mod_filter.$(src_so) 	"$(inst_so)" <.y
 	copy modules\filters\$(LONG)\mod_include.$(src_so) 	"$(inst_so)" <.y
 	copy modules\generators\$(LONG)\mod_asis.$(src_so) 	"$(inst_so)" <.y
 	copy modules\generators\$(LONG)\mod_autoindex.$(src_so) "$(inst_so)" <.y
@@ -467,6 +524,7 @@ _copybin:
 	copy support\$(LONG)\htdbm.$(src_exe) 			"$(inst_exe)" <.y
 	copy support\$(LONG)\htdigest.$(src_exe) 		"$(inst_exe)" <.y
 	copy support\$(LONG)\htpasswd.$(src_exe) 		"$(inst_exe)" <.y
+	copy support\$(LONG)\httxt2dbm.$(src_exe)		"$(inst_exe)" <.y
 	copy support\$(LONG)\logresolve.$(src_exe) 		"$(inst_exe)" <.y
 	copy support\$(LONG)\rotatelogs.$(src_exe) 		"$(inst_exe)" <.y
 	copy support\win32\$(LONG)\ApacheMonitor.$(src_exe) 	"$(inst_exe)" <.y
@@ -508,6 +566,7 @@ _install:
 	copy NOTICE       "$(INSTDIR)\NOTICE.txt" <.y
 	copy README       "$(INSTDIR)\README.txt" <.y
 !IF EXIST("srclib\openssl")
+	copy srclib\openssl\apps\openssl.cnf "$(INSTDIR)\conf\openssl.cnf" <.y
 	type << >> "$(INSTDIR)\NOTICE.txt"
 
   This binary distribution includes cryptographic software written by
@@ -527,10 +586,10 @@ BEGIN {
 <<
 	copy << + srclib\openssl\NEWS "$(INSTDIR)\OPENSSL-NEWS.txt" <.y
 
- Apache HTTP Server 2.0 Limited OpenSSL Distribution
+ Apache HTTP Server 2.2 Limited OpenSSL Distribution
 
  This binary distribution includes the minimal components of OpenSSL required
- to support mod_ssl for Apache HTTP Server version 2.0 (details are listed 
+ to support mod_ssl for Apache HTTP Server version 2.2 (details are listed 
  in OPENSSL-README.txt.)  For the complete list of CHANGES to this and later 
  versions of OpenSSL, please refer to the definative source,
  <http://www.openssl.org/news/changelog.html>, or see the CHANGES file in the
@@ -543,17 +602,21 @@ BEGIN {
 <<
 	copy << + srclib\openssl\README "$(INSTDIR)\OPENSSL-README.txt" <.y
 
- Apache HTTP Server 2.0 Limited OpenSSL Distribution
+ Apache HTTP Server 2.2 Limited OpenSSL Distribution
 
- This binary installation of OpenSSL is a limited distribution of the documents
- OPENSSL-LICENSE.txt, OPENSSL-NEWS.txt and OPENSSL-README.txt, and the binaries
+ This binary installation of OpenSSL is a limited distribution of the
+ files derived from the OpenSSL project:
 
-   libeay32.dll
-   ssleay32.dll
-   openssl.exe
+   OPENSSL-LICENSE.txt
+   OPENSSL-NEWS.txt
+   OPENSSL-README.txt
+   conf\openssl.cnf
+   bin\libeay32.dll
+   bin\ssleay32.dll
+   bin\openssl.exe
 
  These are the minimal libraries and tools required to use mod_ssl as 
- distributed with Apache HTTP Server version 2.0.  No library link files, 
+ distributed with Apache HTTP Server version 2.2.  No library link files, 
  headers or sources are distributed with this binary distribution.  Please 
  refer to the <http://www.openssl.org/> site for complete source or binary 
  distributions.

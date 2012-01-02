@@ -51,7 +51,7 @@ static int sc_for_req_header(const char *header_name)
     const char *p = header_name;
     int i = 0;
 
-    /* ACCEPT-LANGUAGE is the longest headeer
+    /* ACCEPT-LANGUAGE is the longest header
      * that is of interest.
      */
     if (len < 4 || len > 15)
@@ -69,11 +69,11 @@ static int sc_for_req_header(const char *header_name)
                     return SC_ACCEPT;
                 else if (header[6] == '-') {
                     p += 6;
-                    if (memcmp(p, "CHARSET", 7) == 0)
+                    if (strcmp(p, "CHARSET") == 0)
                         return SC_ACCEPT_CHARSET;
-                    else if (memcmp(p,  "ENCODING", 8) == 0)
+                    else if (strcmp(p,  "ENCODING") == 0)
                         return SC_ACCEPT_ENCODING;
-                    else if (memcmp(p, "LANGUAGE", 8) == 0)
+                    else if (strcmp(p, "LANGUAGE") == 0)
                         return SC_ACCEPT_LANGUAGE;
                     else
                         return UNKNOWN_METHOD;
@@ -81,45 +81,45 @@ static int sc_for_req_header(const char *header_name)
                 else
                     return UNKNOWN_METHOD;
             }
-            else if (memcmp(p, "UTHORIZATION", 12) == 0)
+            else if (strcmp(p, "UTHORIZATION") == 0)
                 return SC_AUTHORIZATION;
             else
                 return UNKNOWN_METHOD;
         break;
         case 'C':
-            if(memcmp(p, "OOKIE2", 6) == 0)
+            if(strcmp(p, "OOKIE2") == 0)
                 return SC_COOKIE2;
-	    else if (memcmp(p, "OOKIE", 5) == 0)
+	    else if (strcmp(p, "OOKIE") == 0)
                 return SC_COOKIE;
-            else if(memcmp(p, "ONNECTION", 9) == 0)
+            else if(strcmp(p, "ONNECTION") == 0)
                 return SC_CONNECTION;
-            else if(memcmp(p, "ONTENT-TYPE", 11) == 0)
+            else if(strcmp(p, "ONTENT-TYPE") == 0)
                 return SC_CONTENT_TYPE;
-            else if(memcmp(p, "ONTENT-LENGTH", 13) == 0)
+            else if(strcmp(p, "ONTENT-LENGTH") == 0)
                 return SC_CONTENT_LENGTH;
             else
                 return UNKNOWN_METHOD;
         break;
         case 'H':
-            if(memcmp(p, "OST", 3) == 0)
+            if(strcmp(p, "OST") == 0)
                 return SC_HOST;
             else
                 return UNKNOWN_METHOD;
         break;
         case 'P':
-            if(memcmp(p, "RAGMA", 5) == 0)
+            if(strcmp(p, "RAGMA") == 0)
                 return SC_PRAGMA;
             else
                 return UNKNOWN_METHOD;
         break;
         case 'R':
-            if(memcmp(p, "EFERER", 6) == 0)
+            if(strcmp(p, "EFERER") == 0)
                 return SC_REFERER;
             else
                 return UNKNOWN_METHOD;
         break;
         case 'U':
-            if(memcmp(p, "SER-AGENT", 9) == 0)
+            if(strcmp(p, "SER-AGENT") == 0)
                 return SC_USER_AGENT;
             else
                 return UNKNOWN_METHOD;
@@ -473,10 +473,11 @@ static apr_status_t ajp_unmarshal_response(ajp_msg_t *msg,
 
     rc = ajp_msg_get_string(msg, &ptr);
     if (rc == APR_SUCCESS) {
-        r->status_line =  apr_psprintf(r->pool, "%d %s", status, ptr);
-#if defined(AS400) || defined(_OSD_POSIX)
-        ap_xlate_proto_from_ascii(r->status_line, strlen(r->status_line));
+#if defined(AS400) || defined(_OSD_POSIX) /* EBCDIC platforms */
+        ptr = apr_pstrdup(r->pool, ptr);
+        ap_xlate_proto_from_ascii(ptr, strlen(ptr));
 #endif
+        r->status_line =  apr_psprintf(r->pool, "%d %s", status, ptr);
     } else {
         r->status_line = NULL;
     }
@@ -561,7 +562,7 @@ static apr_status_t ajp_unmarshal_response(ajp_msg_t *msg,
         apr_table_add(r->headers_out, stringname, value);
 
         /* Content-type needs an additional handling */
-        if (memcmp(stringname, "Content-Type", 12) == 0) {
+        if (strcasecmp(stringname, "Content-Type") == 0) {
              /* add corresponding filter */
             ap_set_content_type(r, apr_pstrdup(r->pool, value));
             ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server,
@@ -577,12 +578,13 @@ static apr_status_t ajp_unmarshal_response(ajp_msg_t *msg,
  */
 apr_status_t ajp_send_header(apr_socket_t *sock,
                              request_rec *r,
+                             apr_size_t buffsize,
                              apr_uri_t *uri)
 {
     ajp_msg_t *msg;
     apr_status_t rc;
 
-    rc = ajp_msg_create(r->pool, &msg);
+    rc = ajp_msg_create(r->pool, buffsize, &msg);
     if (rc != APR_SUCCESS) {
         ap_log_error(APLOG_MARK, APLOG_ERR, 0, r->server,
                "ajp_send_header: ajp_msg_create failed");
@@ -611,6 +613,7 @@ apr_status_t ajp_send_header(apr_socket_t *sock,
  */
 apr_status_t ajp_read_header(apr_socket_t *sock,
                              request_rec  *r,
+                             apr_size_t buffsize,
                              ajp_msg_t **msg)
 {
     apr_byte_t result;
@@ -625,7 +628,7 @@ apr_status_t ajp_read_header(apr_socket_t *sock,
         }
     }
     else {
-        rc = ajp_msg_create(r->pool, msg);
+        rc = ajp_msg_create(r->pool, buffsize, msg);
         if (rc != APR_SUCCESS) {
             ap_log_error(APLOG_MARK, APLOG_ERR, 0, r->server,
                    "ajp_read_header: ajp_msg_create failed");
@@ -728,11 +731,11 @@ apr_status_t  ajp_alloc_data_msg(apr_pool_t *pool, char **ptr, apr_size_t *len,
 {
     apr_status_t rc;
 
-    if ((rc = ajp_msg_create(pool, msg)) != APR_SUCCESS)
+    if ((rc = ajp_msg_create(pool, *len, msg)) != APR_SUCCESS)
         return rc;
     ajp_msg_reset(*msg);
     *ptr = (char *)&((*msg)->buf[6]);
-    *len = AJP_MSG_BUFFER_SZ-6;
+    *len =  *len - 6;
 
     return APR_SUCCESS;
 }

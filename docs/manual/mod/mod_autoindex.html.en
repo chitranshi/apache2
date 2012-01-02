@@ -516,6 +516,32 @@ indexing</td></tr>
     of</p>
 
     <dl>
+      <dt><a name="indexoptions.charset" id="indexoptions.charset">Charset=<var>character-set</var></a> (<em>Apache 2.0.61 and
+      later</em>)</dt>
+
+      <dd>The <code>Charset</code> keyword allows you to
+      specify the character set of the generated page. The
+      default is either <var>ISO-8859-1</var> or <var>UTF-8</var>,
+      depending on whether the underlying file system is unicode
+      or not.
+
+      <div class="example"><h3>Example:</h3><p><code>
+        IndexOptions Charset=UTF-8
+      </code></p></div>
+      </dd>
+      
+      <dt><a name="indexoptions.type" id="indexoptions.type">Type=<var>MIME content-type</var></a> (<em>Apache 2.0.61 and
+      later</em>)</dt>
+
+      <dd>The <code>Type</code> keyword allows you to
+      specify the MIME content-type of the generated page. The default
+      is <var>text/html</var>.
+
+      <div class="example"><h3>Example:</h3><p><code>
+        IndexOptions Type=text/plain
+      </code></p></div>
+      </dd>
+      
       <dt><a name="indexoptions.descriptionwidth" id="indexoptions.descriptionwidth">DescriptionWidth=[<var>n</var> | *]</a> (<em>Apache 2.0.23 and
       later</em>)</dt>
 
@@ -888,6 +914,6 @@ of the index listing</td></tr>
 <a href="../ja/mod/mod_autoindex.html" hreflang="ja" rel="alternate" title="Japanese">&nbsp;ja&nbsp;</a> |
 <a href="../ko/mod/mod_autoindex.html" hreflang="ko" rel="alternate" title="Korean">&nbsp;ko&nbsp;</a></p>
 </div><div id="footer">
-<p class="apache">Copyright 2006 The Apache Software Foundation.<br />Licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
+<p class="apache">Copyright 2007 The Apache Software Foundation.<br />Licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
 <p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="../faq/">FAQ</a> | <a href="../glossary.html">Glossary</a> | <a href="../sitemap.html">Sitemap</a></p></div>
 </body></html>

@@ -410,8 +410,7 @@
       Layer Security</a> <a name="tls" id="tls">(TLS)</a></dt>
   <dd>The successor protocol to SSL, created by the Internet Engineering Task
     Force (IETF) for general communication authentication and encryption over
-    TCP/IP networks. TLS version 1 and is nearly identical with SSL version
-    3.<br />
+    TCP/IP networks. TLS version 1 is nearly identical with SSL version 3.<br />
     See: <a href="ssl/">SSL/TLS Encryption</a>
   </dd>
 
@@ -451,6 +450,6 @@
 <a href="./es/glossary.html" hreflang="es" rel="alternate" title="Español">&nbsp;es&nbsp;</a> |
 <a href="./ko/glossary.html" hreflang="ko" rel="alternate" title="Korean">&nbsp;ko&nbsp;</a></p>
 </div><div id="footer">
-<p class="apache">Copyright 2006 The Apache Software Foundation.<br />Licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
+<p class="apache">Copyright 2007 The Apache Software Foundation.<br />Licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
 <p class="menu"><a href="./mod/">Modules</a> | <a href="./mod/directives.html">Directives</a> | <a href="./faq/">FAQ</a> | <a href="./glossary.html">Glossary</a> | <a href="./sitemap.html">Sitemap</a></p></div>
 </body></html>

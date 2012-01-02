@@ -22,7 +22,7 @@ static apr_status_t setptr(apr_file_t *thefile, apr_off_t pos )
     apr_status_t rv;
 
     if (thefile->direction == 1) {
-        rv = apr_file_flush(thefile);
+        rv = apr_file_flush_locked(thefile);
         if (rv) {
             return rv;
         }
@@ -59,6 +59,8 @@ APR_DECLARE(apr_status_t) apr_file_seek(apr_file_t *thefile, apr_seek_where_t wh
         int rc = EINVAL;
         apr_finfo_t finfo;
 
+        file_lock(thefile);
+
         switch (where) {
         case APR_SET:
             rc = setptr(thefile, *offset);
@@ -69,13 +71,16 @@ APR_DECLARE(apr_status_t) apr_file_seek(apr_file_t *thefile, apr_seek_where_t wh
             break;
 
         case APR_END:
-            rc = apr_file_info_get(&finfo, APR_FINFO_SIZE, thefile);
+            rc = apr_file_info_get_locked(&finfo, APR_FINFO_SIZE, thefile);
             if (rc == APR_SUCCESS)
                 rc = setptr(thefile, finfo.size + *offset);
             break;
         }
 
         *offset = thefile->filePtr - thefile->dataRead + thefile->bufpos;
+
+        file_unlock(thefile);
+
         return rc;
     }
     else {
@@ -96,5 +101,5 @@ apr_status_t apr_file_trunc(apr_file_t *fp, apr_off_t offset)
     if (ftruncate(fp->filedes, offset) == -1) {
         return errno;
     }
-    return setptr(fp, offset);
+    return apr_file_seek(fp, APR_SET, &offset);
 }

@@ -21,10 +21,13 @@
 <p><span>Available Languages: </span><a href="./de/invoking.html" hreflang="de" rel="alternate" title="Deutsch">&nbsp;de&nbsp;</a> |
 <a href="./en/invoking.html" hreflang="en" rel="alternate" title="English">&nbsp;en&nbsp;</a> |
 <a href="./es/invoking.html" hreflang="es" rel="alternate" title="Español">&nbsp;es&nbsp;</a> |
+<a href="./fr/invoking.html" hreflang="fr" rel="alternate" title="Français">&nbsp;fr&nbsp;</a> |
 <a href="./ja/invoking.html" title="Japanese">&nbsp;ja&nbsp;</a> |
 <a href="./ko/invoking.html" hreflang="ko" rel="alternate" title="Korean">&nbsp;ko&nbsp;</a> |
 <a href="./ru/invoking.html" hreflang="ru" rel="alternate" title="Russian">&nbsp;ru&nbsp;</a></p>
 </div>
+<div class="outofdate">This translation may be out of date. Check the
+            English version for recent changes.</div>
 
     <p>Windows 上では、Apache は通常は
     Windows NT, 2000, XP ではサービスとして、Windows 9x, ME 
@@ -152,10 +155,11 @@
 <p><span>Available Languages: </span><a href="./de/invoking.html" hreflang="de" rel="alternate" title="Deutsch">&nbsp;de&nbsp;</a> |
 <a href="./en/invoking.html" hreflang="en" rel="alternate" title="English">&nbsp;en&nbsp;</a> |
 <a href="./es/invoking.html" hreflang="es" rel="alternate" title="Español">&nbsp;es&nbsp;</a> |
+<a href="./fr/invoking.html" hreflang="fr" rel="alternate" title="Français">&nbsp;fr&nbsp;</a> |
 <a href="./ja/invoking.html" title="Japanese">&nbsp;ja&nbsp;</a> |
 <a href="./ko/invoking.html" hreflang="ko" rel="alternate" title="Korean">&nbsp;ko&nbsp;</a> |
 <a href="./ru/invoking.html" hreflang="ru" rel="alternate" title="Russian">&nbsp;ru&nbsp;</a></p>
 </div><div id="footer">
-<p class="apache">Copyright 2006 The Apache Software Foundation.<br />Licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
+<p class="apache">Copyright 2007 The Apache Software Foundation.<br />Licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
 <p class="menu"><a href="./mod/">モジュール</a> | <a href="./mod/directives.html">ディレクティブ</a> | <a href="./faq/">FAQ</a> | <a href="./glossary.html">用語</a> | <a href="./sitemap.html">サイトマップ</a></p></div>
 </body></html>

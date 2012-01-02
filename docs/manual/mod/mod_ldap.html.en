@@ -104,7 +104,7 @@ by other LDAP modules</td></tr>
         Allow from yourdomain.example.com<br />
         AuthLDAPURL ldap://127.0.0.1/dc=example,dc=com?uid?one<br />
         AuthzLDAPAuthoritative off<br />
-        require valid-user<br />
+        Require valid-user<br />
       </span>
       &lt;/Location&gt;
     </code></p></div>
@@ -232,7 +232,7 @@ by other LDAP modules</td></tr>
         Allow from yourdomain.example.com<br />
         AuthLDAPURL ldaps://127.0.0.1/dc=example,dc=com?uid?one<br />
         AuthzLDAPAuthoritative off<br />
-        require valid-user<br />
+        Require valid-user<br />
       </span>
       &lt;/Location&gt;
     </code></p></div>
@@ -252,7 +252,7 @@ by other LDAP modules</td></tr>
         Allow from yourdomain.example.com<br />
         AuthLDAPURL ldap://127.0.0.1/dc=example,dc=com?uid?one TLS<br />
         AuthzLDAPAuthoritative off<br />
-        require valid-user<br />
+        Require valid-user<br />
       </span>
       &lt;/Location&gt;
     </code></p></div>
@@ -304,7 +304,7 @@ by other LDAP modules</td></tr>
                 LDAPTrustedClientCert CERT_NICKNAME &lt;nickname&gt; [password]<br />
                 AuthLDAPURL ldaps://127.0.0.1/dc=example,dc=com?uid?one<br />
                 AuthzLDAPAuthoritative off<br />
-                require valid-user<br />
+                Require valid-user<br />
             </span>
             &lt;/Location&gt;
         </code></p></div>
@@ -371,7 +371,7 @@ by other LDAP modules</td></tr>
                 LDAPTrustedClientCert KEY_BASE64 /certs/key1.pem<br />
                 AuthLDAPURL ldaps://127.0.0.1/dc=example,dc=com?uid?one<br />
                 AuthzLDAPAuthoritative off<br />
-                require valid-user<br />
+                Require valid-user<br />
             </span>
             &lt;/Location&gt;
         </code></p></div>
@@ -622,6 +622,6 @@ Certificate Authority or global client certificates</td></tr>
 <div class="bottomlang">
 <p><span>Available Languages: </span><a href="../en/mod/mod_ldap.html" title="English">&nbsp;en&nbsp;</a></p>
 </div><div id="footer">
-<p class="apache">Copyright 2006 The Apache Software Foundation.<br />Licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
+<p class="apache">Copyright 2007 The Apache Software Foundation.<br />Licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
 <p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="../faq/">FAQ</a> | <a href="../glossary.html">Glossary</a> | <a href="../sitemap.html">Sitemap</a></p></div>
 </body></html>

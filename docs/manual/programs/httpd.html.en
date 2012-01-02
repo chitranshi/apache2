@@ -94,8 +94,11 @@ files.</dd>
 
 <dd>Sets a configuration <var>parameter </var>which can be used with
 <code class="directive"><a href="../mod/core.html#ifdefine">&lt;IfDefine&gt;</a></code> sections
-in the configuration files to conditionally skip or process
-commands at server startup and restart.</dd>
+in the configuration files to conditionally skip or process commands
+at server startup and restart. Also can be used to set certain
+less-common startup parameters including <code>-DNO_DETACH</code>
+(prevent the parent from forking) and <code>-DFOREGROUND</code>
+(prevent the parent from calling <code>setsid()</code> et al).</dd>
 
 <dt><code>-e <var>level</var></code></dt>
 
@@ -188,6 +191,6 @@ be read.</dd>
 <p><span>Available Languages: </span><a href="../en/programs/httpd.html" title="English">&nbsp;en&nbsp;</a> |
 <a href="../ko/programs/httpd.html" hreflang="ko" rel="alternate" title="Korean">&nbsp;ko&nbsp;</a></p>
 </div><div id="footer">
-<p class="apache">Copyright 2006 The Apache Software Foundation.<br />Licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
+<p class="apache">Copyright 2007 The Apache Software Foundation.<br />Licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
 <p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="../faq/">FAQ</a> | <a href="../glossary.html">Glossary</a> | <a href="../sitemap.html">Sitemap</a></p></div>
 </body></html>

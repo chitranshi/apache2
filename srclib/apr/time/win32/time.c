@@ -52,7 +52,7 @@ static DWORD get_local_timezone(TIME_ZONE_INFORMATION **tzresult)
 static void SystemTimeToAprExpTime(apr_time_exp_t *xt, SYSTEMTIME *tm)
 {
     static const int dayoffset[12] =
-    {0, 31, 59, 90, 120, 151, 182, 212, 243, 273, 304, 334};
+    {0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334};
 
     /* Note; the caller is responsible for filling in detailed tm_usec,
      * tm_gmtoff and tm_isdst data when applicable.
@@ -139,7 +139,7 @@ APR_DECLARE(apr_status_t) apr_time_exp_lt(apr_time_exp_t *result,
 
     AprTimeToFileTime(&ft, input);
 
-#if APR_HAS_UNICODE_FS
+#if APR_HAS_UNICODE_FS && !defined(_WIN32_WCE)
     IF_WIN_OS_IS_UNICODE
     {
         TIME_ZONE_INFORMATION *tz;
@@ -178,7 +178,7 @@ APR_DECLARE(apr_status_t) apr_time_exp_lt(apr_time_exp_t *result,
                          - (-(tz->Bias + tz->StandardBias) / 60);
     }
 #endif
-#if APR_HAS_ANSI_FS
+#if APR_HAS_ANSI_FS || defined(_WIN32_WCE)
     ELSE_WIN_OS_IS_ANSI
     {
         TIME_ZONE_INFORMATION tz;
@@ -304,7 +304,13 @@ APR_DECLARE(void) apr_sleep(apr_interval_time_t t)
     Sleep((DWORD)(t / 1000));
 }
 
-
+#if defined(_WIN32_WCE)
+/* A noop on WinCE, like Unix implementation */
+APR_DECLARE(void) apr_time_clock_hires(apr_pool_t *p)
+{
+    return;
+}
+#else
 static apr_status_t clock_restore(void *unsetres)
 {
     ULONG newRes;
@@ -324,3 +330,4 @@ APR_DECLARE(void) apr_time_clock_hires(apr_pool_t *p)
                                   apr_pool_cleanup_null);
     }
 }
+#endif

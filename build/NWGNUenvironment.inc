@@ -111,10 +111,13 @@ endif
 #
 
 # MetroWerks NLM tools
-CC		= mwccnlm
-CPP		= mwccnlm
+CC	= mwccnlm
+CPP	= mwccnlm
 LINK	= mwldnlm
-LIB		= mwldnlm -type library -w nocmdline
+LIB	= mwldnlm -type library -w nocmdline
+
+# Setup build tools
+AWK	= awk
 
 ifdef IPV6
 ifndef USE_STDSOCKETS
@@ -132,12 +135,18 @@ ifneq "$(ZLIBSDK)" ""
 INCDIRS := $(INCDIRS);$(ZLIBSDK)
 endif
 
-DEFINES		= -DNETWARE 
+DEFINES	= -DNETWARE 
 ifndef USE_STDSOCKETS
-DEFINES += -DUSE_WINSOCK
+DEFINES	+= -DUSE_WINSOCK
 endif
 ifndef DEBUG
-DEFINES += -DNDEBUG
+DEFINES	+= -DNDEBUG
+endif
+
+ifdef USE_STDSOCKETS
+VERSION_SKT = (BSDSOCK)
+else
+VERSION_SKT = (WINSOCK)
 endif
 
 #
@@ -205,6 +214,19 @@ INSTALL = $(AP_WORK)\Dist
 INSTDIRS = $(AP_WORK)\Dist
 endif
 
+ifndef BASEDIR
+BASEDIR = Apache22
+export BASEDIR
+endif
+
+ifndef PORT
+PORT = 80
+endif
+
+ifndef SSLPORT
+SSLPORT = 443
+endif
+
 # Add support for building IPV6 alongside
 ifneq "$(IPV6)" ""
 DEFINES += -DNW_BUILD_IPV6
@@ -225,22 +247,22 @@ endif
 endif
 
 INSTDEVDIRS := \
-    $(INSTDIRS) \
-	$(INSTALL)\Apache2\include \
-	$(INSTALL)\Apache2\lib \
+	$(INSTDIRS) \
+	$(INSTALL)\$(BASEDIR)\include \
+	$(INSTALL)\$(BASEDIR)\lib \
 
 INSTDIRS += \
-	$(INSTALL)\Apache2 \
-	$(INSTALL)\Apache2\bin \
-	$(INSTALL)\Apache2\cgi-bin \
-	$(INSTALL)\Apache2\conf \
-	$(INSTALL)\Apache2\error \
-	$(INSTALL)\Apache2\htdocs \
-	$(INSTALL)\Apache2\icons \
-	$(INSTALL)\Apache2\logs \
-	$(INSTALL)\Apache2\man \
-	$(INSTALL)\Apache2\manual \
-	$(INSTALL)\Apache2\modules \
+	$(INSTALL)\$(BASEDIR) \
+	$(INSTALL)\$(BASEDIR)\bin \
+	$(INSTALL)\$(BASEDIR)\cgi-bin \
+	$(INSTALL)\$(BASEDIR)\conf \
+	$(INSTALL)\$(BASEDIR)\error \
+	$(INSTALL)\$(BASEDIR)\htdocs \
+	$(INSTALL)\$(BASEDIR)\icons \
+	$(INSTALL)\$(BASEDIR)\logs \
+	$(INSTALL)\$(BASEDIR)\man \
+	$(INSTALL)\$(BASEDIR)\manual \
+	$(INSTALL)\$(BASEDIR)\modules \
 
 #
 # Declare Command and tool macros here
@@ -252,21 +274,20 @@ OS = Windows_NT
 endif
 
 ifeq "$(OS)" "Windows_NT"
-CMD=cmd /C
-CHK=cmd /C if exist
-CHKNOT=cmd /C if not exist
+CMD = cmd /C
 DEL = del /F
-DELTREE = cmd /C rd /s/q
-WINNT=1
+DELTREE = rd /s/q
+WINNT = 1
 XCOPYSW = /E
 else
-CMD=command /C
-CHK=command /C if exist
-CHKNOT=command /C if not exist
+CMD = command /C
 DEL = del
 DELTREE = deltree /y
 XCOPYSW = /E /Y
 endif
+
+CHK = $(CMD) if exist
+CHKNOT = $(CMD) if not exist
 
 
 #

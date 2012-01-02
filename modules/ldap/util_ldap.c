@@ -52,6 +52,14 @@
 #define LDAP_CA_TYPE_BASE64             2
 #define LDAP_CA_TYPE_CERT7_DB           3
 
+/* Default define for ldap functions that need a SIZELIMIT but
+ * do not have the define
+ * XXX This should be removed once a supporting #define is 
+ *  released through APR-Util.
+ */
+#ifndef APR_LDAP_SIZELIMIT
+#define APR_LDAP_SIZELIMIT -1
+#endif
 
 module AP_MODULE_DECLARE_DATA ldap_module;
 
@@ -201,7 +209,7 @@ static apr_status_t uldap_connection_cleanup(void *param)
 static int uldap_connection_init(request_rec *r,
                                  util_ldap_connection_t *ldc )
 {
-    int rc = 0;
+    int rc = 0, ldap_option = 0;
     int version  = LDAP_VERSION3;
     apr_ldap_err_t *result = NULL;
     struct timeval timeOut = {10,0};    /* 10 second connection timeout */
@@ -264,7 +272,8 @@ static int uldap_connection_init(request_rec *r,
     }
 
     /* Set the alias dereferencing option */
-    ldap_set_option(ldc->ldap, LDAP_OPT_DEREF, &(ldc->deref));
+    ldap_option = ldc->deref;
+    ldap_set_option(ldc->ldap, LDAP_OPT_DEREF, &ldap_option);
 
 /*XXX All of the #ifdef's need to be removed once apr-util 1.2 is released */
 #ifdef APR_LDAP_OPT_VERIFY_CERT
@@ -656,7 +665,7 @@ start_over:
     /* search for reqdn */
     if ((result = ldap_search_ext_s(ldc->ldap, (char *)reqdn, LDAP_SCOPE_BASE,
                                     "(objectclass=*)", NULL, 1,
-                                    NULL, NULL, NULL, -1, &res))
+                                    NULL, NULL, NULL, APR_LDAP_SIZELIMIT, &res))
             == LDAP_SERVER_DOWN)
     {
         ldc->reason = "DN Comparison ldap_search_ext_s() "
@@ -934,7 +943,7 @@ start_over:
     if ((result = ldap_search_ext_s(ldc->ldap,
                                     (char *)basedn, scope,
                                     (char *)filter, attrs, 0,
-                                    NULL, NULL, NULL, -1, &res))
+                                    NULL, NULL, NULL, APR_LDAP_SIZELIMIT, &res))
             == LDAP_SERVER_DOWN)
     {
         ldc->reason = "ldap_search_ext_s() for user failed with server down";
@@ -1174,7 +1183,7 @@ start_over:
     if ((result = ldap_search_ext_s(ldc->ldap,
                                     (char *)basedn, scope,
                                     (char *)filter, attrs, 0,
-                                    NULL, NULL, NULL, -1, &res))
+                                    NULL, NULL, NULL, APR_LDAP_SIZELIMIT, &res))
             == LDAP_SERVER_DOWN)
     {
         ldc->reason = "ldap_search_ext_s() for user failed with server down";
@@ -1814,6 +1823,7 @@ static void *util_ldap_merge_config(apr_pool_t *p, void *basev,
     st->search_cache_size = base->search_cache_size;
     st->compare_cache_ttl = base->compare_cache_ttl;
     st->compare_cache_size = base->compare_cache_size;
+    st->util_ldap_cache_lock = base->util_ldap_cache_lock; 
 
     st->connections = NULL;
     st->ssl_supported = 0;

@@ -69,6 +69,7 @@
 <li><img alt="" src="../images/down.gif" /> <a href="#cacheignorecachecontrol">CacheIgnoreCacheControl</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#cacheignoreheaders">CacheIgnoreHeaders</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#cacheignorenolastmod">CacheIgnoreNoLastMod</a></li>
+<li><img alt="" src="../images/down.gif" /> <a href="#cacheignorequerystring">CacheIgnoreQueryString</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#cachelastmodifiedfactor">CacheLastModifiedFactor</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#cachemaxexpire">CacheMaxExpire</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#cachestorenostore">CacheStoreNoStore</a></li>
@@ -329,6 +330,31 @@ header.</td></tr>
 
 </div>
 <div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
+<div class="directive-section"><h2><a name="CacheIgnoreQueryString" id="CacheIgnoreQueryString">CacheIgnoreQueryString</a> <a name="cacheignorequerystring" id="cacheignorequerystring">Directive</a></h2>
+<table class="directive">
+<tr><th><a href="directive-dict.html#Description">Description:</a></th><td>Ignore query string when caching</td></tr>
+<tr><th><a href="directive-dict.html#Syntax">Syntax:</a></th><td><code>CacheIgnoreQueryString On|Off</code></td></tr>
+<tr><th><a href="directive-dict.html#Default">Default:</a></th><td><code>CacheIgnoreQueryString Off</code></td></tr>
+<tr><th><a href="directive-dict.html#Context">Context:</a></th><td>server config, virtual host</td></tr>
+<tr><th><a href="directive-dict.html#Status">Status:</a></th><td>Extension</td></tr>
+<tr><th><a href="directive-dict.html#Module">Module:</a></th><td>mod_cache</td></tr>
+</table>
+    <p>Ordinarily, requests with query string parameters are cached separately
+    for each unique query string. This is according to RFC 2616/13.9 done only
+    if an expiration time is specified. The 
+    <code class="directive">CacheIgnoreQueryString</code> directive tells the cache to
+    cache requests even if no expiration time is specified, and to reply with 
+    a cached reply even if the query string differs. From a caching point of
+    view the request is treated as if having no query string when this 
+    directive is enabled.</p>
+
+    <div class="example"><p><code>
+      CacheIgnoreQueryString On
+    </code></p></div>
+
+
+</div>
+<div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
 <div class="directive-section"><h2><a name="CacheLastModifiedFactor" id="CacheLastModifiedFactor">CacheLastModifiedFactor</a> <a name="cachelastmodifiedfactor" id="cachelastmodifiedfactor">Directive</a></h2>
 <table class="directive">
 <tr><th><a href="directive-dict.html#Description">Description:</a></th><td>The factor used to compute an expiry date based on the
@@ -458,6 +484,6 @@ LastModified date.</td></tr>
 <a href="../ja/mod/mod_cache.html" hreflang="ja" rel="alternate" title="Japanese">&nbsp;ja&nbsp;</a> |
 <a href="../ko/mod/mod_cache.html" hreflang="ko" rel="alternate" title="Korean">&nbsp;ko&nbsp;</a></p>
 </div><div id="footer">
-<p class="apache">Copyright 2006 The Apache Software Foundation.<br />Licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
+<p class="apache">Copyright 2007 The Apache Software Foundation.<br />Licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
 <p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="../faq/">FAQ</a> | <a href="../glossary.html">Glossary</a> | <a href="../sitemap.html">Sitemap</a></p></div>
 </body></html>

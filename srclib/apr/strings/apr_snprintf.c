@@ -396,7 +396,7 @@ static char *conv_10_quad(widest_int num, register bool_int is_unsigned,
      * number against the largest long value it can be. If <=, we
      * punt to the quicker version.
      */
-    if ((num <= ULONG_MAX && is_unsigned) 
+    if (((u_widest_int)num <= (u_widest_int)ULONG_MAX && is_unsigned) 
         || (num <= LONG_MAX && num >= LONG_MIN && !is_unsigned))
             return(conv_10( (wide_int)num, is_unsigned, is_negative,
                buf_end, len));
@@ -501,16 +501,17 @@ static char *conv_os_thread_t(apr_os_thread_t *tid, char *buf_end, apr_size_t *l
 {
     union {
         apr_os_thread_t tid;
-        apr_uint64_t alignme;
+        apr_uint64_t u64;
+        apr_uint32_t u32;
     } u;
     int is_negative;
 
     u.tid = *tid;
     switch(sizeof(u.tid)) {
     case sizeof(apr_int32_t):
-        return conv_10(*(apr_uint32_t *)&u.tid, TRUE, &is_negative, buf_end, len);
+        return conv_10(u.u32, TRUE, &is_negative, buf_end, len);
     case sizeof(apr_int64_t):
-        return conv_10_quad(*(apr_uint64_t *)&u.tid, TRUE, &is_negative, buf_end, len);
+        return conv_10_quad(u.u64, TRUE, &is_negative, buf_end, len);
     default:
         /* not implemented; stick 0 in the buffer */
         return conv_10(0, TRUE, &is_negative, buf_end, len);
@@ -671,16 +672,17 @@ static char *conv_os_thread_t_hex(apr_os_thread_t *tid, char *buf_end, apr_size_
 {
     union {
         apr_os_thread_t tid;
-        apr_uint64_t alignme;
+        apr_uint64_t u64;
+        apr_uint32_t u32;
     } u;
     int is_negative;
 
     u.tid = *tid;
     switch(sizeof(u.tid)) {
     case sizeof(apr_int32_t):
-        return conv_p2(*(apr_uint32_t *)&u.tid, 4, 'x', buf_end, len);
+        return conv_p2(u.u32, 4, 'x', buf_end, len);
     case sizeof(apr_int64_t):
-        return conv_p2_quad(*(apr_uint64_t *)&u.tid, 4, 'x', buf_end, len);
+        return conv_p2_quad(u.u64, 4, 'x', buf_end, len);
     default:
         /* not implemented; stick 0 in the buffer */
         return conv_10(0, TRUE, &is_negative, buf_end, len);
@@ -1109,7 +1111,7 @@ APR_DECLARE(int) apr_vformatter(int (*flush_func)(apr_vformatter_buff_t *),
                  * don't handle "%p".
                  */
                 case 'p':
-#ifdef APR_VOID_P_IS_QUAD
+#if APR_SIZEOF_VOIDP == 8
                     if (sizeof(void *) <= sizeof(u_widest_int)) {
                         ui_quad = (u_widest_int) va_arg(ap, void *);
                         s = conv_p2_quad(ui_quad, 4, 'x',

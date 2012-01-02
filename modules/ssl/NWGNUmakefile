@@ -25,6 +25,7 @@ include $(AP_WORK)\build\NWGNUhead.inc
 
 OSSLINC = $(OSSLSDK)/outinc_nw_libc
 OSSLLIB = $(OSSLSDK)/out_nw_libc
+OSSLAPP = $(OSSLSDK)/apps
 
 #
 # These directories will be at the beginning of the include list, followed by
@@ -271,7 +272,9 @@ nlms :: libs $(TARGET_nlm)
 # correct place.  (See $(AP_WORK)\build\NWGNUhead.inc for examples)
 #
 install :: nlms FORCE
-	copy $(OBJDIR)\mod_ssl.nlm $(INSTALL)\Apache2\modules\*.*
+	copy $(OBJDIR)\mod_ssl.nlm $(INSTALL)\$(BASEDIR)\modules\*.*
+	-copy $(subst /,\,$(OSSLLIB))\openssl.nlm $(INSTALL)\$(BASEDIR)\bin\*.*
+	-copy $(subst /,\,$(OSSLAPP))\openssl.cnf $(INSTALL)\$(BASEDIR)\bin\*.*
     
 #
 # Any specialized rules here
@@ -294,6 +297,5 @@ ssl_expr_scan.c : ssl_expr_scan.l
 #
 
 include $(AP_WORK)\build\NWGNUtail.inc
-
 
 

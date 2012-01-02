@@ -150,6 +150,9 @@ typedef struct {
     #define CACHE_IGNORE_HEADERS_SET   1
     #define CACHE_IGNORE_HEADERS_UNSET 0
     int ignore_headers_set;
+    /** ignore query-string when caching */
+    int ignorequerystring;
+    int ignorequerystring_set;
 } cache_server_conf;
 
 /* cache info information */
@@ -231,6 +234,9 @@ typedef struct {
     apr_time_t lastmod;                 /* last-modified time */
     cache_info *info;                   /* current cache info */
     ap_filter_t *remove_url_filter;     /* Enable us to remove the filter */
+    char *key;                          /* The cache key created for this
+                                         * request
+                                         */
 } cache_request_rec;
 
 

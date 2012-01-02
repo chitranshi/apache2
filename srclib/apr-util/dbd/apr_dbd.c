@@ -125,15 +125,17 @@ APU_DECLARE(apr_status_t) apr_dbd_get_driver(apr_pool_t *pool, const char *name,
 #endif
 
 #ifdef WIN32
-    sprintf(path, "apr_dbd_%s.dll", name);
+    apr_snprintf(path, sizeof path, "apr_dbd_%s.dll", name);
+#elif defined(NETWARE)
+    apr_snprintf(path, sizeof path, "dbd%s.nlm", name);
 #else
-    sprintf(path, "apr_dbd_%s.so", name);
+    apr_snprintf(path, sizeof path, "apr_dbd_%s.so", name);
 #endif
     rv = apr_dso_load(&dlhandle, path, pool);
     if (rv != APR_SUCCESS) { /* APR_EDSOOPEN */
         goto unlock;
     }
-    sprintf(path, "apr_dbd_%s_driver", name);
+    apr_snprintf(path, sizeof path, "apr_dbd_%s_driver", name);
     rv = apr_dso_sym((void*)driver, dlhandle, path);
     if (rv != APR_SUCCESS) { /* APR_ESYMNOTFOUND */
         apr_dso_unload(dlhandle);
@@ -160,7 +162,7 @@ APU_DECLARE(apr_status_t) apr_dbd_open(const apr_dbd_driver_t *driver,
                                        apr_dbd_t **handle)
 {
     apr_status_t rv;
-    *handle = driver->open(pool, params);
+    *handle = (driver->open)(pool, params);
     if (*handle == NULL) {
         return APR_EGENERAL;
     }

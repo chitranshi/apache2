@@ -1,6 +1,10 @@
 apache2 (2.2.21-6) UNRELEASED; urgency=low
 
+  [ Arno Töll ]
   * Fix "typo in /etc/apache2/apache2.conf" (Closes: #653801)
+
+  [ Stefan Fritsch ]
+  * Adjust debian/control to point to new git repository.
 
  -- Arno Töll <debian@toell.net>  Sat, 31 Dec 2011 09:45:14 +0100
 

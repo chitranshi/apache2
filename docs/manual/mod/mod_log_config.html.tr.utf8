@@ -116,7 +116,8 @@
         '2', ikinci bağlantıyı, ..., vb. gösterir;
           <code class="directive"><a href="../mod/core.html#keepalive">KeepAlive</a></code> kullanılmışsa
           değer anlamlıdır; aksi takdirde değer daima (ilk isteği
-          belirten) 0’dır.</td></tr>
+          belirten) 0’dır. 2.2.11 sürümünden beri kullanılabilmektedir.
+          </td></tr>
 <tr class="odd"><td><code>%l</code></td>
         <td>Uzak kullanıcı kimliği (sağlanmışsa, identd üzerinden).
           <code class="module"><a href="../mod/mod_ident.html">mod_ident</a></code> modülü mevcut ve <code class="directive"><a href="../mod/mod_ident.html#identitycheck">IdentityCheck</a></code> yönergesine değer

@@ -70,8 +70,8 @@
     used to log each request to the log file. It can contain literal
     characters copied into the log files and the C-style control
     characters "\n" and "\t" to represent new-lines and tabs.
-    Literal quotes and back-slashes should be escaped with
-    back-slashes.</p>
+    Literal quotes and backslashes should be escaped with
+    backslashes.</p>
 
     <p>The characteristics of the request itself are logged by
     placing "<code>%</code>" directives in the format string, which are
@@ -114,7 +114,8 @@
           <code class="directive"><a href="../mod/core.html#keepalive">KeepAlive</a></code> is being used, so that,
           for example, a '1' means the first keepalive request after the initial
           one, '2' the second, etc...;
-          otherwise this is always 0 (indicating the initial request).</td></tr>
+          otherwise this is always 0 (indicating the initial request).
+          Available in versions 2.2.11 and later.</td></tr>
 <tr class="odd"><td><code>%l</code></td>
         <td>Remote logname (from identd, if supplied). This will return a
         dash unless <code class="module"><a href="../mod/mod_ident.html">mod_ident</a></code> is present and <code class="directive"><a href="../mod/mod_ident.html#identitycheck">IdentityCheck</a></code> is set

@@ -1,9 +1,9 @@
-/* Copyright 2000-2005 The Apache Software Foundation or its licensors, as
- * applicable.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+/* Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -22,6 +22,7 @@
 #include "apr_env.h"
 #include "apr_errno.h"
 #include "apr_pools.h"
+#include "apr_strings.h"
 
 
 #if APR_HAS_UNICODE_FS
@@ -61,10 +62,17 @@ APR_DECLARE(apr_status_t) apr_env_get(char **value,
         if (status)
             return status;
 
+        SetLastError(0);
         size = GetEnvironmentVariableW(wenvvar, &dummy, 0);
-        if (size == 0)
+        if (GetLastError() == ERROR_ENVVAR_NOT_FOUND)
             /* The environment variable doesn't exist. */
             return APR_ENOENT;
+
+        if (size == 0) {
+            /* The environment value exists, but is zero-length. */
+            *value = apr_pstrdup(pool, "");
+            return APR_SUCCESS;
+        }
 
         wvalue = apr_palloc(pool, size * sizeof(*wvalue));
         size = GetEnvironmentVariableW(wenvvar, wvalue, size);
@@ -85,10 +93,17 @@ APR_DECLARE(apr_status_t) apr_env_get(char **value,
     {
         char dummy;
 
+        SetLastError(0);
         size = GetEnvironmentVariableA(envvar, &dummy, 0);
-        if (size == 0)
+        if (GetLastError() == ERROR_ENVVAR_NOT_FOUND)
             /* The environment variable doesn't exist. */
             return APR_ENOENT;
+
+        if (size == 0) {
+            /* The environment value exists, but is zero-length. */
+            *value = apr_pstrdup(pool, "");
+            return APR_SUCCESS;
+        }
 
         val = apr_palloc(pool, size);
         size = GetEnvironmentVariableA(envvar, val, size);

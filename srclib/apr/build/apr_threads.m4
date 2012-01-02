@@ -1,9 +1,10 @@
 dnl -------------------------------------------------------- -*- autoconf -*-
-dnl Copyright 2000-2005 The Apache Software Foundation
-dnl
-dnl Licensed under the Apache License, Version 2.0 (the "License");
-dnl you may not use this file except in compliance with the License.
-dnl You may obtain a copy of the License at
+dnl Licensed to the Apache Software Foundation (ASF) under one or more
+dnl contributor license agreements.  See the NOTICE file distributed with
+dnl this work for additional information regarding copyright ownership.
+dnl The ASF licenses this file to You under the Apache License, Version 2.0
+dnl (the "License"); you may not use this file except in compliance with
+dnl the License.  You may obtain a copy of the License at
 dnl
 dnl     http://www.apache.org/licenses/LICENSE-2.0
 dnl
@@ -263,7 +264,7 @@ int main(int argc, char **argv)
         exit(2);
     if (pthread_mutexattr_setrobust_np(&attr, PTHREAD_MUTEX_ROBUST_NP))
         exit(3);
-    if (pthread_mutexattr_setprotocol(&mattr, PTHREAD_PRIO_INHERIT))
+    if (pthread_mutexattr_setprotocol(&attr, PTHREAD_PRIO_INHERIT))
         exit(4);
     if (pthread_mutex_init(&mutex, &attr))
         exit(5);

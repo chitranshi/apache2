@@ -1605,7 +1605,7 @@ PROXY_DECLARE(void) ap_proxy_initialize_worker_share(proxy_server_conf *conf,
     void *score = NULL;
 #endif
 
-    if (worker->s && (worker->s->status & PROXY_WORKER_INITIALIZED)) {
+    if (worker->s && PROXY_WORKER_IS_INITIALIZED(worker)) {
         /* The worker share is already initialized */
         ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, s,
               "proxy: worker %s already initialized",
@@ -1639,7 +1639,7 @@ PROXY_DECLARE(void) ap_proxy_initialize_worker_share(proxy_server_conf *conf,
      * recheck to see if we've already been here. Possible
      * if proxy is using scoreboard to hold shared stats
      */
-    if (worker->s->status & PROXY_WORKER_INITIALIZED) {
+    if (PROXY_WORKER_IS_INITIALIZED(worker)) {
         /* The worker share is already initialized */
         ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, s,
               "proxy: worker %s already initialized",
@@ -1840,6 +1840,7 @@ ap_proxy_determine_connection(apr_pool_t *p, request_rec *r,
 {
     int server_port;
     apr_status_t err = APR_SUCCESS;
+    apr_status_t uerr = APR_SUCCESS;
 
     /*
      * Break up the URL to determine the host to connect to
@@ -1922,7 +1923,10 @@ ap_proxy_determine_connection(apr_pool_t *p, request_rec *r,
                                     conn->port, 0,
                                     worker->cp->pool);
         conn->addr = worker->cp->addr;
-        PROXY_THREAD_UNLOCK(worker);
+        if ((uerr = PROXY_THREAD_UNLOCK(worker)) != APR_SUCCESS) {
+            ap_log_error(APLOG_MARK, APLOG_ERR, uerr, r->server,
+                         "proxy: unlock");
+        }
     }
     else
         conn->addr = worker->cp->addr;
@@ -1969,7 +1973,8 @@ static int is_socket_connected(apr_socket_t *sock)
     socket_status = apr_socket_recv(sock, test_buffer, &buffer_len);
     /* put back old timeout */
     apr_socket_timeout_set(sock, current_timeout);
-    if (APR_STATUS_IS_EOF(socket_status))
+    if (APR_STATUS_IS_EOF(socket_status) || 
+        APR_STATUS_IS_ECONNRESET(socket_status))
         return 0;
     else
         return 1;

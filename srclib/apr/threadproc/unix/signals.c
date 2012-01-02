@@ -1,9 +1,9 @@
-/* Copyright 2000-2005 The Apache Software Foundation or its licensors, as
- * applicable.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+/* Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -55,7 +55,7 @@ APR_DECLARE(apr_status_t) apr_proc_kill(apr_proc_t *proc, int signum)
 
 #if APR_HAVE_SIGACTION
 
-#ifdef DARWIN
+#if defined(__NetBSD__) || defined(DARWIN)
 static void avoid_zombies(int signo)
 {
     int exit_status;
@@ -91,7 +91,7 @@ APR_DECLARE(apr_sigfunc_t *) apr_signal(int signo, apr_sigfunc_t * func)
         act.sa_flags |= SA_NOCLDWAIT;
     }
 #endif
-#ifdef DARWIN
+#if defined(__NetBSD__) || defined(DARWIN)
     /* ignoring SIGCHLD or leaving the default disposition doesn't avoid zombies,
      * and there is no SA_NOCLDWAIT flag, so catch the signal and reap status in 
      * the handler to avoid zombies

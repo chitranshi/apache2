@@ -1,9 +1,9 @@
-/* Copyright 2000-2005 The Apache Software Foundation or its licensors, as
- * applicable.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+/* Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -180,10 +180,10 @@ apr_status_t apr_socket_recvfrom(apr_sockaddr_t *from, apr_socket_t *sock,
     return APR_SUCCESS;
 }
 
-#ifdef HAVE_WRITEV
 apr_status_t apr_socket_sendv(apr_socket_t * sock, const struct iovec *vec,
                               apr_int32_t nvec, apr_size_t *len)
 {
+#ifdef HAVE_WRITEV
     apr_ssize_t rv;
     apr_size_t requested_len = 0;
     apr_int32_t i;
@@ -225,8 +225,11 @@ do_select:
     }
     (*len) = rv;
     return APR_SUCCESS;
-}
+#else
+    *len = vec[0].iov_len;
+    return apr_socket_send(sock, vec[0].iov_base, len);
 #endif
+}
 
 #if APR_HAS_SENDFILE
 
@@ -264,6 +267,14 @@ apr_status_t apr_socket_sendfile(apr_socket_t *sock, apr_file_t *file,
 
 #else
     off_t off = *offset;
+
+    /* Multiple reports have shown sendfile failing with EINVAL if
+     * passed a >=2Gb count value on some 64-bit kernels.  It won't
+     * noticably hurt performance to limit each call to <2Gb at a
+     * time, so avoid that issue here: */
+    if (sizeof(off_t) == 8 && *len > INT_MAX) {
+        *len = INT_MAX;
+    }
 #endif
 
     if (!hdtr) {

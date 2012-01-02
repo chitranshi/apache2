@@ -1,9 +1,10 @@
 dnl -------------------------------------------------------- -*- autoconf -*-
-dnl Copyright 2000-2005 The Apache Software Foundation
-dnl
-dnl Licensed under the Apache License, Version 2.0 (the "License");
-dnl you may not use this file except in compliance with the License.
-dnl You may obtain a copy of the License at
+dnl Licensed to the Apache Software Foundation (ASF) under one or more
+dnl contributor license agreements.  See the NOTICE file distributed with
+dnl this work for additional information regarding copyright ownership.
+dnl The ASF licenses this file to You under the Apache License, Version 2.0
+dnl (the "License"); you may not use this file except in compliance with
+dnl the License.  You may obtain a copy of the License at
 dnl
 dnl     http://www.apache.org/licenses/LICENSE-2.0
 dnl
@@ -64,7 +65,12 @@ EOF
     echo "NOTEST_LIBS=\"$NOTEST_LIBS\"; export NOTEST_LIBS" >> $1
   fi
 
-  for arg in [$]0 "[$]@"; do
+  # Retrieve command-line arguments.
+  eval "set x $[0] $ac_configure_args"
+  shift
+
+  for arg
+  do
     APR_EXPAND_VAR(arg, $arg)
     echo "\"[$]arg\" \\" >> $1
   done
@@ -342,6 +348,7 @@ CPPFLAGS=$apr_old_cppflags
 
 dnl APR_CHECK_FILE(filename); set ac_cv_file_filename to
 dnl "yes" if 'filename' is readable, else "no".
+dnl @deprecated! - use AC_CHECK_FILE instead
 AC_DEFUN([APR_CHECK_FILE], [
 dnl Pick a safe variable name
 define([apr_cvname], ac_cv_file_[]translit([$1], [./+-], [__p_]))
@@ -800,6 +807,10 @@ dnl used here to allow us to co-exist layouts and argument based
 dnl set ups.
 AC_DEFUN(APR_PARSE_ARGUMENTS,[
 ac_prev=
+# Retrieve the command-line arguments.  The eval is needed because
+# the arguments are quoted to preserve accuracy.
+eval "set x $ac_configure_args"
+shift
 for ac_option
 do
   # If the previous option needs an argument, assign it.

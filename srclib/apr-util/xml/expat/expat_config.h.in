@@ -1,12 +1,4 @@
-/* config.h.in.  Generated from configure.in by autoheader.  */
-/* This file is used by autoheader to add items to expat_config.h.in */
-
-#ifdef WORDS_BIGENDIAN
-#define XML_BYTE_ORDER 21
-#else
-#define XML_BYTE_ORDER 12
-#endif
-
+/* expat_config.h.in.  Generated from configure.in by autoheader.  */
 
 /* Define if building universal (internal helper macro) */
 #undef AC_APPLE_UNIVERSAL_BUILD
@@ -17,14 +9,11 @@
 /* Define to 1 if you have the `bcopy' function. */
 #undef HAVE_BCOPY
 
+/* Define to 1 if you have the <check.h> header file. */
+#undef HAVE_CHECK_H
+
 /* Define to 1 if you have the <dlfcn.h> header file. */
 #undef HAVE_DLFCN_H
-
-/* Define to 1 if you have the <fcntl.h> header file. */
-#undef HAVE_FCNTL_H
-
-/* Define to 1 if you have the `getpagesize' function. */
-#undef HAVE_GETPAGESIZE
 
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
@@ -34,9 +23,6 @@
 
 /* Define to 1 if you have the <memory.h> header file. */
 #undef HAVE_MEMORY_H
-
-/* Define to 1 if you have a working `mmap' system call. */
-#undef HAVE_MMAP
 
 /* Define to 1 if you have the <stdint.h> header file. */
 #undef HAVE_STDINT_H
@@ -49,9 +35,6 @@
 
 /* Define to 1 if you have the <string.h> header file. */
 #undef HAVE_STRING_H
-
-/* Define to 1 if you have the <sys/param.h> header file. */
-#undef HAVE_SYS_PARAM_H
 
 /* Define to 1 if you have the <sys/stat.h> header file. */
 #undef HAVE_SYS_STAT_H
@@ -74,9 +57,6 @@
 /* Define to the one symbol short name of this package. */
 #undef PACKAGE_TARNAME
 
-/* Define to the home page for this package. */
-#undef PACKAGE_URL
-
 /* Define to the version of this package. */
 #undef PACKAGE_VERSION
 
@@ -95,25 +75,18 @@
 # endif
 #endif
 
+/* Define to specify how much context to retain around the current parse
+   point. */
+#undef XML_CONTEXT_BYTES
+
+/* Define to make parameter entity parsing functionality available. */
+#undef XML_DTD
+
+/* Define to make XML Namespaces functionality available. */
+#undef XML_NS
+
 /* Define to empty if `const' does not conform to ANSI C. */
 #undef const
 
-/* Define to `long int' if <sys/types.h> does not define. */
-#undef off_t
-
 /* Define to `unsigned int' if <sys/types.h> does not define. */
 #undef size_t
-
-#define XML_NS
-#define XML_DTD
-
-#define XML_CONTEXT_BYTES 1024
-
-#ifndef HAVE_MEMMOVE
-#ifdef HAVE_BCOPY
-#define memmove(d,s,l) bcopy((s),(d),(l))
-#else
-#define memmove(d,s,l) ;punting on memmove;
-#endif
-
-#endif

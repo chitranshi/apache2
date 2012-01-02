@@ -1,4 +1,53 @@
-                                                         -*- coding: utf-8 -*-
+﻿                                                         -*- coding: utf-8 -*-
+Changes with Apache 2.2.17
+
+  *) prefork MPM: Run cleanups for final request when process exits gracefully
+     to work around a flaw in apr-util.  PR 43857.  [Tom Donovan]
+
+  *) mod_reqtimeout: Do not wrongly enforce timeouts for mod_proxy's backend
+     connections and other protocol handlers (like mod_ftp). Enforce the
+     timeout for AP_MODE_GETLINE. If there is a timeout, shorten the lingering
+     close time from 30 to 2 seconds. [Stefan Fritsch]
+
+  *) Proxy balancer: support setting error status according to HTTP response
+     code from a backend.  PR 48939.  [Daniel Ruggeri <DRuggeri primary.net>]
+
+  *) mod_authnz_ldap: If AuthLDAPCharsetConfig is set, also convert the
+     password to UTF-8. PR 45318.
+     [Johannes Müller <joh_m gmx.de>, Stefan Fritsch]
+
+  *) core: check symlink ownership if both FollowSymlinks and
+     SymlinksIfOwnerMatch are set [Nick Kew]
+
+  *) core: fix origin checking in SymlinksIfOwnerMatch
+     PR 36783 [Robert L Mathews <rob-apache.org.bugs tigertech.net>]
+
+  *) mod_headers: Enable multi-match-and-replace edit option
+     PR 46594 [Nick Kew]
+
+  *) mod_log_config: Make ${cookie}C correctly match whole cookie names
+     instead of substrings. PR 28037. [Dan Franklin <dan dan-franklin.com>,
+     Stefan Fritsch]
+
+  *) mod_dir, mod_negotiation: Pass the output filter information
+     to newly created sub requests; as these are later on used
+     as true requests with an internal redirect. This allows for
+     mod_cache et.al. to trap the results of the redirect.
+     PR 17629, 43939
+     [Dirk-Willem van Gulik, Jim Jagielski, Joe Orton, Ruediger Pluem]
+
+  *) rotatelogs: Fix possible buffer overflow if admin configures a
+     mongo log file path. [Jeff Trawick]
+
+  *) mod_ssl: Do not do overlapping memcpy. PR 45444 [Joe Orton]
+
+  *) vhost: A purely-numeric Host: header should not be treated as a port.
+     PR 44979 [Nick Kew]
+
+  *) core: (re)-introduce -T commandline option to suppress documentroot
+     check at startup.
+     PR 41887 [Jan van den Berg <janvdberg gmail.com>]
+
 Changes with Apache 2.2.16
 
   *) SECURITY: CVE-2010-1452 (cve.mitre.org)
@@ -33,7 +82,7 @@ Changes with Apache 2.2.16
      an action to happen when a URL maps to no file, without resorting
      to ErrorDocument or mod_rewrite.  PR 47184 [Nick Kew]
 
-  *) mod_rewrite: Allow to set environment variables without explicitely
+  *) mod_rewrite: Allow to set environment variables without explicitly
      giving a value. [Rainer Jung]
 
 

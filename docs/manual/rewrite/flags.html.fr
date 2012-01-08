@@ -12,11 +12,11 @@
 <link href="../images/favicon.ico" rel="shortcut icon" /></head>
 <body id="manual-page"><div id="page-header">
 <p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="../faq/">FAQ</a> | <a href="../glossary.html">Glossaire</a> | <a href="../sitemap.html">Plan du site</a></p>
-<p class="apache">Serveur Apache HTTP Version 2.2</p>
+<p class="apache">Serveur Apache HTTP Version 2.3</p>
 <img alt="" src="../images/feather.gif" /></div>
 <div class="up"><a href="./"><img title="&lt;-" alt="&lt;-" src="../images/left.gif" /></a></div>
 <div id="path">
-<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">Serveur HTTP</a> &gt; <a href="http://httpd.apache.org/docs/">Documentation</a> &gt; <a href="../">Version 2.2</a> &gt; <a href="./">Rewrite</a></div><div id="page-content"><div id="preamble"><h1>Les drapeaux de réécriture</h1>
+<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">Serveur HTTP</a> &gt; <a href="http://httpd.apache.org/docs/">Documentation</a> &gt; <a href="../">Version 2.3</a> &gt; <a href="./">Rewrite</a></div><div id="page-content"><div id="preamble"><h1>Les drapeaux de réécriture</h1>
 <div class="toplang">
 <p><span>Langues Disponibles: </span><a href="../en/rewrite/flags.html" hreflang="en" rel="alternate" title="English">&nbsp;en&nbsp;</a> |
 <a href="../fr/rewrite/flags.html" title="Français">&nbsp;fr&nbsp;</a></p>
@@ -30,8 +30,9 @@ des explications détaillées et des exemples.</p>
 <li><img alt="" src="../images/down.gif" /> <a href="#flag_b">B (échappement dans les références arrières)</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#flag_c">C|chain</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#flag_co">CO|cookie</a></li>
-<li><img alt="" src="../images/down.gif" /> <a href="#flag_dpi">DPI|discardpathinfo</a></li>
+<li><img alt="" src="../images/down.gif" /> <a href="#flag_dpi">DPI|discardpath</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#flag_e">E|env</a></li>
+<li><img alt="" src="../images/down.gif" /> <a href="#flag_end">END</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#flag_f">F|forbidden</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#flag_g">G|gone</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#flag_h">H|handler</a></li>
@@ -48,7 +49,7 @@ des explications détaillées et des exemples.</p>
 <li><img alt="" src="../images/down.gif" /> <a href="#flag_s">S|skip</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#flag_t">T|type</a></li>
 </ul><h3>Voir aussi</h3><ul class="seealso"><li><a href="../mod/mod_rewrite.html">Documentation du module</a></li><li><a href="intro.html">Introduction à mod_rewrite</a></li><li><a href="remapping.html">Redirection and remise en
-correspondance</a></li><li><a href="access.html">Contrôle d'accès</a></li><li><a href="vhosts.html">Serveurs virtuels</a></li><li><a href="proxy.html">Mise en cache</a></li><li><a href="rewritemap.html">Utilisation de RewriteMap</a></li><li><a href="advanced.html">Techniques avancées et astuces</a></li><li><a href="avoid.html">Quand ne pas utiliser mod_rewrite</a></li></ul></div>
+correspondance</a></li><li><a href="access.html">Contrôle d'accès</a></li><li><a href="vhosts.html">Serveurs virtuels</a></li><li><a href="proxy.html">Mise en cache</a></li><li><a href="rewritemap.html">Utilisation de RewriteMap</a></li><li><a href="advanced.html">Techniques avancées</a></li><li><a href="avoid.html">Quand ne pas utiliser mod_rewrite</a></li></ul></div>
 <div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
 <div class="section">
 <h2><a name="introduction" id="introduction">Introduction</a></h2>
@@ -92,15 +93,27 @@ non-alphanumériques des références arrières seront échappés. Considérons
 par exemple cette règle :</p>
 
 <div class="example"><p><code>
-RewriteRule ^(/.*)$ /index.php?show=$1
+RewriteRule ^search/(.*)$ /search.php?term=$1
 </code></p></div>
 
-<p>Avec cet exemple, <code>/C++</code> sera réécrit en
-<code>/index.php?show=/C++</code>. Mais <code>/C%2b%2b</code> sera lui
-aussi réécrit en <code>/index.php?show=/C++</code>, car le caractère
-<code>%2b</code> aura été "déséchappé". Avec le drapeau B par contre,
-<code>/C%2b%2b</code> sera réécrit en
-<code>/index.php?show=/C%2b%2b</code>.</p>
+<p>Soit le terme de recherche 'x &amp; y/z' ; un navigateur va le coder
+en 'x%20%26%20y%2Fz', transformant la requête en
+'search/x%20%26%20y%2Fz'. Sans le drapeau B, cette règle de réécriture
+va réécrire la requête en 'search.php?term=x &amp; y/z', ce qui ne
+correspond pas à une URL valide et cette dernière sera encodée en
+<code>search.php?term=x%20&amp;y%2Fz=</code>, ce qui ne correspond pas à
+ce que l'on souhaitait.</p>
+
+<p>Avec le drapeau B, les paramètres sont réencodés avant d'être passés
+à l'URL résultante, ce qui fournit une réécriture correcte en
+<code>/search.php?term=x%20%26%20y%2Fz</code>.</p>
+
+<p>Notez que vous devrez peut-être aussi définir la
+directive <code class="directive"><a href="../mod/core.html#allowencodedslashes">AllowEncodedSlashes</a></code>
+à <code>On</code> pour
+que cet exemple particulier fonctionne, car httpd ne permet pas les
+slashes encodés dans les URLs, et renvoie une erreur 404 s'il en
+rencontre un.</p>
 
 <p>Ce processus d'échappement est en particulier nécessaire dans le
 contexte d'un mandataire, où l'accès au serveur d'arrière-plan échouera
@@ -133,6 +146,7 @@ suivante :</p>
 <p>Vous devez déclarer un nom, une valeur et un domaine pour que
 le cookie puisse être défini.</p>
 
+
 <dl>
 <dt>Domain</dt>
 <dd>Le domaine pour lequel vous souhaitez que le cookie soit valide. Ce
@@ -142,7 +156,7 @@ deux parties séparées par un point. C'est à dire que vous ne pouvez pas
 utiliser les valeurs <code>.com</code> ou <code>.net</code>. En effet,
 ce style de cookie est interdit par le modèle de sécurité des cookies.</dd>
 </dl>
- 
+
 <p>Vous pouvez aussi définir les valeurs suivantes :</p>
 
 <dl>
@@ -189,7 +203,7 @@ pour tous les URIs.</p>
 
 </div><div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
 <div class="section">
-<h2><a name="flag_dpi" id="flag_dpi">DPI|discardpathinfo</a></h2>
+<h2><a name="flag_dpi" id="flag_dpi">DPI|discardpath</a></h2>
 <p>Avec le drapeau DPI, la partie PATH_INFO de l'URI
 réécrit est supprimée.</p>
 <p>Ce drapeau est disponible dans les versions 2.2.12 et supérieures.</p>
@@ -271,6 +285,16 @@ CustomLog logs/access_log combined env=!image
 <p>Notez que le même effet peut être obtenu à l'aide de la directive
 <code class="directive"><a href="../mod/mod_setenvif.html#setenvif">SetEnvIf</a></code>. Cette technique
 est présentée à titre d'exemple et non de recommandation.</p>
+</div><div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
+<div class="section">
+<h2><a name="flag_end" id="flag_end">END</a></h2>
+<p>L'utilisation du drapeau [END] permet non seulement de terminer le
+processus de réécriture en cours (comme [L]), mais aussi d'empêcher tout
+processus de réécriture ultérieur dans un contexte de répertoire
+(htaccess).</p>
+
+<p>Ceci ne s'applique pas aux nouvelles requêtes résultant d'une
+redirection externe.</p>
 </div><div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
 <div class="section">
 <h2><a name="flag_f" id="flag_f">F|forbidden</a></h2>
@@ -493,7 +517,7 @@ soient traitées par un serveur d'images annexe, vous pouvez utiliser
 une règle de ce style :</p>
 
 <div class="example"><p><code>
-RewriteRule (.*)\.(jpg|gif|png) http://images.example.com$1.$2 [P]
+RewriteRule /(.*)\.(jpg|gif|png) http://images.example.com/$1.$2 [P]
 </code></p></div>
 
 <p>L'utilisation du drapeau [P] provoque aussi l'effet du drapeau [L] -
@@ -509,6 +533,16 @@ L'utilisation de ce drapeau implémente de manière plus puissante la
 directive <code class="directive"><a href="../mod/mod_proxy.html#proxypass">ProxyPass</a></code>, pour
 faire correspondre le contenu distant à l'espace de nommage du serveur
 local.</p>
+
+<div class="warning">
+      <h3>Avertissement à propos de la sécurité</h3>
+      <p>Lors de la construction de l'URL cible de la règle, il convient
+      de prendre en compte l'impact en matière de sécurité qu'aura le
+      fait de permettre au client d'influencer le jeu d'URLs pour
+      lesquelles votre serveur agira en tant que mandataire.
+      Assurez-vous que la partie protocole://nom-serveur de l'URL soit
+      fixe, ou ne permette pas au client de l'influencer induement.</p>
+</div>
 
 <p>Note: <code class="module"><a href="../mod/mod_proxy.html">mod_proxy</a></code> doit être activé pour pouvoir
 utiliser ce drapeau.</p>

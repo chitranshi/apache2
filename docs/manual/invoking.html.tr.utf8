@@ -12,11 +12,11 @@
 <link href="./images/favicon.ico" rel="shortcut icon" /></head>
 <body id="manual-page"><div id="page-header">
 <p class="menu"><a href="./mod/">Modüller</a> | <a href="./mod/directives.html">Yönergeler</a> | <a href="./faq/">SSS</a> | <a href="./glossary.html">Terimler</a> | <a href="./sitemap.html">Site Haritası</a></p>
-<p class="apache">Apache HTTP Sunucusu Sürüm 2.2</p>
+<p class="apache">Apache HTTP Sunucusu Sürüm 2.3</p>
 <img alt="" src="./images/feather.gif" /></div>
 <div class="up"><a href="./"><img title="&lt;-" alt="&lt;-" src="./images/left.gif" /></a></div>
 <div id="path">
-<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">HTTP Sunucusu</a> &gt; <a href="http://httpd.apache.org/docs/">Belgeleme</a> &gt; <a href="./">Sürüm 2.2</a></div><div id="page-content"><div id="preamble"><h1>Apache HTTPd’nin başlatılması</h1>
+<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">HTTP Sunucusu</a> &gt; <a href="http://httpd.apache.org/docs/">Belgeleme</a> &gt; <a href="./">Sürüm 2.3</a></div><div id="page-content"><div id="preamble"><h1>Apache HTTPd’nin başlatılması</h1>
 <div class="toplang">
 <p><span>Mevcut Diller: </span><a href="./de/invoking.html" hreflang="de" rel="alternate" title="Deutsch">&nbsp;de&nbsp;</a> |
 <a href="./en/invoking.html" hreflang="en" rel="alternate" title="English">&nbsp;en&nbsp;</a> |
@@ -24,9 +24,9 @@
 <a href="./fr/invoking.html" hreflang="fr" rel="alternate" title="Français">&nbsp;fr&nbsp;</a> |
 <a href="./ja/invoking.html" hreflang="ja" rel="alternate" title="Japanese">&nbsp;ja&nbsp;</a> |
 <a href="./ko/invoking.html" hreflang="ko" rel="alternate" title="Korean">&nbsp;ko&nbsp;</a> |
-<a href="./ru/invoking.html" hreflang="ru" rel="alternate" title="Russian">&nbsp;ru&nbsp;</a> |
 <a href="./tr/invoking.html" title="Türkçe">&nbsp;tr&nbsp;</a></p>
 </div>
+<div class="outofdate">Bu çeviri güncel olmayabilir. Son değişiklikler için İngilizce sürüm geçerlidir.</div>
 
     <p>Apache normal olarak, Windows NT, 2000 ve XP'de bir hizmet olarak,
       Windows 9x ve ME’de ise bir konsol uygulaması olarak çalışır. Ayrıntılı
@@ -52,11 +52,11 @@
       Sunucusunu başlatmak için root yetkileri gerekecektir. Sunucu başlatılıp
       günlük dosyalarını açmak gibi bazı ön hazırlık etkinliklerinde
       bulunduktan sonra istemcilerden gelen istekleri dinlemek ve yanıt vermek
-      için çeşitli <em>çocuk</em> süreçler başlatır. Ana <code>httpd</code>
-      süreci root kullanıcısının aidiyetinde çalışmasını sürdürürken çocuk
-      süreçler daha az yetkili bir kullanıcının aidiyetinde çalışır. Bu işlem
-      seçilen <a href="mpm.html">Çok Süreçlilik Modülü</a> tarafından
-      denetlenir.</p>
+      için çeşitli <em>çocuk</em> süreçler başlatır. Ana
+      <code class="program"><a href="./programs/httpd.html">httpd</a></code> süreci root kullanıcısının aidiyetinde
+      çalışmasını sürdürürken çocuk süreçler daha az yetkili bir kullanıcının
+      aidiyetinde çalışır. Bu işlem seçilen <a href="mpm.html">Çok Süreçlilik
+      Modülü</a> tarafından denetlenir.</p>
 
     <p><code class="program"><a href="./programs/httpd.html">httpd</a></code>’yi çalıştırmak için önerilen yöntem
       <code class="program"><a href="./programs/apachectl.html">apachectl</a></code> betiğini kullanmaktır. Bu betik,
@@ -104,7 +104,7 @@
         sunucusunun zaten çalışmakta oluşu.</li>
     </ul>
 
-    <p>Bu ve diğer sorun çözme talimatları için Apache <a href="http://wiki.apache.org/httpd/FAQ">SSS</a>’sini inceleyiniz.</p>
+    <p>Bu ve diğer sorun çözme talimatları için Apache <a href="faq/">SSS</a>’sini inceleyiniz.</p>
 </div><div class="top"><a href="#page-header"><img alt="top" src="./images/up.gif" /></a></div>
 <div class="section">
 <h2><a name="boot" id="boot">Sistem Açılışında Başlatma</a></h2>
@@ -142,7 +142,6 @@
 <a href="./fr/invoking.html" hreflang="fr" rel="alternate" title="Français">&nbsp;fr&nbsp;</a> |
 <a href="./ja/invoking.html" hreflang="ja" rel="alternate" title="Japanese">&nbsp;ja&nbsp;</a> |
 <a href="./ko/invoking.html" hreflang="ko" rel="alternate" title="Korean">&nbsp;ko&nbsp;</a> |
-<a href="./ru/invoking.html" hreflang="ru" rel="alternate" title="Russian">&nbsp;ru&nbsp;</a> |
 <a href="./tr/invoking.html" title="Türkçe">&nbsp;tr&nbsp;</a></p>
 </div><div id="footer">
 <p class="apache">Copyright 2011 The Apache Software Foundation.<br /><a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a> altında lisanslıdır.</p>

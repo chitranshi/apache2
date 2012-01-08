@@ -12,19 +12,21 @@
 <link href="./images/favicon.ico" rel="shortcut icon" /></head>
 <body id="manual-page"><div id="page-header">
 <p class="menu"><a href="./mod/">モジュール</a> | <a href="./mod/directives.html">ディレクティブ</a> | <a href="./faq/">FAQ</a> | <a href="./glossary.html">用語</a> | <a href="./sitemap.html">サイトマップ</a></p>
-<p class="apache">Apache HTTP サーバ バージョン 2.2</p>
+<p class="apache">Apache HTTP サーバ バージョン 2.3</p>
 <img alt="" src="./images/feather.gif" /></div>
 <div class="up"><a href="./"><img title="&lt;-" alt="&lt;-" src="./images/left.gif" /></a></div>
 <div id="path">
-<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">HTTP サーバ</a> &gt; <a href="http://httpd.apache.org/docs/">ドキュメンテーション</a> &gt; <a href="./">バージョン 2.2</a></div><div id="page-content"><div id="preamble"><h1>ログファイル</h1>
+<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">HTTP サーバ</a> &gt; <a href="http://httpd.apache.org/docs/">ドキュメンテーション</a> &gt; <a href="./">バージョン
+            2.3</a></div><div id="page-content"><div id="preamble"><h1>ログファイル</h1>
 <div class="toplang">
-<p><span>Available Languages: </span><a href="./en/logs.html" hreflang="en" rel="alternate" title="English">&nbsp;en&nbsp;</a> |
+<p><span>言語: </span><a href="./en/logs.html" hreflang="en" rel="alternate" title="English">&nbsp;en&nbsp;</a> |
+<a href="./fr/logs.html" hreflang="fr" rel="alternate" title="Français">&nbsp;fr&nbsp;</a> |
 <a href="./ja/logs.html" title="Japanese">&nbsp;ja&nbsp;</a> |
 <a href="./ko/logs.html" hreflang="ko" rel="alternate" title="Korean">&nbsp;ko&nbsp;</a> |
 <a href="./tr/logs.html" hreflang="tr" rel="alternate" title="Türkçe">&nbsp;tr&nbsp;</a></p>
 </div>
-<div class="outofdate">This translation may be out of date. Check the
-            English version for recent changes.</div>
+<div class="outofdate">この日本語訳はすでに古くなっている可能性があります。
+          更新された内容を見るには英語版をご覧下さい。</div>
 
     <p>ウェブサーバを効果的に管理するためには、サーバの活動やパフォーマンス、
     今発生しているかもしれない問題に関するフィードバックを得ることが必要です。
@@ -72,7 +74,7 @@
     ところです。間違いの詳細や修正方法がそこに書かれていることが
     よくあります。</p>
 
-    <p>エラーログは普通はファイルに書かれます (通常 unix システムでは
+    <p>エラーログは普通はファイルに書かれます (通常 Unix システムでは
     <code>error_log</code>、Windows と OS/2 では <code>error.log</code>)。
     Unix システムではエラーを <code>syslog</code> や
     <a href="#piped">パイプでプログラムに送る</a> ことができます。</p>
@@ -224,7 +226,7 @@
 	環境変数として与えられます。リクエストのステータスコード
 	(以下を参照) が 401 であった場合は、ユーザは認証に失敗しているので、
 	この値は信用できません。ドキュメントがパスワードで保護されていない
-	場合は、このエントリは前のものと同じように "<code>-</code>" に
+	場合は、この部分は前のものと同じように "<code>-</code>" に
 	なります。</dd>
 
 	<dt><code>[10/Oct/2000:13:55:36 -0700]</code>
@@ -274,7 +276,7 @@
 
 	<dt><code>2326</code> (<code>%b</code>)</dt>
 
-	<dd>この最後のエントリはクライアントに送信されたオブジェクトの、
+	<dd>この最後の部分はクライアントに送信されたオブジェクトの、
 	応答ヘッダを除いたサイズを表します。コンテントがクライアントに送られなかった
 	場合は、この値は "<code>-</code>" になります。コンテントが無い場合に
 	"<code>0</code>" をログ収集するには、<code>%b</code> ではなく
@@ -565,7 +567,8 @@
     
   </div></div>
 <div class="bottomlang">
-<p><span>Available Languages: </span><a href="./en/logs.html" hreflang="en" rel="alternate" title="English">&nbsp;en&nbsp;</a> |
+<p><span>言語: </span><a href="./en/logs.html" hreflang="en" rel="alternate" title="English">&nbsp;en&nbsp;</a> |
+<a href="./fr/logs.html" hreflang="fr" rel="alternate" title="Français">&nbsp;fr&nbsp;</a> |
 <a href="./ja/logs.html" title="Japanese">&nbsp;ja&nbsp;</a> |
 <a href="./ko/logs.html" hreflang="ko" rel="alternate" title="Korean">&nbsp;ko&nbsp;</a> |
 <a href="./tr/logs.html" hreflang="tr" rel="alternate" title="Türkçe">&nbsp;tr&nbsp;</a></p>

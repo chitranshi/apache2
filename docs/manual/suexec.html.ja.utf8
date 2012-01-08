@@ -12,20 +12,21 @@
 <link href="./images/favicon.ico" rel="shortcut icon" /></head>
 <body id="manual-page"><div id="page-header">
 <p class="menu"><a href="./mod/">モジュール</a> | <a href="./mod/directives.html">ディレクティブ</a> | <a href="./faq/">FAQ</a> | <a href="./glossary.html">用語</a> | <a href="./sitemap.html">サイトマップ</a></p>
-<p class="apache">Apache HTTP サーバ バージョン 2.2</p>
+<p class="apache">Apache HTTP サーバ バージョン 2.3</p>
 <img alt="" src="./images/feather.gif" /></div>
 <div class="up"><a href="./"><img title="&lt;-" alt="&lt;-" src="./images/left.gif" /></a></div>
 <div id="path">
-<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">HTTP サーバ</a> &gt; <a href="http://httpd.apache.org/docs/">ドキュメンテーション</a> &gt; <a href="./">バージョン 2.2</a></div><div id="page-content"><div id="preamble"><h1>suEXEC サポート</h1>
+<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">HTTP サーバ</a> &gt; <a href="http://httpd.apache.org/docs/">ドキュメンテーション</a> &gt; <a href="./">バージョン
+            2.3</a></div><div id="page-content"><div id="preamble"><h1>suEXEC サポート</h1>
 <div class="toplang">
-<p><span>Available Languages: </span><a href="./en/suexec.html" hreflang="en" rel="alternate" title="English">&nbsp;en&nbsp;</a> |
+<p><span>言語: </span><a href="./en/suexec.html" hreflang="en" rel="alternate" title="English">&nbsp;en&nbsp;</a> |
 <a href="./fr/suexec.html" hreflang="fr" rel="alternate" title="Français">&nbsp;fr&nbsp;</a> |
 <a href="./ja/suexec.html" title="Japanese">&nbsp;ja&nbsp;</a> |
 <a href="./ko/suexec.html" hreflang="ko" rel="alternate" title="Korean">&nbsp;ko&nbsp;</a> |
 <a href="./tr/suexec.html" hreflang="tr" rel="alternate" title="Türkçe">&nbsp;tr&nbsp;</a></p>
 </div>
-<div class="outofdate">This translation may be out of date. Check the
-            English version for recent changes.</div>
+<div class="outofdate">この日本語訳はすでに古くなっている可能性があります。
+          更新された内容を見るには英語版をご覧下さい。</div>
 
     <p><strong>suEXEC</strong>
     機能により、Apache ユーザは Web サーバを実行しているユーザ ID とは
@@ -448,7 +449,7 @@
     すべての構成要素が作成されると、それらのインストールには
     <code>make install</code> コマンドが実行できます。バイナリイメージの <code>suexec</code>
     は <code>--sbindir</code> オプションで指定されたディレクトリにインストールされます。
-    デフォルトの場所は "/usr/local/apache/sbin/suexec" です。<br />
+    デフォルトの場所は "/usr/local/apache/bin/suexec" です。<br />
     インストール時には <strong><em>root</em></strong>
     権限が必要なので注意してください。wrapper がユーザ ID
     を設定するために、所有者 <code><em>root</em></code>
@@ -461,7 +462,7 @@
     オプションで指定した正しいユーザで起動されていることを確認しますが、
     システム上でこのチェックが行なわれる前に、
     suEXEC が呼ぶシステムやライブラリが脆弱である可能性は残ります。対抗策として、
-    一般に良い習慣ともされていますが、
+    一般に良い習慣ともされいますが、
     ファイルシステムパーミッションを使って
     Apache の実行時のグループのみが suEXEC を実行できるように
     するのが良いでしょう。</p>
@@ -473,7 +474,7 @@
     Group webgroup<br />
 </code></p></div>
 
-    <p><code class="program"><a href="./programs/suexec.html">suexec</a></code> が "/usr/local/apache2/sbin/suexec" 
+    <p><code class="program"><a href="./programs/suexec.html">suexec</a></code> が "/usr/local/apache2/bin/suexec" 
     にインストールされていた場合、次のように設定する必要があります。</p>
 
 <div class="example"><p><code>
@@ -554,7 +555,7 @@
 
     <p><strong>注意!</strong>
     この章は完全ではありません。この章の最新改訂版については、
-    Apache グループの<a href="http://httpd.apache.org/docs/2.2/suexec.html">
+    Apache グループの<a href="http://httpd.apache.org/docs/2.3/suexec.html">
     オンラインドキュメント</a>版を参照してください。
     </p>
 
@@ -604,7 +605,7 @@
     </ul>
 </div></div>
 <div class="bottomlang">
-<p><span>Available Languages: </span><a href="./en/suexec.html" hreflang="en" rel="alternate" title="English">&nbsp;en&nbsp;</a> |
+<p><span>言語: </span><a href="./en/suexec.html" hreflang="en" rel="alternate" title="English">&nbsp;en&nbsp;</a> |
 <a href="./fr/suexec.html" hreflang="fr" rel="alternate" title="Français">&nbsp;fr&nbsp;</a> |
 <a href="./ja/suexec.html" title="Japanese">&nbsp;ja&nbsp;</a> |
 <a href="./ko/suexec.html" hreflang="ko" rel="alternate" title="Korean">&nbsp;ko&nbsp;</a> |

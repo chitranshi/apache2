@@ -12,13 +12,14 @@
 <link href="../images/favicon.ico" rel="shortcut icon" /></head>
 <body id="manual-page"><div id="page-header">
 <p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="../faq/">FAQ</a> | <a href="../glossary.html">Glossary</a> | <a href="../sitemap.html">Sitemap</a></p>
-<p class="apache">Apache HTTP Server Version 2.2</p>
+<p class="apache">Apache HTTP Server Version 2.3</p>
 <img alt="" src="../images/feather.gif" /></div>
 <div class="up"><a href="./"><img title="&lt;-" alt="&lt;-" src="../images/left.gif" /></a></div>
 <div id="path">
-<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">HTTP Server</a> &gt; <a href="http://httpd.apache.org/docs/">Documentation</a> &gt; <a href="../">Version 2.2</a> &gt; <a href="./">How-To / Tutorials</a></div><div id="page-content"><div id="preamble"><h1>Apache Tutorial: Introduction to Server Side Includes</h1>
+<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">HTTP Server</a> &gt; <a href="http://httpd.apache.org/docs/">Documentation</a> &gt; <a href="../">Version 2.3</a> &gt; <a href="./">How-To / Tutorials</a></div><div id="page-content"><div id="preamble"><h1>Apache Tutorial: Introduction to Server Side Includes</h1>
 <div class="toplang">
 <p><span>Available Languages: </span><a href="../en/howto/ssi.html" title="English">&nbsp;en&nbsp;</a> |
+<a href="../fr/howto/ssi.html" hreflang="fr" rel="alternate" title="Français">&nbsp;fr&nbsp;</a> |
 <a href="../ja/howto/ssi.html" hreflang="ja" rel="alternate" title="Japanese">&nbsp;ja&nbsp;</a> |
 <a href="../ko/howto/ssi.html" hreflang="ko" rel="alternate" title="Korean">&nbsp;ko&nbsp;</a></p>
 </div>
@@ -94,7 +95,7 @@ existing HTML documents.</p>
     the following directives:</p>
 <div class="example"><p><code>
         AddType text/html .shtml<br />
-	AddOutputFilter INCLUDES .shtml
+        AddOutputFilter INCLUDES .shtml
 </code></p></div>
 
     <p>One disadvantage to this approach is that if you wanted to
@@ -144,7 +145,7 @@ existing HTML documents.</p>
       only at the date of the originally requested file, ignoring
       the modification date of any included files.</li>
 
-      <li>Use the directives provided by 
+      <li>Use the directives provided by
       <code class="module"><a href="../mod/mod_expires.html">mod_expires</a></code> to set an explicit expiration
       time on your files, thereby letting browsers and proxies
       know that it is acceptable to cache them.</li>
@@ -359,15 +360,6 @@ modified?</a></h3>
     the option of setting variables, and using those variables in
     comparisons and conditionals.</p>
 
-<h3><a name="caveat" id="caveat">Caveat</a></h3>
-
-    <p>Most of the features discussed in this article are only
-    available to you if you are running Apache 1.2 or later. Of
-    course, if you are not running Apache 1.2 or later, you need to
-    upgrade immediately, if not sooner. Go on. Do it now. We'll
-    wait.</p>
-
-
 <h3><a name="variables" id="variables">Setting variables</a></h3>
 
     <p>Using the <code>set</code> directive, you can set variables
@@ -382,7 +374,7 @@ modified?</a></h3>
     discussed above (like <code>LAST_MODIFIED</code>, for example) to
     give values to your variables. You will specify that something is
     a variable, rather than a literal string, by using the dollar sign
-    ($) before the name of the variable.</p> 
+    ($) before the name of the variable.</p>
 
     <div class="example"><p><code> &lt;!--#set var="modified" value="$LAST_MODIFIED" --&gt;
     </code></p></div>
@@ -448,7 +440,8 @@ modified?</a></h3>
     <p>Then, in your SSI-enabled document, you might do the
     following:</p>
 <div class="example"><p><code>
-        &lt;!--#if expr="${Mac} &amp;&amp; ${InternetExplorer}" --&gt;<br />
+        &lt;!--#if expr="-T reqenv('Mac') &amp;&amp;
+                         -T reqenv('InternetExplorer')" --&gt;<br />
         Apologetic text goes here<br />
         &lt;!--#else --&gt;<br />
         Cool JavaScript code goes here<br />
@@ -478,6 +471,7 @@ modified?</a></h3>
 </div></div>
 <div class="bottomlang">
 <p><span>Available Languages: </span><a href="../en/howto/ssi.html" title="English">&nbsp;en&nbsp;</a> |
+<a href="../fr/howto/ssi.html" hreflang="fr" rel="alternate" title="Français">&nbsp;fr&nbsp;</a> |
 <a href="../ja/howto/ssi.html" hreflang="ja" rel="alternate" title="Japanese">&nbsp;ja&nbsp;</a> |
 <a href="../ko/howto/ssi.html" hreflang="ko" rel="alternate" title="Korean">&nbsp;ko&nbsp;</a></p>
 </div><div id="footer">

@@ -12,20 +12,21 @@
 <link href="../images/favicon.ico" rel="shortcut icon" /></head>
 <body id="manual-page"><div id="page-header">
 <p class="menu"><a href="../mod/">モジュール</a> | <a href="../mod/directives.html">ディレクティブ</a> | <a href="../faq/">FAQ</a> | <a href="../glossary.html">用語</a> | <a href="../sitemap.html">サイトマップ</a></p>
-<p class="apache">Apache HTTP サーバ バージョン 2.2</p>
+<p class="apache">Apache HTTP サーバ バージョン 2.3</p>
 <img alt="" src="../images/feather.gif" /></div>
 <div class="up"><a href="./"><img title="&lt;-" alt="&lt;-" src="../images/left.gif" /></a></div>
 <div id="path">
-<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">HTTP サーバ</a> &gt; <a href="http://httpd.apache.org/docs/">ドキュメンテーション</a> &gt; <a href="../">バージョン 2.2</a> &gt; <a href="./">バーチャルホスト</a></div><div id="page-content"><div id="preamble"><h1>バーチャルホストの例</h1>
+<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">HTTP サーバ</a> &gt; <a href="http://httpd.apache.org/docs/">ドキュメンテーション</a> &gt; <a href="../">バージョン
+            2.3</a> &gt; <a href="./">バーチャルホスト</a></div><div id="page-content"><div id="preamble"><h1>バーチャルホストの例</h1>
 <div class="toplang">
-<p><span>Available Languages: </span><a href="../en/vhosts/examples.html" hreflang="en" rel="alternate" title="English">&nbsp;en&nbsp;</a> |
+<p><span>言語: </span><a href="../en/vhosts/examples.html" hreflang="en" rel="alternate" title="English">&nbsp;en&nbsp;</a> |
 <a href="../fr/vhosts/examples.html" hreflang="fr" rel="alternate" title="Français">&nbsp;fr&nbsp;</a> |
 <a href="../ja/vhosts/examples.html" title="Japanese">&nbsp;ja&nbsp;</a> |
 <a href="../ko/vhosts/examples.html" hreflang="ko" rel="alternate" title="Korean">&nbsp;ko&nbsp;</a> |
 <a href="../tr/vhosts/examples.html" hreflang="tr" rel="alternate" title="Türkçe">&nbsp;tr&nbsp;</a></p>
 </div>
-<div class="outofdate">This translation may be out of date. Check the
-            English version for recent changes.</div>
+<div class="outofdate">この日本語訳はすでに古くなっている可能性があります。
+          更新された内容を見るには英語版をご覧下さい。</div>
 
 
     <p>この文書は、バーチャルホストの設定の際に
@@ -122,9 +123,9 @@
 
             <div class="example"><p><code>
             NameVirtualHost 172.20.30.40<br />
-						<br />
+            <br />
             &lt;VirtualHost 172.20.30.40&gt;<br />
- 		        # etc ...
+             # etc ...
             </code></p></div>
 
           <p>しかし、IP アドレスが予測不可能なシステム
@@ -160,31 +161,31 @@
     
 
     Listen 80<br />
-		<br />
+    <br />
     # This is the "main" server running on 172.20.30.40<br />
     ServerName server.domain.com<br />
     DocumentRoot /www/mainserver<br />
-		<br />
+    <br />
     # This is the other address<br />
     NameVirtualHost 172.20.30.50<br />
-		<br />
+    <br />
     &lt;VirtualHost 172.20.30.50&gt;<br />
     <span class="indent">
         DocumentRoot /www/example1<br />
         ServerName www.example.com<br />
-   			<br />
+        <br />
         # Other directives here ...<br />
-				<br />
+        <br />
     </span>
     &lt;/VirtualHost&gt;<br />
-		<br />
+    <br />
     &lt;VirtualHost 172.20.30.50&gt;<br />
     <span class="indent">
         DocumentRoot /www/example2<br />
         ServerName www.example.org<br />
-				<br />
+        <br />
         # Other directives here ...<br />
-				<br />
+        <br />
     </span>
     &lt;/VirtualHost&gt;
     </code></p></div>
@@ -215,7 +216,7 @@
 
     NameVirtualHost 192.168.1.1<br />
     NameVirtualHost 172.20.30.40<br />
-		<br />
+    <br />
     &lt;VirtualHost 192.168.1.1 172.20.30.40&gt;<br />
     <span class="indent">
         DocumentRoot /www/server1<br />
@@ -251,31 +252,31 @@
 
     Listen 80<br />
     Listen 8080<br />
-		<br />
+    <br />
     NameVirtualHost 172.20.30.40:80<br />
     NameVirtualHost 172.20.30.40:8080<br />
-		<br />
+    <br />
     &lt;VirtualHost 172.20.30.40:80&gt;<br />
     <span class="indent">
         ServerName www.example.com<br />
         DocumentRoot /www/domain-80<br />
     </span>
     &lt;/VirtualHost&gt;<br />
-		<br />
+    <br />
     &lt;VirtualHost 172.20.30.40:8080&gt;<br />
     <span class="indent">
         ServerName www.example.com<br />
         DocumentRoot /www/domain-8080<br />
     </span>
     &lt;/VirtualHost&gt;<br />
-		<br />
+    <br />
     &lt;VirtualHost 172.20.30.40:80&gt;<br />
     <span class="indent">
         ServerName www.example.org<br />
         DocumentRoot /www/otherdomain-80<br />
     </span>
     &lt;/VirtualHost&gt;<br />
-		<br />
+    <br />
     &lt;VirtualHost 172.20.30.40:8080&gt;<br />
     <span class="indent">
         ServerName www.example.org<br />
@@ -296,14 +297,14 @@
     
 
     Listen 80<br />
-		<br />
+    <br />
     &lt;VirtualHost 172.20.30.40&gt;<br />
     <span class="indent">
         DocumentRoot /www/example1<br />
         ServerName www.example.com<br />
     </span>
     &lt;/VirtualHost&gt;<br />
-		<br />
+    <br />
     &lt;VirtualHost 172.20.30.50&gt;<br />
     <span class="indent">
         DocumentRoot /www/example2<br />
@@ -333,28 +334,28 @@
     Listen 172.20.30.40:8080<br />
     Listen 172.20.30.50:80<br />
     Listen 172.20.30.50:8080<br />
-		<br />
+    <br />
     &lt;VirtualHost 172.20.30.40:80&gt;<br />
     <span class="indent">
         DocumentRoot /www/example1-80<br />
         ServerName www.example.com<br />
     </span>
     &lt;/VirtualHost&gt;<br />
-		<br />
+    <br />
     &lt;VirtualHost 172.20.30.40:8080&gt;<br />
     <span class="indent">
         DocumentRoot /www/example1-8080<br />
         ServerName www.example.com<br />
-		</span>
+    </span>
     &lt;/VirtualHost&gt;<br />
-		<br />
+    <br />
     &lt;VirtualHost 172.20.30.50:80&gt;<br />
     <span class="indent">
         DocumentRoot /www/example2-80<br />
         ServerName www.example.org<br />
     </span>
     &lt;/VirtualHost&gt;<br />
-		<br />
+    <br />
     &lt;VirtualHost 172.20.30.50:8080&gt;<br />
     <span class="indent">
         DocumentRoot /www/example2-8080<br />
@@ -375,30 +376,30 @@
     
 
     Listen 80<br />
-		<br />
+    <br />
     NameVirtualHost 172.20.30.40<br />
-		<br />
+    <br />
     &lt;VirtualHost 172.20.30.40&gt;<br />
     <span class="indent">
         DocumentRoot /www/example1<br />
         ServerName www.example.com<br />
     </span>
     &lt;/VirtualHost&gt;<br />
-		<br />
+    <br />
     &lt;VirtualHost 172.20.30.40&gt;<br />
     <span class="indent">
         DocumentRoot /www/example2<br />
         ServerName www.example.org<br />
     </span>
     &lt;/VirtualHost&gt;<br />
-		<br />
+    <br />
     &lt;VirtualHost 172.20.30.40&gt;<br />
     <span class="indent">
         DocumentRoot /www/example3<br />
         ServerName www.example3.net<br />
     </span>
     &lt;/VirtualHost&gt;<br />
-		<br />
+    <br />
     # IP-based<br />
     &lt;VirtualHost 172.20.30.50&gt;<br />
     <span class="indent">
@@ -406,7 +407,7 @@
         ServerName www.example4.edu<br />
     </span>
     &lt;/VirtualHost&gt;<br />
-		<br />
+    <br />
     &lt;VirtualHost 172.20.30.60&gt;<br />
     <span class="indent">
         DocumentRoot /www/example5<br />
@@ -430,7 +431,7 @@
     <div class="example"><p><code>
     &lt;VirtualHost *:*&gt;<br />
         ProxyPreserveHost On<br />
-        ProxyPass / http://192.168.111.2<br />
+        ProxyPass / http://192.168.111.2/<br />
         ProxyPassReverse / http://192.168.111.2/<br />
         ServerName hostname.example.com<br />
     &lt;/VirtualHost&gt;
@@ -489,7 +490,7 @@
         # ...<br />
     </span>
     &lt;/VirtualHost&gt;<br />
-		<br />
+    <br />
     &lt;VirtualHost _default_:*&gt;<br />
     <span class="indent">
         DocumentRoot /www/default<br />
@@ -545,9 +546,9 @@
     Listen 80<br />
     ServerName www.example.com<br />
     DocumentRoot /www/example1<br />
-		<br />
+    <br />
     NameVirtualHost 172.20.30.40<br />
-		<br />
+    <br />
     &lt;VirtualHost 172.20.30.40 172.20.30.50&gt;<br />
     <span class="indent">
         DocumentRoot /www/example2<br />
@@ -555,7 +556,7 @@
         # ...<br />
     </span>
     &lt;/VirtualHost&gt;<br />
-		<br />
+    <br />
     &lt;VirtualHost 172.20.30.40&gt;<br />
     <span class="indent">
         DocumentRoot /www/example3<br />
@@ -589,7 +590,7 @@
     
 
     NameVirtualHost 172.20.30.40<br />
-		<br />
+    <br />
     &lt;VirtualHost 172.20.30.40&gt;<br />
     <span class="indent">
         # primary vhost<br />
@@ -599,7 +600,7 @@
         # ...<br />
     </span>
     &lt;/VirtualHost&gt;<br />
-		<br />
+    <br />
     &lt;VirtualHost 172.20.30.40&gt;<br />
     DocumentRoot /www/subdomain/sub1<br />
     <span class="indent">
@@ -610,7 +611,7 @@
         # ...<br />
     </span>
     &lt;/VirtualHost&gt;<br />
-		<br />
+    <br />
     &lt;VirtualHost 172.20.30.40&gt;<br />
     <span class="indent">
         DocumentRoot /www/subdomain/sub2<br />
@@ -641,7 +642,7 @@
     使われています。</p>
   </div></div>
 <div class="bottomlang">
-<p><span>Available Languages: </span><a href="../en/vhosts/examples.html" hreflang="en" rel="alternate" title="English">&nbsp;en&nbsp;</a> |
+<p><span>言語: </span><a href="../en/vhosts/examples.html" hreflang="en" rel="alternate" title="English">&nbsp;en&nbsp;</a> |
 <a href="../fr/vhosts/examples.html" hreflang="fr" rel="alternate" title="Français">&nbsp;fr&nbsp;</a> |
 <a href="../ja/vhosts/examples.html" title="Japanese">&nbsp;ja&nbsp;</a> |
 <a href="../ko/vhosts/examples.html" hreflang="ko" rel="alternate" title="Korean">&nbsp;ko&nbsp;</a> |

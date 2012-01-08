@@ -12,26 +12,25 @@
 <link href="../images/favicon.ico" rel="shortcut icon" /></head>
 <body id="manual-page"><div id="page-header">
 <p class="menu"><a href="../mod/">模块</a> | <a href="../mod/directives.html">指令</a> | <a href="../faq/">常见问题</a> | <a href="../glossary.html">术语</a> | <a href="../sitemap.html">网站导航</a></p>
-<p class="apache">Apache HTTP 服务器版本 2.2</p>
+<p class="apache">Apache HTTP 服务器版本 2.3</p>
 <img alt="" src="../images/feather.gif" /></div>
 <div class="up"><a href="../"><img title="&lt;-" alt="&lt;-" src="../images/left.gif" /></a></div>
 <div id="path">
-<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">HTTP 服务器</a> &gt; <a href="http://httpd.apache.org/docs/">文档</a> &gt; <a href="../">版本 2.2</a></div><div id="page-content"><div id="preamble"><h1>Apache 虚拟主机文档</h1>
+<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">HTTP 服务器</a> &gt; <a href="http://httpd.apache.org/docs/">文档</a> &gt; <a href="../">版本 2.3</a></div><div id="page-content"><div id="preamble"><h1>Apache 虚拟主机文档</h1>
 <div class="toplang">
 <p><span>可用语言: </span><a href="../de/vhosts/" hreflang="de" rel="alternate" title="Deutsch">&nbsp;de&nbsp;</a> |
 <a href="../en/vhosts/" hreflang="en" rel="alternate" title="English">&nbsp;en&nbsp;</a> |
 <a href="../fr/vhosts/" hreflang="fr" rel="alternate" title="Français">&nbsp;fr&nbsp;</a> |
 <a href="../ja/vhosts/" hreflang="ja" rel="alternate" title="Japanese">&nbsp;ja&nbsp;</a> |
 <a href="../ko/vhosts/" hreflang="ko" rel="alternate" title="Korean">&nbsp;ko&nbsp;</a> |
-<a href="../ru/vhosts/" hreflang="ru" rel="alternate" title="Russian">&nbsp;ru&nbsp;</a> |
 <a href="../tr/vhosts/" hreflang="tr" rel="alternate" title="Türkçe">&nbsp;tr&nbsp;</a> |
 <a href="../zh-cn/vhosts/" title="Simplified Chinese">&nbsp;zh-cn&nbsp;</a></p>
 </div>
 
 
     <p>术语<cite>虚拟主机</cite>指的是在单一机器上运行多个网站
-    (例如 <code>www.company1.com</code> 和
-    <code>www.company2.com</code>) 。
+    (例如 <code>company1.example.com</code> 和
+    <code>company2.example.com</code>) 。
     虚拟主机可以“<a href="ip-based.html">基于 IP</a>”，即每个 IP 一个站点；
     或者“<a href="name-based.html">基于名称</a>”，
     即每个 IP 多个站点。这些站点运行在同一物理服务器上的事实不会明显的透漏给最终用户。</p>
@@ -40,7 +39,7 @@
     Apache 版本 1.1 和更新的版本同时支持基于 IP 和基于名称的虚拟主机。
     基于名称的虚拟主机有时候称为<em>基于主机</em>或<em>非 IP</em> 的虚拟主机.</p>
 
-    <p>以下是在 Apache 1.3 以及更新版本中，解释支持虚拟主机的所有详细信息的文档页面列表。</p>
+    <p>以下解释是在 Apache 中支持虚拟主机的所有详细信息的文档页面列表。</p>
 
 </div>
 <div id="quickview"><ul id="toc"><li><img alt="" src="../images/down.gif" /> <a href="#support">虚拟主机支持</a></li>
@@ -65,7 +64,6 @@
 
     <ul>
       <li><code class="directive"><a href="../mod/core.html#virtualhost">&lt;VirtualHost&gt;</a></code></li>
-      <li><code class="directive"><a href="../mod/core.html#namevirtualhost">NameVirtualHost</a></code></li>
       <li><code class="directive"><a href="../mod/core.html#servername">ServerName</a></code></li>
       <li><code class="directive"><a href="../mod/core.html#serveralias">ServerAlias</a></code></li>
       <li><code class="directive"><a href="../mod/core.html#serverpath">ServerPath</a></code></li>
@@ -89,7 +87,6 @@
 <a href="../fr/vhosts/" hreflang="fr" rel="alternate" title="Français">&nbsp;fr&nbsp;</a> |
 <a href="../ja/vhosts/" hreflang="ja" rel="alternate" title="Japanese">&nbsp;ja&nbsp;</a> |
 <a href="../ko/vhosts/" hreflang="ko" rel="alternate" title="Korean">&nbsp;ko&nbsp;</a> |
-<a href="../ru/vhosts/" hreflang="ru" rel="alternate" title="Russian">&nbsp;ru&nbsp;</a> |
 <a href="../tr/vhosts/" hreflang="tr" rel="alternate" title="Türkçe">&nbsp;tr&nbsp;</a> |
 <a href="../zh-cn/vhosts/" title="Simplified Chinese">&nbsp;zh-cn&nbsp;</a></p>
 </div><div id="footer">

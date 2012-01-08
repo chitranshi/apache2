@@ -53,8 +53,8 @@ static int proxy_http_canon(request_rec *r, char *url)
     }
     def_port = apr_uri_port_of_scheme(scheme);
 
-    ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server,
-             "proxy: HTTP: canonicalising URL %s", url);
+    ap_log_rerror(APLOG_MARK, APLOG_TRACE1, 0, r,
+                  "HTTP: canonicalising URL %s", url);
 
     /* do syntatic check.
      * We break the URL into host, port, path, search
@@ -62,9 +62,8 @@ static int proxy_http_canon(request_rec *r, char *url)
     port = def_port;
     err = ap_proxy_canon_netloc(r->pool, &url, NULL, NULL, &host, &port);
     if (err) {
-        ap_log_rerror(APLOG_MARK, APLOG_ERR, 0, r,
-                      "error parsing URL %s: %s",
-                      url, err);
+        ap_log_rerror(APLOG_MARK, APLOG_ERR, 0, r, APLOGNO(01083)
+                      "error parsing URL %s: %s", url, err);
         return HTTP_BAD_REQUEST;
     }
 
@@ -252,7 +251,7 @@ static void terminate_headers(apr_bucket_alloc_t *bucket_alloc,
 }
 
 static int pass_brigade(apr_bucket_alloc_t *bucket_alloc,
-                                 request_rec *r, proxy_conn_rec *conn,
+                                 request_rec *r, proxy_conn_rec *p_conn,
                                  conn_rec *origin, apr_bucket_brigade *bb,
                                  int flush)
 {
@@ -265,12 +264,12 @@ static int pass_brigade(apr_bucket_alloc_t *bucket_alloc,
     }
     apr_brigade_length(bb, 0, &transferred);
     if (transferred != -1)
-        conn->worker->s->transferred += transferred;
+        p_conn->worker->s->transferred += transferred;
     status = ap_pass_brigade(origin->output_filters, bb);
     if (status != APR_SUCCESS) {
-        ap_log_error(APLOG_MARK, APLOG_ERR, status, r->server,
-                     "proxy: pass request body failed to %pI (%s)",
-                     conn->addr, conn->hostname);
+        ap_log_rerror(APLOG_MARK, APLOG_ERR, status, r, APLOGNO(01084)
+                      "pass request body failed to %pI (%s)",
+                      p_conn->addr, p_conn->hostname);
         if (origin->aborted) {
             const char *ssl_note;
 
@@ -283,7 +282,7 @@ static int pass_brigade(apr_bucket_alloc_t *bucket_alloc,
             return APR_STATUS_IS_TIMEUP(status) ? HTTP_GATEWAY_TIME_OUT : HTTP_BAD_GATEWAY;
         }
         else {
-            return HTTP_BAD_REQUEST; 
+            return HTTP_BAD_REQUEST;
         }
     }
     apr_brigade_cleanup(bb);
@@ -407,6 +406,11 @@ static int stream_reqbody_chunked(apr_pool_t *p,
                                    5, bucket_alloc);
     APR_BRIGADE_INSERT_TAIL(bb, e);
 
+    if (apr_table_get(r->subprocess_env, "proxy-sendextracrlf")) {
+        e = apr_bucket_immortal_create(ASCII_CRLF, 2, bucket_alloc);
+        APR_BRIGADE_INSERT_TAIL(bb, e);
+    }
+
     /* Now we have headers-only, or the chunk EOS mark; flush it */
     rv = pass_brigade(bucket_alloc, r, p_conn, origin, bb, 1);
     return rv;
@@ -434,10 +438,10 @@ static int stream_reqbody_cl(apr_pool_t *p,
 
         add_cl(p, bucket_alloc, header_brigade, old_cl_val);
         status = apr_strtoff(&cl_val, old_cl_val, &endstr, 10);
-        
+
         if (status || *endstr || endstr == old_cl_val || cl_val < 0) {
-            ap_log_rerror(APLOG_MARK, APLOG_ERR, status, r,
-                          "proxy: could not parse request Content-Length (%s)",
+            ap_log_rerror(APLOG_MARK, APLOG_ERR, status, r, APLOGNO(01085)
+                          "could not parse request Content-Length (%s)",
                           old_cl_val);
             return HTTP_BAD_REQUEST;
         }
@@ -456,6 +460,11 @@ static int stream_reqbody_cl(apr_pool_t *p,
             /* We can't pass this EOS to the output_filters. */
             e = APR_BRIGADE_LAST(input_brigade);
             apr_bucket_delete(e);
+
+            if (apr_table_get(r->subprocess_env, "proxy-sendextracrlf")) {
+                e = apr_bucket_immortal_create(ASCII_CRLF, 2, bucket_alloc);
+                APR_BRIGADE_INSERT_TAIL(input_brigade, e);
+            }
         }
 
         /* C-L < bytes streamed?!?
@@ -468,8 +477,8 @@ static int stream_reqbody_cl(apr_pool_t *p,
          * Prevents HTTP Response Splitting.
          */
         if (bytes_streamed > cl_val) {
-            ap_log_rerror(APLOG_MARK, APLOG_ERR, 0, r,
-                          "proxy: read more bytes of request body than expected "
+            ap_log_rerror(APLOG_MARK, APLOG_ERR, 0, r, APLOGNO(01086)
+                          "read more bytes of request body than expected "
                           "(got %" APR_OFF_T_FMT ", expected %" APR_OFF_T_FMT ")",
                           bytes_streamed, cl_val);
             return HTTP_INTERNAL_SERVER_ERROR;
@@ -521,9 +530,9 @@ static int stream_reqbody_cl(apr_pool_t *p,
     }
 
     if (bytes_streamed != cl_val) {
-        ap_log_error(APLOG_MARK, APLOG_ERR, 0, r->server,
-                     "proxy: client %s given Content-Length did not match"
-                     " number of body bytes read", r->connection->remote_ip);
+        ap_log_rerror(APLOG_MARK, APLOG_ERR, 0, r, APLOGNO(01087)
+                      "client %s given Content-Length did not match"
+                      " number of body bytes read", r->connection->client_ip);
         return HTTP_BAD_REQUEST;
     }
 
@@ -553,8 +562,11 @@ static int spool_reqbody_cl(apr_pool_t *p,
     apr_bucket *e;
     apr_off_t bytes, bytes_spooled = 0, fsize = 0;
     apr_file_t *tmpfile = NULL;
+    apr_off_t limit;
 
     body_brigade = apr_brigade_create(p, bucket_alloc);
+
+    limit = ap_get_limit_req_body(r);
 
     while (!APR_BUCKET_IS_EOS(APR_BRIGADE_FIRST(input_brigade)))
     {
@@ -570,6 +582,17 @@ static int spool_reqbody_cl(apr_pool_t *p,
         apr_brigade_length(input_brigade, 1, &bytes);
 
         if (bytes_spooled + bytes > MAX_MEM_SPOOL) {
+            /*
+             * LimitRequestBody does not affect Proxy requests (Should it?).
+             * Let it take effect if we decide to store the body in a
+             * temporary file on disk.
+             */
+            if (bytes_spooled + bytes > limit) {
+                ap_log_rerror(APLOG_MARK, APLOG_ERR, 0, r, APLOGNO(01088)
+                              "Request body is larger than the configured "
+                              "limit of %" APR_OFF_T_FMT, limit);
+                return HTTP_REQUEST_ENTITY_TOO_LARGE;
+            }
             /* can't spool any more in memory; write latest brigade to disk */
             if (tmpfile == NULL) {
                 const char *temp_dir;
@@ -577,8 +600,8 @@ static int spool_reqbody_cl(apr_pool_t *p,
 
                 status = apr_temp_dir_get(&temp_dir, p);
                 if (status != APR_SUCCESS) {
-                    ap_log_error(APLOG_MARK, APLOG_ERR, status, r->server,
-                                 "proxy: search for temporary directory failed");
+                    ap_log_rerror(APLOG_MARK, APLOG_ERR, status, r, APLOGNO(01089)
+                                  "search for temporary directory failed");
                     return HTTP_INTERNAL_SERVER_ERROR;
                 }
                 apr_filepath_merge(&template, temp_dir,
@@ -586,9 +609,9 @@ static int spool_reqbody_cl(apr_pool_t *p,
                                    APR_FILEPATH_NATIVE, p);
                 status = apr_file_mktemp(&tmpfile, template, 0, p);
                 if (status != APR_SUCCESS) {
-                    ap_log_error(APLOG_MARK, APLOG_ERR, status, r->server,
-                                 "proxy: creation of temporary file in directory %s failed",
-                                 temp_dir);
+                    ap_log_rerror(APLOG_MARK, APLOG_ERR, status, r, APLOGNO(01090)
+                                  "creation of temporary file in directory "
+                                  "%s failed", temp_dir);
                     return HTTP_INTERNAL_SERVER_ERROR;
                 }
             }
@@ -606,9 +629,9 @@ static int spool_reqbody_cl(apr_pool_t *p,
                     if (apr_file_name_get(&tmpfile_name, tmpfile) != APR_SUCCESS) {
                         tmpfile_name = "(unknown)";
                     }
-                    ap_log_error(APLOG_MARK, APLOG_ERR, status, r->server,
-                                 "proxy: write to temporary file %s failed",
-                                 tmpfile_name);
+                    ap_log_rerror(APLOG_MARK, APLOG_ERR, status, r, APLOGNO(01091)
+                                  "write to temporary file %s failed",
+                                  tmpfile_name);
                     return HTTP_INTERNAL_SERVER_ERROR;
                 }
                 AP_DEBUG_ASSERT(bytes_read == bytes_written);
@@ -655,36 +678,69 @@ static int spool_reqbody_cl(apr_pool_t *p,
     terminate_headers(bucket_alloc, header_brigade);
     APR_BRIGADE_CONCAT(header_brigade, body_brigade);
     if (tmpfile) {
-        /* For platforms where the size of the file may be larger than
-         * that which can be stored in a single bucket (where the
-         * length field is an apr_size_t), split it into several
-         * buckets: */
-        if (sizeof(apr_off_t) > sizeof(apr_size_t)
-            && fsize > AP_MAX_SENDFILE) {
-            e = apr_bucket_file_create(tmpfile, 0, AP_MAX_SENDFILE, p,
-                                       bucket_alloc);
-            while (fsize > AP_MAX_SENDFILE) {
-                apr_bucket *ce;
-                apr_bucket_copy(e, &ce);
-                APR_BRIGADE_INSERT_TAIL(header_brigade, ce);
-                e->start += AP_MAX_SENDFILE;
-                fsize -= AP_MAX_SENDFILE;
-            }
-            e->length = (apr_size_t)fsize; /* Resize just the last bucket */
-        }
-        else {
-            e = apr_bucket_file_create(tmpfile, 0, (apr_size_t)fsize, p,
-                                       bucket_alloc);
-        }
+        apr_brigade_insert_file(header_brigade, tmpfile, 0, fsize, p);
+    }
+    if (apr_table_get(r->subprocess_env, "proxy-sendextracrlf")) {
+        e = apr_bucket_immortal_create(ASCII_CRLF, 2, bucket_alloc);
         APR_BRIGADE_INSERT_TAIL(header_brigade, e);
     }
     /* This is all a single brigade, pass with flush flagged */
     return(pass_brigade(bucket_alloc, r, p_conn, origin, header_brigade, 1));
 }
 
+/*
+ * Transform buckets from one bucket allocator to another one by creating a
+ * transient bucket for each data bucket and let it use the data read from
+ * the old bucket. Metabuckets are transformed by just recreating them.
+ * Attention: Currently only the following bucket types are handled:
+ *
+ * All data buckets
+ * FLUSH
+ * EOS
+ *
+ * If an other bucket type is found its type is logged as a debug message
+ * and APR_EGENERAL is returned.
+ */
+static apr_status_t proxy_buckets_lifetime_transform(request_rec *r,
+        apr_bucket_brigade *from, apr_bucket_brigade *to)
+{
+    apr_bucket *e;
+    apr_bucket *new;
+    const char *data;
+    apr_size_t bytes;
+    apr_status_t rv = APR_SUCCESS;
+
+    apr_brigade_cleanup(to);
+    for (e = APR_BRIGADE_FIRST(from);
+         e != APR_BRIGADE_SENTINEL(from);
+         e = APR_BUCKET_NEXT(e)) {
+        if (!APR_BUCKET_IS_METADATA(e)) {
+            apr_bucket_read(e, &data, &bytes, APR_BLOCK_READ);
+            new = apr_bucket_transient_create(data, bytes, r->connection->bucket_alloc);
+            APR_BRIGADE_INSERT_TAIL(to, new);
+        }
+        else if (APR_BUCKET_IS_FLUSH(e)) {
+            new = apr_bucket_flush_create(r->connection->bucket_alloc);
+            APR_BRIGADE_INSERT_TAIL(to, new);
+        }
+        else if (APR_BUCKET_IS_EOS(e)) {
+            new = apr_bucket_eos_create(r->connection->bucket_alloc);
+            APR_BRIGADE_INSERT_TAIL(to, new);
+        }
+        else {
+            ap_log_rerror(APLOG_MARK, APLOG_ERR, 0, r, APLOGNO(00964)
+                          "Unhandled bucket type of type %s in"
+                          " proxy_buckets_lifetime_transform", e->type->name);
+            apr_bucket_delete(e);
+            rv = APR_EGENERAL;
+        }
+    }
+    return rv;
+}
+
 static
 int ap_proxy_http_request(apr_pool_t *p, request_rec *r,
-                                   proxy_conn_rec *p_conn, conn_rec *origin,
+                                   proxy_conn_rec *p_conn, proxy_worker *worker,
                                    proxy_server_conf *conf,
                                    apr_uri_t *uri,
                                    char *url, char *server_portstr)
@@ -708,16 +764,27 @@ int ap_proxy_http_request(apr_pool_t *p, request_rec *r,
     apr_off_t bytes;
     int force10, rv;
     apr_table_t *headers_in_copy;
+    proxy_dir_conf *dconf;
+    conn_rec *origin = p_conn->connection;
+    int do_100_continue;
 
+    dconf = ap_get_module_config(r->per_dir_config, &proxy_module);
     header_brigade = apr_brigade_create(p, origin->bucket_alloc);
 
     /*
      * Send the HTTP/1.1 request to the remote server
      */
 
+    /*
+     * To be compliant, we only use 100-Continue for requests with bodies.
+     * We also make sure we won't be talking HTTP/1.0 as well.
+     */
+    do_100_continue = (worker->s->ping_timeout_set
+                       && ap_request_has_body(r)
+                       && (PROXYREQ_REVERSE == r->proxyreq)
+                       && !(apr_table_get(r->subprocess_env, "force-proxy-request-1.0")));
+
     if (apr_table_get(r->subprocess_env, "force-proxy-request-1.0")) {
-        buf = apr_pstrcat(p, r->method, " ", url, " HTTP/1.0" CRLF, NULL);
-        force10 = 1;
         /*
          * According to RFC 2616 8.2.3 we are not allowed to forward an
          * Expect: 100-continue to an HTTP/1.0 server. Instead we MUST return
@@ -726,6 +793,8 @@ int ap_proxy_http_request(apr_pool_t *p, request_rec *r,
         if (r->expecting_100) {
             return HTTP_EXPECTATION_FAILED;
         }
+        buf = apr_pstrcat(p, r->method, " ", url, " HTTP/1.0" CRLF, NULL);
+        force10 = 1;
         p_conn->close++;
     } else {
         buf = apr_pstrcat(p, r->method, " ", url, " HTTP/1.1" CRLF, NULL);
@@ -738,17 +807,17 @@ int ap_proxy_http_request(apr_pool_t *p, request_rec *r,
     ap_xlate_proto_to_ascii(buf, strlen(buf));
     e = apr_bucket_pool_create(buf, strlen(buf), p, c->bucket_alloc);
     APR_BRIGADE_INSERT_TAIL(header_brigade, e);
-    if (conf->preserve_host == 0) {
+    if (dconf->preserve_host == 0) {
         if (ap_strchr_c(uri->hostname, ':')) { /* if literal IPv6 address */
             if (uri->port_str && uri->port != DEFAULT_HTTP_PORT) {
-                buf = apr_pstrcat(p, "Host: [", uri->hostname, "]:", 
+                buf = apr_pstrcat(p, "Host: [", uri->hostname, "]:",
                                   uri->port_str, CRLF, NULL);
             } else {
                 buf = apr_pstrcat(p, "Host: [", uri->hostname, "]", CRLF, NULL);
             }
         } else {
             if (uri->port_str && uri->port != DEFAULT_HTTP_PORT) {
-                buf = apr_pstrcat(p, "Host: ", uri->hostname, ":", 
+                buf = apr_pstrcat(p, "Host: ", uri->hostname, ":",
                                   uri->port_str, CRLF, NULL);
             } else {
                 buf = apr_pstrcat(p, "Host: ", uri->hostname, CRLF, NULL);
@@ -762,12 +831,11 @@ int ap_proxy_http_request(apr_pool_t *p, request_rec *r,
         const char* hostname = apr_table_get(r->headers_in,"Host");
         if (!hostname) {
             hostname =  r->server->server_hostname;
-            ap_log_rerror(APLOG_MARK, APLOG_WARNING, 0, r,
-                          "proxy: no HTTP 0.9 request (with no host line) "
+            ap_log_rerror(APLOG_MARK, APLOG_WARNING, 0, r, APLOGNO(01092)
+                          "no HTTP 0.9 request (with no host line) "
                           "on incoming request and preserve host set "
                           "forcing hostname to be %s for uri %s",
-                          hostname,
-                          r->uri );
+                          hostname, r->uri);
         }
         buf = apr_pstrcat(p, "Host: ", hostname, CRLF, NULL);
     }
@@ -804,6 +872,14 @@ int ap_proxy_http_request(apr_pool_t *p, request_rec *r,
         );
     }
 
+    /* Use HTTP/1.1 100-Continue as quick "HTTP ping" test
+     * to backend
+     */
+    if (do_100_continue) {
+        apr_table_mergen(r->headers_in, "Expect", "100-Continue");
+        r->expecting_100 = 1;
+    }
+
     /* X-Forwarded-*: handling
      *
      * XXX Privacy Note:
@@ -824,29 +900,30 @@ int ap_proxy_http_request(apr_pool_t *p, request_rec *r,
      * a forward proxy configuation instead of X-Forwarded-*. See the
      * ProxyVia option for details.
      */
+    if (dconf->add_forwarded_headers) {
+       if (PROXYREQ_REVERSE == r->proxyreq) {
+           const char *buf;
 
-    if (PROXYREQ_REVERSE == r->proxyreq) {
-        const char *buf;
+           /* Add X-Forwarded-For: so that the upstream has a chance to
+            * determine, where the original request came from.
+            */
+           apr_table_mergen(r->headers_in, "X-Forwarded-For",
+                            r->useragent_ip);
 
-        /* Add X-Forwarded-For: so that the upstream has a chance to
-         * determine, where the original request came from.
-         */
-        apr_table_mergen(r->headers_in, "X-Forwarded-For",
-                         c->remote_ip);
+           /* Add X-Forwarded-Host: so that upstream knows what the
+            * original request hostname was.
+            */
+           if ((buf = apr_table_get(r->headers_in, "Host"))) {
+               apr_table_mergen(r->headers_in, "X-Forwarded-Host", buf);
+           }
 
-        /* Add X-Forwarded-Host: so that upstream knows what the
-         * original request hostname was.
-         */
-        if ((buf = apr_table_get(r->headers_in, "Host"))) {
-            apr_table_mergen(r->headers_in, "X-Forwarded-Host", buf);
-        }
-
-        /* Add X-Forwarded-Server: so that upstream knows what the
-         * name of this proxy server is (if there are more than one)
-         * XXX: This duplicates Via: - do we strictly need it?
-         */
-        apr_table_mergen(r->headers_in, "X-Forwarded-Server",
-                         r->server->server_hostname);
+           /* Add X-Forwarded-Server: so that upstream knows what the
+            * name of this proxy server is (if there are more than one)
+            * XXX: This duplicates Via: - do we strictly need it?
+            */
+           apr_table_mergen(r->headers_in, "X-Forwarded-Server",
+                            r->server->server_hostname);
+       }
     }
 
     proxy_run_fixups(r);
@@ -897,6 +974,7 @@ int ap_proxy_http_request(apr_pool_t *p, request_rec *r,
             }
         }
 
+
         /* Skip Transfer-Encoding and Content-Length for now.
          */
         if (!strcasecmp(headers_in[counter].key, "Transfer-Encoding")) {
@@ -935,8 +1013,11 @@ int ap_proxy_http_request(apr_pool_t *p, request_rec *r,
      * input_brigade and jump past all of the request body logic...
      * Reading anything with ap_get_brigade is likely to consume the
      * main request's body or read beyond EOS - which would be unplesant.
+     *
+     * An exception: when a kept_body is present, then subrequest CAN use
+     * pass request bodies, and we DONT skip the body.
      */
-    if (r->main) {
+    if (!r->kept_body && r->main) {
         /* XXX: Why DON'T sub-requests use keepalives? */
         p_conn->close++;
         if (old_cl_val) {
@@ -962,17 +1043,16 @@ int ap_proxy_http_request(apr_pool_t *p, request_rec *r,
      * do not modify add_te_chunked's logic
      */
     if (old_te_val && strcasecmp(old_te_val, "chunked") != 0) {
-        ap_log_error(APLOG_MARK, APLOG_ERR, 0, r->server,
-                     "proxy: %s Transfer-Encoding is not supported",
-                     old_te_val);
+        ap_log_rerror(APLOG_MARK, APLOG_ERR, 0, r, APLOGNO(01093)
+                      "%s Transfer-Encoding is not supported", old_te_val);
         return HTTP_INTERNAL_SERVER_ERROR;
     }
 
     if (old_cl_val && old_te_val) {
-        ap_log_error(APLOG_MARK, APLOG_DEBUG, APR_ENOTIMPL, r->server,
-                     "proxy: client %s (%s) requested Transfer-Encoding "
-                     "chunked body with Content-Length (C-L ignored)",
-                     c->remote_ip, c->remote_host ? c->remote_host: "");
+        ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r, APLOGNO(01094)
+                      "client %s (%s) requested Transfer-Encoding "
+                      "chunked body with Content-Length (C-L ignored)",
+                      c->client_ip, c->remote_host ? c->remote_host: "");
         apr_table_unset(r->headers_in, "Content-Length");
         old_cl_val = NULL;
         origin->keepalive = AP_CONN_CLOSE;
@@ -993,11 +1073,11 @@ int ap_proxy_http_request(apr_pool_t *p, request_rec *r,
                                 AP_MODE_READBYTES, APR_BLOCK_READ,
                                 MAX_MEM_SPOOL - bytes_read);
         if (status != APR_SUCCESS) {
-            ap_log_error(APLOG_MARK, APLOG_ERR, status, r->server,
-                         "proxy: prefetch request body failed to %pI (%s)"
-                         " from %s (%s)",
-                         p_conn->addr, p_conn->hostname ? p_conn->hostname: "",
-                         c->remote_ip, c->remote_host ? c->remote_host: "");
+            ap_log_rerror(APLOG_MARK, APLOG_ERR, status, r, APLOGNO(01095)
+                          "prefetch request body failed to %pI (%s)"
+                          " from %s (%s)",
+                          p_conn->addr, p_conn->hostname ? p_conn->hostname: "",
+                          c->client_ip, c->remote_host ? c->remote_host: "");
             return HTTP_BAD_REQUEST;
         }
 
@@ -1015,11 +1095,11 @@ int ap_proxy_http_request(apr_pool_t *p, request_rec *r,
          */
         status = ap_save_brigade(NULL, &input_brigade, &temp_brigade, p);
         if (status != APR_SUCCESS) {
-            ap_log_error(APLOG_MARK, APLOG_ERR, status, r->server,
-                         "proxy: processing prefetched request body failed"
-                         " to %pI (%s) from %s (%s)",
-                         p_conn->addr, p_conn->hostname ? p_conn->hostname: "",
-                         c->remote_ip, c->remote_host ? c->remote_host: "");
+            ap_log_rerror(APLOG_MARK, APLOG_ERR, status, r, APLOGNO(01096)
+                          "processing prefetched request body failed"
+                          " to %pI (%s) from %s (%s)",
+                          p_conn->addr, p_conn->hostname ? p_conn->hostname: "",
+                          c->client_ip, c->remote_host ? c->remote_host: "");
             return HTTP_INTERNAL_SERVER_ERROR;
         }
 
@@ -1120,7 +1200,7 @@ skip_body:
      * otherwise sent Connection: Keep-Alive.
      */
     if (!force10) {
-        if (p_conn->close || p_conn->close_on_recycle) {
+        if (p_conn->close) {
             buf = apr_pstrdup(p, "Connection: close" CRLF);
         }
         else {
@@ -1154,53 +1234,109 @@ skip_body:
     }
 
     if (rv != OK) {
-        /* apr_errno value has been logged in lower level method */
-        ap_log_error(APLOG_MARK, APLOG_ERR, 0, r->server,
-                     "proxy: pass request body failed to %pI (%s)"
-                     " from %s (%s)",
-                     p_conn->addr,
-                     p_conn->hostname ? p_conn->hostname: "",
-                     c->remote_ip,
-                     c->remote_host ? c->remote_host: "");
+        /* apr_status_t value has been logged in lower level method */
+        ap_log_rerror(APLOG_MARK, APLOG_ERR, 0, r, APLOGNO(01097)
+                      "pass request body failed to %pI (%s) from %s (%s)",
+                      p_conn->addr, p_conn->hostname ? p_conn->hostname: "",
+                      c->client_ip, c->remote_host ? c->remote_host: "");
         return rv;
     }
 
     return OK;
 }
 
-static void process_proxy_header(request_rec* r, proxy_dir_conf* c,
-                      const char* key, const char* value)
+/*
+ * If the date is a valid RFC 850 date or asctime() date, then it
+ * is converted to the RFC 1123 format.
+ */
+static const char *date_canon(apr_pool_t *p, const char *date)
 {
-    static const char* date_hdrs[]
-        = { "Date", "Expires", "Last-Modified", NULL } ;
+    apr_status_t rv;
+    char* ndate;
+
+    apr_time_t time = apr_date_parse_http(date);
+    if (!time) {
+        return date;
+    }
+
+    ndate = apr_palloc(p, APR_RFC822_DATE_LEN);
+    rv = apr_rfc822_date(ndate, time);
+    if (rv != APR_SUCCESS) {
+        return date;
+    }
+
+    return ndate;
+}
+
+static request_rec *make_fake_req(conn_rec *c, request_rec *r)
+{
+    apr_pool_t *pool;
+    request_rec *rp;
+
+    apr_pool_create(&pool, c->pool);
+
+    rp = apr_pcalloc(pool, sizeof(*r));
+
+    rp->pool            = pool;
+    rp->status          = HTTP_OK;
+
+    rp->headers_in      = apr_table_make(pool, 50);
+    rp->subprocess_env  = apr_table_make(pool, 50);
+    rp->headers_out     = apr_table_make(pool, 12);
+    rp->err_headers_out = apr_table_make(pool, 5);
+    rp->notes           = apr_table_make(pool, 5);
+
+    rp->server = r->server;
+    rp->log = r->log;
+    rp->proxyreq = r->proxyreq;
+    rp->request_time = r->request_time;
+    rp->connection      = c;
+    rp->output_filters  = c->output_filters;
+    rp->input_filters   = c->input_filters;
+    rp->proto_output_filters  = c->output_filters;
+    rp->proto_input_filters   = c->input_filters;
+    rp->useragent_ip = c->client_ip;
+    rp->useragent_addr = c->client_addr;
+
+    rp->request_config  = ap_create_request_config(pool);
+    proxy_run_create_req(r, rp);
+
+    return rp;
+}
+
+static void process_proxy_header(request_rec *r, proxy_dir_conf *c,
+                                 const char *key, const char *value)
+{
+    static const char *date_hdrs[]
+        = { "Date", "Expires", "Last-Modified", NULL };
     static const struct {
-        const char* name;
+        const char *name;
         ap_proxy_header_reverse_map_fn func;
     } transform_hdrs[] = {
-        { "Location", ap_proxy_location_reverse_map } ,
-        { "Content-Location", ap_proxy_location_reverse_map } ,
-        { "URI", ap_proxy_location_reverse_map } ,
-        { "Destination", ap_proxy_location_reverse_map } ,
-        { "Set-Cookie", ap_proxy_cookie_reverse_map } ,
+        { "Location", ap_proxy_location_reverse_map },
+        { "Content-Location", ap_proxy_location_reverse_map },
+        { "URI", ap_proxy_location_reverse_map },
+        { "Destination", ap_proxy_location_reverse_map },
+        { "Set-Cookie", ap_proxy_cookie_reverse_map },
         { NULL, NULL }
-    } ;
-    int i ;
-    for ( i = 0 ; date_hdrs[i] ; ++i ) {
-        if ( !strcasecmp(date_hdrs[i], key) ) {
+    };
+    int i;
+    for (i = 0; date_hdrs[i]; ++i) {
+        if (!strcasecmp(date_hdrs[i], key)) {
             apr_table_add(r->headers_out, key,
-                ap_proxy_date_canon(r->pool, value)) ;
-            return ;
+                          date_canon(r->pool, value));
+            return;
         }
     }
-    for ( i = 0 ; transform_hdrs[i].name ; ++i ) {
-        if ( !strcasecmp(transform_hdrs[i].name, key) ) {
+    for (i = 0; transform_hdrs[i].name; ++i) {
+        if (!strcasecmp(transform_hdrs[i].name, key)) {
             apr_table_add(r->headers_out, key,
-                (*transform_hdrs[i].func)(r, c, value)) ;
-            return ;
+                          (*transform_hdrs[i].func)(r, c, value));
+            return;
        }
     }
-    apr_table_add(r->headers_out, key, value) ;
-    return ;
+    apr_table_add(r->headers_out, key, value);
+    return;
 }
 
 /*
@@ -1233,7 +1369,10 @@ static void ap_proxy_read_headers(request_rec *r, request_rec *rr,
      * Read header lines until we get the empty separator line, a read error,
      * the connection closes (EOF), or we timeout.
      */
+    ap_log_rerror(APLOG_MARK, APLOG_TRACE4, 0, r,
+                  "Headers received from backend:");
     while ((len = ap_getline(buffer, size, rr, 1)) > 0) {
+        ap_log_rerror(APLOG_MARK, APLOG_TRACE4, 0, r, "%s", buffer);
 
         if (!(value = strchr(buffer, ':'))) {     /* Find the colon separator */
 
@@ -1261,23 +1400,24 @@ static void ap_proxy_read_headers(request_rec *r, request_rec *rr,
                      * the first line of the response.
                      */
                     if (saw_headers) {
-                        ap_log_error(APLOG_MARK, APLOG_WARNING, 0, r->server,
-                         "proxy: Starting body due to bogus non-header in headers "
-                         "returned by %s (%s)", r->uri, r->method);
+                        ap_log_rerror(APLOG_MARK, APLOG_WARNING, 0, r, APLOGNO(01098)
+                                      "Starting body due to bogus non-header "
+                                      "in headers returned by %s (%s)",
+                                      r->uri, r->method);
                         *pread_len = len;
                         return ;
                     } else {
-                         ap_log_error(APLOG_MARK, APLOG_WARNING, 0, r->server,
-                         "proxy: No HTTP headers "
-                         "returned by %s (%s)", r->uri, r->method);
+                         ap_log_rerror(APLOG_MARK, APLOG_WARNING, 0, r, APLOGNO(01099)
+                                       "No HTTP headers returned by %s (%s)",
+                                       r->uri, r->method);
                         return ;
                     }
                 }
             }
             /* this is the psc->badopt == bad_ignore case */
-            ap_log_error(APLOG_MARK, APLOG_WARNING, 0, r->server,
-                         "proxy: Ignoring bogus HTTP header "
-                         "returned by %s (%s)", r->uri, r->method);
+            ap_log_rerror(APLOG_MARK, APLOG_WARNING, 0, r, APLOGNO(01100)
+                          "Ignoring bogus HTTP header returned by %s (%s)",
+                          r->uri, r->method);
             continue;
         }
 
@@ -1334,7 +1474,7 @@ apr_status_t ap_proxygetline(apr_bucket_brigade *bb, char *s, int n, request_rec
 
     if (rv == APR_SUCCESS) {
         *writen = (int) len;
-    } else if (rv == APR_ENOSPC) {
+    } else if (APR_STATUS_IS_ENOSPC(rv)) {
         *writen = n;
     } else {
         *writen = -1;
@@ -1355,15 +1495,14 @@ apr_status_t ap_proxygetline(apr_bucket_brigade *bb, char *s, int n, request_rec
 
 static
 apr_status_t ap_proxy_http_process_response(apr_pool_t * p, request_rec *r,
-                                            proxy_conn_rec *backend,
-                                            conn_rec *origin,
+                                            proxy_conn_rec **backend_ptr,
+                                            proxy_worker *worker,
                                             proxy_server_conf *conf,
                                             char *server_portstr) {
     conn_rec *c = r->connection;
     char buffer[HUGE_STRING_LEN];
     const char *buf;
     char keepchar;
-    request_rec *rp;
     apr_bucket *e;
     apr_bucket_brigade *bb, *tmp_bb;
     apr_bucket_brigade *pass_bb;
@@ -1381,37 +1520,66 @@ apr_status_t ap_proxy_http_process_response(apr_pool_t * p, request_rec *r,
     int proxy_status = OK;
     const char *original_status_line = r->status_line;
     const char *proxy_status_line = NULL;
+    proxy_conn_rec *backend = *backend_ptr;
+    conn_rec *origin = backend->connection;
+    apr_interval_time_t old_timeout = 0;
+    proxy_dir_conf *dconf;
+    int do_100_continue;
+
+    dconf = ap_get_module_config(r->per_dir_config, &proxy_module);
+
+    do_100_continue = (worker->s->ping_timeout_set
+                       && ap_request_has_body(r)
+                       && (PROXYREQ_REVERSE == r->proxyreq)
+                       && !(apr_table_get(r->subprocess_env, "force-proxy-request-1.0")));
 
     bb = apr_brigade_create(p, c->bucket_alloc);
     pass_bb = apr_brigade_create(p, c->bucket_alloc);
+
+    /* Setup for 100-Continue timeout if appropriate */
+    if (do_100_continue) {
+        apr_socket_timeout_get(backend->sock, &old_timeout);
+        if (worker->s->ping_timeout != old_timeout) {
+            apr_status_t rc;
+            rc = apr_socket_timeout_set(backend->sock, worker->s->ping_timeout);
+            if (rc != APR_SUCCESS) {
+                ap_log_rerror(APLOG_MARK, APLOG_ERR, rc, r, APLOGNO(01101)
+                              "could not set 100-Continue timeout");
+            }
+        }
+    }
 
     /* Get response from the remote server, and pass it up the
      * filter chain
      */
 
-    rp = ap_proxy_make_fake_req(origin, r);
+    backend->r = make_fake_req(origin, r);
     /* In case anyone needs to know, this is a fake request that is really a
      * response.
      */
-    rp->proxyreq = PROXYREQ_RESPONSE;
+    backend->r->proxyreq = PROXYREQ_RESPONSE;
+    apr_table_setn(r->notes, "proxy-source-port", apr_psprintf(r->pool, "%hu",
+                   origin->local_addr->port));
     tmp_bb = apr_brigade_create(p, c->bucket_alloc);
     do {
         apr_status_t rc;
 
         apr_brigade_cleanup(bb);
 
-        rc = ap_proxygetline(tmp_bb, buffer, sizeof(buffer), rp, 0, &len);
+        rc = ap_proxygetline(tmp_bb, buffer, sizeof(buffer), backend->r, 0, &len);
         if (len == 0) {
             /* handle one potential stray CRLF */
-            rc = ap_proxygetline(tmp_bb, buffer, sizeof(buffer), rp, 0, &len);
+            rc = ap_proxygetline(tmp_bb, buffer, sizeof(buffer), backend->r, 0, &len);
         }
         if (len <= 0) {
-            ap_log_rerror(APLOG_MARK, APLOG_ERR, rc, r,
-                          "proxy: error reading status line from remote "
+            ap_log_rerror(APLOG_MARK, APLOG_ERR, rc, r, APLOGNO(01102)
+                          "error reading status line from remote "
                           "server %s:%d", backend->hostname, backend->port);
             if (APR_STATUS_IS_TIMEUP(rc)) {
-                ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r,
-                              "proxy: read timeout");
+                ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r, APLOGNO(01103) "read timeout");
+                if (do_100_continue) {
+                    return ap_proxyerror(r, HTTP_SERVICE_UNAVAILABLE, "Timeout on 100-Continue");
+                }
             }
             /*
              * If we are a reverse proxy request shutdown the connection
@@ -1428,10 +1596,10 @@ apr_status_t ap_proxy_http_process_response(apr_pool_t * p, request_rec *r,
                 !APR_STATUS_IS_TIMEUP(rc)) {
                 apr_bucket *eos;
 
-                ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r,
-                              "proxy: Closing connection to client because"
+                ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r, APLOGNO(01104)
+                              "Closing connection to client because"
                               " reading from backend server %s:%d failed."
-                              " Number of keepalives %i", backend->hostname, 
+                              " Number of keepalives %i", backend->hostname,
                               backend->port, c->keepalives);
                 ap_proxy_backend_broke(r, bb);
                 /*
@@ -1463,11 +1631,11 @@ apr_status_t ap_proxy_http_process_response(apr_pool_t * p, request_rec *r,
                 return OK;
             }
             else if (!c->keepalives) {
-                     ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r,
-                                   "proxy: NOT Closing connection to client"
+                     ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r, APLOGNO(01105)
+                                   "NOT Closing connection to client"
                                    " although reading from backend server %s:%d"
-                                   " failed.", backend->hostname,
-                                   backend->port);
+                                   " failed.",
+                                   backend->hostname, backend->port);
             }
             return ap_proxyerror(r, HTTP_BAD_GATEWAY,
                                  "Error reading from remote server");
@@ -1497,6 +1665,8 @@ apr_status_t ap_proxy_http_process_response(apr_pool_t * p, request_rec *r,
             keepchar = buffer[12];
             buffer[12] = '\0';
             proxy_status = atoi(&buffer[9]);
+            apr_table_setn(r->notes, "proxy-status",
+                           apr_pstrdup(r->pool, &buffer[9]));
 
             if (keepchar != '\0') {
                 buffer[12] = keepchar;
@@ -1515,6 +1685,9 @@ apr_status_t ap_proxy_http_process_response(apr_pool_t * p, request_rec *r,
             r->status = proxy_status;
             r->status_line = proxy_status_line;
 
+            ap_log_rerror(APLOG_MARK, APLOG_TRACE3, 0, r,
+                          "Status from backend: %d", proxy_status);
+
             /* read the headers. */
             /* N.B. for HTTP/1.0 clients, we have to fold line-wrapped headers*/
             /* Also, take care with headers with multiple occurences. */
@@ -1525,14 +1698,13 @@ apr_status_t ap_proxy_http_process_response(apr_pool_t * p, request_rec *r,
                          "Set-Cookie", NULL);
 
             /* shove the headers direct into r->headers_out */
-            ap_proxy_read_headers(r, rp, buffer, sizeof(buffer), origin,
+            ap_proxy_read_headers(r, backend->r, buffer, sizeof(buffer), origin,
                                   &pread_len);
 
             if (r->headers_out == NULL) {
-                ap_log_error(APLOG_MARK, APLOG_WARNING, 0,
-                             r->server, "proxy: bad HTTP/%d.%d header "
-                             "returned by %s (%s)", major, minor, r->uri,
-                             r->method);
+                ap_log_rerror(APLOG_MARK, APLOG_WARNING, 0, r, APLOGNO(01106)
+                              "bad HTTP/%d.%d header returned by %s (%s)",
+                              major, minor, r->uri, r->method);
                 backend->close += 1;
                 /*
                  * ap_send_error relies on a headers_out to be present. we
@@ -1570,10 +1742,10 @@ apr_status_t ap_proxy_http_process_response(apr_pool_t * p, request_rec *r,
                  * XXX: We aught to treat such a response as uncachable
                  */
                 apr_table_unset(r->headers_out, "Content-Length");
-                ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server,
-                             "proxy: server %s:%d returned Transfer-Encoding"
-                             " and Content-Length", backend->hostname,
-                             backend->port);
+                ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r, APLOGNO(01107)
+                              "server %s:%d returned Transfer-Encoding"
+                              " and Content-Length",
+                              backend->hostname, backend->port);
                 backend->close += 1;
             }
 
@@ -1583,15 +1755,14 @@ apr_status_t ap_proxy_http_process_response(apr_pool_t * p, request_rec *r,
              */
             te = apr_table_get(r->headers_out, "Transfer-Encoding");
             /* strip connection listed hop-by-hop headers from response */
-            backend->close += ap_proxy_liststr(apr_table_get(r->headers_out,
-                                                             "Connection"),
-                                              "close");
+            backend->close += ap_find_token(p,
+                    apr_table_get(r->headers_out, "Connection"), "close");
             ap_proxy_clear_connection(p, r->headers_out);
             if ((buf = apr_table_get(r->headers_out, "Content-Type"))) {
                 ap_set_content_type(r, apr_pstrdup(p, buf));
             }
             if (!ap_is_HTTP_INFO(proxy_status)) {
-                ap_proxy_pre_http_request(origin, rp);
+                ap_proxy_pre_http_request(origin, backend->r);
             }
 
             /* Clear hop-by-hop headers */
@@ -1643,6 +1814,12 @@ apr_status_t ap_proxy_http_process_response(apr_pool_t * p, request_rec *r,
 
         if (ap_is_HTTP_INFO(proxy_status)) {
             interim_response++;
+            /* Reset to old timeout iff we've adjusted it */
+            if (do_100_continue
+                && (r->status == HTTP_CONTINUE)
+                && (worker->s->ping_timeout != old_timeout)) {
+                    apr_socket_timeout_set(backend->sock, old_timeout);
+            }
         }
         else {
             interim_response = 0;
@@ -1662,9 +1839,8 @@ apr_status_t ap_proxy_http_process_response(apr_pool_t * p, request_rec *r,
              */
             const char *policy = apr_table_get(r->subprocess_env,
                                                "proxy-interim-response");
-            ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r,
-                         "proxy: HTTP: received interim %d response",
-                         r->status);
+            ap_log_rerror(APLOG_MARK, APLOG_TRACE2, 0, r,
+                          "HTTP: received interim %d response", r->status);
             if (!policy || !strcasecmp(policy, "RFC")) {
                 ap_send_interim_response(r, 1);
             }
@@ -1672,22 +1848,23 @@ apr_status_t ap_proxy_http_process_response(apr_pool_t * p, request_rec *r,
              * policies and maybe also add option to bail out with 502
              */
             else if (strcasecmp(policy, "Suppress")) {
-                ap_log_rerror(APLOG_MARK, APLOG_WARNING, 0, r,
-                             "undefined proxy interim response policy");
+                ap_log_rerror(APLOG_MARK, APLOG_WARNING, 0, r, APLOGNO(01108)
+                              "undefined proxy interim response policy");
             }
         }
         /* Moved the fixups of Date headers and those affected by
          * ProxyPassReverse/etc from here to ap_proxy_read_headers
          */
 
-        if ((proxy_status == 401) && (conf->error_override)) {
+        if ((proxy_status == 401) && (dconf->error_override)) {
             const char *buf;
             const char *wa = "WWW-Authenticate";
             if ((buf = apr_table_get(r->headers_out, wa))) {
                 apr_table_set(r->err_headers_out, wa, buf);
             } else {
-                ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server,
-                             "proxy: origin server sent 401 without WWW-Authenticate header");
+                ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r, APLOGNO(01109)
+                              "origin server sent 401 without "
+                              "WWW-Authenticate header");
             }
         }
 
@@ -1716,6 +1893,21 @@ apr_status_t ap_proxy_http_process_response(apr_pool_t * p, request_rec *r,
             e = apr_bucket_heap_create(buffer, cntr, NULL, c->bucket_alloc);
             APR_BRIGADE_INSERT_TAIL(bb, e);
         }
+        /* PR 41646: get HEAD right with ProxyErrorOverride */
+        if (ap_is_HTTP_ERROR(r->status) && dconf->error_override) {
+            /* clear r->status for override error, otherwise ErrorDocument
+             * thinks that this is a recursive error, and doesn't find the
+             * custom error page
+             */
+            r->status = HTTP_OK;
+            /* Discard body, if one is expected */
+            if (!r->header_only && /* not HEAD request */
+                (proxy_status != HTTP_NO_CONTENT) && /* not 204 */
+                (proxy_status != HTTP_NOT_MODIFIED)) { /* not 304 */
+                ap_discard_request_body(backend->r);
+            }
+            return proxy_status;
+        }
 
         /* send body - but only if a body is expected */
         if ((!r->header_only) &&                   /* not HEAD request */
@@ -1728,26 +1920,25 @@ apr_status_t ap_proxy_http_process_response(apr_pool_t * p, request_rec *r,
              * TE, so that they are preserved accordingly for
              * ap_http_filter to know where to end.
              */
-            rp->headers_in = apr_table_copy(r->pool, r->headers_out);
+            backend->r->headers_in = apr_table_clone(backend->r->pool, r->headers_out);
             /*
              * Restore Transfer-Encoding header from response if we saved
              * one before and there is none left. We need it for the
              * ap_http_filter. See above.
              */
-            if (te && !apr_table_get(rp->headers_in, "Transfer-Encoding")) {
-                apr_table_add(rp->headers_in, "Transfer-Encoding", te);
+            if (te && !apr_table_get(backend->r->headers_in, "Transfer-Encoding")) {
+                apr_table_add(backend->r->headers_in, "Transfer-Encoding", te);
             }
 
             apr_table_unset(r->headers_out,"Transfer-Encoding");
 
-            ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server,
-                         "proxy: start body send");
+            ap_log_rerror(APLOG_MARK, APLOG_TRACE3, 0, r, "start body send");
 
             /*
              * if we are overriding the errors, we can't put the content
              * of the page into the brigade
              */
-            if (!conf->error_override || !ap_is_HTTP_ERROR(proxy_status)) {
+            if (!dconf->error_override || !ap_is_HTTP_ERROR(proxy_status)) {
                 /* read the body, pass it to the output filters */
                 apr_read_type_e mode = APR_NONBLOCK_READ;
                 int finish = FALSE;
@@ -1757,7 +1948,7 @@ apr_status_t ap_proxy_http_process_response(apr_pool_t * p, request_rec *r,
                  * error status so that an underlying error (eg HTTP_NOT_FOUND)
                  * doesn't become an HTTP_OK.
                  */
-                if (conf->error_override && !ap_is_HTTP_ERROR(proxy_status)
+                if (dconf->error_override && !ap_is_HTTP_ERROR(proxy_status)
                         && ap_is_HTTP_ERROR(original_status)) {
                     r->status = original_status;
                     r->status_line = original_status_line;
@@ -1767,7 +1958,7 @@ apr_status_t ap_proxy_http_process_response(apr_pool_t * p, request_rec *r,
                     apr_off_t readbytes;
                     apr_status_t rv;
 
-                    rv = ap_get_brigade(rp->input_filters, bb,
+                    rv = ap_get_brigade(backend->r->input_filters, bb,
                                         AP_MODE_READBYTES, mode,
                                         conf->io_buffer_size);
 
@@ -1795,8 +1986,8 @@ apr_status_t ap_proxy_http_process_response(apr_pool_t * p, request_rec *r,
                          * our backend bailed on us. Pass along a 502 error
                          * error bucket
                          */
-                        ap_log_cerror(APLOG_MARK, APLOG_ERR, rv, c,
-                                      "proxy: error reading response");
+                        ap_log_rerror(APLOG_MARK, APLOG_ERR, rv, r, APLOGNO(01110)
+                                      "error reading response");
                         ap_proxy_backend_broke(r, bb);
                         ap_pass_brigade(r->output_filters, bb);
                         backend_broke = 1;
@@ -1810,9 +2001,8 @@ apr_status_t ap_proxy_http_process_response(apr_pool_t * p, request_rec *r,
                     backend->worker->s->read += readbytes;
 #if DEBUGGING
                     {
-                    ap_log_error(APLOG_MARK, APLOG_DEBUG, 0,
-                                 r->server, "proxy (PID %d): readbytes: %#x",
-                                 getpid(), readbytes);
+                    ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r, APLOGNO(01111)
+                                  "readbytes: %#x", readbytes);
                     }
 #endif
                     /* sanity check */
@@ -1822,43 +2012,82 @@ apr_status_t ap_proxy_http_process_response(apr_pool_t * p, request_rec *r,
                     }
 
                     /* Switch the allocator lifetime of the buckets */
-                    ap_proxy_buckets_lifetime_transform(r, bb, pass_bb);
+                    proxy_buckets_lifetime_transform(r, bb, pass_bb);
 
                     /* found the last brigade? */
-                    if (APR_BUCKET_IS_EOS(APR_BRIGADE_LAST(bb))) {
+                    if (APR_BUCKET_IS_EOS(APR_BRIGADE_LAST(pass_bb))) {
+
                         /* signal that we must leave */
                         finish = TRUE;
+
+                        /* the brigade may contain transient buckets that contain
+                         * data that lives only as long as the backend connection.
+                         * Force a setaside so these transient buckets become heap
+                         * buckets that live as long as the request.
+                         */
+                        for (e = APR_BRIGADE_FIRST(pass_bb); e
+                                != APR_BRIGADE_SENTINEL(pass_bb); e
+                                = APR_BUCKET_NEXT(e)) {
+                            apr_bucket_setaside(e, r->pool);
+                        }
+
+                        /* finally it is safe to clean up the brigade from the
+                         * connection pool, as we have forced a setaside on all
+                         * buckets.
+                         */
+                        apr_brigade_cleanup(bb);
+
+                        /* make sure we release the backend connection as soon
+                         * as we know we are done, so that the backend isn't
+                         * left waiting for a slow client to eventually
+                         * acknowledge the data.
+                         */
+                        ap_proxy_release_connection(backend->worker->s->scheme,
+                                backend, r->server);
+                        /* Ensure that the backend is not reused */
+                        *backend_ptr = NULL;
+
                     }
 
                     /* try send what we read */
                     if (ap_pass_brigade(r->output_filters, pass_bb) != APR_SUCCESS
                         || c->aborted) {
                         /* Ack! Phbtt! Die! User aborted! */
-                        backend->close = 1;  /* this causes socket close below */
+                        /* Only close backend if we haven't got all from the
+                         * backend. Furthermore if *backend_ptr is NULL it is no
+                         * longer safe to fiddle around with backend as it might
+                         * be already in use by another thread.
+                         */
+                        if (*backend_ptr) {
+                            backend->close = 1;  /* this causes socket close below */
+                        }
                         finish = TRUE;
                     }
 
                     /* make sure we always clean up after ourselves */
-                    apr_brigade_cleanup(bb);
                     apr_brigade_cleanup(pass_bb);
+                    apr_brigade_cleanup(bb);
 
                 } while (!finish);
             }
-            ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server,
-                         "proxy: end body send");
+            ap_log_rerror(APLOG_MARK, APLOG_TRACE2, 0, r, "end body send");
         }
         else if (!interim_response) {
-            ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server,
-                         "proxy: header only");
+            ap_log_rerror(APLOG_MARK, APLOG_TRACE2, 0, r, "header only");
+
+            /* make sure we release the backend connection as soon
+             * as we know we are done, so that the backend isn't
+             * left waiting for a slow client to eventually
+             * acknowledge the data.
+             */
+            ap_proxy_release_connection(backend->worker->s->scheme,
+                    backend, r->server);
+            *backend_ptr = NULL;
 
             /* Pass EOS bucket down the filter chain. */
             e = apr_bucket_eos_create(c->bucket_alloc);
             APR_BRIGADE_INSERT_TAIL(bb, e);
-            if (ap_pass_brigade(r->output_filters, bb) != APR_SUCCESS
-                || c->aborted) {
-                /* Ack! Phbtt! Die! User aborted! */
-                backend->close = 1;  /* this causes socket close below */
-            }
+            ap_pass_brigade(r->output_filters, bb);
 
             apr_brigade_cleanup(bb);
         }
@@ -1867,7 +2096,7 @@ apr_status_t ap_proxy_http_process_response(apr_pool_t * p, request_rec *r,
     /* See define of AP_MAX_INTERIM_RESPONSES for why */
     if (interim_response >= AP_MAX_INTERIM_RESPONSES) {
         return ap_proxyerror(r, HTTP_BAD_GATEWAY,
-                             apr_psprintf(p, 
+                             apr_psprintf(p,
                              "Too many (%d) interim responses from origin server",
                              interim_response));
     }
@@ -1877,29 +2106,7 @@ apr_status_t ap_proxy_http_process_response(apr_pool_t * p, request_rec *r,
         return DONE;
     }
 
-    if (conf->error_override) {
-        /* the code above this checks for 'OK' which is what the hook expects */
-        if (!ap_is_HTTP_ERROR(proxy_status)) {
-            return OK;
-        }
-        else {
-            /* clear r->status for override error, otherwise ErrorDocument
-             * thinks that this is a recursive error, and doesn't find the
-             * custom error page
-             */
-            r->status = HTTP_OK;
-            /* Discard body, if one is expected */
-            if (!r->header_only && /* not HEAD request */
-                (proxy_status != HTTP_NO_CONTENT) && /* not 204 */
-                (proxy_status != HTTP_NOT_MODIFIED)) { /* not 304 */
-                ap_discard_request_body(rp);
-            }
-            return proxy_status;
-        }
-    }
-    else {
-        return OK;
-    }
+    return OK;
 }
 
 static
@@ -1932,6 +2139,7 @@ static int proxy_http_handler(request_rec *r, proxy_worker *worker,
     proxy_conn_rec *backend = NULL;
     int is_ssl = 0;
     conn_rec *c = r->connection;
+    int retry = 0;
     /*
      * Use a shorter-lived pool to reduce memory usage
      * and avoid a memory leak
@@ -1951,17 +2159,17 @@ static int proxy_http_handler(request_rec *r, proxy_worker *worker,
     /* is it for us? */
     if (strcmp(scheme, "https") == 0) {
         if (!ap_proxy_ssl_enable(NULL)) {
-            ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server,
-                         "proxy: HTTPS: declining URL %s"
-                         " (mod_ssl not configured?)", url);
+            ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r, APLOGNO(01112)
+                          "HTTPS: declining URL %s (mod_ssl not configured?)",
+                          url);
             return DECLINED;
         }
         is_ssl = 1;
         proxy_function = "HTTPS";
     }
     else if (!(strcmp(scheme, "http") == 0 || (strcmp(scheme, "ftp") == 0 && proxyname))) {
-        ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server,
-                     "proxy: HTTP: declining URL %s", url);
+        ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r, APLOGNO(01113) "HTTP: declining URL %s",
+                      url);
         return DECLINED; /* only interested in HTTP, or FTP via proxy */
     }
     else {
@@ -1970,8 +2178,7 @@ static int proxy_http_handler(request_rec *r, proxy_worker *worker,
         else
             proxy_function = "FTP";
     }
-    ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server,
-             "proxy: HTTP: serving URL %s", url);
+    ap_log_rerror(APLOG_MARK, APLOG_TRACE1, 0, r, "HTTP: serving URL %s", url);
 
 
     /* create space for state information */
@@ -1981,6 +2188,7 @@ static int proxy_http_handler(request_rec *r, proxy_worker *worker,
 
 
     backend->is_ssl = is_ssl;
+
     if (is_ssl) {
         ap_proxy_ssl_connection_cleanup(backend, r);
     }
@@ -1990,7 +2198,7 @@ static int proxy_http_handler(request_rec *r, proxy_worker *worker,
      * is not a request that is coming over an already kept alive connection
      * with the client, do NOT reuse the connection to the backend, because
      * we cannot forward a failure to the client in this case as the client
-     * does NOT expects this in this situation.
+     * does NOT expect this in this situation.
      * Yes, this creates a performance penalty.
      */
     if ((r->proxyreq == PROXYREQ_REVERSE) && (!c->keepalives)
@@ -1998,48 +2206,68 @@ static int proxy_http_handler(request_rec *r, proxy_worker *worker,
         backend->close = 1;
     }
 
-    /* Step One: Determine Who To Connect To */
-    if ((status = ap_proxy_determine_connection(p, r, conf, worker, backend,
-                                                uri, &url, proxyname,
+    while (retry < 2) {
+        char *locurl = url;
+
+        /* Step One: Determine Who To Connect To */
+        if ((status = ap_proxy_determine_connection(p, r, conf, worker, backend,
+                                                uri, &locurl, proxyname,
                                                 proxyport, server_portstr,
                                                 sizeof(server_portstr))) != OK)
-        goto cleanup;
+            break;
 
-    /* Step Two: Make the Connection */
-    if (ap_proxy_connect_backend(proxy_function, backend, worker, r->server)) {
-        status = HTTP_SERVICE_UNAVAILABLE;
-        goto cleanup;
-    }
-
-    /* Step Three: Create conn_rec */
-    if (!backend->connection) {
-        if ((status = ap_proxy_connection_create(proxy_function, backend,
-                                                 c, r->server)) != OK)
-            goto cleanup;
-        /*
-         * On SSL connections set a note on the connection what CN is
-         * requested, such that mod_ssl can check if it is requested to do
-         * so.
-         */
-        if (is_ssl) {
-            apr_table_set(backend->connection->notes, "proxy-request-hostname",
-                          uri->hostname);
+        /* Step Two: Make the Connection */
+        if (ap_proxy_connect_backend(proxy_function, backend, worker, r->server)) {
+            ap_log_rerror(APLOG_MARK, APLOG_ERR, 0, r, APLOGNO(01114)
+                          "HTTP: failed to make connection to backend: %s",
+                          backend->hostname);
+            status = HTTP_SERVICE_UNAVAILABLE;
+            break;
         }
+
+        /* Step Three: Create conn_rec */
+        if (!backend->connection) {
+            if ((status = ap_proxy_connection_create(proxy_function, backend,
+                                                     c, r->server)) != OK)
+                break;
+            /*
+             * On SSL connections set a note on the connection what CN is
+             * requested, such that mod_ssl can check if it is requested to do
+             * so.
+             */
+            if (is_ssl) {
+                apr_table_set(backend->connection->notes, "proxy-request-hostname",
+                              uri->hostname);
+            }
+        }
+
+        /* Step Four: Send the Request
+         * On the off-chance that we forced a 100-Continue as a
+         * kinda HTTP ping test, allow for retries
+         */
+        if ((status = ap_proxy_http_request(p, r, backend, worker,
+                                        conf, uri, locurl, server_portstr)) != OK) {
+            if ((status == HTTP_SERVICE_UNAVAILABLE) && worker->s->ping_timeout_set) {
+                backend->close = 1;
+                ap_log_rerror(APLOG_MARK, APLOG_INFO, status, r, APLOGNO(01115)
+                              "HTTP: 100-Continue failed to %pI (%s)",
+                              worker->cp->addr, worker->s->hostname);
+                retry++;
+                continue;
+            } else {
+                break;
+            }
+
+        }
+
+        /* Step Five: Receive the Response... Fall thru to cleanup */
+        status = ap_proxy_http_process_response(p, r, &backend, worker,
+                                                conf, server_portstr);
+
+        break;
     }
-
-    /* Step Four: Send the Request */
-    if ((status = ap_proxy_http_request(p, r, backend, backend->connection,
-                                        conf, uri, url, server_portstr)) != OK)
-        goto cleanup;
-
-    /* Step Five: Receive the Response */
-    if ((status = ap_proxy_http_process_response(p, r, backend,
-                                                 backend->connection,
-                                                 conf, server_portstr)) != OK)
-        goto cleanup;
 
     /* Step Six: Clean Up */
-
 cleanup:
     if (backend) {
         if (status != OK)
@@ -2048,20 +2276,14 @@ cleanup:
     }
     return status;
 }
-static apr_status_t warn_rx_free(void *p)
-{
-    ap_pregfree((apr_pool_t*)p, warn_rx);
-    return APR_SUCCESS;
-}
 static void ap_proxy_http_register_hook(apr_pool_t *p)
 {
     proxy_hook_scheme_handler(proxy_http_handler, NULL, NULL, APR_HOOK_FIRST);
     proxy_hook_canon_handler(proxy_http_canon, NULL, NULL, APR_HOOK_FIRST);
     warn_rx = ap_pregcomp(p, "[0-9]{3}[ \t]+[^ \t]+[ \t]+\"[^\"]*\"([ \t]+\"([^\"]+)\")?", 0);
-    apr_pool_cleanup_register(p, p, warn_rx_free, apr_pool_cleanup_null);
 }
 
-module AP_MODULE_DECLARE_DATA proxy_http_module = {
+AP_DECLARE_MODULE(proxy_http) = {
     STANDARD20_MODULE_STUFF,
     NULL,              /* create per-directory config structure */
     NULL,              /* merge per-directory config structures */

@@ -12,21 +12,21 @@
 <link href="../images/favicon.ico" rel="shortcut icon" /></head>
 <body id="manual-page"><div id="page-header">
 <p class="menu"><a href="../mod/">Modüller</a> | <a href="../mod/directives.html">Yönergeler</a> | <a href="../faq/">SSS</a> | <a href="../glossary.html">Terimler</a> | <a href="../sitemap.html">Site Haritası</a></p>
-<p class="apache">Apache HTTP Sunucusu Sürüm 2.2</p>
+<p class="apache">Apache HTTP Sunucusu Sürüm 2.3</p>
 <img alt="" src="../images/feather.gif" /></div>
 <div class="up"><a href="../"><img title="&lt;-" alt="&lt;-" src="../images/left.gif" /></a></div>
 <div id="path">
-<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">HTTP Sunucusu</a> &gt; <a href="http://httpd.apache.org/docs/">Belgeleme</a> &gt; <a href="../">Sürüm 2.2</a></div><div id="page-content"><div id="preamble"><h1>Apache Sanal Konak Belgeleri</h1>
+<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">HTTP Sunucusu</a> &gt; <a href="http://httpd.apache.org/docs/">Belgeleme</a> &gt; <a href="../">Sürüm 2.3</a></div><div id="page-content"><div id="preamble"><h1>Apache Sanal Konak Belgeleri</h1>
 <div class="toplang">
 <p><span>Mevcut Diller: </span><a href="../de/vhosts/" hreflang="de" rel="alternate" title="Deutsch">&nbsp;de&nbsp;</a> |
 <a href="../en/vhosts/" hreflang="en" rel="alternate" title="English">&nbsp;en&nbsp;</a> |
 <a href="../fr/vhosts/" hreflang="fr" rel="alternate" title="Français">&nbsp;fr&nbsp;</a> |
 <a href="../ja/vhosts/" hreflang="ja" rel="alternate" title="Japanese">&nbsp;ja&nbsp;</a> |
 <a href="../ko/vhosts/" hreflang="ko" rel="alternate" title="Korean">&nbsp;ko&nbsp;</a> |
-<a href="../ru/vhosts/" hreflang="ru" rel="alternate" title="Russian">&nbsp;ru&nbsp;</a> |
 <a href="../tr/vhosts/" title="Türkçe">&nbsp;tr&nbsp;</a> |
 <a href="../zh-cn/vhosts/" hreflang="zh-cn" rel="alternate" title="Simplified Chinese">&nbsp;zh-cn&nbsp;</a></p>
 </div>
+<div class="outofdate">Bu çeviri güncel olmayabilir. Son değişiklikler için İngilizce sürüm geçerlidir.</div>
 
 
     <p><cite>Sanal Konak</cite> (Virtual Host) terimi tek bir makine üzerinde
@@ -38,10 +38,10 @@
       kullanıldığı halde bu sunucu son kullanıcıya görünür değildir.</p>
 
     <p>Apache yazılımsal olarak IP’ye dayalı sanal konakları destekleyen ilk
-      sunuculardan biridir. 1.1 sürümünden itibaren Apache hem IP’ye dayalı hem de
-      isme dayalı sanal konakları desteklemektedir. İsme dayalı sanal konaklara
-      bazen <em>konağa dayalı</em> sanal konaklar veya <em>IP’ye dayanmayan</em>
-      sanal konaklar da denmektedir.</p>
+      sunuculardan biridir. 1.1 sürümünden itibaren Apache hem IP’ye dayalı hem
+      de isme dayalı sanal konakları desteklemektedir. İsme dayalı sanal
+      konaklara bazen <em>konağa dayalı</em> sanal konaklar veya <em>IP’ye
+      dayanmayan</em> sanal konaklar da denmektedir.</p>
 
     <p>Aşağıda, Apache’nin 1.3 sürümü ve sonrası için sanal konak desteğini bütün
       ayrıntıları ile açıklayan belgeler listelenmiştir.</p>
@@ -62,7 +62,7 @@
       <li><a href="examples.html">Çok kullanılan sanal konak yapılandırma
         örnekleri</a></li>
       <li><a href="fd-limits.html">Dosya Tanıtıcı Sınırları</a> (veya,
-        <em>çok fazla günlük dosyası</em>)</li>
+      <em>çok fazla günlük dosyası</em>)</li>
       <li><a href="mass.html">Devingen olarak Yapılandırılan Kütlesel Sanal
         Barındırma</a></li>
       <li><a href="details.html">Konak Eşlemenin Derinliğine İncelenmesi</a></li>
@@ -101,7 +101,6 @@
 <a href="../fr/vhosts/" hreflang="fr" rel="alternate" title="Français">&nbsp;fr&nbsp;</a> |
 <a href="../ja/vhosts/" hreflang="ja" rel="alternate" title="Japanese">&nbsp;ja&nbsp;</a> |
 <a href="../ko/vhosts/" hreflang="ko" rel="alternate" title="Korean">&nbsp;ko&nbsp;</a> |
-<a href="../ru/vhosts/" hreflang="ru" rel="alternate" title="Russian">&nbsp;ru&nbsp;</a> |
 <a href="../tr/vhosts/" title="Türkçe">&nbsp;tr&nbsp;</a> |
 <a href="../zh-cn/vhosts/" hreflang="zh-cn" rel="alternate" title="Simplified Chinese">&nbsp;zh-cn&nbsp;</a></p>
 </div><div id="footer">

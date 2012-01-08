@@ -5,18 +5,18 @@
               This file is generated from xml source: DO NOT EDIT
         XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
       -->
-<title>Overview of new features in Apache 2.2 - Apache HTTP Server</title>
+<title>Overview of new features in Apache HTTP Server 2.2 - Apache HTTP Server</title>
 <link href="./style/css/manual.css" rel="stylesheet" media="all" type="text/css" title="Main stylesheet" />
 <link href="./style/css/manual-loose-100pc.css" rel="alternate stylesheet" media="all" type="text/css" title="No Sidebar - Default font size" />
 <link href="./style/css/manual-print.css" rel="stylesheet" media="print" type="text/css" />
 <link href="./images/favicon.ico" rel="shortcut icon" /></head>
 <body id="manual-page"><div id="page-header">
 <p class="menu"><a href="./mod/">Modules</a> | <a href="./mod/directives.html">Directives</a> | <a href="./faq/">FAQ</a> | <a href="./glossary.html">Glossary</a> | <a href="./sitemap.html">Sitemap</a></p>
-<p class="apache">Apache HTTP Server Version 2.2</p>
+<p class="apache">Apache HTTP Server Version 2.3</p>
 <img alt="" src="./images/feather.gif" /></div>
 <div class="up"><a href="./"><img title="&lt;-" alt="&lt;-" src="./images/left.gif" /></a></div>
 <div id="path">
-<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">HTTP Server</a> &gt; <a href="http://httpd.apache.org/docs/">Documentation</a> &gt; <a href="./">Version 2.2</a></div><div id="page-content"><div id="preamble"><h1>Overview of new features in Apache 2.2</h1>
+<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">HTTP Server</a> &gt; <a href="http://httpd.apache.org/docs/">Documentation</a> &gt; <a href="./">Version 2.3</a></div><div id="page-content"><div id="preamble"><h1>Overview of new features in Apache HTTP Server 2.2</h1>
 <div class="toplang">
 <p><span>Available Languages: </span><a href="./en/new_features_2_2.html" title="English">&nbsp;en&nbsp;</a> |
 <a href="./fr/new_features_2_2.html" hreflang="fr" rel="alternate" title="Français">&nbsp;fr&nbsp;</a> |
@@ -43,18 +43,18 @@
 
       <dt>Authn/Authz</dt>
       <dd>The bundled authentication and authorization modules have
-          been refactored.  The new <code class="module"><a href="./mod/mod_authn_alias.html">mod_authn_alias</a></code> module
-          can greatly simplify certain authentication configurations.
+          been refactored.  The new mod_authn_alias(already removed from 2.3/2.4)
+          module can greatly simplify certain authentication configurations.
           See <a href="#module">module name changes</a>, and
           <a href="#developer">the developer changes</a> for more
           information about how these changes affects users and module
           writers.</dd>
 
       <dt>Caching</dt>
-      <dd><code class="module"><a href="./mod/mod_cache.html">mod_cache</a></code>, <code class="module"><a href="./mod/mod_disk_cache.html">mod_disk_cache</a></code>, and
-          <code class="module"><a href="./mod/mod_mem_cache.html">mod_mem_cache</a></code> have undergone a lot of changes, and
+      <dd><code class="module"><a href="./mod/mod_cache.html">mod_cache</a></code>, <code class="module"><a href="./mod/mod_cache_disk.html">mod_cache_disk</a></code>, and
+          mod_mem_cache(already removed from 2.3/2.4) have undergone a lot of changes, and
           are now considered production-quality. <code class="program"><a href="./programs/htcacheclean.html">htcacheclean</a></code>
-          has been introduced to clean up <code class="module"><a href="./mod/mod_disk_cache.html">mod_disk_cache</a></code>
+          has been introduced to clean up <code class="module"><a href="./mod/mod_cache_disk.html">mod_cache_disk</a></code>
           setups.</dd>
 
       <dt>Configuration</dt>
@@ -95,7 +95,6 @@
           ordering problems in the 2.0 architecture.</dd>
 
       <dt>Large File Support</dt>
-
       <dd><code class="program"><a href="./programs/httpd.html">httpd</a></code> is now built with support for files larger
           than 2GB on modern 32-bit Unix systems.  Support for handling
           &gt;2GB request bodies has also been added.</dd>
@@ -108,10 +107,9 @@
           timeout was reached.</dd>
 
       <dt>SQL Database Support</dt>
-      <dd><p><code class="module"><a href="./mod/mod_dbd.html">mod_dbd</a></code>, together with the <code>apr_dbd</code>
+      <dd><code class="module"><a href="./mod/mod_dbd.html">mod_dbd</a></code>, together with the <code>apr_dbd</code>
           framework, brings direct SQL support to modules that need it.
-          Supports connection pooling in threaded MPMs.</p>
-	  </dd>
+          Supports connection pooling in threaded MPMs.</dd>
 
     </dl>
   </div><div class="top"><a href="#page-header"><img alt="top" src="./images/up.gif" /></a></div>
@@ -127,7 +125,7 @@
           <code class="module"><a href="./mod/mod_authn_file.html">mod_authn_file</a></code>; <code>mod_auth_dbm</code> is now
           called <code class="module"><a href="./mod/mod_authn_dbm.html">mod_authn_dbm</a></code>; <code>mod_access</code> has
           been renamed <code class="module"><a href="./mod/mod_authz_host.html">mod_authz_host</a></code>.  There is also a new
-          <code class="module"><a href="./mod/mod_authn_alias.html">mod_authn_alias</a></code> module for simplifying
+          mod_authn_alias(already removed from 2.3/2.4) module for simplifying
           certain authentication configurations.
       </dd>
 
@@ -136,7 +134,7 @@
           <code>mod_auth_ldap</code> module to the 2.2 <code>Authn/Authz</code>
           framework.  New features include using LDAP attribute values and
           complicated search filters in the
-          <code class="directive"><a href="./mod/core.html#require">Require</a></code> directive.</dd>
+          <code class="directive"><a href="./mod/mod_authz_core.html#require">Require</a></code> directive.</dd>
 
       <dt><code class="module"><a href="./mod/mod_authz_owner.html">mod_authz_owner</a></code></dt>
       <dd>A new module that authorizes access to files based
@@ -196,7 +194,7 @@
       <dd>The bundled authentication and authorization modules have
           been renamed along the following lines:
           <ul>
-          <li><code>mod_auth_*</code> -&gt; Modules that implement an HTTP
+          <li><code>mod_auth_*</code>  -&gt; Modules that implement an HTTP
           authentication mechanism</li>
           <li><code>mod_authn_*</code> -&gt; Modules that provide a backend
           authentication provider</li>

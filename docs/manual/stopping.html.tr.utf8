@@ -12,11 +12,11 @@
 <link href="./images/favicon.ico" rel="shortcut icon" /></head>
 <body id="manual-page"><div id="page-header">
 <p class="menu"><a href="./mod/">Modüller</a> | <a href="./mod/directives.html">Yönergeler</a> | <a href="./faq/">SSS</a> | <a href="./glossary.html">Terimler</a> | <a href="./sitemap.html">Site Haritası</a></p>
-<p class="apache">Apache HTTP Sunucusu Sürüm 2.2</p>
+<p class="apache">Apache HTTP Sunucusu Sürüm 2.3</p>
 <img alt="" src="./images/feather.gif" /></div>
 <div class="up"><a href="./"><img title="&lt;-" alt="&lt;-" src="./images/left.gif" /></a></div>
 <div id="path">
-<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">HTTP Sunucusu</a> &gt; <a href="http://httpd.apache.org/docs/">Belgeleme</a> &gt; <a href="./">Sürüm 2.2</a></div><div id="page-content"><div id="preamble"><h1>Durdurma ve Yeniden Başlatma</h1>
+<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">HTTP Sunucusu</a> &gt; <a href="http://httpd.apache.org/docs/">Belgeleme</a> &gt; <a href="./">Sürüm 2.3</a></div><div id="page-content"><div id="preamble"><h1>Durdurma ve Yeniden Başlatma</h1>
 <div class="toplang">
 <p><span>Mevcut Diller: </span><a href="./de/stopping.html" hreflang="de" rel="alternate" title="Deutsch">&nbsp;de&nbsp;</a> |
 <a href="./en/stopping.html" hreflang="en" rel="alternate" title="English">&nbsp;en&nbsp;</a> |
@@ -26,6 +26,7 @@
 <a href="./ko/stopping.html" hreflang="ko" rel="alternate" title="Korean">&nbsp;ko&nbsp;</a> |
 <a href="./tr/stopping.html" title="Türkçe">&nbsp;tr&nbsp;</a></p>
 </div>
+<div class="outofdate">Bu çeviri güncel olmayabilir. Son değişiklikler için İngilizce sürüm geçerlidir.</div>
 
     <p>Bu belge Apache HTTPd’nin Unix benzeri sistemlerde durdurulması ve
       yeniden başlatılması konularını kapsar. Windows NT, 2000 ve XP
@@ -146,25 +147,25 @@
       dakikadan önce bitmeyeceğini gözönüne alarak eski günlük üzerinde işlem
       yapmaya başlamak için 15 dakika beklenebilir.</p>
 
-    <div class="note">Bir yeniden başlatma isteğinde, eğer yapılandırma dosyalarınızda bir
-      hata varsa sunucu yeniden başlamaz ve bir hata ile çıkar. Nazikçe
-      yeniden başlatma durumunda ana süreç çıkarken çocuklarını çalışır durumda
-      bırakır. (Bunlar, ellerindeki istekler bitince ‘nazikçe çıkacak’ olan
-      çocuk süreçlerdir.) Eğer sunucuyu yeniden başlatmaya çalışırsanız bu
-      sorunlara yol açar; örneğin, dinleyeceği portları bağlayamayabilir. Bir
-      yeniden başlatma öncesinde yapılandırma dosyalarınızın sözdizimini
-      <code>-t</code> komut satırı seçeneği ile sınayabilirsiniz (bkz,
-      <code class="program"><a href="./programs/httpd.html">httpd</a></code>).  Ancak, bu hala sunucunuzun düzgünce yeniden
-      başlatılmasını garanti etmeyecektir. Yapılandırma dosyalarınızı
-      sözdizimi denetiminin yanında anlamlandırılması bakımından da sınamak
-      için <code class="program"><a href="./programs/httpd.html">httpd</a></code>’nin root olmayan bir kullanıcı tarafından
+    <div class="note">
+    <p>Bir yeniden başlatma isteğinde, yapılandırma dosyalarında bir hata
+      olmadığından emin olmak için önce bir sözdizimi denetimi yapılır. Eğer
+      yapılandırma dosyalarınızda bir hata varsa bu sözdizimi hatasıyla ilgili
+      bir hata iletisi alırsınız ve sunucu yeniden başlamayı reddeder. Bu
+      yolla, bir hata sonucu sunucunun çökerek yeniden başlamaması nedeniyle
+      işlevsiz bir sunucuyla başbaşa kalmanız önlenmiştir.</p>
+
+    <p>Ancak, bu hala sunucunuzun düzgünce yeniden başlatılmasını garanti
+      etmeyecektir. Yapılandırma dosyalarınızı sözdizimi denetiminin yanında
+      anlamlandırılması bakımından da sınamak için
+      <code class="program"><a href="./programs/httpd.html">httpd</a></code>’nin root olmayan bir kullanıcı tarafından
       çalıştırılmasını deneyebilirsiniz. Eğer yapılandırma dosyalarında bir
       hata yoksa soketleri ve günlük dosyalarını açmaya çalışırken root
       aidiyetinde çalışmadığından veya çalışmakta olan asıl sunucu bu portları
       zaten dinlediğinden başarısız olacaktır. Eğer başka bir sebeple
       başarısız olursa olası sebep bir yapılandırma dosyası hatasıdır ve asıl
       sunucuya ‘nazikçe yeniden başla’ komutunu vermeden önce bu hatayı
-      düzeltmeniz gerekir.</div>
+      düzeltmeniz gerekir.</p></div>
 </div><div class="top"><a href="#page-header"><img alt="top" src="./images/up.gif" /></a></div>
 <div class="section">
 <h2><a name="hup" id="hup">Hemen Yeniden Başlat</a></h2>
@@ -180,13 +181,14 @@
       dosyalarını yeniden açar. Bunların ardından isteklere yanıt verecek yeni
       kuşak çocukları oluşturmaya başlar.</p>
 
-    <p><code class="module"><a href="./mod/mod_status.html">mod_status</a></code> kullanıcıları bir <code>HUP</code> sinyali
+    <p><code class="module"><a href="./mod/mod_status.html">mod_status</a></code> kullanıcıları bir <code>HUP</code> sinyalı
       gönderildiğinde sunucu istatistiklerinin sıfırlandığı konusunda
       uyarılırlar.</p>
 
-    <div class="note">Eğer yapılandırma dosyalarınızda sözdizimi hatası varsa yeniden
-     başlatma işlemi gerçekleşmez ve ana süreç bir hata vererek çıkar.
-     Bundan kaçınmak için önceki yönteme bakınız.</div>
+    <div class="note">‘Nazikçe yeniden başlat’ komutundaki gibi yeniden başlatma öncesi
+      bir sözdizimi denetimi yapılır. Eğer yapılandırma dosyalarınızda
+      sözdizimi hatası varsa yeniden başlatma işlemi gerçekleşmez ve sözdizimi
+      hatalarıyla ilgili bildirim alırsınız.</div>
 </div><div class="top"><a href="#page-header"><img alt="top" src="./images/up.gif" /></a></div>
 <div class="section">
 <h2><a name="gracefulstop" id="gracefulstop">Nazikçe Durdur</a></h2>
@@ -198,12 +200,12 @@
     <p>Ana sürecin <code>WINCH</code> veya <code>graceful-stop</code>
       sinyalini alması, çocuklara ellerindeki mevcut işleri bitirdikten sonra
       (veya sundukları bir şey yoksa hemen) çıkmalarının <em>önerilmesine</em>
-      sebep olur. Ebevey süreç bunun hemen <code class="directive"><a href="./mod/mpm_common.html#pidfile">PidFile</a></code> dosyasını siler ve port
-      dinlemeyi keser. Ana süreç çalışmaya ve isteklere yanıt vermekte olan
+      sebep olur. Ana süreç bunun hemen ardından <code class="directive"><a href="./mod/mpm_common.html#pidfile">PidFile</a></code> dosyasını siler ve port
+      dinlemeyi keser. Ana süreç  çalışmaya ve isteklere yanıt vermekte olan
       çocuk süreçleri izlemeye devam eder. Tüm çocuklar işlerini bitirip
       çıktığında veya <code class="directive"><a href="./mod/mpm_common.html#gracefulshutdowntimeout">GracefulShutdownTimeout</a></code> ile belirtilen
       zaman aşımı dolduğunda ana süreç de kendini sonlandırır. Eğer zaman aşımı
-      devreye girmişse o an calışmakta olan çocuk süreçlere <code>TERM</code>
+      devreye girmişse o an çalışmakta olan çocuk süreçlere <code>TERM</code>
       sinyali gönderilerek hemen çıkmaları sağlanır.</p>
 
     <p>Bir <code>TERM</code> sinyali ile "graceful" durumundaki tüm çocuklar

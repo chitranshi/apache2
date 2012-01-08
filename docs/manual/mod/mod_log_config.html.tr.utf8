@@ -13,11 +13,11 @@
 <body>
 <div id="page-header">
 <p class="menu"><a href="../mod/">Modüller</a> | <a href="../mod/directives.html">Yönergeler</a> | <a href="../faq/">SSS</a> | <a href="../glossary.html">Terimler</a> | <a href="../sitemap.html">Site Haritası</a></p>
-<p class="apache">Apache HTTP Sunucusu Sürüm 2.2</p>
+<p class="apache">Apache HTTP Sunucusu Sürüm 2.3</p>
 <img alt="" src="../images/feather.gif" /></div>
 <div class="up"><a href="./"><img title="&lt;-" alt="&lt;-" src="../images/left.gif" /></a></div>
 <div id="path">
-<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">HTTP Sunucusu</a> &gt; <a href="http://httpd.apache.org/docs/">Belgeleme</a> &gt; <a href="../">Sürüm 2.2</a> &gt; <a href="./">Modüller</a></div>
+<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">HTTP Sunucusu</a> &gt; <a href="http://httpd.apache.org/docs/">Belgeleme</a> &gt; <a href="../">Sürüm 2.3</a> &gt; <a href="./">Modüller</a></div>
 <div id="page-content">
 <div id="preamble"><h1>Apache Modülü mod_log_config</h1>
 <div class="toplang">
@@ -26,6 +26,7 @@
 <a href="../ko/mod/mod_log_config.html" hreflang="ko" rel="alternate" title="Korean">&nbsp;ko&nbsp;</a> |
 <a href="../tr/mod/mod_log_config.html" title="Türkçe">&nbsp;tr&nbsp;</a></p>
 </div>
+<div class="outofdate">Bu çeviri güncel olmayabilir. Son değişiklikler için İngilizce sürüm geçerlidir.</div>
 <table class="module"><tr><th><a href="module-dict.html#Description">Açıklama:</a></th><td>Sunucuya yapılan isteklerin günlük kayıtlarının tutulması
 </td></tr>
 <tr><th><a href="module-dict.html#Status">Durum:</a></th><td>Temel</td></tr>
@@ -50,7 +51,6 @@
 <div id="quickview"><h3 class="directives">Yönergeler</h3>
 <ul id="toc">
 <li><img alt="" src="../images/down.gif" /> <a href="#bufferedlogs">BufferedLogs</a></li>
-<li><img alt="" src="../images/down.gif" /> <a href="#cookielog">CookieLog</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#customlog">CustomLog</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#logformat">LogFormat</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#transferlog">TransferLog</a></li>
@@ -92,32 +92,30 @@
         <td>HTTP başlıkları hariç, yanıtın bayt cinsinden uzunluğu. OGB
           biçeminde hiç bayt gönderilmemişse günlüğe '<code>-</code>' yerine
           '<code>0</code>' çıktılanır.</td></tr>
-<tr class="odd"><td><code>%{<var>Fesmekan</var>}C</code></td>
-        <td>İstek içinde sunucuya gönderilen <var>Fesmekan</var> çerezinin
-          içeriği. Sadece 0. sürüm çerezler tam olarak desteklenir.</td></tr>
+<tr class="odd"><td><code>%{<var>DEĞİŞKEN</var>}C</code></td>
+        <td>İstek içinde sunucuya gönderilen <var>DEĞİŞKEN</var> çerezinin
+          içeriği.</td></tr>
 <tr><td><code>%D</code></td>
         <td>Mikrosaniye cinsinden isteği sunmak için harcanan zaman.</td></tr>
-<tr class="odd"><td><code>%{<var>FALANCA</var>}e</code></td>
-        <td><var>FALANCA</var> ortam değişkeninin içeriği.</td></tr>
+<tr class="odd"><td><code>%{<var>DEĞİŞKEN</var>}e</code></td>
+        <td><var>DEĞİŞKEN</var> ortam değişkeninin içeriği.</td></tr>
 <tr><td><code>%f</code></td>
         <td>Dosya ismi</td></tr>
 <tr class="odd"><td><code>%h</code></td>
         <td>Uzak konak</td></tr>
 <tr><td><code>%H</code></td>
         <td>İstek Protokolü</td></tr>
-<tr class="odd"><td><code>%{<var>Filanca</var>}i</code></td>
+<tr class="odd"><td><code>%{<var>DEĞİŞKEN</var>}i</code></td>
         <td>İstekle birlikte sunucuya gönderilen
-          <code><var>Filanca</var>:</code> başlık satır(lar)ının
+          <code><var>DEĞİŞKEN</var>:</code> başlık satır(lar)ının
           içeriği. Diğer modüllerde (örn. <code class="module"><a href="../mod/mod_headers.html">mod_headers</a></code>)
           yapılan değişikliklerden etkilenir.</td></tr>
 <tr><td><code>%k</code></td>
         <td>Bu bağlantıda işlenen isteklerin sayısı; yani örneğin,
-        '1' değeri bağlantı kurulduktan sonraki ilk kalıcı bağlantıyı,
-        '2', ikinci bağlantıyı, ..., vb. gösterir;
+    	  '1' değeri bağlantı kurulduktan sonraki ilk kalıcı bağlantıyı,
+    	  '2', ikinci bağlantıyı, ..., vb. gösterir;
           <code class="directive"><a href="../mod/core.html#keepalive">KeepAlive</a></code> kullanılmışsa
-          değer anlamlıdır; aksi takdirde değer daima (ilk isteği
-          belirten) 0’dır. 2.2.11 sürümünden beri kullanılabilmektedir.
-          </td></tr>
+          değer anlamlıdır; aksi takdirde değer daima 0’dır.</td></tr>
 <tr class="odd"><td><code>%l</code></td>
         <td>Uzak kullanıcı kimliği (sağlanmışsa, identd üzerinden).
           <code class="module"><a href="../mod/mod_ident.html">mod_ident</a></code> modülü mevcut ve <code class="directive"><a href="../mod/mod_ident.html#identitycheck">IdentityCheck</a></code> yönergesine değer
@@ -125,10 +123,10 @@
           tire imi yazılır.</td></tr>
 <tr><td><code>%m</code></td>
         <td>İstek yöntemi</td></tr>
-<tr class="odd"><td><code>%{<var>Filanca</var>}n</code></td>
-        <td>Diğer modüldeki <var>Filanca</var> bilgisinin içeriği.</td></tr>
-<tr><td><code>%{<var>Filanca</var>}o</code></td>
-        <td>Yanıttaki <code><var>Filanca</var>:</code> başlık satır(lar)ının
+<tr class="odd"><td><code>%{<var>DEĞİŞKEN</var>}n</code></td>
+        <td>Diğer modüldeki <var>DEĞİŞKEN</var> bilgisinin içeriği.</td></tr>
+<tr><td><code>%{<var>DEĞİŞKEN</var>}o</code></td>
+        <td>Yanıttaki <code><var>DEĞİŞKEN</var>:</code> başlık satır(lar)ının
           içeriği.</td></tr>
 <tr class="odd"><td><code>%p</code></td>
         <td>Sunucunun isteği sunduğu meşru port</td></tr>
@@ -149,31 +147,29 @@
           eklenir yoksa hiçbir şey eklenmez).</td></tr>
 <tr><td><code>%r</code></td>
         <td>İsteğin ilk satırı.</td></tr>
-<tr class="odd"><td><code>%R</code></td>
-        <td>Yanıt varsa yanıtı üreten eylemci.</td></tr>
-<tr><td><code>%s</code></td>
+<tr class="odd"><td><code>%s</code></td>
         <td>Durum. Dahili olarak yönlendirilen istekler için isteğin *özgün*
           durumudur --- isteğin son durumu için <code>%&gt;s</code>
           kullanınız.</td></tr>
-<tr class="odd"><td><code>%t</code></td>
+<tr><td><code>%t</code></td>
         <td>İsteğin alındığı tarih ve saat (standart ingiliz biçemi).</td></tr>
-<tr><td><code>%{<var>biçem</var>}t</code></td>
+<tr class="odd"><td><code>%{<var>biçem</var>}t</code></td>
         <td>İsteğin alındığı tarih ve saat; <var>biçem</var>
           <code>strftime(3)</code> biçeminde belirtilmelidir (genelde
           yerelleştirme amaçlı).</td></tr>
-<tr class="odd"><td><code>%T</code></td>
+<tr><td><code>%T</code></td>
         <td>Saniye cinsinden, isteği sunmak için harcanan zaman.</td></tr>
-<tr><td><code>%u</code></td>
+<tr class="odd"><td><code>%u</code></td>
         <td>Uzak kullanıcı (kimlik doğrulaması istenmişse vardır; durum kodu
           (<code>%s</code>) 401 ise yanlış olabilir).</td></tr>
-<tr class="odd"><td><code>%U</code></td>
+<tr><td><code>%U</code></td>
         <td>Herhangi bir sorgu dizgesi içermeksizin istenen URL yolu.</td></tr>
-<tr><td><code>%v</code></td>
+<tr class="odd"><td><code>%v</code></td>
         <td>İsteği sunan sunucunun meşru sunucu ismi (<code class="directive"><a href="../mod/core.html#servername">ServerName</a></code>).</td></tr>
-<tr class="odd"><td><code>%V</code></td>
+<tr><td><code>%V</code></td>
         <td><code class="directive"><a href="../mod/core.html#usecanonicalname">UseCanonicalName</a></code> ayarı ile
           ilgili sunucu ismi.</td></tr>
-<tr><td><code>%X</code></td>
+<tr class="odd"><td><code>%X</code></td>
         <td>Yanıt tamamlandığında bağlantı durumu:
 
         <table>
@@ -189,10 +185,10 @@
         <p>(Apache 1.3’ün son sürümlerinde bu belirteç <code>%c</code> idi
           fakat geçmişe yönelik olarak <code>%{<var>isim</var>}c</code> ssl
           sözdizimi ile çelişiyordu.)</p></td></tr>
-<tr class="odd"><td><code>%I</code></td>
+<tr><td><code>%I</code></td>
         <td>İstek ve başlıklar dahil alınan bayt sayısı; sıfır olamaz. Bunu
           kullanmak için <code class="module"><a href="../mod/mod_logio.html">mod_logio</a></code> etkin olmalıdır.</td></tr>
-<tr><td><code>%O</code></td>
+<tr class="odd"><td><code>%O</code></td>
         <td>Başlıklar dahil gönderilen bayt sayısı; sıfır olamaz.Bunu
           kullanmak için <code class="module"><a href="../mod/mod_logio.html">mod_logio</a></code> etkin olmalıdır.</td></tr>
 </table>
@@ -241,11 +237,6 @@
         Artık, ağa gönderilen gerçek bayt sayısını günlüğe kaydetmek için
         <code class="module"><a href="../mod/mod_logio.html">mod_logio</a></code> modülü tarafından sağlanan <code>%O</code>
         biçem belirteci kullanılmaktadır.</p>
-
-      <p>Dikkat: <code class="module"><a href="../mod/mod_cache.html">mod_cache</a></code> standart bir eylemci olarak değil
-        hızlandırılmış bir eylemci olarak gerçeklenmştir. Bu bakımdan
-        <code>%R</code> biçem dizgesi içerik önbelleklemesi ile ilgili
-        herhangi bir eylemci bilgisi döndürmeyecektir.</p>
 
     
 
@@ -304,23 +295,6 @@
 
 </div>
 <div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
-<div class="directive-section"><h2><a name="CookieLog" id="CookieLog">CookieLog</a> <a name="cookielog" id="cookielog">Yönergesi</a></h2>
-<table class="directive">
-<tr><th><a href="directive-dict.html#Description">Açıklama:</a></th><td>Çerezleri günlüğe kaydetmek için dosya ismi belirtmekte
-kullanılır.</td></tr>
-<tr><th><a href="directive-dict.html#Syntax">Sözdizimi:</a></th><td><code>CookieLog <var>dosya-adı</var></code></td></tr>
-<tr><th><a href="directive-dict.html#Context">Bağlam:</a></th><td>sunucu geneli, sanal konak</td></tr>
-<tr><th><a href="directive-dict.html#Status">Durum:</a></th><td>Temel</td></tr>
-<tr><th><a href="directive-dict.html#Module">Modül:</a></th><td>mod_log_config</td></tr>
-<tr><th><a href="directive-dict.html#Compatibility">Uyumluluk:</a></th><td>Bu yönergenin kullanımı önerilmemektedir.</td></tr>
-</table>
-    <p><code class="directive">CookieLog</code> yönergesi çerezleri günlüğe kaydetmek
-      için dosya ismi belirtir. Dosya isminin <code class="directive"><a href="../mod/core.html#serverroot">ServerRoot</a></code> değerine göre belirtildiği
-      varsayılır. Yönerge <code>mod_cookies</code> ile uyumluluk için vardır
-      ve kullanımı önerilmemektedir.</p>
-
-</div>
-<div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
 <div class="directive-section"><h2><a name="CustomLog" id="CustomLog">CustomLog</a> <a name="customlog" id="customlog">Yönergesi</a></h2>
 <table class="directive">
 <tr><th><a href="directive-dict.html#Description">Açıklama:</a></th><td>Günlük dosyasın ismini ve girdi biçemini belirler.</td></tr>
@@ -347,8 +321,7 @@ kullanılır.</td></tr>
       <dt><var>borulu-süreç</var></dt>
       <dd>"<code>|</code>" boru karakteri ile öncelenmiş olarak günlük
         bilgisini standart girdisinden kabul edecek sürecin ismi (veya komut
-        satırı) Daha fazla bilgi için <a href="../logs.html#piped">borulu
-        günlükler</a> ile ilgili ek bilgilere bakın.
+        satırı).
 
       <div class="warning"><h3>Güvenlik:</h3>
       <p>Bir borulu süreç kullanılmışsa, süreç <code class="program"><a href="../programs/httpd.html">httpd</a></code>’yi

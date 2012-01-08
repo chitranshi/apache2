@@ -12,17 +12,21 @@
 <link href="./images/favicon.ico" rel="shortcut icon" /></head>
 <body id="manual-page"><div id="page-header">
 <p class="menu"><a href="./mod/">モジュール</a> | <a href="./mod/directives.html">ディレクティブ</a> | <a href="./faq/">FAQ</a> | <a href="./glossary.html">用語</a> | <a href="./sitemap.html">サイトマップ</a></p>
-<p class="apache">Apache HTTP サーバ バージョン 2.2</p>
+<p class="apache">Apache HTTP サーバ バージョン 2.3</p>
 <img alt="" src="./images/feather.gif" /></div>
 <div class="up"><a href="./"><img title="&lt;-" alt="&lt;-" src="./images/left.gif" /></a></div>
 <div id="path">
-<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">HTTP サーバ</a> &gt; <a href="http://httpd.apache.org/docs/">ドキュメンテーション</a> &gt; <a href="./">バージョン 2.2</a></div><div id="page-content"><div id="preamble"><h1>サーバ全体の設定</h1>
+<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">HTTP サーバ</a> &gt; <a href="http://httpd.apache.org/docs/">ドキュメンテーション</a> &gt; <a href="./">バージョン
+            2.3</a></div><div id="page-content"><div id="preamble"><h1>サーバ全体の設定</h1>
 <div class="toplang">
-<p><span>Available Languages: </span><a href="./en/server-wide.html" hreflang="en" rel="alternate" title="English">&nbsp;en&nbsp;</a> |
+<p><span>言語: </span><a href="./en/server-wide.html" hreflang="en" rel="alternate" title="English">&nbsp;en&nbsp;</a> |
+<a href="./fr/server-wide.html" hreflang="fr" rel="alternate" title="Français">&nbsp;fr&nbsp;</a> |
 <a href="./ja/server-wide.html" title="Japanese">&nbsp;ja&nbsp;</a> |
 <a href="./ko/server-wide.html" hreflang="ko" rel="alternate" title="Korean">&nbsp;ko&nbsp;</a> |
 <a href="./tr/server-wide.html" hreflang="tr" rel="alternate" title="Türkçe">&nbsp;tr&nbsp;</a></p>
 </div>
+<div class="outofdate">この日本語訳はすでに古くなっている可能性があります。
+          更新された内容を見るには英語版をご覧下さい。</div>
 
 <p>このドキュメントでは<code class="module"><a href="./mod/core.html">core</a></code>
 サーバのディレクティブの中で、
@@ -39,16 +43,16 @@
 
     <table class="related"><tr><th>関連モジュール</th><th>関連ディレクティブ</th></tr><tr><td /><td><ul><li><code class="directive"><a href="./mod/core.html#servername">ServerName</a></code></li><li><code class="directive"><a href="./mod/core.html#serveradmin">ServerAdmin</a></code></li><li><code class="directive"><a href="./mod/core.html#serversignature">ServerSignature</a></code></li><li><code class="directive"><a href="./mod/core.html#servertokens">ServerTokens</a></code></li><li><code class="directive"><a href="./mod/core.html#usecanonicalname">UseCanonicalName</a></code></li><li><code class="directive"><a href="./mod/core.html#usecanonicalphysicalport">UseCanonicalPhysicalPort</a></code></li></ul></td></tr></table>
 
-    <p><code class="directive"><a href="./mod/core.html#serveradmin">ServerAdmin</a></code>, 
-    <code class="directive"><a href="./mod/core.html#servertokens">ServerTokens</a></code>, 
-    <code class="directive"><a href="./mod/core.html#usecanonicalphysicalport">UseCanonicalPhysicalPort</a></code>
+    <p><code class="directive"><a href="./mod/core.html#serveradmin">ServerAdmin</a></code> ディレクティブと
+    <code class="directive"><a href="./mod/core.html#servertokens">ServerTokens</a></code>
     ディレクティブは、エラーメッセージなどのサーバが作るドキュメントに、
     どのようなサーバの情報を表示するかを制御します。
     <code class="directive"><a href="./mod/core.html#servertokens">ServerTokens</a></code> ディレクティブは、Server HTTP
     レスポンスヘッダフィールドの値を設定します。</p>
 
-    <p><code class="directive"><a href="./mod/core.html#servername">ServerName</a></code> ディレクティブと
-    <code class="directive"><a href="./mod/core.html#usecanonicalname">UseCanonicalName</a></code>
+    <p><code class="directive"><a href="./mod/core.html#servername">ServerName</a></code>,
+    <code class="directive"><a href="./mod/core.html#usecanonicalname">UseCanonicalName</a></code>,
+    <code class="directive"><a href="./mod/core.html#usecanonicalphysicalport">UseCanonicalPhysicalPort</a></code>
     ディレクティブは、サーバが自分自身を参照する URL
     を作るときに使われます。
     たとえば、クライアントがディレクトリを要求して、
@@ -92,7 +96,8 @@
     でのみ、スタックの大きさを制御するために使われます。</p>
   </div></div>
 <div class="bottomlang">
-<p><span>Available Languages: </span><a href="./en/server-wide.html" hreflang="en" rel="alternate" title="English">&nbsp;en&nbsp;</a> |
+<p><span>言語: </span><a href="./en/server-wide.html" hreflang="en" rel="alternate" title="English">&nbsp;en&nbsp;</a> |
+<a href="./fr/server-wide.html" hreflang="fr" rel="alternate" title="Français">&nbsp;fr&nbsp;</a> |
 <a href="./ja/server-wide.html" title="Japanese">&nbsp;ja&nbsp;</a> |
 <a href="./ko/server-wide.html" hreflang="ko" rel="alternate" title="Korean">&nbsp;ko&nbsp;</a> |
 <a href="./tr/server-wide.html" hreflang="tr" rel="alternate" title="Türkçe">&nbsp;tr&nbsp;</a></p>

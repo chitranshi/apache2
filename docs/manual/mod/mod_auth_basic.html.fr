@@ -13,11 +13,11 @@
 <body>
 <div id="page-header">
 <p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="../faq/">FAQ</a> | <a href="../glossary.html">Glossaire</a> | <a href="../sitemap.html">Plan du site</a></p>
-<p class="apache">Serveur Apache HTTP Version 2.2</p>
+<p class="apache">Serveur Apache HTTP Version 2.3</p>
 <img alt="" src="../images/feather.gif" /></div>
 <div class="up"><a href="./"><img title="&lt;-" alt="&lt;-" src="../images/left.gif" /></a></div>
 <div id="path">
-<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">Serveur HTTP</a> &gt; <a href="http://httpd.apache.org/docs/">Documentation</a> &gt; <a href="../">Version 2.2</a> &gt; <a href="./">Modules</a></div>
+<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">Serveur HTTP</a> &gt; <a href="http://httpd.apache.org/docs/">Documentation</a> &gt; <a href="../">Version 2.3</a> &gt; <a href="./">Modules</a></div>
 <div id="page-content">
 <div id="preamble"><h1>Module Apache mod_auth_basic</h1>
 <div class="toplang">
@@ -39,7 +39,7 @@
     combiné avec au moins un module d'authentification comme
     <code class="module"><a href="../mod/mod_authn_file.html">mod_authn_file</a></code> et un module d'autorisation comme
     <code class="module"><a href="../mod/mod_authz_user.html">mod_authz_user</a></code>. L'authentification HTTP à
-    base de condensé, quant à elle, est fournie par le module
+    base de condensé (digest), quant à elle, est fournie par le module
     <code class="module"><a href="../mod/mod_auth_digest.html">mod_auth_digest</a></code>. </p>
 </div>
 <div id="quickview"><h3 class="directives">Directives</h3>
@@ -49,10 +49,10 @@
 </ul>
 <h3>Voir aussi</h3>
 <ul class="seealso">
-<li><code class="directive"><a href="../mod/core.html#authname">AuthName</a></code></li>
-<li><code class="directive"><a href="../mod/core.html#authtype">AuthType</a></code></li>
-<li><code class="directive"><a href="../mod/core.html#require">Require</a></code></li>
-<li><code class="directive"><a href="../mod/core.html#satisfy">Satisfy</a></code></li>
+<li><code class="directive"><a href="../mod/mod_authn_core.html#authname">AuthName</a></code></li>
+<li><code class="directive"><a href="../mod/mod_authn_core.html#authtype">AuthType</a></code></li>
+<li><code class="directive"><a href="../mod/mod_authz_core.html#require">Require</a></code></li>
+<li><code class="directive"><a href="../mod/mod_authz_core.html#match">Match</a></code></li>
 <li><a href="../howto/auth.html">Mode d'emploi de
 l'authentification</a></li>
 </ul></div>
@@ -90,7 +90,7 @@ niveau</td></tr>
 <div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
 <div class="directive-section"><h2><a name="AuthBasicProvider" id="AuthBasicProvider">AuthBasicProvider</a> <a name="authbasicprovider" id="authbasicprovider">Directive</a></h2>
 <table class="directive">
-<tr><th><a href="directive-dict.html#Description">Description:</a></th><td>Définit le(s) fournisseur(s) d'authentification pour
+<tr><th><a href="directive-dict.html#Description">Description:</a></th><td>Définit le(les) fournisseur(s) d'authentification pour
 cette zone du site web</td></tr>
 <tr><th><a href="directive-dict.html#Syntax">Syntaxe:</a></th><td><code>AuthBasicProvider <var>nom fournisseur</var>
 [<var>nom fournisseur</var>] ...</code></td></tr>
@@ -121,10 +121,16 @@ cette zone du site web</td></tr>
       &lt;/Location&gt;
     </code></p></div>
 
+    <p>Les fournisseurs sont sollicités dans l'ordre jusqu'à ce que l'un
+    d'entre eux trouve une correspondance pour le nom d'utilisateur de
+    la requête ; alors, ce dernier fournisseur sera le seul à vérifier
+    le mot de passe. Un échec dans la vérification du mot de passe
+    n'entraîne pas le passage du contrôle au fournisseur suivant.</p>
+
     <p>Les différents fournisseurs disponibles sont implémentés par les
     modules <code class="module"><a href="../mod/mod_authn_dbm.html">mod_authn_dbm</a></code>,
-    <code class="module"><a href="../mod/mod_authn_file.html">mod_authn_file</a></code>, <code class="module"><a href="../mod/mod_authn_dbd.html">mod_authn_dbd</a></code>, et
-    <code class="module"><a href="../mod/mod_authnz_ldap.html">mod_authnz_ldap</a></code>.</p>
+    <code class="module"><a href="../mod/mod_authn_file.html">mod_authn_file</a></code>, <code class="module"><a href="../mod/mod_authn_dbd.html">mod_authn_dbd</a></code>,
+    <code class="module"><a href="../mod/mod_authnz_ldap.html">mod_authnz_ldap</a></code> et <code class="module"><a href="../mod/mod_authn_socache.html">mod_authn_socache</a></code>.</p>
 
 </div>
 </div>

@@ -13,19 +13,21 @@
 <body>
 <div id="page-header">
 <p class="menu"><a href="../mod/">Modüller</a> | <a href="../mod/directives.html">Yönergeler</a> | <a href="../faq/">SSS</a> | <a href="../glossary.html">Terimler</a> | <a href="../sitemap.html">Site Haritası</a></p>
-<p class="apache">Apache HTTP Sunucusu Sürüm 2.2</p>
+<p class="apache">Apache HTTP Sunucusu Sürüm 2.3</p>
 <img alt="" src="../images/feather.gif" /></div>
 <div class="up"><a href="./"><img title="&lt;-" alt="&lt;-" src="../images/left.gif" /></a></div>
 <div id="path">
-<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">HTTP Sunucusu</a> &gt; <a href="http://httpd.apache.org/docs/">Belgeleme</a> &gt; <a href="../">Sürüm 2.2</a> &gt; <a href="./">Modüller</a></div>
+<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">HTTP Sunucusu</a> &gt; <a href="http://httpd.apache.org/docs/">Belgeleme</a> &gt; <a href="../">Sürüm 2.3</a> &gt; <a href="./">Modüller</a></div>
 <div id="page-content">
 <div id="preamble"><h1>Apache Modülü mod_setenvif</h1>
 <div class="toplang">
 <p><span>Mevcut Diller: </span><a href="../en/mod/mod_setenvif.html" hreflang="en" rel="alternate" title="English">&nbsp;en&nbsp;</a> |
+<a href="../fr/mod/mod_setenvif.html" hreflang="fr" rel="alternate" title="Français">&nbsp;fr&nbsp;</a> |
 <a href="../ja/mod/mod_setenvif.html" hreflang="ja" rel="alternate" title="Japanese">&nbsp;ja&nbsp;</a> |
 <a href="../ko/mod/mod_setenvif.html" hreflang="ko" rel="alternate" title="Korean">&nbsp;ko&nbsp;</a> |
 <a href="../tr/mod/mod_setenvif.html" title="Türkçe">&nbsp;tr&nbsp;</a></p>
 </div>
+<div class="outofdate">Bu çeviri güncel olmayabilir. Son değişiklikler için İngilizce sürüm geçerlidir.</div>
 <table class="module"><tr><th><a href="module-dict.html#Description">Açıklama:</a></th><td>Ortam değişkenlerinin isteğin özelliklerine uygun olarak atanmasını sağlar</td></tr>
 <tr><th><a href="module-dict.html#Status">Durum:</a></th><td>Temel</td></tr>
 <tr><th><a href="module-dict.html#ModuleIdentifier">Modül Betimleyici:</a></th><td>setenvif_module</td></tr>
@@ -33,12 +35,10 @@
 <h3>Özet</h3>
 
 
-    <p><code class="module"><a href="../mod/mod_setenvif.html">mod_setenvif</a></code> modülü, dahili ortam değişkenlerinin,
-      isteğin farklı bileşenlerinin belirttiğiniz düzenli ifade ile eşleşmesine
-      bağlı olarak atanmasını mümkün kılar. Bu ortam değişkenleri, CGI
-      betiklerinde ve SSI sayfalarında da kullanılabilir hale gelmenin yanı sıra
-      sunucunun çeşitli kısımlarında yapılacak eylemlere karar verirken
-      kullanılabilirler.</p>
+    <p><code class="module"><a href="../mod/mod_setenvif.html">mod_setenvif</a></code> modülü ortam değişkenlerinin isteğin
+      farklı bileşenlerinin belirttiğiniz düzenli ifade ile eşleşmesine bağlı
+      olarak atanmasını mümkün kılar. Bu ortam değişkenleri sunucunun çeşitli
+      kısımlarında yapılacak eylemlere karar verirken kullanılır.</p>
 
     <p>Yönergeler yapılandırma dosyasında yer aldıkları sıraya göre ele
       alınırlar. Böylece daha karmaşık dizilimler kullanılabilir, bu örnekteki
@@ -55,6 +55,7 @@
 <li><img alt="" src="../images/down.gif" /> <a href="#browsermatch">BrowserMatch</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#browsermatchnocase">BrowserMatchNoCase</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#setenvif">SetEnvIf</a></li>
+<li><img alt="" src="../images/down.gif" /> <a href="#setenvifexpr">SetEnvIfExpr</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#setenvifnocase">SetEnvIfNoCase</a></li>
 </ul>
 <h3>Ayrıca bakınız:</h3>
@@ -139,7 +140,7 @@ duyarsız eşleşmelerine bağlı olarak belirler.</td></tr>
 </table>
     <p><code class="directive">SetEnvIf</code> yönergesi ortam değişkenlerini isteğin
       özniteliklerine göre tanımlar. İlk bileşen olarak belirtilen
-      <code><em>öznitelik</em></code> şu üç şeyden biri olabilir:</p>
+      <code><em>öznitelik</em></code> şu dört şeyden biri olabilir:</p>
 
     <ol>
       <li>Bir HTTP istek başlığı alanı (ayrıntılı bilgi için bak: <a href="http://www.rfc-editor.org/rfc/rfc2616.txt">RFC2616</a>);
@@ -182,6 +183,15 @@ duyarsız eşleşmelerine bağlı olarak belirler.</td></tr>
         Ortam değişkenlerinin dikkate alınabilmesi için istek öznitelikleri
         arasında hiçbir eşleşme olmaması ve <code><em>öznitelik</em></code>
         olarak bir düzenli ifade belirtilmemiş olması gerekir.</li>
+
+      <li>Nesne kimliği <code><em>oid</em></code> olan bir SSL istemci
+        sertifikası eklentisine bir başvuru. SSL olarak yapılmamış bir istekte
+        veya yapılandırılmış bir <code><em>oid</em></code>’in yokluğunda
+        hiçbir değişken ataması yapılmaz. Birden fazla
+        <code><em>oid</em></code> söz konusu ise aralarına virgül
+        (<code>','</code>) konarak ilgili dizgeler birleştirilir.
+        <code><em>oid</em></code> dizge değerli bir eklentiyi
+        betimlemelidir.</li>
     </ol>
 
     <p>İkinci bileşen (<code><em>düzifd</em></code>) bir <a class="glossarylink" href="../glossary.html#regex" title="sözlüğe bakınız">düzenli ifade</a>dir.  <code><em>düzifd</em></code>
@@ -216,6 +226,8 @@ duyarsız eşleşmelerine bağlı olarak belirler.</td></tr>
             :<br />
       SetEnvIf object_is_image xbm XBIT_PROCESSING=1<br />
             :<br />
+      SetEnvIf OID("2.16.840.1.113730.1.13") "(.*)" NetscapeComment=$1<br />
+            :<br />
       SetEnvIf ^TS*  ^[a-z].*  TS_VAR<br />
     </code></p></div>
 
@@ -224,6 +236,9 @@ duyarsız eşleşmelerine bağlı olarak belirler.</td></tr>
       istenen sayfa <code>belgeler.alanismi.mesela.dom</code> adlı sitede
       bulunuyorsa <code>dahili_site_istendi</code> ortam değişkeni
       atanmaktadır.</p>
+
+    <p>Altıncı örnekte <code>NetscapeComment</code> ortam değişkenine ilgili
+      SSL istemci sertifikası alanındaki (varsa) dizge atanmaktadır.</p>
 
     <p>Son örnekte ise istekte "TS" ile başlayıp [a-z] arasındaki
       karakterlerle devam eden bir başlık alanı varsa <code>TS_VAR</code>
@@ -234,6 +249,16 @@ duyarsız eşleşmelerine bağlı olarak belirler.</td></tr>
 <li><a href="../env.html">Apache’de Ortam Değişkenleri</a> belgesinde
 daha fazla örnek bulunabilir.</li>
 </ul>
+</div>
+<div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
+<div class="directive-section"><h2><a name="SetEnvIfExpr" id="SetEnvIfExpr">SetEnvIfExpr</a> <a name="setenvifexpr" id="setenvifexpr">Yönergesi</a></h2>
+<table class="directive">
+<tr><th><a href="directive-dict.html#Description">Açıklama:</a></th><td>Sets environment variables based on an ap_expr expression</td></tr>
+<tr><th><a href="directive-dict.html#Syntax">Sözdizimi:</a></th><td><code /></td></tr>
+<tr><th><a href="directive-dict.html#Context">Bağlam:</a></th><td>sunucu geneli, sanal konak, dizin, .htaccess</td></tr>
+<tr><th><a href="directive-dict.html#Status">Durum:</a></th><td>Temel</td></tr>
+<tr><th><a href="directive-dict.html#Module">Modül:</a></th><td>mod_setenvif</td></tr>
+</table><p>Documentation not yet translated. Please see English version of document.</p>
 </div>
 <div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
 <div class="directive-section"><h2><a name="SetEnvIfNoCase" id="SetEnvIfNoCase">SetEnvIfNoCase</a> <a name="setenvifnocase" id="setenvifnocase">Yönergesi</a></h2>
@@ -247,6 +272,7 @@ bağlı olmaksızın yapılmış tanımlara göre atar.</td></tr>
 <tr><th><a href="directive-dict.html#Override">Geçersizleştirme:</a></th><td>FileInfo</td></tr>
 <tr><th><a href="directive-dict.html#Status">Durum:</a></th><td>Temel</td></tr>
 <tr><th><a href="directive-dict.html#Module">Modül:</a></th><td>mod_setenvif</td></tr>
+<tr><th><a href="directive-dict.html#Compatibility">Uyumluluk:</a></th><td>Apache 1.3 ve sonrasında mevcuttur.</td></tr>
 </table>
     <p><code class="directive">SetEnvIfNoCase</code> yönergesi sözdizimsel ve anlamsal
       olarak <code class="directive"><a href="#setenvif">SetEnvIf</a></code>
@@ -266,6 +292,7 @@ bağlı olmaksızın yapılmış tanımlara göre atar.</td></tr>
 </div>
 <div class="bottomlang">
 <p><span>Mevcut Diller: </span><a href="../en/mod/mod_setenvif.html" hreflang="en" rel="alternate" title="English">&nbsp;en&nbsp;</a> |
+<a href="../fr/mod/mod_setenvif.html" hreflang="fr" rel="alternate" title="Français">&nbsp;fr&nbsp;</a> |
 <a href="../ja/mod/mod_setenvif.html" hreflang="ja" rel="alternate" title="Japanese">&nbsp;ja&nbsp;</a> |
 <a href="../ko/mod/mod_setenvif.html" hreflang="ko" rel="alternate" title="Korean">&nbsp;ko&nbsp;</a> |
 <a href="../tr/mod/mod_setenvif.html" title="Türkçe">&nbsp;tr&nbsp;</a></p>

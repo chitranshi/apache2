@@ -13,19 +13,23 @@
 <body>
 <div id="page-header">
 <p class="menu"><a href="../mod/">Module</a> | <a href="../mod/directives.html">Direktiven</a> | <a href="../faq/">FAQ</a> | <a href="../glossary.html">Glossar</a> | <a href="../sitemap.html">Seitenindex</a></p>
-<p class="apache">Apache HTTP Server Version 2.2</p>
+<p class="apache">Apache HTTP Server Version 2.3</p>
 <img alt="" src="../images/feather.gif" /></div>
 <div class="up"><a href="./"><img title="&lt;-" alt="&lt;-" src="../images/left.gif" /></a></div>
 <div id="path">
-<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">HTTP-Server</a> &gt; <a href="http://httpd.apache.org/docs/">Dokumentation</a> &gt; <a href="../">Version 2.2</a> &gt; <a href="./">Module</a></div>
+<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">HTTP-Server</a> &gt; <a href="http://httpd.apache.org/docs/">Dokumentation</a> &gt; <a href="../">Version 2.3</a> &gt; <a href="./">Module</a></div>
 <div id="page-content">
 <div id="preamble"><h1>Apache-Modul mod_actions</h1>
 <div class="toplang">
 <p><span>Verfügbare Sprachen: </span><a href="../de/mod/mod_actions.html" title="Deutsch">&nbsp;de&nbsp;</a> |
 <a href="../en/mod/mod_actions.html" hreflang="en" rel="alternate" title="English">&nbsp;en&nbsp;</a> |
+<a href="../fr/mod/mod_actions.html" hreflang="fr" rel="alternate" title="Français">&nbsp;fr&nbsp;</a> |
 <a href="../ja/mod/mod_actions.html" hreflang="ja" rel="alternate" title="Japanese">&nbsp;ja&nbsp;</a> |
 <a href="../ko/mod/mod_actions.html" hreflang="ko" rel="alternate" title="Korean">&nbsp;ko&nbsp;</a></p>
 </div>
+<div class="outofdate">Diese Übersetzung ist möglicherweise
+            nicht mehr aktuell. Bitte prüfen Sie die englische Version auf
+            die neuesten Änderungen.</div>
 <table class="module"><tr><th><a href="module-dict.html#Description">Beschreibung:</a></th><td>Dieses Modul ermöglicht die Ausführung von CGI-Skripten
   in Abhängigkeit von Medientypen und Anfragemethoden.</td></tr>
 <tr><th><a href="module-dict.html#Status">Status:</a></th><td>Basis</td></tr>
@@ -34,11 +38,10 @@
 <h3>Zusammenfassung</h3>
 
     <p>Das Modul besitzt zwei Direktiven. Die Direktive <code class="directive"><a href="#action">Action</a></code> erlaubt die Ausführung von 
-      CGI-Skripten immer dann, wenn eine Anfrage zu einem bestimmten <a class="glossarylink" href="../glossary.html#mime-type" title="siehe Glossar">MIME-Type</a> erfolgt. Die Direktive <code class="directive"><a href="#script">Script</a></code> erlaubt die Ausführung
-      von CGI-Skripten abhängig von einer
-      bestimmten Methode, die in der Anfrage verwendet wird. Dies macht es
-      deutlich einfacher, Skripte auszuführen, die Dateien
-      verarbeiten.</p>
+      CGI-Skripten immer dann, wenn eine Anfrage zu einem bestimmten <a class="glossarylink" href="../glossary.html#mime-type" title="siehe Glossar">MIME-Type</a> erfolgt. Die Direktive <code class="directive"><a href="#script">Script</a></code> erlaubt die Ausführung von
+      CGI-Skripten abhängig von einer bestimmten Methode, die in der
+      Anfrage verwendet wird. Dies macht es deutlich einfacher, Skripte
+      auszuführen, die Dateien verarbeiten.</p>
 </div>
 <div id="quickview"><h3 class="directives">Direktiven</h3>
 <ul id="toc">
@@ -69,11 +72,12 @@
       <var>CGI-Skript</var> aktiviert, sobald die <var>Aktionsart</var> durch
       eine Anfrage ausgelöst wird. <var>CGI-Skript</var> ist der URL-Pfad
       zu einer Ressource, die unter Verwendung von <code class="directive"><a href="../mod/mod_alias.html#scriptalias">ScriptAlias</a></code> oder <code class="directive"><a href="../mod/mod_mime.html#addhandler">AddHandler</a></code> als CGI-Skript gekennzeichnet
-      wurde. Die <var>Aktionsart</var> kann entweder ein <a href="../handler.html">Handler</a> oder ein <a class="glossarylink" href="../glossary.html#mime-type" title="siehe Glossar">MIME-Type</a> sein. Die URL und den Dateipfad des
-      angeforderten Dokuments in den Standard-CGI-Umgebungsvariablen
-      <code>PATH_INFO</code> und <code>PATH_TRANSLATED</code> übergeben.
-      Der für die jeweilige Anfrage verwendete Handler wird in der
-      Umgebungsvariablen <code>REDIRECT_HANDLER</code> übergeben.</p>
+      wurde. Die <var>Aktionsart</var> kann entweder ein <a href="../handler.html">Handler</a> oder ein <a class="glossarylink" href="../glossary.html#mime-type" title="siehe Glossar">MIME-Type</a> sein. Die URL und
+      den Dateipfad des angeforderten Dokuments in den 
+      Standard-CGI-Umgebungsvariablen <code>PATH_INFO</code> und
+      <code>PATH_TRANSLATED</code> übergeben. Der für die jeweilige 
+      Anfrage verwendete Handler wird in der Umgebungsvariablen
+      <code>REDIRECT_HANDLER</code> übergeben.</p>
 
     <div class="example"><h3>Beispiele</h3><p><code>
       # Anfragen für Dateien eines bestimmten MIME-Types:<br />
@@ -158,6 +162,7 @@
 <div class="bottomlang">
 <p><span>Verfügbare Sprachen: </span><a href="../de/mod/mod_actions.html" title="Deutsch">&nbsp;de&nbsp;</a> |
 <a href="../en/mod/mod_actions.html" hreflang="en" rel="alternate" title="English">&nbsp;en&nbsp;</a> |
+<a href="../fr/mod/mod_actions.html" hreflang="fr" rel="alternate" title="Français">&nbsp;fr&nbsp;</a> |
 <a href="../ja/mod/mod_actions.html" hreflang="ja" rel="alternate" title="Japanese">&nbsp;ja&nbsp;</a> |
 <a href="../ko/mod/mod_actions.html" hreflang="ko" rel="alternate" title="Korean">&nbsp;ko&nbsp;</a></p>
 </div><div id="footer">

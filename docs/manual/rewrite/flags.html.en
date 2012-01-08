@@ -12,11 +12,11 @@
 <link href="../images/favicon.ico" rel="shortcut icon" /></head>
 <body id="manual-page"><div id="page-header">
 <p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="../faq/">FAQ</a> | <a href="../glossary.html">Glossary</a> | <a href="../sitemap.html">Sitemap</a></p>
-<p class="apache">Apache HTTP Server Version 2.2</p>
+<p class="apache">Apache HTTP Server Version 2.3</p>
 <img alt="" src="../images/feather.gif" /></div>
 <div class="up"><a href="./"><img title="&lt;-" alt="&lt;-" src="../images/left.gif" /></a></div>
 <div id="path">
-<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">HTTP Server</a> &gt; <a href="http://httpd.apache.org/docs/">Documentation</a> &gt; <a href="../">Version 2.2</a> &gt; <a href="./">Rewrite</a></div><div id="page-content"><div id="preamble"><h1>RewriteRule Flags</h1>
+<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">HTTP Server</a> &gt; <a href="http://httpd.apache.org/docs/">Documentation</a> &gt; <a href="../">Version 2.3</a> &gt; <a href="./">Rewrite</a></div><div id="page-content"><div id="preamble"><h1>RewriteRule Flags</h1>
 <div class="toplang">
 <p><span>Available Languages: </span><a href="../en/rewrite/flags.html" title="English">&nbsp;en&nbsp;</a> |
 <a href="../fr/rewrite/flags.html" hreflang="fr" rel="alternate" title="Français">&nbsp;fr&nbsp;</a></p>
@@ -30,8 +30,9 @@ providing detailed explanations and examples.</p>
 <li><img alt="" src="../images/down.gif" /> <a href="#flag_b">B (escape backreferences)</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#flag_c">C|chain</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#flag_co">CO|cookie</a></li>
-<li><img alt="" src="../images/down.gif" /> <a href="#flag_dpi">DPI|discardpathinfo</a></li>
+<li><img alt="" src="../images/down.gif" /> <a href="#flag_dpi">DPI|discardpath</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#flag_e">E|env</a></li>
+<li><img alt="" src="../images/down.gif" /> <a href="#flag_end">END</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#flag_f">F|forbidden</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#flag_g">G|gone</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#flag_h">H|handler</a></li>
@@ -43,10 +44,11 @@ providing detailed explanations and examples.</p>
 <li><img alt="" src="../images/down.gif" /> <a href="#flag_p">P|proxy</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#flag_pt">PT|passthrough</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#flag_qsa">QSA|qsappend</a></li>
+<li><img alt="" src="../images/down.gif" /> <a href="#flag_qsd">QSD|qsdiscard</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#flag_r">R|redirect</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#flag_s">S|skip</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#flag_t">T|type</a></li>
-</ul><h3>See also</h3><ul class="seealso"><li><a href="../mod/mod_rewrite.html">Module documentation</a></li><li><a href="intro.html">mod_rewrite introduction</a></li><li><a href="remapping.html">Redirection and remapping</a></li><li><a href="access.html">Controlling access</a></li><li><a href="vhosts.html">Virtual hosts</a></li><li><a href="proxy.html">Proxying</a></li><li><a href="rewritemap.html">Using RewriteMap</a></li><li><a href="advanced.html">Advanced techniques and tricks</a></li><li><a href="avoid.html">When not to use mod_rewrite</a></li></ul></div>
+</ul><h3>See also</h3><ul class="seealso"><li><a href="../mod/mod_rewrite.html">Module documentation</a></li><li><a href="intro.html">mod_rewrite introduction</a></li><li><a href="remapping.html">Redirection and remapping</a></li><li><a href="access.html">Controlling access</a></li><li><a href="vhosts.html">Virtual hosts</a></li><li><a href="proxy.html">Proxying</a></li><li><a href="rewritemap.html">Using RewriteMap</a></li><li><a href="advanced.html">Advanced techniques</a></li><li><a href="avoid.html">When not to use mod_rewrite</a></li></ul></div>
 <div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
 <div class="section">
 <h2><a name="introduction" id="introduction">Introduction</a></h2>
@@ -62,7 +64,7 @@ RewriteRule pattern target [Flag1,Flag2,Flag3]
 a longer form, such as <code>cookie</code>. Some flags take one or more
 arguments. Flags are not case sensitive.</p>
 
-<p>Each flag (with a few exceptions) 
+<p>Each flag (with a few exceptions)
 has a long and short form. While it is most common to use
 the short form, it is recommended that you familiarize yourself with the
 long form, so that you remember what each flag is supposed to do.</p>
@@ -87,14 +89,22 @@ Using the B flag, non-alphanumeric characters in backreferences
 will be escaped. For example, consider the rule:</p>
 
 <div class="example"><p><code>
-RewriteRule ^(/.*)$ /index.php?show=$1
+RewriteRule ^search/(.*)$ /search.php?term=$1
 </code></p></div>
 
-<p>This will map <code>/C++</code> to
-<code>/index.php?show=/C++</code>. But it will also map
-<code>/C%2b%2b</code> to <code>/index.php?show=/C++</code>, because
-the <code>%2b</code> has been unescaped.  With the B flag, it will
-instead map to <code>/index.php?show=/C%2b%2b</code>.</p>
+<p>Given a search term of 'x &amp; y/z', a browser will encode it as
+'x%20%26%20y%2Fz', making the request 'search/x%20%26%20y%2Fz'. Without the B
+flag, this rewrite rule will map to 'search.php?term=x &amp; y/z', which
+isn't a valid URL, and so would be encoded as
+<code>search.php?term=x%20&amp;y%2Fz=</code>, which is not what was intended.</p>
+
+<p>With the B flag set on this same rule, the parameters are re-encoded
+before being passed on to the output URL, resulting in a correct mapping to
+<code>/search.php?term=x%20%26%20y%2Fz</code>.</p>
+
+<p>Note that you may also need to set <code class="directive"><a href="../mod/core.html#allowencodedslashes">AllowEncodedSlashes</a></code> to <code>On</code> to get this
+particular example to work, as httpd does not allow encoded slashes in URLs, and
+returns a 404 if it sees one.</p>
 
 <p>This escaping is particularly necessary in a proxy situation,
 when the backend may break if presented with an unescaped URL.</p>
@@ -138,7 +148,6 @@ security model.</dd>
 <p>You may optionally also set the following values:</p>
 
 <dl>
-
 <dt>Lifetime</dt>
 <dd>The time for which the cookie will persist, in minutes.</dd>
 <dd>A value of 0 indicates that the cookie will persist only for the
@@ -179,7 +188,7 @@ minutes (24 hours) and will be returned for all URIs.</p>
 
 </div><div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
 <div class="section">
-<h2><a name="flag_dpi" id="flag_dpi">DPI|discardpathinfo</a></h2>
+<h2><a name="flag_dpi" id="flag_dpi">DPI|discardpath</a></h2>
 <p>The DPI flag causes the PATH_INFO portion of the rewritten URI to be
 discarded.</p>
 <p>This flag is available in version 2.2.12 and later.</p>
@@ -262,10 +271,19 @@ CustomLog logs/access_log combined env=!image
 an example, not as a recommendation.</p>
 </div><div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
 <div class="section">
+<h2><a name="flag_end" id="flag_end">END</a></h2>
+<p>Using the [END] flag terminates not only the current round ot rewrite
+processing (like [L]) but also prevents any subsequent rewrite
+processing from occurring in per-directory (htaccess) context.</p>
+
+<p>This does not apply to new requests resulting from external
+redirects.</p>
+</div><div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
+<div class="section">
 <h2><a name="flag_f" id="flag_f">F|forbidden</a></h2>
 <p>Using the [F] flag causes the server to return a 403 Forbidden status
 code to the client. While the same behavior can be accomplished using
-the <code class="directive"><a href="../mod/mod_access.html#deny">Deny</a></code> directive, this 
+the <code class="directive"><a href="../mod/mod_access.html#deny">Deny</a></code> directive, this
 allows more flexibility in assigning a Forbidden status.</p>
 
 <p>The following rule will forbid <code>.exe</code> files from being
@@ -340,13 +358,13 @@ C. Use this flag to indicate that the current rule should be applied
 immediately without considering further rules.</p>
 
 <p>If you are using <code class="directive"><a href="../mod/mod_rewrite.html#rewriterule">RewriteRule</a></code> in either
-<code>.htaccess</code> files or in 
+<code>.htaccess</code> files or in
 <code class="directive"><a href="../mod/core.html#directory">&lt;Directory&gt;</a></code> sections,
 it is important to have some understanding of how the rules are
 processed.  The simplified form of this is that once the rules have been
 processed, the rewritten request is handed back to the URL parsing
 engine to do what it may with it. It is possible that as the rewritten
-request is handled, the <code>.htaccess</code> file or 
+request is handled, the <code>.htaccess</code> file or
 <code class="directive"><a href="../mod/core.html#directory">&lt;Directory&gt;</a></code> section
 may be encountered again, and thus the ruleset may be run again from the
 start. Most commonly this will happen if one of the rules causes a
@@ -358,9 +376,15 @@ contexts, that you take explicit steps to avoid rules looping, and not
 count solely on the [L] flag to terminate execution of a series of
 rules, as shown below.</p>
 
+<p> An alternative flag, [END], can be used to terminate not only the
+current round of rewrite processing but prevent any subsequent
+rewrite processing from occuring in per-directory (htaccess)
+context. This does not apply to new requests resulting from external
+redirects.</p>
+
 <p>The example given here will rewrite any request to
 <code>index.php</code>, giving the original request as a query string
-argument to <code>index.php</code>, however, the <code class="directive"><a href="../mod/mod_rewrite.html#rewritecond">RewriteCond</a></code> ensures that if the request 
+argument to <code>index.php</code>, however, the <code class="directive"><a href="../mod/mod_rewrite.html#rewritecond">RewriteCond</a></code> ensures that if the request
 is already for <code>index.php</code>, the <code class="directive"><a href="../mod/mod_rewrite.html#rewriterule">RewriteRule</a></code> will be skipped.</p>
 
 <div class="example"><p><code>
@@ -440,7 +464,7 @@ On subrequests, it is not always useful, and can even cause errors, if
 the complete set of rules are applied. Use this flag to exclude
 problematic rules.</p>
 
-<p>To decide whether or not to use this rule: if you prefix URLs with 
+<p>To decide whether or not to use this rule: if you prefix URLs with
 CGI-scripts, to force them to be processed by the CGI-script, it's
 likely that you will run into problems (or significant overhead)
 on sub-requests. In these cases, use this flag.</p>
@@ -459,7 +483,7 @@ example, if you wanted all image requests to be handled by a back-end
 image server, you might do something like the following:</p>
 
 <div class="example"><p><code>
-RewriteRule (.*)\.(jpg|gif|png) http://images.example.com$1.$2 [P]
+RewriteRule /(.*)\.(jpg|gif|png) http://images.example.com/$1.$2 [P]
 </code></p></div>
 
 <p>Use of the [P] flag implies [L] - that is, the request is immediately
@@ -474,6 +498,15 @@ error from the proxy module. Use this flag to achieve a
 more powerful implementation of the <code class="directive"><a href="../mod/mod_proxy.html#proxypass">ProxyPass</a></code> directive,
 to map remote content into the namespace of the local server.</p>
 
+<div class="warning">
+<h3>Security Warning</h3>
+<p>Take care when constructing the target URL of the rule, considering
+the security impact from allowing the client influence over the set of
+URLs to which your server will act as a proxy.  Ensure that the scheme
+and hostname part of the URL is either fixed, or does not allow the
+client undue influence.</p>
+</div>
+
 <p>Note: <code class="module"><a href="../mod/mod_proxy.html">mod_proxy</a></code> must be enabled in order
 to use this flag.</p>
 
@@ -486,15 +519,15 @@ The target (or substitution string) in a RewriteRule is assumed to be a
 file path, by default. The use of the [PT] flag causes it to be treated
 as a URI instead. That is to say, the
 use of the [PT] flag causes the result of the <code class="directive"><a href="../mod/mod_rewrite.html#rewriterule">RewriteRule</a></code> to be passed back through
-URL mapping, so that location-based mappings, such as <code class="directive"><a href="../mod/mod_alias.html#alias">Alias</a></code>, <code class="directive"><a href="../mod/core.html#redirect">Redirect</a></code>, or <code class="directive"><a href="../mod/mod_alias.html#scriptalias">ScriptAlias</a></code>, for example, might have a 
+URL mapping, so that location-based mappings, such as <code class="directive"><a href="../mod/mod_alias.html#alias">Alias</a></code>, <code class="directive"><a href="../mod/core.html#redirect">Redirect</a></code>, or <code class="directive"><a href="../mod/mod_alias.html#scriptalias">ScriptAlias</a></code>, for example, might have a
 chance to take effect.
 </p>
 
 <p>
-If, for example, you have an 
+If, for example, you have an
 <code class="directive"><a href="../mod/mod_alias.html#alias">Alias</a></code>
 for /icons, and have a <code class="directive"><a href="../mod/mod_rewrite.html#rewriterule">RewriteRule</a></code> pointing there, you should
-use the [PT] flag to ensure that the 
+use the [PT] flag to ensure that the
 <code class="directive"><a href="../mod/mod_alias.html#alias">Alias</a></code> is evaluated.
 </p>
 
@@ -542,6 +575,29 @@ will be discarded.
 </p>
 </div><div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
 <div class="section">
+<h2><a name="flag_qsd" id="flag_qsd">QSD|qsdiscard</a></h2>
+<p>
+When the requested URI contains a query string, and the target URI does
+not, the default behavior of <code class="directive"><a href="../mod/mod_rewrite.html#rewriterule">RewriteRule</a></code> is to copy that query
+string to the target URI. Using the [QSD] flag causes the query string
+to be discarded.
+</p>
+
+<p>This flag is available in version 2.4.0 and later.</p>
+
+<p>
+Using [QSD] and [QSA] together will result in [QSD] taking precedence.
+</p>
+
+<p>
+If the target URI has a query string, the default behavior will be
+observed - that is, the original query string will be discarded and
+replaced with the query string in the <code>RewriteRule</code> target
+URI.
+</p>
+
+</div><div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
+<div class="section">
 <h2><a name="flag_r" id="flag_r">R|redirect</a></h2>
 <p>
 Use of the [R] flag causes a HTTP redirect to be issued to the browser.
@@ -552,8 +608,8 @@ will be used to generate the URL sent with the redirect.
 </p>
 
 <p>
-<em>Any</em> valid HTTP response  status code may be specified, 
-using the syntax [R=305], with a 302 status code being used by 
+<em>Any</em> valid HTTP response  status code may be specified,
+using the syntax [R=305], with a 302 status code being used by
 default if none is specified. The status code specified need not
 necessarily be a redirect (3xx) status code.
 </p>
@@ -563,7 +619,7 @@ substitution string is dropped entirely, and rewriting is stopped as if
 the <code>L</code> were used.</p>
 
 <p>In addition to response status codes, you may also specify redirect
-status using their symbolic names: <code>temp</code> (default), 
+status using their symbolic names: <code>temp</code> (default),
 <code>permanent</code>, or <code>seeother</code>.</p>
 
 <p>
@@ -597,9 +653,9 @@ RewriteRule (.*\.html) docs.php?$1
 <code class="directive"><a href="../mod/mod_rewrite.html#rewriterule">RewriteRule</a></code> immediately
 following it. Thus, if you want to make a <code>RewriteCond</code> apply
 to several <code>RewriteRule</code>s, one possible technique is to
-negate those conditions and use a [Skip] flag. So, you can 
-use this to make pseudo if-then-else constructs: The last rule of 
-the then-clause becomes <code>skip=N</code>, where N is the 
+negate those conditions and use a [Skip] flag. So, you can
+use this to make pseudo if-then-else constructs: The last rule of
+the then-clause becomes <code>skip=N</code>, where N is the
 number of rules in the else-clause.</p>
 </div><div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
 <div class="section">
@@ -632,10 +688,10 @@ invariably be a less efficient solution than the alternatives.</p>
 
 <p>
 If used in per-directory context, use only <code>-</code> (dash)
-as the substitution <em>for the entire round of mod_rewrite processing</em>, 
-otherwise the MIME-type set with this flag is lost due to an internal 
+as the substitution <em>for the entire round of mod_rewrite processing</em>,
+otherwise the MIME-type set with this flag is lost due to an internal
 re-processing (including subsequent rounds of mod_rewrite processing).
-The <code>L</code> flag can be useful in this context to end the 
+The <code>L</code> flag can be useful in this context to end the
 <em>current</em> round of mod_rewrite processing.</p>
 
 </div></div>

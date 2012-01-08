@@ -142,10 +142,10 @@ case "$1" in
         ;;
   graceful)
         echo -n $"Gracefully restarting $prog: "
-	LANG=$HTTPD_LANG $httpd $OPTIONS -k $@
-	RETVAL=$?
+        LANG=$HTTPD_LANG $httpd $OPTIONS -k $@
+        RETVAL=$?
         echo
-	;;
+        ;;
   *)
 	echo $"Usage: $prog {start|stop|restart|condrestart|reload|status|graceful|help|configtest}"
 	exit 1

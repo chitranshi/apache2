@@ -12,11 +12,11 @@
 <link href="../images/favicon.ico" rel="shortcut icon" /></head>
 <body id="manual-page"><div id="page-header">
 <p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="../faq/">FAQ</a> | <a href="../glossary.html">Glossaire</a> | <a href="../sitemap.html">Plan du site</a></p>
-<p class="apache">Serveur Apache HTTP Version 2.2</p>
+<p class="apache">Serveur Apache HTTP Version 2.3</p>
 <img alt="" src="../images/feather.gif" /></div>
 <div class="up"><a href="./"><img title="&lt;-" alt="&lt;-" src="../images/left.gif" /></a></div>
 <div id="path">
-<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">Serveur HTTP</a> &gt; <a href="http://httpd.apache.org/docs/">Documentation</a> &gt; <a href="../">Version 2.2</a> &gt; <a href="./">Serveurs virtuels</a></div><div id="page-content"><div id="preamble"><h1>Exemples d'utilisations de VirtualHost</h1>
+<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">Serveur HTTP</a> &gt; <a href="http://httpd.apache.org/docs/">Documentation</a> &gt; <a href="../">Version 2.3</a> &gt; <a href="./">Serveurs virtuels</a></div><div id="page-content"><div id="preamble"><h1>Exemples d'utilisations de VirtualHost</h1>
 <div class="toplang">
 <p><span>Langues Disponibles: </span><a href="../en/vhosts/examples.html" hreflang="en" rel="alternate" title="English">&nbsp;en&nbsp;</a> |
 <a href="../fr/vhosts/examples.html" title="Français">&nbsp;fr&nbsp;</a> |
@@ -83,9 +83,6 @@
     # Apache doit écouter sur le port 80<br />
     Listen 80<br />
     <br />
-    # Toutes les adresses IP doivent répondre aux requêtes sur les <br />
-    # serveurs virtuels<br />
-    NameVirtualHost *:80<br />
     <br />
     &lt;VirtualHost *:80&gt;<br />
     <span class="indent">
@@ -109,8 +106,9 @@
     </code></p></div>
 
     <p>Les astérisques correspondent à toutes les adresses, si bien que 
-    le serveur principal ne répondra jamais à aucune requête. Comme 
-    <code>www.example.com</code> se trouve en premier dans le fichier 
+    le serveur principal ne répondra jamais à aucune requête. Comme le
+    serveur virtuel
+    <code>ServerName www.example.com</code> se trouve en premier dans le fichier 
     de configuration, il a la plus grande priorité et peut être vu 
     comme serveur <cite>par défaut</cite> ou <cite>primaire</cite>&nbsp;; 
     ce qui signifie que toute requête reçue ne correspondant à aucune 
@@ -120,17 +118,10 @@
     <div class="note">
             <h3>Note&nbsp;:</h3>
 
-            <p>Si vous le souhaitez, vous pouvez remplacer <code>*</code> 
-            par l'adresse IP du système. Dans ce cas, l'argument de 
-            <code>VirtualHost</code> <em>doit</em> correspondre à 
-            l'argument de <code>NameVirtualHost</code>&nbsp;:</p>
-
-            <div class="example"><p><code>
-            NameVirtualHost 172.20.30.40<br />
-						<br />
-            &lt;VirtualHost 172.20.30.40&gt;<br />
- 		        # etc ...
-            </code></p></div>
+            <p>Vous pouvez remplacer <code>*</code> 
+            par l'adresse IP du système si vous ne souhaitez pas faire
+	    opérer la sélection du serveur virtuel en fonction de la
+	    paire adresse IP/port.</p>
 
            <p>En général, il est commode d'utiliser <code>*</code> sur 
            les systèmes dont l'adresse IP n'est pas constante - par 
@@ -160,7 +151,7 @@
 
     <p>Le serveur a deux adresses IP. Sur l'une 
     (<code>172.20.30.40</code>), le serveur "principal" 
-    <code>server.domain.com</code> doit répondre, et sur l'autre 
+    <code>server.example.com</code> doit répondre, et sur l'autre 
     (<code>172.20.30.50</code>), deux serveurs virtuels (ou plus) 
     répondront.</p>
 
@@ -170,11 +161,8 @@
     Listen 80<br />
         <br />
     # Serveur "principal" sur 172.20.30.40<br />
-    ServerName server.domain.com<br />
+    ServerName server.example.com<br />
     DocumentRoot /www/mainserver<br />
-        <br />
-    # l'autre adresse <br />
-    NameVirtualHost 172.20.30.50<br />
         <br />
     &lt;VirtualHost 172.20.30.50&gt;<br />
     <span class="indent">
@@ -224,9 +212,7 @@
     <div class="example"><h3>Configuration du serveur</h3><p><code>
     
 
-    NameVirtualHost 192.168.1.1<br />
-    NameVirtualHost 172.20.30.40<br />
-        <br />
+    <br />
     &lt;VirtualHost 192.168.1.1 172.20.30.40&gt;<br />
     <span class="indent">
         DocumentRoot /www/server1<br />
@@ -256,21 +242,16 @@
     ports.</a></h2>
 
     <p>Vous disposez de plusieurs domaines pointant sur la même adresse 
-    IP et vous voulez également servir de multiples ports. Vous y 
-    parviendrez en définissant les ports dans la directive 
-    "NameVirtualHost". Si vous tentez d'utiliser &lt;VirtualHost 
-    name:port&gt; sans directive NameVirtualHost name:port, ou tentez 
-    d'utiliser la directive Listen, votre configuration ne fonctionnera 
-    pas.</p>
+    IP et vous voulez également servir de multiples ports. L'exemple
+    suivant montre que la sélection en fonction du nom intervient après
+    la sélection de la meilleure correspondance du point de vue adresse
+    IP/port.</p>
 
     <div class="example"><h3>Configuration du serveur</h3><p><code>
     
 
     Listen 80<br />
     Listen 8080<br />
-		<br />
-    NameVirtualHost 172.20.30.40:80<br />
-    NameVirtualHost 172.20.30.40:8080<br />
 		<br />
     &lt;VirtualHost 172.20.30.40:80&gt;<br />
     <span class="indent">
@@ -387,33 +368,32 @@
 <h2><a name="mixed" id="mixed">Hébergements virtuels mixtes basé sur 
     les noms et sur IP</a></h2>
 
-    <p>Pour certaines adresses, des serveurs virtuels seront définis 
-    par nom, et pour d'autres, ils seront définis par IP.</p>
+    <p>Toute adresse indiquée comme argument d'une section VirtualHost
+    et n'apparaissant dans aucun autre serveur virtuel, fait de cette
+    section un serveur virtuel sélectionnable uniquement en fonction de
+    son adresse IP.</p>
 
     <div class="example"><h3>Configuration du serveur</h3><p><code>
     
 
     Listen 80<br />
-		<br />
-    NameVirtualHost 172.20.30.40<br />
-		<br />
     &lt;VirtualHost 172.20.30.40&gt;<br />
     <span class="indent">
-        DocumentRoot /www/example.com<br />
+        DocumentRoot /www/example1<br />
         ServerName www.example.com<br />
     </span>
     &lt;/VirtualHost&gt;<br />
 		<br />
     &lt;VirtualHost 172.20.30.40&gt;<br />
     <span class="indent">
-        DocumentRoot /www/example.org<br />
+        DocumentRoot /www/example2<br />
         ServerName www.example.org<br />
     </span>
     &lt;/VirtualHost&gt;<br />
 		<br />
     &lt;VirtualHost 172.20.30.40&gt;<br />
     <span class="indent">
-        DocumentRoot /www/example.net<br />
+        DocumentRoot /www/example3<br />
         ServerName www.example.net<br />
     </span>
     &lt;/VirtualHost&gt;<br />
@@ -421,14 +401,14 @@
     # "par-IP"<br />
     &lt;VirtualHost 172.20.30.50&gt;<br />
     <span class="indent">
-        DocumentRoot /www/example.edu<br />
+        DocumentRoot /www/example4<br />
         ServerName www.example.edu<br />
     </span>
     &lt;/VirtualHost&gt;<br />
 		<br />
     &lt;VirtualHost 172.20.30.60&gt;<br />
     <span class="indent">
-        DocumentRoot /www/example.gov<br />
+        DocumentRoot /www/example5<br />
         ServerName www.example.gov<br />
     </span>
     &lt;/VirtualHost&gt;
@@ -549,6 +529,10 @@
     sera servie par le serveur virtuel par défaut, et toute autre 
     requête vers une adresse et un port non spécifiés sera servie 
     par le serveur principal.</p>
+
+    <p>L'utilisation du caractère générique <code>*</code> dans la
+    déclaration d'un serveur virtuel l'emporte sur
+    <code>_default_</code>.</p>
     
 
 	</div><div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
@@ -572,8 +556,6 @@
     Listen 80<br />
     ServerName www.example.com<br />
     DocumentRoot /www/example.com<br />
-		<br />
-    NameVirtualHost 172.20.30.40<br />
 		<br />
     &lt;VirtualHost 172.20.30.40 172.20.30.50&gt;<br />
     <span class="indent">
@@ -616,14 +598,12 @@
     <div class="example"><h3>Configuration du serveur</h3><p><code>
     
 
-    NameVirtualHost 172.20.30.40<br />
-		<br />
     &lt;VirtualHost 172.20.30.40&gt;<br />
     <span class="indent">
         # Serveur virtuel primaire<br />
         DocumentRoot /www/subdomain<br />
         RewriteEngine On<br />
-        RewriteRule ^/.* /www/subdomain/index.html<br />
+        RewriteRule . /www/subdomain/index.html<br />
         # ...<br />
     </span>
     &lt;/VirtualHost&gt;<br />

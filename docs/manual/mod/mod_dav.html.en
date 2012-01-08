@@ -13,11 +13,11 @@
 <body>
 <div id="page-header">
 <p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="../faq/">FAQ</a> | <a href="../glossary.html">Glossary</a> | <a href="../sitemap.html">Sitemap</a></p>
-<p class="apache">Apache HTTP Server Version 2.2</p>
+<p class="apache">Apache HTTP Server Version 2.3</p>
 <img alt="" src="../images/feather.gif" /></div>
 <div class="up"><a href="./"><img title="&lt;-" alt="&lt;-" src="../images/left.gif" /></a></div>
 <div id="path">
-<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">HTTP Server</a> &gt; <a href="http://httpd.apache.org/docs/">Documentation</a> &gt; <a href="../">Version 2.2</a> &gt; <a href="./">Modules</a></div>
+<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">HTTP Server</a> &gt; <a href="http://httpd.apache.org/docs/">Documentation</a> &gt; <a href="../">Version 2.3</a> &gt; <a href="./">Modules</a></div>
 <div id="page-content">
 <div id="preamble"><h1>Apache Module mod_dav</h1>
 <div class="toplang">
@@ -67,7 +67,7 @@
     by the <code class="module"><a href="../mod/mod_dav_fs.html">mod_dav_fs</a></code> module. Therefore, that module
     must be compiled into the server or loaded at runtime using the
     <code class="directive"><a href="../mod/mod_so.html#loadmodule">LoadModule</a></code> directive.</p>
-    
+
     <p>In addition, a location for the DAV lock database must be
     specified in the global section of your <code>httpd.conf</code>
     file using the <code class="directive"><a href="../mod/mod_dav_fs.html#davlockdb">DavLockDB</a></code>
@@ -78,8 +78,8 @@
     </code></p></div>
 
     <p>The directory containing the lock database file must be
-    writable by the <code class="directive"><a href="../mod/mpm_common.html#user">User</a></code>
-    and <code class="directive"><a href="../mod/mpm_common.html#group">Group</a></code> under which
+    writable by the <code class="directive"><a href="../mod/mod_unixd.html#user">User</a></code>
+    and <code class="directive"><a href="../mod/mod_unixd.html#group">Group</a></code> under which
     Apache is running.</p>
 
     <p>You may wish to add a <code class="directive"><a href="../mod/core.html#limit">&lt;Limit&gt;</a></code> clause inside the <code class="directive"><a href="../mod/core.html#location">&lt;Location&gt;</a></code> directive to limit access to
@@ -92,23 +92,22 @@
     <div class="example"><h3>Full Example</h3><p><code>
       DavLockDB /usr/local/apache2/var/DavLock<br />
       <br />
-       &lt;Location /foo&gt;<br />
-       <span class="indent">
-         Order Allow,Deny<br />
-         Allow from all<br />
-         Dav On<br />
-         <br />
-         AuthType Basic<br />
-         AuthName DAV<br />
-         AuthUserFile user.passwd<br />
-         <br />
-         &lt;LimitExcept GET OPTIONS&gt;<br />
-         <span class="indent">
-           Require user admin<br />
-         </span>
-         &lt;/LimitExcept&gt;<br />
-       </span>
-       &lt;/Location&gt;<br />
+      &lt;Directory /usr/local/apache2/htdocs/foo&gt;<br />
+      <span class="indent">
+        Require all granted<br />
+        Dav On<br />
+        <br />
+        AuthType Basic<br />
+        AuthName DAV<br />
+        AuthUserFile user.passwd<br />
+        <br />
+        &lt;LimitExcept GET POST OPTIONS&gt;<br />
+        <span class="indent">
+          Require user admin<br />
+        </span>
+        &lt;/LimitExcept&gt;<br />
+      </span>
+      &lt;/Directory&gt;<br />
     </code></p></div>
 
    <p><code class="module"><a href="../mod/mod_dav.html">mod_dav</a></code> is a descendent of Greg Stein's <a href="http://www.webdav.org/mod_dav/">mod_dav for Apache 1.3</a>.  More
@@ -132,10 +131,10 @@
 
     <p>In order for <code class="module"><a href="../mod/mod_dav.html">mod_dav</a></code> to manage files, it must
     be able to write to the directories and files under its control
-    using the <code class="directive"><a href="../mod/mpm_common.html#user">User</a></code> and
-    <code class="directive"><a href="../mod/mpm_common.html#group">Group</a></code> under which
+    using the <code class="directive"><a href="../mod/mod_unixd.html#user">User</a></code> and
+    <code class="directive"><a href="../mod/mod_unixd.html#group">Group</a></code> under which
     Apache is running.  New files created will also be owned by this
-    <code class="directive"><a href="../mod/mpm_common.html#user">User</a></code> and <code class="directive"><a href="../mod/mpm_common.html#group">Group</a></code>.  For this reason, it is
+    <code class="directive"><a href="../mod/mod_unixd.html#user">User</a></code> and <code class="directive"><a href="../mod/mod_unixd.html#group">Group</a></code>.  For this reason, it is
     important to control access to this account.  The DAV repository
     is considered private to Apache; modifying files outside of Apache
     (for example using FTP or filesystem-level tools) should not be

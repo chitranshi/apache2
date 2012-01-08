@@ -13,17 +13,18 @@
 <link href="../images/favicon.ico" rel="shortcut icon" /></head>
 <body id="manual-page"><div id="page-header">
 <p class="menu"><a href="../mod/">Modüller</a> | <a href="../mod/directives.html">Yönergeler</a> | <a href="../faq/">SSS</a> | <a href="../glossary.html">Terimler</a> | <a href="../sitemap.html">Site Haritası</a></p>
-<p class="apache">Apache HTTP Sunucusu Sürüm 2.2</p>
+<p class="apache">Apache HTTP Sunucusu Sürüm 2.3</p>
 <img alt="" src="../images/feather.gif" /></div>
 <div class="up"><a href="./"><img title="&lt;-" alt="&lt;-" src="../images/left.gif" /></a></div>
 <div id="path">
-<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">HTTP Sunucusu</a> &gt; <a href="http://httpd.apache.org/docs/">Belgeleme</a> &gt; <a href="../">Sürüm 2.2</a> &gt; <a href="./">Programlar</a></div><div id="page-content"><div id="preamble"><h1>rotatelogs - Apache günlüklerini döndürmek için borulu günlük kayıt
+<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">HTTP Sunucusu</a> &gt; <a href="http://httpd.apache.org/docs/">Belgeleme</a> &gt; <a href="../">Sürüm 2.3</a> &gt; <a href="./">Programlar</a></div><div id="page-content"><div id="preamble"><h1>rotatelogs - Apache günlüklerini döndürmek için borulu günlük kayıt
   programı</h1>
 <div class="toplang">
 <p><span>Mevcut Diller: </span><a href="../en/programs/rotatelogs.html" hreflang="en" rel="alternate" title="English">&nbsp;en&nbsp;</a> |
 <a href="../ko/programs/rotatelogs.html" hreflang="ko" rel="alternate" title="Korean">&nbsp;ko&nbsp;</a> |
 <a href="../tr/programs/rotatelogs.html" title="Türkçe">&nbsp;tr&nbsp;</a></p>
 </div>
+<div class="outofdate">Bu çeviri güncel olmayabilir. Son değişiklikler için İngilizce sürüm geçerlidir.</div>
 
      <p><code><strong>rotatelogs</strong></code>, Apache'nin borulu günlük
      dosyaları özelliği ile birlikte kullanmak için tasarlanmış basit bir
@@ -42,8 +43,9 @@
      <p><code><strong>rotatelogs</strong>
      [ -<strong>l</strong> ]
      [ -<strong>f</strong> ]
+     [ -<strong>v</strong> ]
      <var>dosyaismi</var>
-     <var>süre</var>|<var>boyut</var>M
+     <var>süre</var>|<var>boyut</var>(B|K|M|G)
      [ <var>saat_farkı</var> ]</code></p>
 </div><div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
 <div class="section">
@@ -61,11 +63,15 @@
     dosyasının açılmasını sağlar. Çok meşgul sitelerde, sunucu başlatılıp ilk
     istek sunuluncaya kadar geçen zamanda günlük dosyasının yokluğu
     özdevinimli işlemler yapan bazı günlükleme araçlarında sorunlara yol
-    açabilir. Bu seçenek bu gibi durumlarda yararlıdır. <em>2.2.9 ve sonrası
-    için geçerlidir.</em></dd>
+    açabilir. Bu seçenek bu gibi durumlarda yararlıdır.</dd>
+
+    <dt><code><strong>-v</strong></code></dt>
+    <dd>Standart hataya verilen çıktı daha ayrıntılı olur. Çıktı,
+    yapılandırma çözümlemesinin sonuçlarını ve tüm dosya açma/kapama
+    işlemlerini içerir.</dd>
 
     <dt><code><var>dosyaismi</var></code></dt>
-    <dd><p>Günlük dosyasının ismi yoluyla birlikte belirtilir.
+    <dd>Günlük dosyasının ismi yoluyla birlikte belirtilir.
     <var>dosyaismi</var> '%' karakterleri içeriyorsa bunlar
     <code>strftime(3)</code> biçem belirteçleri olarak ele alınır. Aksi
     takdirde, özdevinimli olarak <var>.nnnnnnnnnn</var> uzantısı üretilir.
@@ -73,15 +79,7 @@
     diliminin başlangıcına göre hesaplanır. Örneğin, döndürmenin 86400
     saniyede bir yapılacağı belirtilmişse, <code>strftime(3)</code> biçeminde
     oluşturulan saat, dakika ve saniye alanları, 24 saatlik sürenin
-    başlangıcını (geceyarısı) göstermek üzere sıfırlarla doldurulur.</p>
-    <p><code>strftime(3)</code> dosya ismi biçimlemesini kullanırken, günlük
-    dosyası biçiminin günlüğün her döndürülüşünde farklı bir dosya ismi üretecek
-    ayrıntılara sahip olmasın sağlamalısınız. Aksi takdirde, döndürme işlemi
-    sonucunda günlük yeni bir dosya yerine aynı dosyanın üzerine yazılacaktır.
-    Örneğin, <code><var>dosyaismi</var></code> olarak
-    <code>/var/logs/errorlog.%Y-%m-%d</code> belirtilmişse, günlük dosyası da 5
-    megabayta ulaşıyorsa, günlük döndürme ile aynı dosya ismi üretilir ve günlük
-    aynı dosyaya yazılmaya devam ederek bu boyut ikiye katlanır.</p></dd>
+    başlangıcını (geceyarısı) göstermek üzere sıfırlarla doldurulur.</dd>
 
     <dt><code><var>süre</var></code></dt>
     <dd>Günlük dosyasının yenisinin kaç saniyede bir açılacağı belirtilir.
@@ -89,10 +87,11 @@
     yenilenir; 86400 saniye ise her geceyarısı yenilenir. (Bu süre zarfında
     günlüğe kaydedilecek bir olay gerçekleşmemişse dosya oluşturulmaz.)</dd>
 
-    <dt><code><var>boyut</var>M</code></dt>
+    <dt><code><var>boyut</var>(B|K|M|G)</code></dt>
     <dd>Boyuta göre döndürme için azami dosya boyutu. Belirtilenin bir süre
-    değil de bir boyut değeri olarak ele alınması için değerin sonuna
-    <code>M</code> (megabayt) harfi konmalıdır.
+    değil de bir boyut değeri olarak ele alınması için değerin sonuna şu
+    karakterlerden biri eklenmelidir: <code>B</code> (Bayt), <code>K</code>
+    (kilobayt), <code>M</code> (megabayt), <code>G</code> (gigabayt).
 
     <p>Süre ve boyut birlikte belirtilmişse boyut süreden sonra
     belirtilmelidir. Dosya yenilemesi, bunlardan hangisi daha önce aşılırsa o

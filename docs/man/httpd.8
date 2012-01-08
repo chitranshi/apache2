@@ -19,7 +19,7 @@
 .el .ne 3
 .IP "\\$1" \\$2
 ..
-.TH "HTTPD" 8 "2010-09-28" "Apache HTTP Server" "httpd"
+.TH "HTTPD" 8 "2010-09-12" "Apache HTTP Server" "httpd"
 
 .SH NAME
 httpd \- Apache Hypertext Transfer Protocol Server
@@ -73,9 +73,6 @@ Sets the LogLevel to \fIlevel\fR during server startup\&. This is useful for tem
 -E \fIfile\fR
 Send error messages during server startup to \fIfile\fR\&.  
 .TP
--R \fIdirectory\fR
-When the server is compiled using the SHARED_CORE rule, this specifies the \fIdirectory\fR for the shared object files\&.  
-.TP
 -h
 Output a short summary of available command line options\&.  
 .TP
@@ -83,7 +80,7 @@ Output a short summary of available command line options\&.
 Output a list of modules compiled into the server\&. This will \fBnot\fR list dynamically loaded modules included using the LoadModule directive\&.  
 .TP
 -L
-Output a list of directives together with expected arguments and places where the directive is valid\&.  
+Output a list of directives provided by static modules, together with expected arguments and places where the directive is valid\&. Directives provided by shared modules are not listed\&.  
 .TP
 -M
 Dump a list of loaded Static and Shared Modules\&.  
@@ -91,7 +88,7 @@ Dump a list of loaded Static and Shared Modules\&.
 -S
 Show the settings as parsed from the config file (currently only shows the virtualhost settings)\&.  
 .TP
--T (Available in 2\&.2\&.17 and later)
+-T (Availabe in 2\&.3\&.8 and later)
 Skip document root check at startup/restart\&.  
 .TP
 -t

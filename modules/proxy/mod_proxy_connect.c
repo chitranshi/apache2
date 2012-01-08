@@ -16,10 +16,10 @@
 
 /* CONNECT method for Apache proxy */
 
-#define CORE_PRIVATE
-
 #include "mod_proxy.h"
 #include "apr_poll.h"
+
+#define CONN_BLKSZ AP_IOBUFSIZE
 
 module AP_MODULE_DECLARE_DATA proxy_connect_module;
 
@@ -46,14 +46,87 @@ module AP_MODULE_DECLARE_DATA proxy_connect_module;
  * FIXME: no check for r->assbackwards, whatever that is.
  */
 
-static int allowed_port(proxy_server_conf *conf, int port)
+typedef struct {
+    apr_array_header_t *allowed_connect_ports;
+} connect_conf;
+
+typedef struct {
+    int first;
+    int last;
+} port_range;
+
+static void *create_config(apr_pool_t *p, server_rec *s)
+{
+    connect_conf *c = apr_pcalloc(p, sizeof(connect_conf));
+    c->allowed_connect_ports = apr_array_make(p, 10, sizeof(port_range));
+    return c;
+}
+
+static void *merge_config(apr_pool_t *p, void *basev, void *overridesv)
+{
+    connect_conf *c = apr_pcalloc(p, sizeof(connect_conf));
+    connect_conf *base = (connect_conf *) basev;
+    connect_conf *overrides = (connect_conf *) overridesv;
+
+    c->allowed_connect_ports = apr_array_append(p,
+                                                base->allowed_connect_ports,
+                                                overrides->allowed_connect_ports);
+
+    return c;
+}
+
+
+/*
+ * Set the ports CONNECT can use
+ */
+static const char *
+    set_allowed_ports(cmd_parms *parms, void *dummy, const char *arg)
+{
+    server_rec *s = parms->server;
+    int first, last;
+    connect_conf *conf =
+        ap_get_module_config(s->module_config, &proxy_connect_module);
+    port_range *New;
+    char *endptr;
+    const char *p = arg;
+
+    if (!apr_isdigit(arg[0]))
+        return "AllowCONNECT: port numbers must be numeric";
+
+    first = strtol(p, &endptr, 10);
+    if (*endptr == '-') {
+        p = endptr + 1;
+        last = strtol(p, &endptr, 10);
+    }
+    else {
+        last = first;
+    }
+
+    if (endptr == p || *endptr != '\0')  {
+        return apr_psprintf(parms->temp_pool,
+                            "Cannot parse '%s' as port number", p);
+    }
+
+    New = apr_array_push(conf->allowed_connect_ports);
+    New->first = first;
+    New->last  = last;
+    return NULL;
+}
+
+
+static int allowed_port(connect_conf *conf, int port)
 {
     int i;
-    int *list = (int *) conf->allowed_connect_ports->elts;
+    port_range *list = (port_range *) conf->allowed_connect_ports->elts;
 
-    for(i = 0; i < conf->allowed_connect_ports->nelts; i++) {
-    if(port == list[i])
-        return 1;
+    if (apr_is_empty_array(conf->allowed_connect_ports)){
+        return port == APR_URI_HTTPS_DEFAULT_PORT
+               || port == APR_URI_SNEWS_DEFAULT_PORT;
+    }
+
+    for (i = 0; i < conf->allowed_connect_ports->nelts; i++) {
+        if (port >= list[i].first && port <= list[i].last)
+            return 1;
     }
     return 0;
 }
@@ -65,10 +138,56 @@ static int proxy_connect_canon(request_rec *r, char *url)
     if (r->method_number != M_CONNECT) {
     return DECLINED;
     }
-    ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server,
-         "proxy: CONNECT: canonicalising URL %s", url);
+    ap_log_rerror(APLOG_MARK, APLOG_TRACE1, 0, r, "canonicalising URL %s", url);
 
     return OK;
+}
+
+/* read available data (in blocks of CONN_BLKSZ) from c_i and copy to c_o */
+static int proxy_connect_transfer(request_rec *r, conn_rec *c_i, conn_rec *c_o,
+                                  apr_bucket_brigade *bb, char *name)
+{
+    int rv;
+#ifdef DEBUGGING
+    apr_off_t len;
+#endif
+
+    do {
+        apr_brigade_cleanup(bb);
+        rv = ap_get_brigade(c_i->input_filters, bb, AP_MODE_READBYTES,
+                            APR_NONBLOCK_READ, CONN_BLKSZ);
+        if (rv == APR_SUCCESS) {
+            if (c_o->aborted)
+                return APR_EPIPE;
+            if (APR_BRIGADE_EMPTY(bb))
+                break;
+#ifdef DEBUGGING
+            len = -1;
+            apr_brigade_length(bb, 0, &len);
+            ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r, APLOGNO(01016)
+                          "read %" APR_OFF_T_FMT
+                          " bytes from %s", len, name);
+#endif
+            rv = ap_pass_brigade(c_o->output_filters, bb);
+            if (rv == APR_SUCCESS) {
+                ap_fflush(c_o->output_filters, bb);
+            }
+            else {
+                ap_log_rerror(APLOG_MARK, APLOG_ERR, rv, r, APLOGNO(01017)
+                              "error on %s - ap_pass_brigade",
+                              name);
+            }
+        } else if (!APR_STATUS_IS_EAGAIN(rv)) {
+            ap_log_rerror(APLOG_MARK, APLOG_DEBUG, rv, r, APLOGNO(01018)
+                          "error on %s - ap_get_brigade",
+                          name);
+        }
+    } while (rv == APR_SUCCESS);
+
+    if (APR_STATUS_IS_EAGAIN(rv)) {
+        rv = APR_SUCCESS;
+    }
+    return rv;
 }
 
 /* CONNECT handler */
@@ -77,13 +196,21 @@ static int proxy_connect_handler(request_rec *r, proxy_worker *worker,
                                  char *url, const char *proxyname,
                                  apr_port_t proxyport)
 {
+    connect_conf *c_conf =
+        ap_get_module_config(r->server->module_config, &proxy_connect_module);
+
     apr_pool_t *p = r->pool;
     apr_socket_t *sock;
+    conn_rec *c = r->connection;
+    conn_rec *backconn;
+
+    apr_bucket_brigade *bb = apr_brigade_create(p, c->bucket_alloc);
     apr_status_t err, rv;
-    apr_size_t i, o, nbytes;
+    apr_size_t nbytes;
     char buffer[HUGE_STRING_LEN];
-    apr_socket_t *client_socket = ap_get_module_config(r->connection->conn_config, &core_module);
-    int failed;
+    apr_socket_t *client_socket = ap_get_conn_socket(c);
+    int failed, rc;
+    int client_error = 0;
     apr_pollset_t *pollset;
     apr_pollfd_t pollfd;
     const apr_pollfd_t *signalled;
@@ -97,12 +224,10 @@ static int proxy_connect_handler(request_rec *r, proxy_worker *worker,
 
     /* is this for us? */
     if (r->method_number != M_CONNECT) {
-        ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server,
-             "proxy: CONNECT: declining URL %s", url);
-    return DECLINED;
+        ap_log_rerror(APLOG_MARK, APLOG_TRACE1, 0, r, "declining URL %s", url);
+        return DECLINED;
     }
-    ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server,
-         "proxy: CONNECT: serving URL %s", url);
+    ap_log_rerror(APLOG_MARK, APLOG_TRACE1, 0, r, "serving URL %s", url);
 
 
     /*
@@ -118,8 +243,8 @@ static int proxy_connect_handler(request_rec *r, proxy_worker *worker,
                                          NULL));
     }
 
-    ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server,
-         "proxy: CONNECT: connecting %s to %s:%d", url, uri.hostname, uri.port);
+    ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r, APLOGNO(01019)
+                  "connecting %s to %s:%d", url, uri.hostname, uri.port);
 
     /* do a DNS lookup for the destination host */
     err = apr_sockaddr_info_get(&uri_addr, uri.hostname, APR_UNSPEC, uri.port,
@@ -134,16 +259,18 @@ static int proxy_connect_handler(request_rec *r, proxy_worker *worker,
     if (proxyname) {
         connectname = proxyname;
         connectport = proxyport;
-        err = apr_sockaddr_info_get(&connect_addr, proxyname, APR_UNSPEC, proxyport, 0, p);
+        err = apr_sockaddr_info_get(&connect_addr, proxyname, APR_UNSPEC,
+                                    proxyport, 0, p);
     }
     else {
         connectname = uri.hostname;
         connectport = uri.port;
         connect_addr = uri_addr;
     }
-    ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server,
-         "proxy: CONNECT: connecting to remote proxy %s on port %d", connectname, connectport);
- 
+    ap_log_rerror(APLOG_MARK, APLOG_TRACE1, 0, r,
+                  "connecting to remote proxy %s on port %d",
+                  connectname, connectport);
+
     /* check if ProxyBlock directive on this host */
     if (OK != ap_proxy_checkproxyblock(r, conf, uri_addr)) {
         return ap_proxyerror(r, HTTP_FORBIDDEN,
@@ -151,19 +278,9 @@ static int proxy_connect_handler(request_rec *r, proxy_worker *worker,
     }
 
     /* Check if it is an allowed port */
-    if (conf->allowed_connect_ports->nelts == 0) {
-    /* Default setting if not overridden by AllowCONNECT */
-        switch (uri.port) {
-            case APR_URI_HTTPS_DEFAULT_PORT:
-            case APR_URI_SNEWS_DEFAULT_PORT:
-                break;
-            default:
-                /* XXX can we call ap_proxyerror() here to get a nice log message? */
-                return HTTP_FORBIDDEN;
-        }
-    } else if(!allowed_port(conf, uri.port)) {
-        /* XXX can we call ap_proxyerror() here to get a nice log message? */
-        return HTTP_FORBIDDEN;
+    if(!allowed_port(c_conf, uri.port)) {
+              return ap_proxyerror(r, HTTP_FORBIDDEN,
+                                   "Connect to remote machine blocked");
     }
 
     /*
@@ -192,8 +309,7 @@ static int proxy_connect_handler(request_rec *r, proxy_worker *worker,
      * XXX FIXME
      */
     failed = ap_proxy_connect_to_backend(&sock, "CONNECT", connect_addr,
-                                         connectname, conf, r->server,
-                                         r->pool);
+                                         connectname, conf, r);
 
     /* handle a permanent error from the above loop */
     if (failed) {
@@ -205,72 +321,13 @@ static int proxy_connect_handler(request_rec *r, proxy_worker *worker,
         }
     }
 
-    /*
-     * Step Three: Send the Request
-     *
-     * Send the HTTP/1.1 CONNECT request to the remote server
-     */
-
-    /* we are acting as a tunnel - the output filter stack should
-     * be completely empty, because when we are done here we are done completely.
-     * We add the NULL filter to the stack to do this...
-     */
-    r->output_filters = NULL;
-    r->connection->output_filters = NULL;
-
-
-    /* If we are connecting through a remote proxy, we need to pass
-     * the CONNECT request on to it.
-     */
-    if (proxyport) {
-    /* FIXME: Error checking ignored.
-     */
-        ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server,
-             "proxy: CONNECT: sending the CONNECT request to the remote proxy");
-        nbytes = apr_snprintf(buffer, sizeof(buffer),
-                  "CONNECT %s HTTP/1.0" CRLF, r->uri);
-        apr_socket_send(sock, buffer, &nbytes);
-        nbytes = apr_snprintf(buffer, sizeof(buffer),
-                  "Proxy-agent: %s" CRLF CRLF, ap_get_server_banner());
-        apr_socket_send(sock, buffer, &nbytes);
-    }
-    else {
-        ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server,
-             "proxy: CONNECT: Returning 200 OK Status");
-        nbytes = apr_snprintf(buffer, sizeof(buffer),
-                  "HTTP/1.0 200 Connection Established" CRLF);
-        ap_xlate_proto_to_ascii(buffer, nbytes);
-        apr_socket_send(client_socket, buffer, &nbytes);
-        nbytes = apr_snprintf(buffer, sizeof(buffer),
-                  "Proxy-agent: %s" CRLF CRLF, ap_get_server_banner());
-        ap_xlate_proto_to_ascii(buffer, nbytes);
-        apr_socket_send(client_socket, buffer, &nbytes);
-#if 0
-        /* This is safer code, but it doesn't work yet.  I'm leaving it
-         * here so that I can fix it later.
-         */
-        r->status = HTTP_OK;
-        r->header_only = 1;
-        apr_table_set(r->headers_out, "Proxy-agent: %s", ap_get_server_banner());
-        ap_rflush(r);
-#endif
-    }
-
-    ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server,
-         "proxy: CONNECT: setting up poll()");
-
-    /*
-     * Step Four: Handle Data Transfer
-     *
-     * Handle two way transfer of data over the socket (this is a tunnel).
-     */
-
-/*    r->sent_bodyct = 1;*/
+    /* setup polling for connection */
+    ap_log_rerror(APLOG_MARK, APLOG_TRACE2, 0, r, "setting up poll()");
 
     if ((rv = apr_pollset_create(&pollset, 2, r->pool, 0)) != APR_SUCCESS) {
         apr_socket_close(sock);
-        ap_log_rerror(APLOG_MARK, APLOG_ERR, rv, r,
-            "proxy: CONNECT: error apr_pollset_create()");
+        ap_log_rerror(APLOG_MARK, APLOG_ERR, rv, r, APLOGNO(01020)
+                      "error apr_pollset_create()");
         return HTTP_INTERNAL_SERVER_ERROR;
     }
 
@@ -286,18 +343,104 @@ static int proxy_connect_handler(request_rec *r, proxy_worker *worker,
     pollfd.desc.s = sock;
     apr_pollset_add(pollset, &pollfd);
 
+    /*
+     * Step Three: Send the Request
+     *
+     * Send the HTTP/1.1 CONNECT request to the remote server
+     */
+
+    backconn = ap_run_create_connection(c->pool, r->server, sock,
+                                        c->id, c->sbh, c->bucket_alloc);
+    if (!backconn) {
+        /* peer reset */
+        ap_log_rerror(APLOG_MARK, APLOG_INFO, 0, r, APLOGNO(01021)
+                      "an error occurred creating a new connection "
+                      "to %pI (%s)", connect_addr, connectname);
+        apr_socket_close(sock);
+        return HTTP_INTERNAL_SERVER_ERROR;
+    }
+    ap_proxy_ssl_disable(backconn);
+    rc = ap_run_pre_connection(backconn, sock);
+    if (rc != OK && rc != DONE) {
+        backconn->aborted = 1;
+        ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r, APLOGNO(01022)
+                      "pre_connection setup failed (%d)", rc);
+        return HTTP_INTERNAL_SERVER_ERROR;
+    }
+
+    ap_log_rerror(APLOG_MARK, APLOG_TRACE3, 0, r,
+                  "connection complete to %pI (%s)",
+                  connect_addr, connectname);
+    apr_table_setn(r->notes, "proxy-source-port", apr_psprintf(r->pool, "%hu",
+                   backconn->local_addr->port));
+
+    /* If we are connecting through a remote proxy, we need to pass
+     * the CONNECT request on to it.
+     */
+    if (proxyport) {
+    /* FIXME: Error checking ignored.
+     */
+        ap_log_rerror(APLOG_MARK, APLOG_TRACE2, 0, r,
+                      "sending the CONNECT request to the remote proxy");
+        ap_fprintf(backconn->output_filters, bb,
+                   "CONNECT %s HTTP/1.0" CRLF, r->uri);
+        ap_fprintf(backconn->output_filters, bb,
+                   "Proxy-agent: %s" CRLF CRLF, ap_get_server_banner());
+        ap_fflush(backconn->output_filters, bb);
+    }
+    else {
+        ap_log_rerror(APLOG_MARK, APLOG_TRACE1, 0, r, "Returning 200 OK");
+        nbytes = apr_snprintf(buffer, sizeof(buffer),
+                              "HTTP/1.0 200 Connection Established" CRLF);
+        ap_xlate_proto_to_ascii(buffer, nbytes);
+        ap_fwrite(c->output_filters, bb, buffer, nbytes);
+        nbytes = apr_snprintf(buffer, sizeof(buffer),
+                              "Proxy-agent: %s" CRLF CRLF,
+                              ap_get_server_banner());
+        ap_xlate_proto_to_ascii(buffer, nbytes);
+        ap_fwrite(c->output_filters, bb, buffer, nbytes);
+        ap_fflush(c->output_filters, bb);
+#if 0
+        /* This is safer code, but it doesn't work yet.  I'm leaving it
+         * here so that I can fix it later.
+         */
+        r->status = HTTP_OK;
+        r->header_only = 1;
+        apr_table_set(r->headers_out, "Proxy-agent: %s", ap_get_server_banner());
+        ap_rflush(r);
+#endif
+    }
+
+    ap_log_rerror(APLOG_MARK, APLOG_TRACE2, 0, r, "setting up poll()");
+
+    /*
+     * Step Four: Handle Data Transfer
+     *
+     * Handle two way transfer of data over the socket (this is a tunnel).
+     */
+
+    /* we are now acting as a tunnel - the input/output filter stacks should
+     * not contain any non-connection filters.
+     */
+    r->output_filters = c->output_filters;
+    r->proto_output_filters = c->output_filters;
+    r->input_filters = c->input_filters;
+    r->proto_input_filters = c->input_filters;
+/*    r->sent_bodyct = 1;*/
+
     while (1) { /* Infinite loop until error (one side closes the connection) */
-        if ((rv = apr_pollset_poll(pollset, -1, &pollcnt, &signalled)) != APR_SUCCESS) {
-            if (APR_STATUS_IS_EINTR(rv)) { 
+        if ((rv = apr_pollset_poll(pollset, -1, &pollcnt, &signalled))
+            != APR_SUCCESS) {
+            if (APR_STATUS_IS_EINTR(rv)) {
                 continue;
             }
             apr_socket_close(sock);
-            ap_log_rerror(APLOG_MARK, APLOG_ERR, rv, r, "proxy: CONNECT: error apr_poll()");
+            ap_log_rerror(APLOG_MARK, APLOG_ERR, rv, r, APLOGNO(01023) "error apr_poll()");
             return HTTP_INTERNAL_SERVER_ERROR;
         }
 #ifdef DEBUGGING
-        ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server,
-                     "proxy: CONNECT: woke from select(), i=%d", pollcnt);
+        ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r, APLOGNO(01024)
+                      "woke from poll(), i=%d", pollcnt);
 #endif
 
         for (pi = 0; pi < pollcnt; pi++) {
@@ -307,80 +450,44 @@ static int proxy_connect_handler(request_rec *r, proxy_worker *worker,
                 pollevent = cur->rtnevents;
                 if (pollevent & APR_POLLIN) {
 #ifdef DEBUGGING
-                    ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server,
-                                 "proxy: CONNECT: sock was set");
+                    ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r, APLOGNO(01025)
+                                  "sock was readable");
 #endif
-                    nbytes = sizeof(buffer);
-                    rv = apr_socket_recv(sock, buffer, &nbytes);
-                    if (rv == APR_SUCCESS) {
-                        o = 0;
-                        i = nbytes;
-                        while(i > 0)
-                        {
-                            nbytes = i;
-    /* This is just plain wrong.  No module should ever write directly
-     * to the client.  For now, this works, but this is high on my list of
-     * things to fix.  The correct line is:
-     * if ((nbytes = ap_rwrite(buffer + o, nbytes, r)) < 0)
-     * rbb
-     */
-                            rv = apr_socket_send(client_socket, buffer + o, &nbytes);
-                            if (rv != APR_SUCCESS)
-                                break;
-                            o += nbytes;
-                            i -= nbytes;
-                        }
+                    rv = proxy_connect_transfer(r, backconn, c, bb, "sock");
                     }
-                    else
-                        break;
+                else if ((pollevent & APR_POLLERR)
+                         || (pollevent & APR_POLLHUP)) {
+                         rv = APR_EPIPE;
+                         ap_log_rerror(APLOG_MARK, APLOG_NOTICE, 0, r, APLOGNO(01026)
+                                       "err/hup on backconn");
                 }
-                else if ((pollevent & APR_POLLERR) || (pollevent & APR_POLLHUP))
-                    break;
+                if (rv != APR_SUCCESS)
+                    client_error = 1;
             }
             else if (cur->desc.s == client_socket) {
                 pollevent = cur->rtnevents;
                 if (pollevent & APR_POLLIN) {
 #ifdef DEBUGGING
-                    ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server,
-                                 "proxy: CONNECT: client was set");
+                    ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r, APLOGNO(01027)
+                                  "client was readable");
 #endif
-                    nbytes = sizeof(buffer);
-                    rv = apr_socket_recv(client_socket, buffer, &nbytes);
-                    if (rv == APR_SUCCESS) {
-                        o = 0;
-                        i = nbytes;
-#ifdef DEBUGGING
-                        ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server,
-                                     "proxy: CONNECT: read %d from client", i);
-#endif
-                        while(i > 0)
-                        {
-                            nbytes = i;
-                            rv = apr_socket_send(sock, buffer + o, &nbytes);
-                            if (rv != APR_SUCCESS)
-                                break;
-                            o += nbytes;
-                            i -= nbytes;
-                        }
-                    }
-                    else
-                        break;
-                }
-                else if ((pollevent & APR_POLLERR) || (pollevent & APR_POLLHUP)) {
-                    rv = APR_EOF;
-                    break;
+                    rv = proxy_connect_transfer(r, c, backconn, bb, "client");
                 }
             }
-            else
-                break;
+            else {
+                rv = APR_EBADF;
+                ap_log_rerror(APLOG_MARK, APLOG_INFO, 0, r, APLOGNO(01028)
+                              "unknown socket in pollset");
+            }
+
         }
         if (rv != APR_SUCCESS) {
             break;
         }
     }
 
-    ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server,
-         "proxy: CONNECT: finished with poll() - cleaning up");
+    ap_log_rerror(APLOG_MARK, APLOG_TRACE2, 0, r,
+                  "finished with poll() - cleaning up");
 
     /*
      * Step Five: Clean Up
@@ -388,7 +495,12 @@ static int proxy_connect_handler(request_rec *r, proxy_worker *worker,
      * Close the socket and clean up
      */
 
-    apr_socket_close(sock);
+    if (client_error)
+        apr_socket_close(sock);
+    else
+        ap_lingering_close(backconn);
+
+    c->aborted = 1;
 
     return OK;
 }
@@ -399,12 +511,19 @@ static void ap_proxy_connect_register_hook(apr_pool_t *p)
     proxy_hook_canon_handler(proxy_connect_canon, NULL, NULL, APR_HOOK_MIDDLE);
 }
 
-module AP_MODULE_DECLARE_DATA proxy_connect_module = {
+static const command_rec cmds[] =
+{
+    AP_INIT_ITERATE("AllowCONNECT", set_allowed_ports, NULL, RSRC_CONF,
+     "A list of ports or port ranges which CONNECT may connect to"),
+    {NULL}
+};
+
+AP_DECLARE_MODULE(proxy_connect) = {
     STANDARD20_MODULE_STUFF,
     NULL,       /* create per-directory config structure */
     NULL,       /* merge per-directory config structures */
-    NULL,       /* create per-server config structure */
-    NULL,       /* merge per-server config structures */
-    NULL,       /* command apr_table_t */
+    create_config,       /* create per-server config structure */
+    merge_config,       /* merge per-server config structures */
+    cmds,       /* command apr_table_t */
     ap_proxy_connect_register_hook  /* register hooks */
 };

@@ -12,20 +12,21 @@
 <link href="./images/favicon.ico" rel="shortcut icon" /></head>
 <body id="manual-page"><div id="page-header">
 <p class="menu"><a href="./mod/">モジュール</a> | <a href="./mod/directives.html">ディレクティブ</a> | <a href="./faq/">FAQ</a> | <a href="./glossary.html">用語</a> | <a href="./sitemap.html">サイトマップ</a></p>
-<p class="apache">Apache HTTP サーバ バージョン 2.2</p>
+<p class="apache">Apache HTTP サーバ バージョン 2.3</p>
 <img alt="" src="./images/feather.gif" /></div>
 <div class="up"><a href="./"><img title="&lt;-" alt="&lt;-" src="./images/left.gif" /></a></div>
 <div id="path">
-<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">HTTP サーバ</a> &gt; <a href="http://httpd.apache.org/docs/">ドキュメンテーション</a> &gt; <a href="./">バージョン 2.2</a></div><div id="page-content"><div id="preamble"><h1>セクションの設定</h1>
+<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">HTTP サーバ</a> &gt; <a href="http://httpd.apache.org/docs/">ドキュメンテーション</a> &gt; <a href="./">バージョン
+            2.3</a></div><div id="page-content"><div id="preamble"><h1>セクションの設定</h1>
 <div class="toplang">
-<p><span>Available Languages: </span><a href="./en/sections.html" hreflang="en" rel="alternate" title="English">&nbsp;en&nbsp;</a> |
+<p><span>言語: </span><a href="./en/sections.html" hreflang="en" rel="alternate" title="English">&nbsp;en&nbsp;</a> |
 <a href="./fr/sections.html" hreflang="fr" rel="alternate" title="Français">&nbsp;fr&nbsp;</a> |
 <a href="./ja/sections.html" title="Japanese">&nbsp;ja&nbsp;</a> |
 <a href="./ko/sections.html" hreflang="ko" rel="alternate" title="Korean">&nbsp;ko&nbsp;</a> |
 <a href="./tr/sections.html" hreflang="tr" rel="alternate" title="Türkçe">&nbsp;tr&nbsp;</a></p>
 </div>
-<div class="outofdate">This translation may be out of date. Check the
-            English version for recent changes.</div>
+<div class="outofdate">この日本語訳はすでに古くなっている可能性があります。
+          更新された内容を見るには英語版をご覧下さい。</div>
  <p><a href="configuring.html">設定ファイル</a>中のディレクティブは
 サーバ全体に適用されたり、特定のディレクトリやファイル、ホスト、URL にのみ
 適用されるように制限したりすることができます。この文書は設定用のセクションの
@@ -47,9 +48,11 @@
 
 <p>コンテナには二つの基本となる種類があります。ほとんどのコンテナは
 各リクエストに対して評価されます。その場合、コンテナ中のディレクティブは
-コンテナにマッチするリクエストにのみ適用されます。
-一方、<code class="directive"><a href="./mod/core.html#ifdefine">&lt;IfDefine&gt;</a></code> コンテナ. <code class="directive"><a href="./mod/core.html#ifmodule">&lt;IfModule&gt;</a></code> コンテナ,
-<code class="directive"><a href="./mod/mod_version.html#ifversion">&lt;IfVersion&gt;</a></code> は
+コンテナにマッチするリクエストにのみ適用されます。一方、
+<code class="directive"><a href="./mod/core.html#ifdefine">&lt;IfDefine&gt;</a></code>, 
+<code class="directive"><a href="./mod/core.html#ifmodule">&lt;IfModule&gt;</a></code>, 
+<code class="directive"><a href="./mod/mod_version.html#ifversion">&lt;IfVersion&gt;</a></code>
+コンテナは
 サーバの起動時と再起動時にのみ評価されます。起動時に条件が真であれば、
 コンテナ中のディレクティブはすべてのリクエストに適用されます。条件が
 偽であれば、コンテナ中のディレクティブは無視されます。</p>
@@ -87,12 +90,13 @@ MimeMagicFile conf/magic<br />
 </code></p></div>
 
 <p><code class="directive"><a href="./mod/mod_version.html#ifversion">&lt;IfVersion&gt;</a></code>
-ディレクティブは <code class="directive"><a href="./mod/core.html#ifdefine">&lt;IfDefine&gt;</a></code> 
-や <code class="directive"><a href="./mod/core.html#ifmodule">&lt;IfModule&gt;</a></code> 
-によく似ていますが、サーバが特定のバージョンであるときにのみ有効にしたい
-ディレクティブを囲むのに使います。
-テストスイートや大規模ネットワークなどの、さまざまなバージョンの httpd を
-異なる設定で扱う用途向けにデザインされています。</p>
+ディレクティブは
+<code class="directive"><a href="./mod/core.html#ifdefine">&lt;IfDefine&gt;</a></code> や
+<code class="directive"><a href="./mod/core.html#ifmodule">&lt;IfModule&gt;</a></code>と、
+とてもよく似ていますが、稼働中のサーバのバージョンが特定のバージョンの時にのみ
+適用されます。様々なバージョンの httpd を様々な設定で動作させることになる場合で、
+テストスイートや巨大なネットワークでの用途を想定して、
+このモジュールは設計されています。</p>
 
 <div class="example"><p><code>
   &lt;IfVersion &gt;= 2.1&gt;<br />
@@ -103,8 +107,8 @@ MimeMagicFile conf/magic<br />
   &lt;/IfVersion&gt;
 </code></p></div>
 
-<p><code class="directive"><a href="./mod/core.html#ifdefine">&lt;IfDefine&gt;</a></code> ディレクティブ,
-<code class="directive"><a href="./mod/core.html#ifmodule">&lt;IfModule&gt;</a></code> ディレクティブ,
+<p><code class="directive"><a href="./mod/core.html#ifdefine">&lt;IfDefine&gt;</a></code>, 
+<code class="directive"><a href="./mod/core.html#ifmodule">&lt;IfModule&gt;</a></code>,
 <code class="directive"><a href="./mod/mod_version.html#ifversion">&lt;IfVersion&gt;</a></code> ディレクティブは
 テストの前に "!" を付けることで否定の条件を適用することができます。
 また、これらのセクションはより複雑な制限を課すために入れ子にすることができます。
@@ -132,8 +136,7 @@ MimeMagicFile conf/magic<br />
 
 <p><code class="directive"><a href="./mod/core.html#directory">&lt;Directory&gt;</a></code> ディレクティブと
 <code class="directive"><a href="./mod/core.html#files">&lt;Files&gt;</a></code> ディレクティブ、それと
-それらの<a class="glossarylink" href="./glossary.html#regex" title="用語集を参照">正規表現</a>版はディレクティブを
-ファイルシステムの一部分に対して適用します。
+それらの正規表現版はディレクティブをファイルシステムの一部分に対して適用します。
 <code class="directive"><a href="./mod/core.html#directory">&lt;Directory&gt;</a></code> セクションの
 中のディレクティブは指定されたディレクトリとそのすべてのサブディレクトリに
 適用されます。<a href="howto/htaccess.html">.htaccess ファイル</a>を
@@ -183,7 +186,8 @@ Deny from all<br />
 <h3><a name="webspace" id="webspace">ウェブ空間コンテナ</a></h3>
 
 <p>一方、<code class="directive"><a href="./mod/core.html#location">&lt;Location&gt;</a></code>
-ディレクティブとその正規表現版はウェブ空間上の内容に対して設定を変更します。
+ディレクティブとその<a class="glossarylink" href="./glossary.html#regex" title="用語集を参照">正規表現</a>版は
+ウェブ空間上の内容に対して設定を変更します。
 たとえば、次の設定では /private で始まる URL パスへのアクセスを制限します。
 具体的には、
 <code>http://yoursite.example.com/private</code>,
@@ -232,7 +236,7 @@ shell スタイルのワイルドカードキャラクタが使用できます�
 <code class="directive"><a href="./mod/core.html#filesmatch">&lt;FilesMatch&gt;</a></code>, 
 <code class="directive"><a href="./mod/core.html#locationmatch">&lt;LocationMatch&gt;</a></code>
 があり、マッチを選択するのに perl 互換<a class="glossarylink" href="./glossary.html#regex" title="用語集を参照">正規表現</a>を使用できます。しかし、次の設定のマージに目を通して、
-正規表現のセクションを使用することで、ディレクティブの適用がどのように
+regex セクションを使用することで、ディレクティブの適用がどのように
 変化するか把握しておいてください。</p>
 
 <p>全ユーザディレクトリの設定を変更する、非 regex
@@ -270,7 +274,7 @@ Deny from all<br />
 
 <p>ファイルシステム上のオブジェクトへのアクセスを制限するために、
 <code class="directive"><a href="./mod/core.html#location">&lt;Location&gt;</a></code>
-を決して使用しないようにしましょう。
+を決して使用ないようにしましょう。
 同一のファイルシステム位置にマップしている、ウェブ空間位置 (URL)
 が多数あって、設定した制限を迂回されてしまうかもしれないからです。
 例えば次の設定を考えてみましょう。</p>
@@ -481,7 +485,7 @@ Deny from badguy.example.com<br />
 
 </div></div>
 <div class="bottomlang">
-<p><span>Available Languages: </span><a href="./en/sections.html" hreflang="en" rel="alternate" title="English">&nbsp;en&nbsp;</a> |
+<p><span>言語: </span><a href="./en/sections.html" hreflang="en" rel="alternate" title="English">&nbsp;en&nbsp;</a> |
 <a href="./fr/sections.html" hreflang="fr" rel="alternate" title="Français">&nbsp;fr&nbsp;</a> |
 <a href="./ja/sections.html" title="Japanese">&nbsp;ja&nbsp;</a> |
 <a href="./ko/sections.html" hreflang="ko" rel="alternate" title="Korean">&nbsp;ko&nbsp;</a> |

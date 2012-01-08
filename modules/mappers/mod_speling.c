@@ -107,7 +107,7 @@ static const command_rec speling_cmds[] =
                   (void*)APR_OFFSETOF(spconfig, enabled), OR_OPTIONS,
                  "whether or not to fix miscapitalized/misspelled requests"),
     AP_INIT_FLAG("CheckCaseOnly", ap_set_flag_slot,
-                  (void*)APR_OFFSETOF(spconfig, case_only), OR_OPTIONS, 
+                  (void*)APR_OFFSETOF(spconfig, case_only), OR_OPTIONS,
                  "whether or not to fix only miscapitalized requests"),
     { NULL }
 };
@@ -211,7 +211,7 @@ static int check_speling(request_rec *r)
     }
 
     /* We've already got a file of some kind or another */
-    if (r->finfo.filetype != 0) {
+    if (r->finfo.filetype != APR_NOFILE) {
         return DECLINED;
     }
 
@@ -519,7 +519,7 @@ static void register_hooks(apr_pool_t *p)
     ap_hook_fixups(check_speling,NULL,NULL,APR_HOOK_LAST);
 }
 
-module AP_MODULE_DECLARE_DATA speling_module =
+AP_DECLARE_MODULE(speling) =
 {
     STANDARD20_MODULE_STUFF,
     create_mconfig_for_directory,  /* create per-dir config */

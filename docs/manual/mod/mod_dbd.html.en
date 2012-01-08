@@ -13,11 +13,11 @@
 <body>
 <div id="page-header">
 <p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="../faq/">FAQ</a> | <a href="../glossary.html">Glossary</a> | <a href="../sitemap.html">Sitemap</a></p>
-<p class="apache">Apache HTTP Server Version 2.2</p>
+<p class="apache">Apache HTTP Server Version 2.3</p>
 <img alt="" src="../images/feather.gif" /></div>
 <div class="up"><a href="./"><img title="&lt;-" alt="&lt;-" src="../images/left.gif" /></a></div>
 <div id="path">
-<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">HTTP Server</a> &gt; <a href="http://httpd.apache.org/docs/">Documentation</a> &gt; <a href="../">Version 2.2</a> &gt; <a href="./">Modules</a></div>
+<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">HTTP Server</a> &gt; <a href="http://httpd.apache.org/docs/">Documentation</a> &gt; <a href="../">Version 2.3</a> &gt; <a href="./">Modules</a></div>
 <div id="page-content">
 <div id="preamble"><h1>Apache Module mod_dbd</h1>
 <div class="toplang">
@@ -240,20 +240,20 @@ APR_DECLARE_OPTIONAL_FN(void, ap_dbd_prepare, (server_rec*, const char*, const c
     password, database name, hostname and port number for connection.</p>
     <p>Connection string parameters for current drivers include:</p>
     <dl>
-    <dt>FreeTDS (for MSSQL and SyBase - see SECURITY note)</dt>
+    <dt>FreeTDS (for MSSQL and SyBase)</dt>
     <dd>username, password, appname, dbname, host, charset, lang, server</dd>
     <dt>MySQL</dt>
-    <dd>host, port, user, pass, dbname, sock, flags, fldsz, group, reconnect</dd> 
-    <dt>ODBC</dt>
-    <dd>datasource, user, password, connect, ctimeout, stimeout, access, txmode, bufsize</dd>
+    <dd>host, port, user, pass, dbname, sock, flags, fldsz, group, reconnect</dd>
     <dt>Oracle</dt>
-    <dd>user, pass, dbname, server</dd> 
+    <dd>user, pass, dbname, server</dd>
     <dt>PostgreSQL</dt>
     <dd>The connection string is passed straight through to <code>PQconnectdb</code></dd>
     <dt>SQLite2</dt>
     <dd>The connection string is split on a colon, and <code>part1:part2</code> is used as <code>sqlite_open(part1, atoi(part2), NULL)</code></dd>
     <dt>SQLite3</dt>
     <dd>The connection string is passed straight through to <code>sqlite3_open</code></dd>
+    <dt>ODBC</dt>
+    <dd>datasource, user, password, connect, ctimeout, stimeout, access, txmode, bufsize</dd>
     </dl>
 
 </div>

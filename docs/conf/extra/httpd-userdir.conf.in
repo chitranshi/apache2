@@ -1,6 +1,6 @@
 # Settings for user home directories
 #
-# Required module: mod_userdir
+# Required module: mod_authz_core, mod_authz_host, mod_userdir
 
 #
 # UserDir: The name of the directory that is appended onto a user's home
@@ -16,13 +16,6 @@ UserDir public_html
 <Directory "/home/*/public_html">
     AllowOverride FileInfo AuthConfig Limit Indexes
     Options MultiViews Indexes SymLinksIfOwnerMatch IncludesNoExec
-    <Limit GET POST OPTIONS>
-        Order allow,deny
-        Allow from all
-    </Limit>
-    <LimitExcept GET POST OPTIONS>
-        Order deny,allow
-        Deny from all
-    </LimitExcept>
+    Require method GET POST OPTIONS
 </Directory>
 

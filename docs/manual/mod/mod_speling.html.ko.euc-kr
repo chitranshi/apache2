@@ -13,11 +13,11 @@
 <body>
 <div id="page-header">
 <p class="menu"><a href="../mod/">모듈</a> | <a href="../mod/directives.html">지시어들</a> | <a href="../faq/">FAQ</a> | <a href="../glossary.html">용어</a> | <a href="../sitemap.html">사이트맵</a></p>
-<p class="apache">Apache HTTP Server Version 2.2</p>
+<p class="apache">Apache HTTP Server Version 2.3</p>
 <img alt="" src="../images/feather.gif" /></div>
 <div class="up"><a href="./"><img title="&lt;-" alt="&lt;-" src="../images/left.gif" /></a></div>
 <div id="path">
-<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">HTTP Server</a> &gt; <a href="http://httpd.apache.org/docs/">Documentation</a> &gt; <a href="../">Version 2.2</a> &gt; <a href="./">모듈</a></div>
+<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">HTTP Server</a> &gt; <a href="http://httpd.apache.org/docs/">Documentation</a> &gt; <a href="../">Version 2.3</a> &gt; <a href="./">모듈</a></div>
 <div id="page-content">
 <div id="preamble"><h1>아파치 모듈 mod_speling</h1>
 <div class="toplang">
@@ -68,15 +68,12 @@
 <div class="directive-section"><h2><a name="CheckCaseOnly" id="CheckCaseOnly">CheckCaseOnly</a> <a name="checkcaseonly" id="checkcaseonly">지시어</a></h2>
 <table class="directive">
 <tr><th><a href="directive-dict.html#Description">설명:</a></th><td>Limits the action of the speling module to case corrections</td></tr>
-<tr><th><a href="directive-dict.html#Syntax">문법:</a></th><td><code>CheckCaseOnly on|off</code></td></tr>
-<tr><th><a href="directive-dict.html#Default">기본값:</a></th><td><code>CheckCaseOnly Off</code></td></tr>
+<tr><th><a href="directive-dict.html#Syntax">문법:</a></th><td><code /></td></tr>
 <tr><th><a href="directive-dict.html#Context">사용장소:</a></th><td>주서버설정, 가상호스트, directory, .htaccess</td></tr>
-<tr><th><a href="directive-dict.html#Override">Override 옵션:</a></th><td>Options</td></tr>
 <tr><th><a href="directive-dict.html#Status">상태:</a></th><td>Extension</td></tr>
 <tr><th><a href="directive-dict.html#Module">모듈:</a></th><td>mod_speling</td></tr>
-</table><p>The documentation for this directive has
-            not been translated yet. Please have a look at the English
-            version.</p></div>
+</table><p>Documentation not yet translated. Please see English version of document.</p>
+</div>
 <div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
 <div class="directive-section"><h2><a name="CheckSpelling" id="CheckSpelling">CheckSpelling</a> <a name="checkspelling" id="checkspelling">지시어</a></h2>
 <table class="directive">

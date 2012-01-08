@@ -32,7 +32,6 @@
 #define APR_WANT_MEMFUNC
 #include "apr_want.h"
 
-#define CORE_PRIVATE
 #include "util_filter.h"
 #include "ap_config.h"
 #include "httpd.h"
@@ -59,21 +58,15 @@
 #include <unistd.h>
 #endif
 
+APLOG_USE_MODULE(http);
+
 /* New Apache routine to map status codes into array indicies
  *  e.g.  100 -> 0,  101 -> 1,  200 -> 2 ...
  * The number of status lines must equal the value of RESPONSE_CODES (httpd.h)
  * and must be listed in order.
  */
 
-#ifdef UTS21
-/* The second const triggers an assembler bug on UTS 2.1.
- * Another workaround is to move some code out of this file into another,
- *   but this is easier.  Dave Dykstra, 3/31/99
- */
-static const char * status_lines[RESPONSE_CODES] =
-#else
 static const char * const status_lines[RESPONSE_CODES] =
-#endif
 {
     "100 Continue",
     "101 Switching Protocols",
@@ -158,6 +151,21 @@ AP_IMPLEMENT_HOOK_VOID(insert_error_filter, (request_rec *r), (r))
  */
 #define METHOD_NUMBER_LAST  62
 
+static int is_mpm_running(void)
+{
+    int mpm_state = 0;
+
+    if (ap_mpm_query(AP_MPMQ_MPM_STATE, &mpm_state)) {
+      return 0;
+    }
+
+    if (mpm_state == AP_MPMQ_STOPPING) {
+      return 0;
+    }
+
+    return 1;
+}
+
 
 AP_DECLARE(int) ap_set_keepalive(request_rec *r)
 {
@@ -220,7 +228,7 @@ AP_DECLARE(int) ap_set_keepalive(request_rec *r)
             || apr_table_get(r->headers_in, "Via"))
         && ((ka_sent = ap_find_token(r->pool, conn, "keep-alive"))
             || (r->proto_num >= HTTP_VERSION(1,1)))
-        && !ap_graceful_stop_signalled()) {
+        && is_mpm_running()) {
 
         r->connection->keepalive = AP_CONN_KEEPALIVE;
         r->connection->keepalives++;
@@ -489,7 +497,7 @@ AP_DECLARE(int) ap_method_register(apr_pool_t *p, const char *methname)
         /* The method registry  has run out of dynamically
          * assignable method numbers. Log this and return M_INVALID.
          */
-        ap_log_perror(APLOG_MARK, APLOG_ERR, 0, p,
+        ap_log_perror(APLOG_MARK, APLOG_ERR, 0, p, APLOGNO(01610)
                       "Maximum new request methods %d reached while "
                       "registering method %s.",
                       METHOD_NUMBER_LAST, methname);
@@ -773,7 +781,7 @@ static char *make_allow(request_rec *r)
     apr_hash_index_t *hi = apr_hash_first(r->pool, methods_registry);
     /* For TRACE below */
     core_server_config *conf =
-        ap_get_module_config(r->server->module_config, &core_module);
+        ap_get_core_module_config(r->server->module_config);
 
     mask = r->allowed_methods->method_mask;
 
@@ -838,19 +846,12 @@ AP_DECLARE(void) ap_set_content_type(request_rec *r, const char *ct)
     }
     else if (!r->content_type || strcmp(r->content_type, ct)) {
         r->content_type = ct;
-
-        /* Insert filters requested by the AddOutputFiltersByType
-         * configuration directive. Content-type filters must be
-         * inserted after the content handlers have run because
-         * only then, do we reliably know the content-type.
-         */
-        ap_add_output_filters_by_type(r);
     }
 }
 
 AP_DECLARE(void) ap_set_accept_ranges(request_rec *r)
 {
-    core_dir_config *d = ap_get_module_config(r->per_dir_config, &core_module);
+    core_dir_config *d = ap_get_core_module_config(r->per_dir_config);
     apr_table_setn(r->headers_out, "Accept-Ranges",
                   (d->max_ranges == AP_MAXRANGES_NORANGES) ? "none"
                                                            : "bytes");
@@ -1084,14 +1085,13 @@ static const char *get_canned_error_string(int status,
                                "misconfiguration and was unable to complete\n"
                                "your request.</p>\n"
                                "<p>Please contact the server "
-                               "administrator,\n ",
+                               "administrator at \n ",
                                ap_escape_html(r->pool,
                                               r->server->server_admin),
-                               " and inform them of the time the "
+                               " to inform them of the time this "
                                "error occurred,\n"
-                               "and anything you might have done that "
-                               "may have\n"
-                               "caused the error.</p>\n"
+                               " and the actions you performed just before "
+                               "this error.</p>\n"
                                "<p>More information about this error "
                                "may be available\n"
                                "in the server error log.</p>\n",
@@ -1193,7 +1193,7 @@ AP_DECLARE(void) ap_send_error_response(request_rec *r, int recursive_error)
         if (apr_table_get(r->subprocess_env,
                           "suppress-error-charset") != NULL) {
             core_request_config *request_conf =
-                        ap_get_module_config(r->request_config, &core_module);
+                        ap_get_core_module_config(r->request_config);
             request_conf->suppress_charset = 1; /* avoid adding default
                                                  * charset later
                                                  */
@@ -1242,16 +1242,28 @@ AP_DECLARE(void) ap_send_error_response(request_rec *r, int recursive_error)
         const char *h1;
 
         /* Accept a status_line set by a module, but only if it begins
-         * with the 3 digit status code
+         * with the correct 3 digit status code
          */
-        if (r->status_line != NULL
-            && strlen(r->status_line) > 4       /* long enough */
-            && apr_isdigit(r->status_line[0])
-            && apr_isdigit(r->status_line[1])
-            && apr_isdigit(r->status_line[2])
-            && apr_isspace(r->status_line[3])
-            && apr_isalnum(r->status_line[4])) {
-            title = r->status_line;
+        if (r->status_line) {
+            char *end;
+            int len = strlen(r->status_line);
+            if (len >= 3
+                && apr_strtoi64(r->status_line, &end, 10) == r->status
+                && (end - 3) == r->status_line
+                && (len < 4 || apr_isspace(r->status_line[3]))
+                && (len < 5 || apr_isalnum(r->status_line[4]))) {
+                /* Since we passed the above check, we know that length three
+                 * is equivalent to only a 3 digit numeric http status.
+                 * RFC2616 mandates a trailing space, let's add it.
+                 * If we have an empty reason phrase, we also add "Unknown Reason".
+                 */
+                if (len == 3) {
+                    r->status_line = apr_pstrcat(r->pool, r->status_line, " Unknown Reason", NULL);
+                } else if (len == 4) {
+                    r->status_line = apr_pstrcat(r->pool, r->status_line, "Unknown Reason", NULL);
+                }
+                title = r->status_line;
+            }
         }
 
         /* folks decided they didn't want the error code in the H1 text */

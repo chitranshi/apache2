@@ -13,15 +13,16 @@
 <body>
 <div id="page-header">
 <p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="../faq/">FAQ</a> | <a href="../glossary.html">Glossary</a> | <a href="../sitemap.html">Sitemap</a></p>
-<p class="apache">Apache HTTP Server Version 2.2</p>
+<p class="apache">Apache HTTP Server Version 2.3</p>
 <img alt="" src="../images/feather.gif" /></div>
 <div class="up"><a href="./"><img title="&lt;-" alt="&lt;-" src="../images/left.gif" /></a></div>
 <div id="path">
-<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">HTTP Server</a> &gt; <a href="http://httpd.apache.org/docs/">Documentation</a> &gt; <a href="../">Version 2.2</a> &gt; <a href="./">Modules</a></div>
+<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">HTTP Server</a> &gt; <a href="http://httpd.apache.org/docs/">Documentation</a> &gt; <a href="../">Version 2.3</a> &gt; <a href="./">Modules</a></div>
 <div id="page-content">
 <div id="preamble"><h1>Apache Module mod_asis</h1>
 <div class="toplang">
 <p><span>Available Languages: </span><a href="../en/mod/mod_asis.html" title="English">&nbsp;en&nbsp;</a> |
+<a href="../fr/mod/mod_asis.html" hreflang="fr" rel="alternate" title="Français">&nbsp;fr&nbsp;</a> |
 <a href="../ja/mod/mod_asis.html" hreflang="ja" rel="alternate" title="Japanese">&nbsp;ja&nbsp;</a> |
 <a href="../ko/mod/mod_asis.html" hreflang="ko" rel="alternate" title="Korean">&nbsp;ko&nbsp;</a></p>
 </div>
@@ -33,7 +34,7 @@ HTTP headers</td></tr>
 <h3>Summary</h3>
 
     <p>This module provides the handler <code>send-as-is</code>
-    which causes Apache to send the document without adding most of
+    which causes Apache HTTP Server to send the document without adding most of
     the usual HTTP headers.</p>
 
     <p>This can be used to send any kind of data from the server,
@@ -53,7 +54,7 @@ HTTP headers</td></tr>
 <ul class="seealso">
 <li><code class="module"><a href="../mod/mod_headers.html">mod_headers</a></code></li>
 <li><code class="module"><a href="../mod/mod_cern_meta.html">mod_cern_meta</a></code></li>
-<li><a href="../handler.html">Apache's Handler Use</a></li>
+<li><a href="../handler.html">Apache httpd's Handler Use</a></li>
 </ul></div>
 <div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
 <div class="section">
@@ -65,11 +66,13 @@ HTTP headers</td></tr>
     <div class="example"><p><code>AddHandler send-as-is asis</code></p></div>
 
     <p>The contents of any file with a <code>.asis</code> extension
-    will then be sent by Apache to the client with almost no
+    will then be sent by Apache httpd to the client with almost no
     changes. In particular, HTTP headers are derived from the file
     itself according to <code class="module"><a href="../mod/mod_cgi.html">mod_cgi</a></code> rules, so an asis
     file must include valid headers, and may also use the CGI
-    Status: header to determine the HTTP response code.</p>
+    <code>Status:</code> header to determine the HTTP response
+    code. The <code>Content-Length:</code> header will automatically
+    be inserted or, if included, corrected by httpd.</p>
 
     <p>Here's an example of a file whose contents are sent <em>as
     is</em> so as to tell the client that a file has
@@ -78,7 +81,7 @@ HTTP headers</td></tr>
 
     <div class="example"><p><code>
       Status: 301 Now where did I leave that URL<br />
-      Location: http://xyz.abc.com/foo/bar.html<br />
+      Location: http://xyz.example.com/foo/bar.html<br />
       Content-type: text/html<br />
       <br />
       &lt;html&gt;<br />
@@ -87,7 +90,7 @@ HTTP headers</td></tr>
       &lt;/head&gt;<br />
       &lt;body&gt;<br />
       &lt;h1&gt;Fred's exceptionally wonderful page has moved to<br />
-      &lt;a href="http://xyz.abc.com/foo/bar.html"&gt;Joe's&lt;/a&gt;
+      &lt;a href="http://xyz.example.com/foo/bar.html"&gt;Joe's&lt;/a&gt;
       site.<br />
       &lt;/h1&gt;<br />
       &lt;/body&gt;<br />
@@ -104,6 +107,7 @@ HTTP headers</td></tr>
 </div>
 <div class="bottomlang">
 <p><span>Available Languages: </span><a href="../en/mod/mod_asis.html" title="English">&nbsp;en&nbsp;</a> |
+<a href="../fr/mod/mod_asis.html" hreflang="fr" rel="alternate" title="Français">&nbsp;fr&nbsp;</a> |
 <a href="../ja/mod/mod_asis.html" hreflang="ja" rel="alternate" title="Japanese">&nbsp;ja&nbsp;</a> |
 <a href="../ko/mod/mod_asis.html" hreflang="ko" rel="alternate" title="Korean">&nbsp;ko&nbsp;</a></p>
 </div><div id="footer">

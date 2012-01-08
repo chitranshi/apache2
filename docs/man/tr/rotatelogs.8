@@ -19,7 +19,7 @@
 .el .ne 3
 .IP "\\$1" \\$2
 ..
-.TH "ROTATELOGS" 8 "2011-02-04" "Apache HTTP Sunucusu" "rotatelogs"
+.TH "ROTATELOGS" 8 "2009-02-16" "Apache HTTP Sunucusu" "rotatelogs"
 .nh
 .SH İSİM
 rotatelogs \- Apache günlüklerini döndürmek için borulu günlük kayıt programı
@@ -27,7 +27,7 @@ rotatelogs \- Apache günlüklerini döndürmek için borulu günlük kayıt pro
 .SH "KULLANIM"
  
 .PP
-\fBrotatelogs\fR [ -\fBl\fR ] [ -\fBf\fR ] \fIdosyaismi\fR \fIsüre\fR|\fIboyut\fRM [ \fIsaat_farkı\fR ]
+\fBrotatelogs\fR [ -\fBl\fR ] [ -\fBf\fR ] [ -\fBv\fR ] \fIdosyaismi\fR \fIsüre\fR|\fIboyut\fR(B|K|M|G) [ \fIsaat_farkı\fR ]
  
 
 .SH "ÖZET"
@@ -44,16 +44,19 @@ rotatelogs \- Apache günlüklerini döndürmek için borulu günlük kayıt pro
 GMT yerine yerel zamanın kullanılmasını sağlar\&. Zaman dilimi değişik olan ortamlarda (BST, DST gibi) bu seçeneğin kullanımı beklenmedik sonuçlar verebilir!  
 .TP
 \fB-f\fR
-İlk günlük giridisinin okunmasını beklemeden \fBrotatelogs\fR başlar başlamaz günlük dosyasının açılmasını sağlar\&. Çok meşgul sitelerde, sunucu başlatılıp ilk istek sunuluncaya kadar geçen zamanda günlük dosyasının yokluğu özdevinimli işlemler yapan bazı günlükleme araçlarında sorunlara yol açabilir\&. Bu seçenek bu gibi durumlarda yararlıdır\&. \fI2\&.2\&.9 ve sonrası için geçerlidir\&.\fR  
+İlk günlük giridisinin okunmasını beklemeden \fBrotatelogs\fR başlar başlamaz günlük dosyasının açılmasını sağlar\&. Çok meşgul sitelerde, sunucu başlatılıp ilk istek sunuluncaya kadar geçen zamanda günlük dosyasının yokluğu özdevinimli işlemler yapan bazı günlükleme araçlarında sorunlara yol açabilir\&. Bu seçenek bu gibi durumlarda yararlıdır\&.  
+.TP
+\fB-v\fR
+Standart hataya verilen çıktı daha ayrıntılı olur\&. Çıktı, yapılandırma çözümlemesinin sonuçlarını ve tüm dosya açma/kapama işlemlerini içerir\&.  
 .TP
 \fIdosyaismi\fR
-.PP Günlük dosyasının ismi yoluyla birlikte belirtilir\&. \fIdosyaismi\fR '%' karakterleri içeriyorsa bunlar strftime(3) biçem belirteçleri olarak ele alınır\&. Aksi takdirde, özdevinimli olarak \fI\&.nnnnnnnnnn\fR uzantısı üretilir\&. Uzantı saniye cinsindendir ve her iki durumda da bu değer, mevcut döngü diliminin başlangıcına göre hesaplanır\&. Örneğin, döndürmenin 86400 saniyede bir yapılacağı belirtilmişse, strftime(3) biçeminde oluşturulan saat, dakika ve saniye alanları, 24 saatlik sürenin başlangıcını (geceyarısı) göstermek üzere sıfırlarla doldurulur\&. .PP strftime(3) dosya ismi biçimlemesini kullanırken, günlük dosyası biçiminin günlüğün her döndürülüşünde farklı bir dosya ismi üretecek ayrıntılara sahip olmasın sağlamalısınız\&. Aksi takdirde, döndürme işlemi sonucunda günlük yeni bir dosya yerine aynı dosyanın üzerine yazılacaktır\&. Örneğin, \fIdosyaismi\fR olarak /var/logs/errorlog\&.%Y-%m-%d belirtilmişse, günlük dosyası da 5 megabayta ulaşıyorsa, günlük döndürme ile aynı dosya ismi üretilir ve günlük aynı dosyaya yazılmaya devam ederek bu boyut ikiye katlanır\&.  
+Günlük dosyasının ismi yoluyla birlikte belirtilir\&. \fIdosyaismi\fR '%' karakterleri içeriyorsa bunlar strftime(3) biçem belirteçleri olarak ele alınır\&. Aksi takdirde, özdevinimli olarak \fI\&.nnnnnnnnnn\fR uzantısı üretilir\&. Uzantı saniye cinsindendir ve her iki durumda da bu değer, mevcut döngü diliminin başlangıcına göre hesaplanır\&. Örneğin, döndürmenin 86400 saniyede bir yapılacağı belirtilmişse, strftime(3) biçeminde oluşturulan saat, dakika ve saniye alanları, 24 saatlik sürenin başlangıcını (geceyarısı) göstermek üzere sıfırlarla doldurulur\&.  
 .TP
 \fIsüre\fR
 Günlük dosyasının yenisinin kaç saniyede bir açılacağı belirtilir\&. Örneğin, bu süre 3600 saniye ise günlük dosyası her saat başında yenilenir; 86400 saniye ise her geceyarısı yenilenir\&. (Bu süre zarfında günlüğe kaydedilecek bir olay gerçekleşmemişse dosya oluşturulmaz\&.)  
 .TP
-\fIboyut\fRM
-Boyuta göre döndürme için azami dosya boyutu\&. Belirtilenin bir süre değil de bir boyut değeri olarak ele alınması için değerin sonuna M (megabayt) harfi konmalıdır\&. .PP Süre ve boyut birlikte belirtilmişse boyut süreden sonra belirtilmelidir\&. Dosya yenilemesi, bunlardan hangisi daha önce aşılırsa o zaman gerçekleşir\&.  
+\fIboyut\fR(B|K|M|G)
+Boyuta göre döndürme için azami dosya boyutu\&. Belirtilenin bir süre değil de bir boyut değeri olarak ele alınması için değerin sonuna şu karakterlerden biri eklenmelidir: B (Bayt), K (kilobayt), M (megabayt), G (gigabayt)\&. .PP Süre ve boyut birlikte belirtilmişse boyut süreden sonra belirtilmelidir\&. Dosya yenilemesi, bunlardan hangisi daha önce aşılırsa o zaman gerçekleşir\&.  
 .TP
 \fIsaat_farkı\fR
 Koordinatlı evrensel zamana göre "dakika" farkı\&. Belirtilmezse, sıfır öntanımlıdır\&. Örneğin, -5 saatlik bir zaman diliminde bulunuyorsanız bu değer -300 olmalıdır\&. Çoğu durumda, bunun yerine \fB-l\fR seçeneğini kullanmak gerekir\&.  

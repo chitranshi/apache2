@@ -12,11 +12,11 @@
 <link href="../images/favicon.ico" rel="shortcut icon" /></head>
 <body id="manual-page"><div id="page-header">
 <p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="../faq/">FAQ</a> | <a href="../glossary.html">Glossaire</a> | <a href="../sitemap.html">Plan du site</a></p>
-<p class="apache">Serveur Apache HTTP Version 2.2</p>
+<p class="apache">Serveur Apache HTTP Version 2.3</p>
 <img alt="" src="../images/feather.gif" /></div>
 <div class="up"><a href="./"><img title="&lt;-" alt="&lt;-" src="../images/left.gif" /></a></div>
 <div id="path">
-<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">Serveur HTTP</a> &gt; <a href="http://httpd.apache.org/docs/">Documentation</a> &gt; <a href="../">Version 2.2</a> &gt; <a href="./">Recettes / Tutoriels</a></div><div id="page-content"><div id="preamble"><h1>Tutoriel Apache : fichiers .htaccess</h1>
+<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">Serveur HTTP</a> &gt; <a href="http://httpd.apache.org/docs/">Documentation</a> &gt; <a href="../">Version 2.3</a> &gt; <a href="./">Recettes / Tutoriels</a></div><div id="page-content"><div id="preamble"><h1>Tutoriel Apache : fichiers .htaccess</h1>
 <div class="toplang">
 <p><span>Langues Disponibles: </span><a href="../en/howto/htaccess.html" hreflang="en" rel="alternate" title="English">&nbsp;en&nbsp;</a> |
 <a href="../fr/howto/htaccess.html" title="Français">&nbsp;fr&nbsp;</a> |
@@ -43,8 +43,7 @@ Includes - SSI)</a></li>
 <div class="section">
 <h2><a name="related" id="related">Fichiers .htaccess</a></h2>
     
-    <table class="related"><tr><th>Modules Apparentés</th><th>Directives Apparentées</th></tr><tr><td><ul><li><code class="module"><a href="../mod/core.html">core</a></code></li><li><code class="module"><a href="../mod/mod_authn_file.html">mod_authn_file</a></code></li><li><code class="module"><a href="../mod/mod_authz_groupfile.html">mod_authz_groupfile</a></code></li><li><code class="module"><a href="../mod/mod_cgi.html">mod_cgi</a></code></li><li><code class="module"><a href="../mod/mod_include.html">mod_include</a></code></li><li><code class="module"><a href="../mod/mod_mime.html">mod_mime</a></code></li></ul></td><td><ul><li><code class="directive"><a href="../mod/core.html#accessfilename">AccessFileName</a></code></li><li><code class="directive"><a href="../mod/core.html#allowoverride">AllowOverride</a></code></li><li><code class="directive"><a href="../mod/core.html#options">Options</a></code></li><li><code class="directive"><a href="../mod/mod_mime.html#addhandler">AddHandler</a></code></li><li><code class="directive"><a href="../mod/core.html#sethandler">SetHandler</a></code></li><li><code class="directive"><a href="../mod/core.html#authtype">AuthType</a></code></li><li><code class="directive"><a href="../mod/core.html#authname">AuthName</a></code></li><li><code class="directive"><a href="../mod/mod_authn_file.html#authuserfile">AuthUserFile</a></code></li><li><code class="directive"><a href="../mod/mod_authz_groupfile.html#authgroupfile">AuthGroupFile</a></code></li><li><code class="directive"><a href="../mod/core.html#require">Require</a></code></li></ul></td></tr></table>
-
+    <table class="related"><tr><th>Modules Apparentés</th><th>Directives Apparentées</th></tr><tr><td><ul><li><code class="module"><a href="../mod/core.html">core</a></code></li><li><code class="module"><a href="../mod/mod_authn_file.html">mod_authn_file</a></code></li><li><code class="module"><a href="../mod/mod_authz_groupfile.html">mod_authz_groupfile</a></code></li><li><code class="module"><a href="../mod/mod_cgi.html">mod_cgi</a></code></li><li><code class="module"><a href="../mod/mod_include.html">mod_include</a></code></li><li><code class="module"><a href="../mod/mod_mime.html">mod_mime</a></code></li></ul></td><td><ul><li><code class="directive"><a href="../mod/core.html#accessfilename">AccessFileName</a></code></li><li><code class="directive"><a href="../mod/core.html#allowoverride">AllowOverride</a></code></li><li><code class="directive"><a href="../mod/core.html#options">Options</a></code></li><li><code class="directive"><a href="../mod/mod_mime.html#addhandler">AddHandler</a></code></li><li><code class="directive"><a href="../mod/core.html#sethandler">SetHandler</a></code></li><li><code class="directive"><a href="../mod/mod_authn_core.html#authtype">AuthType</a></code></li><li><code class="directive"><a href="../mod/mod_authn_core.html#authname">AuthName</a></code></li><li><code class="directive"><a href="../mod/mod_authn_file.html#authuserfile">AuthUserFile</a></code></li><li><code class="directive"><a href="../mod/mod_authz_groupfile.html#authgroupfile">AuthGroupFile</a></code></li><li><code class="directive"><a href="../mod/mod_authz_core.html#require">Require</a></code></li></ul></td></tr></table>
     <div class="note">Les fichiers <code>.htaccess</code> ne doivent être utilisés
     que si vous n'avez pas accès au fichier de configuration du serveur
     principal. L'utilisation des fichiers <code>.htaccess</code>
@@ -58,8 +57,8 @@ Includes - SSI)</a></li>
 
 
     <p>Les fichiers <code>.htaccess</code> (ou "fichiers de
-    configuration distribués) fournissent une méthode pour modifier la
-    configuration du serveur au niveau de chaque répertoire. Un fichier,
+    configuration distribués") fournissent une méthode pour modifier la
+    configuration du serveur au niveau d'un répertoire. Un fichier,
     contenant une ou plusieurs directives de configuration, est placé
     dans un répertoire de documents particulier, et ses directives
     s'appliquent à ce répertoire et à tous ses sous-répertoires.</p>
@@ -83,7 +82,7 @@ Includes - SSI)</a></li>
     fichier est déterminé par la directive <code class="directive"><a href="../mod/core.html#allowoverride">AllowOverride</a></code>. Cette directive spécifie,
     sous forme de catégories, quelles directives seront traitées si
     elles se trouvent dans un fichier <code>.htaccess</code>. Si une
-    directive est permise dans un fichier <code>.htaccess</code>,
+    directive est permise dans un fichier <code>.htaccess</code> file,
     la documentation de cette directive contiendra une section Override,
     spécifiant quelle valeur doit prendre <code class="directive"><a href="../mod/core.html#allowoverride">AllowOverride</a></code> pour que cette directive
     soit traitée.</p>
@@ -119,14 +118,20 @@ Includes - SSI)</a></li>
     les fichiers .htaccess ?</a></h2>
 
     <p>En principe, vous ne devriez utiliser les fichiers
-    <code>.htaccess</code> que si vous n'avez pas accès au fichier de
-    configuration du serveur principal. Par exemple, la fausse idée
+    <code>.htaccess</code> que lorsque vous n'avez pas accès au fichier de
+    configuration du serveur principal. Par exemple, la fausse
+    idée
     selon laquelle l'authentification de l'utilisateur devrait toujours
     être faite dans les fichiers <code>.htaccess</code> est très
-    répandue. Ceci est tout simplement faux. Vous pouvez configurer
+    répandue. Il est aussi souvent avancé, ces dernières
+    années, que les directives de <code class="module"><a href="../mod/mod_rewrite.html">mod_rewrite</a></code> doivent
+    être définies dans les fichiers <code>.htaccess</code>. Ceci est
+    tout simplement faux. Vous pouvez configurer
     l'authentification des utilisateurs au niveau de la configuration du
     serveur principal, et c'est en fait cette méthode qui doit être
-    privilégiée.</p>
+    privilégiée. De même, les directives de
+    <code>mod_rewrite</code> fonctionneront mieux, à de nombreux égards,
+    dans le contexte du serveur principal.</p>
 
     <p>Les fichiers <code>.htaccess</code> ne devraient être utilisés
     que dans le cas où les fournisseurs de contenu ont besoin de
@@ -195,8 +200,8 @@ Includes - SSI)</a></li>
     demandes de support technique. Assurez-vous d'avoir informé
     clairement vos utilisateurs du niveau de privilèges que vous leur
     avez attribué. Indiquer exactement comment vous avez défini la
-    directive <code class="directive"><a href="../mod/core.html#allowoverride">AllowOverride</a></code>, et
-    diriger les utilisateurs vers la documentation correspondante, vous
+    directive <code class="directive"><a href="../mod/core.html#allowoverride">AllowOverride</a></code> et
+    diriger les utilisateurs vers la documentation correspondante vous
     évitera bien des confusions ultérieures.</p>
 
     <p>Notez que mettre un fichier <code>.htaccess</code> contenant une
@@ -264,7 +269,7 @@ Includes - SSI)</a></li>
 
     <p>Note : "<code>AllowOverride Options</code>" doit être présent
     pour permettre l'utilisation de la directive "<code class="directive"><a href="../mod/core.html#options">Options</a></code>"  dans les fichiers
-    <code>.htaccess</code> files.</p>
+    <code>.htaccess</code>.</p>
 
     <p>Dans le répertoire <code>/www/htdocs/exemple1/exemple2</code> se
     trouve un fichier <code>.htaccess</code> contenant ce qui suit
@@ -297,7 +302,7 @@ Includes - SSI)</a></li>
     <code>.htaccess</code>, vous pouvez utiliser :</p>
 
     <div class="example"><p><code>
-&lt;Directory /&gt;<br />
+&lt;Directory /www/htdocs&gt;<br />
 <span class="indent">
 Allowoverride All<br />
 </span>
@@ -309,6 +314,10 @@ Options +IncludesNoExec -ExecCGI<br />
 </span>
 &lt;/Location&gt;
     </code></p></div>
+
+    <div class="note">Dans cet exemple, on considère que le chemin défini par la
+    directive <code class="directive"><a href="../mod/core.html#documentroot">DocumentRoot</a></code> est
+    <code>/www/htdocs</code>.</div>
 
 
 </div><div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
@@ -416,7 +425,7 @@ Includes - SSI)</a></h2>
     <code>AllowOverride None</code> n'affecte pas le répertoire où se
     trouve votre fichier. Un bon test consiste à mettre des directives
     dont la syntaxe est erronée dans votre ficher <code>.htaccess</code>
-    et de redémarrer le serveur. Si aucune erreur n'est générée par le
+    et de recharger la page. Si aucune erreur n'est générée par le
     serveur, il est pratiquement certain qu'une directive
     <code>AllowOverride None</code> affecte votre répertoire.</p>
 
@@ -424,9 +433,28 @@ Includes - SSI)</a></h2>
     tentez d'accéder à des documents, consultez votre journal des
     erreurs d'Apache. Il vous indiquera probablement que la directive
     utilisée dans votre fichier <code>.htaccess</code> n'est pas
-    permise. Il peut aussi vous indiquer une erreur de syntaxe qu'il
-    vous appartiendra de corriger.</p>
+    permise.</p>
 
+<div class="example"><p><code>
+	[Fri Sep 17 18:43:16 2010] [alert] [client 192.168.200.51] /var/www/html/.htaccess: DirectoryIndex not allowed here
+</code></p></div>
+	<p>Cela signifie soit que vous utilisez une directive qui n'est
+	jamais permise dans les fichiers <code>.htaccess</code>, soit
+	que vous n'avez tout simplement pas défini la directive
+	<code class="directive"><a href="../mod/core.html#allowoverride">AllowOverride</a></code> à un niveau
+	suffisant pour la directive que vous utilisez. Consultez la
+	documentation de cette directive pour déterminer quel cas
+	s'applique.</p>
+
+	<p>Le journal des erreurs peut aussi vous signaler une erreur de
+	syntaxe dans l'usage de la directive elle-même.</p>
+
+    <div class="example"><p><code>
+    [Sat Aug 09 16:22:34 2008] [alert] [client 192.168.200.51] /var/www/html/.htaccess: RewriteCond: bad flag delimiters
+    </code></p></div>
+
+	<p>Dans ce cas, le message d'erreur sera spécifique à l'erreur
+	de syntaxe que vous avez commise.</p>
 </div></div>
 <div class="bottomlang">
 <p><span>Langues Disponibles: </span><a href="../en/howto/htaccess.html" hreflang="en" rel="alternate" title="English">&nbsp;en&nbsp;</a> |

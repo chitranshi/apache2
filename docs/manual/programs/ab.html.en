@@ -12,11 +12,11 @@
 <link href="../images/favicon.ico" rel="shortcut icon" /></head>
 <body id="manual-page"><div id="page-header">
 <p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="../faq/">FAQ</a> | <a href="../glossary.html">Glossary</a> | <a href="../sitemap.html">Sitemap</a></p>
-<p class="apache">Apache HTTP Server Version 2.2</p>
+<p class="apache">Apache HTTP Server Version 2.3</p>
 <img alt="" src="../images/feather.gif" /></div>
 <div class="up"><a href="./"><img title="&lt;-" alt="&lt;-" src="../images/left.gif" /></a></div>
 <div id="path">
-<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">HTTP Server</a> &gt; <a href="http://httpd.apache.org/docs/">Documentation</a> &gt; <a href="../">Version 2.2</a> &gt; <a href="./">Programs</a></div><div id="page-content"><div id="preamble"><h1>ab - Apache HTTP server benchmarking tool</h1>
+<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">HTTP Server</a> &gt; <a href="http://httpd.apache.org/docs/">Documentation</a> &gt; <a href="../">Version 2.3</a> &gt; <a href="./">Programs</a></div><div id="page-content"><div id="preamble"><h1>ab - Apache HTTP server benchmarking tool</h1>
 <div class="toplang">
 <p><span>Available Languages: </span><a href="../en/programs/ab.html" title="English">&nbsp;en&nbsp;</a> |
 <a href="../ko/programs/ab.html" hreflang="ko" rel="alternate" title="Korean">&nbsp;ko&nbsp;</a> |
@@ -39,6 +39,7 @@
     <p><code><strong>ab</strong>
     [ -<strong>A</strong> <var>auth-username</var>:<var>password</var> ]
     [ -<strong>b</strong> <var>windowsize</var> ]
+    [ -<strong>B</strong> <var>local-address</var> ]
     [ -<strong>c</strong> <var>concurrency</var> ]
     [ -<strong>C</strong> <var>cookie-name</var>=<var>value</var> ]
     [ -<strong>d</strong> ]
@@ -80,6 +81,9 @@
 
     <dt><code>-b <var>windowsize</var></code></dt>
     <dd>Size of TCP send/receive buffer, in bytes.</dd>
+
+    <dt><code>-B <var>local-address</var></code></dt>
+    <dd>Address to bind to when making outgoing connections.</dd>
 
     <dt><code>-c <var>concurrency</var></code></dt>
     <dd>Number of multiple requests to perform at a time. Default is one
@@ -198,7 +202,7 @@
     <dd>String to use as attributes for <code>&lt;td&gt;</code>.</dd>
 
     <dt><code>-Z <var>ciphersuite</var></code></dt>
-    <dd>Specify SSL/TLS cipher suite (See openssl ciphers).</dd>
+    <dd>Specify SSL/TLS cipher suite (See openssl ciphers)</dd>
     </dl>
 </div><div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
 <div class="section">

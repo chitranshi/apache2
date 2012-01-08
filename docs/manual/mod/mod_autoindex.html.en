@@ -13,11 +13,11 @@
 <body>
 <div id="page-header">
 <p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="../faq/">FAQ</a> | <a href="../glossary.html">Glossary</a> | <a href="../sitemap.html">Sitemap</a></p>
-<p class="apache">Apache HTTP Server Version 2.2</p>
+<p class="apache">Apache HTTP Server Version 2.3</p>
 <img alt="" src="../images/feather.gif" /></div>
 <div class="up"><a href="./"><img title="&lt;-" alt="&lt;-" src="../images/left.gif" /></a></div>
 <div id="path">
-<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">HTTP Server</a> &gt; <a href="http://httpd.apache.org/docs/">Documentation</a> &gt; <a href="../">Version 2.2</a> &gt; <a href="./">Modules</a></div>
+<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">HTTP Server</a> &gt; <a href="http://httpd.apache.org/docs/">Documentation</a> &gt; <a href="../">Version 2.3</a> &gt; <a href="./">Modules</a></div>
 <div id="page-content">
 <div id="preamble"><h1>Apache Module mod_autoindex</h1>
 <div class="toplang">
@@ -66,7 +66,7 @@
     display. If you select a header link, the listing will be
     regenerated, sorted by the values in that column. Selecting the
     same header repeatedly toggles between ascending and descending
-    order. These column header links are suppressed with
+    order. These column header links are suppressed with the
     <code class="directive"><a href="#indexoptions">IndexOptions</a></code> directive's
     <code>SuppressColumnSorting</code> option.</p>
 
@@ -89,6 +89,7 @@
 <li><img alt="" src="../images/down.gif" /> <a href="#headername">HeaderName</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#indexheadinsert">IndexHeadInsert</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#indexignore">IndexIgnore</a></li>
+<li><img alt="" src="../images/down.gif" /> <a href="#indexignorereset">IndexIgnoreReset</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#indexoptions">IndexOptions</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#indexorderdefault">IndexOrderDefault</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#indexstylesheet">IndexStyleSheet</a></li>
@@ -103,7 +104,7 @@
 <h2><a name="query" id="query">Autoindex Request Query Arguments</a></h2>
     
 
-    <p>Apache 2.0.23 reorganized the Query Arguments for Column
+    <p>Apache HTTP Server 2.0.23 reorganized the Query Arguments for Column
     Sorting, and introduced an entire group of new query options.
     To effectively eliminate all client control over the output,
     the <code><a href="#indexoptions.ignoreclient">IndexOptions
@@ -293,7 +294,8 @@ icon selected by MIME content-type</td></tr>
     <var>String</var> is enclosed in double quotes (<code>"</code>).</p>
 
     <div class="example"><h3>Example</h3><p><code>
-      AddDescription "The planet Mars" /web/pics/mars.gif
+      AddDescription "The planet Mars" mars.gif <br />
+      AddDescription "My friend Marshall" friends/mars.gif
     </code></p></div>
 
     <p>The typical, default description field is 23 bytes wide. 6
@@ -302,6 +304,15 @@ icon selected by MIME content-type</td></tr>
     added by the <code><a href="#indexoptions.suppresslastmodified">IndexOptions SuppressLastModified</a></code> option.
     Therefore, the widest default the description column is ever
     assigned is 55 bytes.</p>
+
+    <p>Since the <var>File</var> argument may be a partial file name,
+    please remember that a too-short partial filename may match
+    unintended files. For example, <code>le.html</code> will match the
+    file <code>le.html</code> but will also match the file
+    <code>example.html</code>. In the event that there may be ambiguity,
+    use as complete a filename as you can, but keep in mind that the
+    first match encountered will be used, and order your list of
+    <code>AddDescription</code> directives accordingly.</p>
 
     <p>See the <a href="#indexoptions.descriptionwidth">DescriptionWidth</a> <code class="directive"><a href="#indexoptions">IndexOptions</a></code> keyword for details on overriding the size
     of this column, or allowing descriptions of unlimited length.</p>
@@ -313,6 +324,14 @@ icon selected by MIME content-type</td></tr>
       element (such as cutting off the end of a bolded phrase), the
       results may affect the rest of the directory listing.</p>
     </div>
+
+    <div class="note"><h3>Arguments with path information</h3>
+      <p>Absolute paths are not currently supported and do not match
+      anything at runtime. Arguments with relative path information,
+      which would normally only be used in htaccess context, are implicitly 
+      prefixed with '*/' to avoid matching partial directory names.</p>
+    </div>
+
 
 </div>
 <div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
@@ -342,9 +361,9 @@ icon selected by MIME content-type</td></tr>
     HTMLTable</code>.</p>
 
     <div class="example"><h3>Examples</h3><p><code>
-      AddIcon (IMG,/icons/image.xbm) .gif .jpg .xbm<br />
-      AddIcon /icons/dir.xbm ^^DIRECTORY^^<br />
-      AddIcon /icons/backup.xbm *~
+      AddIcon (IMG,/icons/image.png) .gif .jpg .png<br />
+      AddIcon /icons/dir.png ^^DIRECTORY^^<br />
+      AddIcon /icons/backup.png *~
     </code></p></div>
 
     <p><code class="directive"><a href="#addiconbytype">AddIconByType</a></code>
@@ -375,7 +394,7 @@ content-encoding</td></tr>
     <code>x-compress</code>.</p>
 
     <div class="example"><h3>Example</h3><p><code>
-      AddIconByEncoding /icons/compress.xbm x-compress
+      AddIconByEncoding /icons/compress.png x-compress
     </code></p></div>
 
 </div>
@@ -403,7 +422,7 @@ content-type</td></tr>
     required the mime types.</p>
 
     <div class="example"><h3>Example</h3><p><code>
-      AddIconByType (IMG,/icons/image.xbm) image/*
+      AddIconByType (IMG,/icons/image.png) image/*
     </code></p></div>
 
 </div>
@@ -424,7 +443,7 @@ configured</td></tr>
     or a fully qualified remote URL.</p>
 
     <div class="example"><h3>Example</h3><p><code>
-      DefaultIcon /icon/unknown.xbm
+      DefaultIcon /icon/unknown.png
     </code></p></div>
 
 </div>
@@ -494,7 +513,6 @@ of the index listing</td></tr>
 <tr><th><a href="directive-dict.html#Override">Override:</a></th><td>Indexes</td></tr>
 <tr><th><a href="directive-dict.html#Status">Status:</a></th><td>Base</td></tr>
 <tr><th><a href="directive-dict.html#Module">Module:</a></th><td>mod_autoindex</td></tr>
-<tr><th><a href="directive-dict.html#Compatibility">Compatibility:</a></th><td>Available in Apache 2.2.11 and later</td></tr>
 </table>
     <p>The <code class="directive">IndexHeadInsert</code> directive specifies a
     string to insert in the <var>&lt;head&gt;</var> section of the HTML
@@ -529,6 +547,43 @@ a directory</td></tr>
       IndexIgnore .??* *~ *# HEADER* README* RCS CVS *,v *,t
     </code></p></div>
 
+    <div class="note"><h3>Regular Expressions</h3>
+      <p>This directive does not currently work in configuration sections
+      that have regular expression arguments, such as  <code class="directive"><a href="../mod/core.html#directorymatch">&lt;DirectoryMatch&gt;</a></code>
+      </p>
+    </div>
+
+</div>
+<div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
+<div class="directive-section"><h2><a name="IndexIgnoreReset" id="IndexIgnoreReset">IndexIgnoreReset</a> <a name="indexignorereset" id="indexignorereset">Directive</a></h2>
+<table class="directive">
+<tr><th><a href="directive-dict.html#Description">Description:</a></th><td>Empties the list of files to hide when listing
+a directory</td></tr>
+<tr><th><a href="directive-dict.html#Syntax">Syntax:</a></th><td><code>IndexIgnoreReset ON|OFF</code></td></tr>
+<tr><th><a href="directive-dict.html#Context">Context:</a></th><td>server config, virtual host, directory, .htaccess</td></tr>
+<tr><th><a href="directive-dict.html#Override">Override:</a></th><td>Indexes</td></tr>
+<tr><th><a href="directive-dict.html#Status">Status:</a></th><td>Base</td></tr>
+<tr><th><a href="directive-dict.html#Module">Module:</a></th><td>mod_autoindex</td></tr>
+<tr><th><a href="directive-dict.html#Compatibility">Compatibility:</a></th><td>2.3.10 and later</td></tr>
+</table>
+    <p>The <code class="directive">IndexIgnoreReset</code> directive removes
+    any files ignored by <code class="directive">IndexIgnore</code> otherwise
+    inherited from other configuration sections. </p>
+
+    <div class="example"><p><code>
+      &lt;Directory /var/www&gt;
+      IndexIgnore *.bak .??* *~ *# HEADER* README* RCS CVS *,v *,t
+      &lt;/Directory&gt;
+      &lt;Directory /var/www/backups&gt;
+      IndexIgnoreReset ON
+      IndexIgnore .??* *# HEADER* README* RCS CVS *,v *,t
+      &lt;/Directory&gt;
+    </code></p></div>
+
+    <div class="warning"><p> Review the default configuration for a list of
+    patterns that you might want to explicitly ignore after using this
+    directive.</p></div>
+
 </div>
 <div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
 <div class="directive-section"><h2><a name="IndexOptions" id="IndexOptions">IndexOptions</a> <a name="indexoptions" id="indexoptions">Directive</a></h2>
@@ -548,33 +603,35 @@ indexing</td></tr>
     of</p>
 
     <dl>
-      <dt><a name="indexoptions.charset" id="indexoptions.charset">Charset=<var>character-set</var></a> (<em>Apache 2.0.61 and
+      <dt><a name="indexoptions.addaltclass" id="indexoptions.addaltclass">AddAltClass</a></dt>
+      <dd>Adds an additional CSS class declaration to each row of the
+      directory listing table when <code>IndexOptions HTMLTable</code>
+      is in effect and an <code>IndexStyleSheet</code> is defined.
+      Rather than the standard <code>even</code> and <code>odd</code>
+      classes that would otherwise be applied to each row of the table,
+      a class of <code>even-<em>ALT</em></code> or
+      <code>odd-<em>ALT</em></code> where <em>ALT</em> is either the
+      standard alt text associated with the file style (eg. <em>snd</em>,
+      <em>txt</em>, <em>img</em>, etc) or the alt text defined by one of
+      the various <code>AddAlt*</code> directives.
+      </dd>
+
+      <dt><a name="indexoptions.charset" id="indexoptions.charset">Charset=<var>character-set</var></a> (<em>Apache HTTP Server 2.0.61 and
       later</em>)</dt>
 
       <dd>The <code>Charset</code> keyword allows you to
       specify the character set of the generated page. The
-      default is either <var>ISO-8859-1</var> or <var>UTF-8</var>,
-      depending on whether the underlying file system is unicode
-      or not.
+      default is <code>UTF-8</code> on Windows and Mac OS X,
+      and <code>ISO-8859-1</code> elsewhere.
+      (It depends on whether the underlying file system
+      uses Unicode filenames or not.)
 
       <div class="example"><h3>Example:</h3><p><code>
         IndexOptions Charset=UTF-8
       </code></p></div>
       </dd>
 
-      <dt><a name="indexoptions.type" id="indexoptions.type">Type=<var>MIME content-type</var></a> (<em>Apache 2.0.61 and
-      later</em>)</dt>
-
-      <dd>The <code>Type</code> keyword allows you to
-      specify the MIME content-type of the generated page. The default
-      is <var>text/html</var>.
-
-      <div class="example"><h3>Example:</h3><p><code>
-        IndexOptions Type=text/plain
-      </code></p></div>
-      </dd>
-
-      <dt><a name="indexoptions.descriptionwidth" id="indexoptions.descriptionwidth">DescriptionWidth=[<var>n</var> | *]</a> (<em>Apache 2.0.23 and
+      <dt><a name="indexoptions.descriptionwidth" id="indexoptions.descriptionwidth">DescriptionWidth=[<var>n</var> | *]</a> (<em>Apache HTTP Server 2.0.23 and
       later</em>)</dt>
 
       <dd>The <code>DescriptionWidth</code> keyword allows you to
@@ -598,7 +655,7 @@ indexing</td></tr>
 
       <dd>This turns on fancy indexing of directories.</dd>
 
-      <dt><a name="indexoptions.foldersfirst" id="indexoptions.foldersfirst">FoldersFirst</a> (<em>Apache
+      <dt><a name="indexoptions.foldersfirst" id="indexoptions.foldersfirst">FoldersFirst</a> (<em>Apache HTTP Server
       2.0.23 and later</em>)</dt>
 
       <dd>If this option is enabled, subdirectory listings will
@@ -617,7 +674,7 @@ indexing</td></tr>
       HTTP Server 2.0.23 and later</em>)</dt>
 
       <dd>This option with <code>FancyIndexing</code> constructs
-      a simple table for the fancy directory listing. 
+      a simple table for the fancy directory listing.
       It is necessary for utf-8 enabled platforms or if file
       names or description text will alternate between
       left-to-right and right-to-left reading order.</dd>
@@ -635,7 +692,7 @@ indexing</td></tr>
       icon. This allows browser to precalculate the page layout without having
       to wait until all the images have been loaded. If no value is given for
       the option, it defaults to the standard height of the icons supplied
-      with the Apache software.</dd>
+      with the Apache httpd software.</dd>
 
       <dt><a name="indexoptions.iconwidth" id="indexoptions.iconwidth">IconWidth[=<var>pixels</var>]</a></dt>
 
@@ -645,7 +702,7 @@ indexing</td></tr>
       the file icon. This allows browser to precalculate the page
       layout without having to wait until all the images have been
       loaded. If no value is given for the option, it defaults to
-      the standard width of the icons supplied with the Apache
+      the standard width of the icons supplied with the Apache httpd
       software.</dd>
 
       <dt><a name="indexoptions.ignorecase" id="indexoptions.ignorecase">IgnoreCase</a></dt>
@@ -668,7 +725,8 @@ indexing</td></tr>
       <dd>The <code>NameWidth</code> keyword allows you to specify the width
       of the filename column in bytes.</dd>
 
-      <dd><code>-NameWidth</code> (or unset) allows <code class="module"><a href="../mod/mod_autoindex.html">mod_autoindex</a></code> to calculate the best width.</dd>
+      <dd><code>-NameWidth</code> (or unset) allows <code class="module"><a href="../mod/mod_autoindex.html">mod_autoindex</a></code> to calculate the best width, but only up
+      to 20 bytes wide.</dd>
 
       <dd><code>NameWidth=<var>n</var></code> fixes the column width to
       <var>n</var> bytes wide.</dd>
@@ -686,20 +744,20 @@ indexing</td></tr>
 
       <dt><a name="indexoptions.showforbidden" id="indexoptions.showforbidden">ShowForbidden</a></dt>
 
-      <dd>If specified, Apache will show files normally hidden because
+      <dd>If specified, Apache httpd will show files normally hidden because
       the subrequest returned <code>HTTP_UNAUTHORIZED</code> or
       <code>HTTP_FORBIDDEN</code></dd>
 
       <dt><a name="indexoptions.suppresscolumnsorting" id="indexoptions.suppresscolumnsorting">SuppressColumnSorting</a></dt>
 
-      <dd>If specified, Apache will not make the column headings in a
+      <dd>If specified, Apache httpd will not make the column headings in a
       FancyIndexed directory listing into links for sorting. The
       default behavior is for them to be links; selecting the
       column heading will sort the directory listing by the values
-      in that column. <strong>Prior to Apache 2.0.23, this also
+      in that column. <strong>Prior to Apache HTTP Server 2.0.23, this also
       disabled parsing the Query Arguments for the sort
       string.</strong> That behavior is now controlled by <a href="#indexoptions.ignoreclient"><code>IndexOptions
-      IgnoreClient</code></a> in Apache 2.0.23.</dd>
+      IgnoreClient</code></a> in Apache HTTP Server 2.0.23.</dd>
 
       <dt><a name="indexoptions.suppressdescription" id="indexoptions.suppressdescription">SuppressDescription</a></dt>
 
@@ -721,9 +779,12 @@ indexing</td></tr>
       causing the module to start the display with the header file
       contents. The header file must contain appropriate HTML instructions
       in this case. If there is no header file, the preamble is generated
-      as usual.</dd>
+      as usual. If you also specify a <code class="directive"><a href="#readmename">ReadmeName</a></code>, and if that file
+      exists, The closing &lt;/body&gt;&lt;/html&gt; tags are also
+      ommitted from the output, under the assumption that you'll likely
+      put those closing tags in that file.</dd>
 
-      <dt><a name="indexoptions.suppressicon" id="indexoptions.suppressicon">SuppressIcon</a> (<em>Apache
+      <dt><a name="indexoptions.suppressicon" id="indexoptions.suppressicon">SuppressIcon</a> (<em>Apache HTTP Server
       2.0.23 and later</em>)</dt>
 
       <dd>This will suppress the icon in fancy indexing listings.
@@ -739,7 +800,7 @@ indexing</td></tr>
       in fancy indexing listings.</dd>
 
       <dt><a name="indexoptions.suppressrules" id="indexoptions.suppressrules">SuppressRules</a>
-      (<em>Apache 2.0.23 and later</em>)</dt>
+      (<em>Apache HTTP Server 2.0.23 and later</em>)</dt>
 
       <dd>This will suppress the horizontal rule lines (<code>hr</code>
       elements) in directory listings. Combining both <code>SuppressIcon</code> and
@@ -752,7 +813,7 @@ indexing</td></tr>
 
       <dd>This will suppress the file size in fancy indexing listings.</dd>
 
-      <dt><a name="indexoptions.trackmodified" id="indexoptions.trackmodified">TrackModified</a> (<em>Apache
+      <dt><a name="indexoptions.trackmodified" id="indexoptions.trackmodified">TrackModified</a> (<em>Apache HTTP Server
       2.0.23 and later</em>)</dt>
 
       <dd>This returns the <code>Last-Modified</code> and <code>ETag</code>
@@ -769,8 +830,20 @@ indexing</td></tr>
       <code>Last-Modified</code> header on all Unix platforms.</strong>
       If this is a concern, leave this option disabled.</dd>
 
+      <dt><a name="indexoptions.type" id="indexoptions.type">Type=<var>MIME content-type</var></a> (<em>Apache HTTP Server 2.0.61 and
+      later</em>)</dt>
+
+      <dd>The <code>Type</code> keyword allows you to
+      specify the MIME content-type of the generated page. The default
+      is <var>text/html</var>.
+
+      <div class="example"><h3>Example:</h3><p><code>
+        IndexOptions Type=text/plain
+      </code></p></div>
+      </dd>
+
       <dt><a name="indexoptions.versionsort" id="indexoptions.versionsort">VersionSort</a>
-      (<em>Apache 2.0a3 and later</em>)</dt>
+      (<em>Apache HTTP Server 2.0a3 and later</em>)</dt>
 
       <dd>The <code>VersionSort</code> keyword causes files containing
       version numbers to sort in a natural way. Strings are sorted as
@@ -798,18 +871,18 @@ indexing</td></tr>
       </dd>
 
       <dt><a name="indexoptions.xhtml" id="indexoptions.xhtml">XHTML</a>
-      (<em>Apache 2.0.49 and later</em>)</dt>
+      (<em>Apache HTTP Server 2.0.49 and later</em>)</dt>
 
       <dd>The <code>XHTML</code> keyword forces <code class="module"><a href="../mod/mod_autoindex.html">mod_autoindex</a></code>
       to emit XHTML 1.0 code instead of HTML 3.2.</dd>
+
     </dl>
 
    
    <dl><dt>Incremental IndexOptions</dt>
    <dd>
-     <p>Apache 1.3.3 introduced some significant changes in the
-     handling of <code class="directive">IndexOptions</code> directives. In
-     particular:</p>
+     <p>Be aware of how multiple <code class="directive">IndexOptions</code> are
+     handled.</p>
 
      <ul>
      <li>Multiple <code class="directive">IndexOptions</code> directives for a
@@ -886,7 +959,7 @@ Name|Date|Size|Description</code></td></tr>
     <em>always</em> the ascending filename.</p>
 
     <p>You can, if desired, prevent the client from reordering the list
-    by also adding the <code><a href="#indexoptions.suppresscolumnsorting">SuppressColumnSorting</a></code> 
+    by also adding the <code><a href="#indexoptions.suppresscolumnsorting">SuppressColumnSorting</a></code>
     index option to remove the sort link from the top of the column,
     along with the <code><a href="#indexoptions.ignoreclient">IgnoreClient</a></code> index
     option to prevent them from manually adding sort options to the
@@ -910,6 +983,24 @@ Name|Date|Size|Description</code></td></tr>
       
       IndexStyleSheet "/css/style.css"
     </code></p></div>
+
+    <p>Using this directive in conjunction with <code>IndexOptions
+    HTMLTable</code> adds a number of CSS classes to the resulting HTML.
+    The entire table is given a CSS id of <code>indexlist</code> and the
+    following classes are associated with the various parts of the
+    listing:</p>
+
+    <table class="bordered"><tr class="header"><th>Class</th><th>Definition</th></tr>
+<tr><td>tr.indexhead</td><td>Header row of listing</td></tr>
+<tr class="odd"><td>th.indexcolicon and td.indexcolicon</td> <td>Icon column</td></tr>
+<tr><td>th.indexcolname and td.indexcolname</td> <td>File name column</td></tr>
+<tr class="odd"><td>th.indexcollastmod and td.indexcollastmod</td> <td>Last modified column</td></tr>
+<tr><td>th.indexcolsize and td.indexcolsize</td> <td>File size column</td></tr>
+<tr class="odd"><td>th.indexcoldesc and td.indexcoldesc</td> <td>Description column</td></tr>
+<tr><td>tr.breakrow</td> <td>Horizontal rule at the bottom of the table</td></tr>
+<tr class="odd"><td>tr.odd and tr.even</td> <td>Alternating even and odd rows</td></tr>
+</table>
+
 
 </div>
 <div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>

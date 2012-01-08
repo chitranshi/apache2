@@ -13,19 +13,21 @@
 <body>
 <div id="page-header">
 <p class="menu"><a href="../mod/">Modüller</a> | <a href="../mod/directives.html">Yönergeler</a> | <a href="../faq/">SSS</a> | <a href="../glossary.html">Terimler</a> | <a href="../sitemap.html">Site Haritası</a></p>
-<p class="apache">Apache HTTP Sunucusu Sürüm 2.2</p>
+<p class="apache">Apache HTTP Sunucusu Sürüm 2.3</p>
 <img alt="" src="../images/feather.gif" /></div>
 <div class="up"><a href="./"><img title="&lt;-" alt="&lt;-" src="../images/left.gif" /></a></div>
 <div id="path">
-<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">HTTP Sunucusu</a> &gt; <a href="http://httpd.apache.org/docs/">Belgeleme</a> &gt; <a href="../">Sürüm 2.2</a> &gt; <a href="./">Modüller</a></div>
+<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">HTTP Sunucusu</a> &gt; <a href="http://httpd.apache.org/docs/">Belgeleme</a> &gt; <a href="../">Sürüm 2.3</a> &gt; <a href="./">Modüller</a></div>
 <div id="page-content">
 <div id="preamble"><h1>Apache Modülü mod_alias</h1>
 <div class="toplang">
 <p><span>Mevcut Diller: </span><a href="../en/mod/mod_alias.html" hreflang="en" rel="alternate" title="English">&nbsp;en&nbsp;</a> |
+<a href="../fr/mod/mod_alias.html" hreflang="fr" rel="alternate" title="Français">&nbsp;fr&nbsp;</a> |
 <a href="../ja/mod/mod_alias.html" hreflang="ja" rel="alternate" title="Japanese">&nbsp;ja&nbsp;</a> |
 <a href="../ko/mod/mod_alias.html" hreflang="ko" rel="alternate" title="Korean">&nbsp;ko&nbsp;</a> |
 <a href="../tr/mod/mod_alias.html" title="Türkçe">&nbsp;tr&nbsp;</a></p>
 </div>
+<div class="outofdate">Bu çeviri güncel olmayabilir. Son değişiklikler için İngilizce sürüm geçerlidir.</div>
 <table class="module"><tr><th><a href="module-dict.html#Description">Açıklama:</a></th><td>Belge ağacının parçalarının dosya sisteminin parçalarıyla
 eşlenmesini sağlar ve URL yönlendirmesi yapar.</td></tr>
 <tr><th><a href="module-dict.html#Status">Durum:</a></th><td>Temel</td></tr>
@@ -126,11 +128,11 @@ eşlenmesini sağlar ve URL yönlendirmesi yapar.</td></tr>
       Alias /image /ftp/pub/image
     </code></p></div>
 
-    <p><code>http://mesela.dom/image/foo.gif</code> şeklinde bir istek, sunucunun
+    <p><code>http://sunucum/image/foo.gif</code> şeklinde bir istek, sunucunun
       <code>/ftp/pub/image/foo.gif</code> dosyasıyla yanıt vermesine sebep
       olurdu. Sadece tam yol parçaları eşleştirilir; bu bakımdan yukarıdaki
       <code class="directive">Alias</code> yapılandırması
-      <code>http://mesela.dom/imagefoo.gif</code> ile eşleşmez. Düzenli
+      <code>http://sunucum/imagefoo.gif</code> ile eşleşmez. Düzenli
       ifadelerin kullanıldığı daha karmaşık eşleşmeler için <code class="directive"><a href="#aliasmatch">AliasMatch</a></code> yönergesine bakınız.</p>
 
     <p><code><em>URL-yolu</em></code>’nu bir <code>/</code> ile
@@ -140,10 +142,8 @@ eşlenmesini sağlar ve URL yönlendirmesi yapar.</td></tr>
 
     <dl><dd><code>Alias /icons/ /usr/local/apache/icons/</code></dd></dl>
 
-    <p>diye bir tanım yaparsanız <code>/icons</code> URL’si için, sonunda bir /
-      yokmuşçasına bir <code class="directive">Alias</code> kullanılmayacaktır. Benzer
-      şekilde, <var>URL-yolu</var> belirtirken sonda / kullanmazsanız
-      <var>dosya-yolu</var> için de sonda / kullanmamalısınız.</p>
+    <p>diye bir tanım yaparsanız <code>/icons</code> URL’si için bir
+      <code class="directive">Alias</code> kullanılmayacaktır.</p>
 
     <p><code class="directive">Alias</code> <em>hedefleri</em> için ek <code class="directive"><a href="../mod/core.html#directory">&lt;Directory&gt;</a></code> bölümleri
       belirtmeniz gerekebileceğine dikkat ediniz. <code class="directive"><a href="../mod/core.html#directory">&lt;Directory&gt;</a></code> bölümlerinden önce yer alan
@@ -191,57 +191,11 @@ eşler.</td></tr>
       AliasMatch ^/icons(.*) /usr/local/apache/icons$1
     </code></p></div>
 
-    <p><a class="glossarylink" href="../glossary.html#regex" title="sözlüğe bakınız">Düzenli ifadeler</a> tüm gücüyle
-      kullanılabilir Örneğin, <code><em>URL-yolu</em></code> ile harf büyüklüğüne
-      duyarsız eşleşmeler sağlayacak düzenli ifadeler kullanılabilir:</p>
+    <p>Ayrıca, <code><em>URL-yolu</em></code> ile harf büyüklüğüne duyarsız
+      eşleşmeler sağlayacak düzenli ifadeler de kullanılabilir:</p>
 
     <div class="example"><p><code>
       AliasMatch (?i)^/image(.*) /ftp/pub/image$1
-    </code></p></div>
-
-    <p><code class="directive"><a href="#alias">Alias</a></code>
-      ile <code class="directive"><a href="#aliasmatch">AliasMatch</a></code> arasındaki
-      belirgin tek fark <code class="directive"><a href="#alias">Alias</a></code>
-      yönergesinin URI'nin bir ek bölümünü, sağda, dosya yolunun sonundaki
-      eşleşen parçayı özdevinimli olarak kopyalayacak olmasıdır. Halbuki
-      <code class="directive"><a href="#aliasmatch ">AliasMatch </a></code> bunu yapmaz. Yani,
-      hemen her durumda, istek URI'sinin baştan sona tümünün düzenli ifade ile
-      eşleşmesini ve sağ taraftaki ikamenin kullanılmasını istersiniz.</p>
-
-    <p>Başka bir deyişle, <code class="directive"><a href="#alias">Alias</a></code> yerine
-      <code class="directive"><a href="#aliasmatch">AliasMatch</a></code> yazmak aynı etkiyi
-      sağlamayacaktır. En azından, düzenli ifadenin başına <code>^</code> ve
-      sonuna <code>(.*)$</code> ekledikten sonra yer değiştirme parçasının sonuna
-      da <code>$1</code> eklemeniz gerekir.</p>
-
-    <p>Örneğin, bunu AliasMatch ile değiştirmek istediğinizi varsayalım:</p>
-
-    <div class="example"><p><code>
-      Alias /image/ /ftp/pub/image/
-    </code></p></div>
-
-    <p>Bu aynı şey değildir; bunu yapmayın! Bu, herhangi bir yerinde /image/
-      içeren tüm istekleri /ftp/pub/image/ dizinine gönderecektir:</p>
-
-    <div class="example"><p><code>
-      AliasMatch /image/ /ftp/pub/image/
-    </code></p></div>
-
-    <p>Aynı etkiyi elde etmek için yapacağınız bu olacaktır:</p>
-
-    <div class="example"><p><code>
-      AliasMatch ^/image/(.*)$ /ftp/pub/image/$1
-    </code></p></div>
-
-    <p>Şüphesiz, <code class="directive"><a href="#alias">Alias</a></code> yönergesinin
-      çalıştığı yerde <code class="directive"><a href="#aliasmatch">AliasMatch</a></code>
-      kullanmanın bir yararı yoktur. <code class="directive"><a href="#aliasmatch">AliasMatch</a></code> daha karmaşık şeyler yapma imkanı
-      verir. Örneğin, farklı dizinler altındaki farklı dosyalar için başka
-      yerdeki dosyaları sunmak isteyelim:</p>
-
-    <div class="example"><p><code>
-      AliasMatch ^/image/(.*)\.jpg$ /files/jpg.images/$1.jpg<br />
-      AliasMatch ^/image/(.*)\.gif$ /files/gif.images/$1.gif
     </code></p></div>
   
 </div>
@@ -262,11 +216,10 @@ yönlendirir.</td></tr>
 
     <p>Eski <code><em>URL-yolu</em></code> bir bölü çizgisi ile başlar ve harf
       büyüklüğüne duyarlıdır (% imlemesi çözüldükten sonra).
-      <code><em>URL-yolu</em></code> olarak göreli yollara izin verilmez.
-      <code><em>URL</em></code> ise ya bir şema ve konak ismi ile başlayan bir
-      mutlak URL ya da bir bölü çizgisi ile başlayan bir URL yolu olmalıdır.
-      İkinci durumda URL yolunun başına geçerli sunucu ismi ve şemayı sunucu
-      ekler.</p>
+      <code><em>URL-yolu</em></code> olarak göreli yollara izin verilmez.</p>
+
+    <p><code><em>URL</em></code> ise ya bir şema ve konak ismi ile başlayan
+      bir mutlak URL ya da bir bölü çizgisi ile başlayan bir URL yolu olabilir. İkinci durumda URL yolunun başına geçerli sunucu ismi ve şemayı sunucu ekler.</p>
 
     <p><code><em>URL-yolu</em></code> ile başlayan istekler istemciye hedef
       <code><em>URL</em></code> konumuna bir yönlendirme isteği olarak
@@ -274,7 +227,11 @@ yönlendirir.</td></tr>
       yol hedef URL’ye eklenir.</p>
 
     <div class="example"><h3>Örnek:</h3><p><code>
-      Redirect /hizmet http://iki.mesela.dom/hizmet
+      # Farklı bir konaktaki bir URL'ye yönlendirme<br />
+      Redirect /hizmet http://iki.mesela.dom/hizmet<br />
+      <br />
+      # Aynı konak üzerinde yönlendirme<br />
+      Redirect /bir /iki
     </code></p></div>
 
     <p>İstemcinin yaptığı <code>http://mesela.dom/hizmet/fesmekan.txt</code>
@@ -408,7 +365,7 @@ URL’ye yönlendirir.</td></tr>
       ScriptAlias /cgi-bin/ /siteler/cgi-bin/
     </code></p></div>
 
-    <p><code>http://mesela.dom/cgi-bin/foo</code> şeklindeki bir istek sunucunun
+    <p><code>http://sunucum/cgi-bin/foo</code> şeklindeki bir istek sunucunun
       <code>/siteler/cgi-bin/foo</code> betiğini çalıştırmasına sebep olur. Bu
       yapılandırma aslında şuna eşdeğerdir:</p>
 
@@ -421,6 +378,19 @@ URL’ye yönlendirir.</td></tr>
       </span>
       &lt;/Location&gt;
     </code></p></div>
+
+    <p><code class="directive">ScriptAlias</code> yönergesini bir betik veya eylemci
+      ile birlikte de kullanabilirsiniz. Örnek:</p>
+
+    <div class="example"><p><code>
+         ScriptAlias /cgi-bin/ /siteler/cgi-handler.pl
+    </code></p></div>
+
+    <p>Bu senaryoda <code>/cgi-bin/</code>’den istenen tüm dosyalar sizin
+      belirttiğiniz dosya tarafından işleme sokulacaktır. Bu yöntemle kendi
+      özel eylemcinizi kullanabilirsiniz. İsterseniz, bunu içerik eklemek
+      ya da ısmarlama bir eylem için bir CGI sarmalayıcısı olarak da
+      kullanabilirsiniz.</p>
 
     <div class="warning">Yapılandırma değiştiğinde kaynak kodlarının ister
       istemez açığa çıkmasını istemiyorsanız CGI betiklerinizi <code class="directive"><a href="../mod/core.html#documentroot">DocumentRoot</a></code> altına koymayınız.
@@ -475,24 +445,12 @@ eşler ve hedefi bir CGI betiği olarak çalıştırır.</td></tr>
     <div class="example"><p><code>
       ScriptAliasMatch ^/cgi-bin(.*) /usr/local/apache/cgi-bin$1
     </code></p></div>
-
-    <p>AliasMatch'teki gibi, burada da <a class="glossarylink" href="../glossary.html#rexex" title="sözlüğe bakınız">düzenli
-      ifadeler</a> tüm gücüyle kullanılabilir. Örneğin, bir URL yolu ile
-      harf büyüklüğüne duyarsız eşleşme sağlayan bir rumuz oluşturmak
-      mümkündür:</p>
-
-    <div class="example"><p><code>
-      ScriptAliasMatch (?i)^/cgi-bin(.*) /usr/local/apache/cgi-bin$1
-    </code></p></div>
-
-    <p><code class="directive"><a href="#alias">Alias</a></code> ve
-      <code class="directive"><a href="#aliasmatch">AliasMatch</a></code> arasındaki farklarla
-      ilgili herşey burada da geçerlidir. Ayrıntılar için  <code class="directive"><a href="#aliasmatch">AliasMatch</a></code>yönergesine bakınız.</p>
-
+  
 </div>
 </div>
 <div class="bottomlang">
 <p><span>Mevcut Diller: </span><a href="../en/mod/mod_alias.html" hreflang="en" rel="alternate" title="English">&nbsp;en&nbsp;</a> |
+<a href="../fr/mod/mod_alias.html" hreflang="fr" rel="alternate" title="Français">&nbsp;fr&nbsp;</a> |
 <a href="../ja/mod/mod_alias.html" hreflang="ja" rel="alternate" title="Japanese">&nbsp;ja&nbsp;</a> |
 <a href="../ko/mod/mod_alias.html" hreflang="ko" rel="alternate" title="Korean">&nbsp;ko&nbsp;</a> |
 <a href="../tr/mod/mod_alias.html" title="Türkçe">&nbsp;tr&nbsp;</a></p>

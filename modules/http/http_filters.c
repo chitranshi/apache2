@@ -29,7 +29,6 @@
 #define APR_WANT_MEMFUNC
 #include "apr_want.h"
 
-#define CORE_PRIVATE
 #include "util_filter.h"
 #include "ap_config.h"
 #include "httpd.h"
@@ -56,6 +55,8 @@
 #include <unistd.h>
 #endif
 
+APLOG_USE_MODULE(http);
+
 #define INVALID_CHAR -2
 
 static long get_chunk_size(char *);
@@ -77,6 +78,7 @@ typedef struct http_filter_ctx {
     apr_bucket_brigade *bb;
 } http_ctx_t;
 
+/* bail out if some error in the HTTP input filter happens */
 static apr_status_t bail_out_on_error(http_ctx_t *ctx,
                                       ap_filter_t *f,
                                       int http_error)
@@ -92,6 +94,11 @@ static apr_status_t bail_out_on_error(http_ctx_t *ctx,
     e = apr_bucket_eos_create(f->c->bucket_alloc);
     APR_BRIGADE_INSERT_TAIL(bb, e);
     ctx->eos_sent = 1;
+    /* If chunked encoding / content-length are corrupt, we may treat parts
+     * of this request's body as the next one's headers.
+     * To be safe, disable keep-alive.
+     */
+    f->r->connection->keepalive = AP_CONN_CLOSE;
     return ap_pass_brigade(f->r->output_filters, bb);
 }
 
@@ -103,7 +110,7 @@ static apr_status_t get_remaining_chunk_line(http_ctx_t *ctx,
     apr_off_t brigade_length;
     apr_bucket *e;
     const char *lineend;
-    apr_size_t len;
+    apr_size_t len = 0;
 
     /*
      * As the brigade b should have been requested in mode AP_MODE_GETLINE
@@ -153,8 +160,9 @@ static apr_status_t get_remaining_chunk_line(http_ctx_t *ctx,
     if (lineend[len - 1] != APR_ASCII_LF) {
         return APR_EAGAIN;
     }
-    /* Line is complete. So reset ctx->linesize for next round. */
+    /* Line is complete. So reset ctx for next round. */
     ctx->linesize = 0;
+    ctx->pos = ctx->chunk_ln;
     return APR_SUCCESS;
 }
 
@@ -259,12 +267,12 @@ apr_status_t ap_http_filter(ap_filter_t *f, apr_bucket_brigade *b,
                 /* Something that isn't in HTTP, unless some future
                  * edition defines new transfer ecodings, is unsupported.
                  */
-                ap_log_rerror(APLOG_MARK, APLOG_ERR, 0, f->r,
+                ap_log_rerror(APLOG_MARK, APLOG_INFO, 0, f->r, APLOGNO(01585)
                               "Unknown Transfer-Encoding: %s", tenc);
                 return bail_out_on_error(ctx, f, HTTP_NOT_IMPLEMENTED);
             }
             else {
-                ap_log_rerror(APLOG_MARK, APLOG_WARNING, 0, f->r,
+                ap_log_rerror(APLOG_MARK, APLOG_WARNING, 0, f->r, APLOGNO(01586)
                   "Unknown Transfer-Encoding: %s; using Content-Length", tenc);
                 tenc = NULL;
             }
@@ -273,7 +281,6 @@ apr_status_t ap_http_filter(ap_filter_t *f, apr_bucket_brigade *b,
             char *endstr;
 
             ctx->state = BODY_LENGTH;
-            errno = 0;
 
             /* Protects against over/underflow, non-digit chars in the
              * string (excluding leading space) (the endstr checks)
@@ -282,7 +289,7 @@ apr_status_t ap_http_filter(ap_filter_t *f, apr_bucket_brigade *b,
                 || endstr == lenp || *endstr || ctx->remaining < 0) {
 
                 ctx->remaining = 0;
-                ap_log_rerror(APLOG_MARK, APLOG_ERR, 0, f->r,
+                ap_log_rerror(APLOG_MARK, APLOG_INFO, 0, f->r, APLOGNO(01587)
                               "Invalid Content-Length");
 
                 return bail_out_on_error(ctx, f, HTTP_REQUEST_ENTITY_TOO_LARGE);
@@ -292,7 +299,7 @@ apr_status_t ap_http_filter(ap_filter_t *f, apr_bucket_brigade *b,
              * time, stop it here if it is invalid.
              */
             if (ctx->limit && ctx->limit < ctx->remaining) {
-                ap_log_rerror(APLOG_MARK, APLOG_ERR, 0, f->r,
+                ap_log_rerror(APLOG_MARK, APLOG_INFO, 0, f->r, APLOGNO(01588)
                           "Requested content-length of %" APR_OFF_T_FMT
                           " is larger than the configured limit"
                           " of %" APR_OFF_T_FMT, ctx->remaining, ctx->limit);
@@ -336,7 +343,8 @@ apr_status_t ap_http_filter(ap_filter_t *f, apr_bucket_brigade *b,
                  */
                 f->r->expecting_100 = 0;
                 tmp = apr_pstrcat(f->r->pool, AP_SERVER_PROTOCOL, " ",
-                                  ap_get_status_line(100), CRLF CRLF, NULL);
+                                  ap_get_status_line(HTTP_CONTINUE), CRLF CRLF,
+                                  NULL);
                 len = strlen(tmp);
                 ap_xlate_proto_to_ascii(tmp, len);
                 apr_brigade_cleanup(bb);
@@ -376,7 +384,7 @@ apr_status_t ap_http_filter(ap_filter_t *f, apr_bucket_brigade *b,
                     ctx->remaining = get_chunk_size(ctx->chunk_ln);
                     if (ctx->remaining == INVALID_CHAR) {
                         rv = APR_EGENERAL;
-                        http_error = HTTP_SERVICE_UNAVAILABLE;
+                        http_error = HTTP_BAD_REQUEST;
                     }
                 }
             }
@@ -384,11 +392,11 @@ apr_status_t ap_http_filter(ap_filter_t *f, apr_bucket_brigade *b,
 
             /* Detect chunksize error (such as overflow) */
             if (rv != APR_SUCCESS || ctx->remaining < 0) {
-                ap_log_rerror(APLOG_MARK, APLOG_ERR, rv, f->r, "Error reading first chunk %s ", 
+                ap_log_rerror(APLOG_MARK, APLOG_INFO, rv, f->r, APLOGNO(01589) "Error reading first chunk %s ",
                               (ctx->remaining < 0) ? "(overflow)" : "");
                 ctx->remaining = 0; /* Reset it in case we have to
                                      * come back here later */
-                if (APR_STATUS_IS_TIMEUP(rv)) { 
+                if (APR_STATUS_IS_TIMEUP(rv)) {
                     http_error = HTTP_REQUEST_TIME_OUT;
                 }
                 return bail_out_on_error(ctx, f, http_error);
@@ -481,7 +489,7 @@ apr_status_t ap_http_filter(ap_filter_t *f, apr_bucket_brigade *b,
                             ctx->remaining = get_chunk_size(ctx->chunk_ln);
                             if (ctx->remaining == INVALID_CHAR) {
                                 rv = APR_EGENERAL;
-                                http_error = HTTP_SERVICE_UNAVAILABLE;
+                                http_error = HTTP_BAD_REQUEST;
                             }
                         }
                     }
@@ -490,11 +498,11 @@ apr_status_t ap_http_filter(ap_filter_t *f, apr_bucket_brigade *b,
 
                 /* Detect chunksize error (such as overflow) */
                 if (rv != APR_SUCCESS || ctx->remaining < 0) {
-                    ap_log_rerror(APLOG_MARK, APLOG_ERR, rv, f->r, "Error reading chunk %s ", 
+                    ap_log_rerror(APLOG_MARK, APLOG_INFO, rv, f->r, APLOGNO(01590) "Error reading chunk %s ",
                                   (ctx->remaining < 0) ? "(overflow)" : "");
                     ctx->remaining = 0; /* Reset it in case we have to
                                          * come back here later */
-                    if (APR_STATUS_IS_TIMEUP(rv)) { 
+                    if (APR_STATUS_IS_TIMEUP(rv)) {
                         http_error = HTTP_REQUEST_TIME_OUT;
                     }
                     return bail_out_on_error(ctx, f, http_error);
@@ -559,7 +567,7 @@ apr_status_t ap_http_filter(ap_filter_t *f, apr_bucket_brigade *b,
          * really count.  This seems to be up for interpretation.  */
         ctx->limit_used += totalread;
         if (ctx->limit < ctx->limit_used) {
-            ap_log_rerror(APLOG_MARK, APLOG_ERR, 0, f->r,
+            ap_log_rerror(APLOG_MARK, APLOG_INFO, 0, f->r, APLOGNO(01591)
                           "Read content-length of %" APR_OFF_T_FMT
                           " is larger than the configured limit"
                           " of %" APR_OFF_T_FMT, ctx->limit_used, ctx->limit);
@@ -647,23 +655,10 @@ static int form_header_field(header_struct *h,
 #if APR_CHARSET_EBCDIC
     char *headfield;
     apr_size_t len;
-    apr_size_t name_len;
-    apr_size_t val_len;
-    char *next;
 
-    name_len = strlen(fieldname);
-    val_len = strlen(fieldval);
-    len = name_len + val_len + 4; /* 4 for ": " plus CRLF */
-    headfield = (char *)apr_palloc(h->pool, len + 1);
-    memcpy(headfield, fieldname, name_len);
-    next = headfield + name_len;
-    *next++ = ':';
-    *next++ = ' ';
-    memcpy(next, fieldval, val_len);
-    next += val_len;
-    *next++ = CR;
-    *next++ = LF;
-    *next = 0;
+    headfield = apr_pstrcat(h->pool, fieldname, ": ", fieldval, CRLF, NULL);
+    len = strlen(headfield);
+
     ap_xlate_proto_to_ascii(headfield, len);
     apr_brigade_write(h->bb, NULL, NULL, headfield, len);
 #else
@@ -803,6 +798,16 @@ static apr_status_t send_all_header_fields(header_struct *h,
         t_elt++;
     } while (t_elt < t_end);
 
+    if (APLOGrtrace4(r)) {
+        t_elt = (const apr_table_entry_t *)(elts->elts);
+        do {
+            ap_log_rerror(APLOG_MARK, APLOG_TRACE4, 0, r, "  %s: %s",
+                          ap_escape_logitem(r->pool, t_elt->key),
+                          ap_escape_logitem(r->pool, t_elt->val));
+            t_elt++;
+        } while (t_elt < t_end);
+    }
+
 #if APR_CHARSET_EBCDIC
     {
         apr_size_t len;
@@ -824,12 +829,21 @@ static void validate_status_line(request_rec *r)
 {
     char *end;
 
-    if (r->status_line
-        && (strlen(r->status_line) <= 4
+    if (r->status_line) {
+        int len = strlen(r->status_line);
+        if (len < 3
             || apr_strtoi64(r->status_line, &end, 10) != r->status
-            || *end != ' '
-            || (end - 3) != r->status_line)) {
-        r->status_line = NULL;
+            || (end - 3) != r->status_line
+            || (len >= 4 && ! apr_isspace(r->status_line[3]))) {
+            r->status_line = NULL;
+        }
+        /* Since we passed the above check, we know that length three
+         * is equivalent to only a 3 digit numeric http status.
+         * RFC2616 mandates a trailing space, let's add it.
+         */
+        else if (len == 3) {
+            r->status_line = apr_pstrcat(r->pool, r->status_line, " ", NULL);
+        }
     }
 }
 
@@ -876,8 +890,10 @@ static void basic_http_header_check(request_rec *r,
 static void basic_http_header(request_rec *r, apr_bucket_brigade *bb,
                               const char *protocol)
 {
-    char *date;
-    const char *server;
+    char *date = NULL;
+    const char *proxy_date = NULL;
+    const char *server = NULL;
+    const char *us = ap_get_server_banner();
     header_struct h;
     struct iovec vec[4];
 
@@ -916,8 +932,6 @@ static void basic_http_header(request_rec *r, apr_bucket_brigade *bb,
      * generate a new server header / date header
      */
     if (r->proxyreq != PROXYREQ_NONE) {
-        const char *proxy_date;
-
         proxy_date = apr_table_get(r->headers_out, "Date");
         if (!proxy_date) {
             /*
@@ -927,65 +941,59 @@ static void basic_http_header(request_rec *r, apr_bucket_brigade *bb,
              */
             date = apr_palloc(r->pool, APR_RFC822_DATE_LEN);
             ap_recent_rfc822_date(date, r->request_time);
-            proxy_date = date;
         }
-        form_header_field(&h, "Date", proxy_date);
         server = apr_table_get(r->headers_out, "Server");
-        if (server) {
-            form_header_field(&h, "Server", server);
-        }
     }
     else {
         date = apr_palloc(r->pool, APR_RFC822_DATE_LEN);
         ap_recent_rfc822_date(date, r->request_time);
-        form_header_field(&h, "Date", date);
-        form_header_field(&h, "Server", ap_get_server_banner());
     }
+
+    form_header_field(&h, "Date", proxy_date ? proxy_date : date );
+
+    if (!server && *us)
+        server = us;
+    if (server)
+        form_header_field(&h, "Server", server);
+
+    if (APLOGrtrace3(r)) {
+        ap_log_rerror(APLOG_MARK, APLOG_TRACE3, 0, r,
+                      "Response sent with status %d%s",
+                      r->status,
+                      APLOGrtrace4(r) ? ", headers:" : "");
+
+        /*
+         * Date and Server are less interesting, use TRACE5 for them while
+         * using TRACE4 for the other headers.
+         */
+        ap_log_rerror(APLOG_MARK, APLOG_TRACE5, 0, r, "  %s: %s", "Date",
+                      proxy_date ? proxy_date : date );
+        if (server)
+            ap_log_rerror(APLOG_MARK, APLOG_TRACE5, 0, r, "  %s: %s", "Server",
+                          server);
+    }
+
 
     /* unset so we don't send them again */
     apr_table_unset(r->headers_out, "Date");        /* Avoid bogosity */
-    apr_table_unset(r->headers_out, "Server");
+    if (server) {
+        apr_table_unset(r->headers_out, "Server");
+    }
 }
 
 AP_DECLARE(void) ap_basic_http_header(request_rec *r, apr_bucket_brigade *bb)
 {
-    const char *protocol;
+    const char *protocol = NULL;
 
     basic_http_header_check(r, &protocol);
     basic_http_header(r, bb, protocol);
 }
 
-/* Navigator versions 2.x, 3.x and 4.0 betas up to and including 4.0b2
- * have a header parsing bug.  If the terminating \r\n occur starting
- * at offset 256, 257 or 258 of output then it will not properly parse
- * the headers.  Curiously it doesn't exhibit this problem at 512, 513.
- * We are guessing that this is because their initial read of a new request
- * uses a 256 byte buffer, and subsequent reads use a larger buffer.
- * So the problem might exist at different offsets as well.
- *
- * This should also work on keepalive connections assuming they use the
- * same small buffer for the first read of each new request.
- *
- * At any rate, we check the bytes written so far and, if we are about to
- * tickle the bug, we instead insert a bogus padding header.  Since the bug
- * manifests as a broken image in Navigator, users blame the server.  :(
- * It is more expensive to check the User-Agent than it is to just add the
- * bytes, so we haven't used the BrowserMatch feature here.
- */
 static void terminate_header(apr_bucket_brigade *bb)
 {
-    char tmp[] = "X-Pad: avoid browser bug" CRLF;
     char crlf[] = CRLF;
-    apr_off_t len;
     apr_size_t buflen;
 
-    (void) apr_brigade_length(bb, 1, &len);
-
-    if (len >= 255 && len <= 257) {
-        buflen = strlen(tmp);
-        ap_xlate_proto_to_ascii(tmp, buflen);
-        apr_brigade_write(bb, NULL, NULL, tmp, buflen);
-    }
     buflen = strlen(crlf);
     ap_xlate_proto_to_ascii(crlf, buflen);
     apr_brigade_write(bb, NULL, NULL, crlf, buflen);
@@ -1012,8 +1020,7 @@ AP_DECLARE_NONSTD(int) ap_send_http_trace(request_rec *r)
     while (r->prev) {
         r = r->prev;
     }
-    conf = (core_server_config *)ap_get_module_config(r->server->module_config,
-                                                      &core_module);
+    conf = ap_get_core_module_config(r->server->module_config);
 
     if (conf->trace_enable == AP_TRACE_DISABLE) {
         apr_table_setn(r->notes, "error-notes",
@@ -1022,7 +1029,7 @@ AP_DECLARE_NONSTD(int) ap_send_http_trace(request_rec *r)
     }
 
     if (conf->trace_enable == AP_TRACE_EXTENDED)
-        /* XX should be = REQUEST_CHUNKED_PASS */
+        /* XXX: should be = REQUEST_CHUNKED_PASS */
         body = REQUEST_CHUNKED_DECHUNK;
     else
         body = REQUEST_NO_BODY;
@@ -1118,7 +1125,7 @@ AP_CORE_DECLARE_NONSTD(apr_status_t) ap_http_header_filter(ap_filter_t *f,
     request_rec *r = f->r;
     conn_rec *c = r->connection;
     const char *clheader;
-    const char *protocol;
+    const char *protocol = NULL;
     apr_bucket *e;
     apr_bucket_brigade *b2;
     header_struct h;
@@ -1191,7 +1198,7 @@ AP_CORE_DECLARE_NONSTD(apr_status_t) ap_http_header_filter(ap_filter_t *f,
     if (apr_table_get(r->subprocess_env, "force-no-vary") != NULL) {
         apr_table_unset(r->headers_out, "Vary");
         r->proto_num = HTTP_VERSION(1,0);
-        apr_table_set(r->subprocess_env, "force-response-1.0", "1");
+        apr_table_setn(r->subprocess_env, "force-response-1.0", "1");
     }
     else {
         fixup_vary(r);
@@ -1215,7 +1222,7 @@ AP_CORE_DECLARE_NONSTD(apr_status_t) ap_http_header_filter(ap_filter_t *f,
     }
 
     ctype = ap_make_content_type(r, r->content_type);
-    if (strcasecmp(ctype, NO_CONTENT_TYPE)) {
+    if (ctype) {
         apr_table_setn(r->headers_out, "Content-Type", ctype);
     }
 
@@ -1464,12 +1471,12 @@ AP_DECLARE(int) ap_setup_client_block(request_rec *r, int read_policy)
 
     if (tenc) {
         if (strcasecmp(tenc, "chunked")) {
-            ap_log_rerror(APLOG_MARK, APLOG_ERR, 0, r,
+            ap_log_rerror(APLOG_MARK, APLOG_INFO, 0, r, APLOGNO(01592)
                           "Unknown Transfer-Encoding %s", tenc);
             return HTTP_NOT_IMPLEMENTED;
         }
         if (r->read_body == REQUEST_CHUNKED_ERROR) {
-            ap_log_rerror(APLOG_MARK, APLOG_ERR, 0, r,
+            ap_log_rerror(APLOG_MARK, APLOG_INFO, 0, r, APLOGNO(01593)
                           "chunked Transfer-Encoding forbidden: %s", r->uri);
             return (lenp) ? HTTP_BAD_REQUEST : HTTP_LENGTH_REQUIRED;
         }
@@ -1482,7 +1489,7 @@ AP_DECLARE(int) ap_setup_client_block(request_rec *r, int read_policy)
         if (apr_strtoff(&r->remaining, lenp, &endstr, 10)
             || *endstr || r->remaining < 0) {
             r->remaining = 0;
-            ap_log_rerror(APLOG_MARK, APLOG_ERR, 0, r,
+            ap_log_rerror(APLOG_MARK, APLOG_INFO, 0, r, APLOGNO(01594)
                           "Invalid Content-Length");
             return HTTP_BAD_REQUEST;
         }
@@ -1490,7 +1497,7 @@ AP_DECLARE(int) ap_setup_client_block(request_rec *r, int read_policy)
 
     if ((r->read_body == REQUEST_NO_BODY)
         && (r->read_chunked || (r->remaining > 0))) {
-        ap_log_rerror(APLOG_MARK, APLOG_ERR, 0, r,
+        ap_log_rerror(APLOG_MARK, APLOG_INFO, 0, r, APLOGNO(01595)
                       "%s with body is not allowed for %s", r->method, r->uri);
         return HTTP_REQUEST_ENTITY_TOO_LARGE;
     }
@@ -1499,8 +1506,7 @@ AP_DECLARE(int) ap_setup_client_block(request_rec *r, int read_policy)
     {
         /* Make sure ap_getline() didn't leave any droppings. */
         core_request_config *req_cfg =
-            (core_request_config *)ap_get_module_config(r->request_config,
-                                                        &core_module);
+            (core_request_config *)ap_get_core_module_config(r->request_config);
         AP_DEBUG_ASSERT(APR_BRIGADE_EMPTY(req_cfg->bb));
     }
 #endif
@@ -1663,4 +1669,3 @@ apr_status_t ap_http_outerror_filter(ap_filter_t *f,
 
     return ap_pass_brigade(f->next,  b);
 }
-

@@ -13,16 +13,17 @@
 <body>
 <div id="page-header">
 <p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="../faq/">FAQ</a> | <a href="../glossary.html">Glossary</a> | <a href="../sitemap.html">Sitemap</a></p>
-<p class="apache">Apache HTTP Server Version 2.2</p>
+<p class="apache">Apache HTTP Server Version 2.3</p>
 <img alt="" src="../images/feather.gif" /></div>
 <div class="up"><a href="./"><img title="&lt;-" alt="&lt;-" src="../images/left.gif" /></a></div>
 <div id="path">
-<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">HTTP Server</a> &gt; <a href="http://httpd.apache.org/docs/">Documentation</a> &gt; <a href="../">Version 2.2</a> &gt; <a href="./">Modules</a></div>
+<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">HTTP Server</a> &gt; <a href="http://httpd.apache.org/docs/">Documentation</a> &gt; <a href="../">Version 2.3</a> &gt; <a href="./">Modules</a></div>
 <div id="page-content">
 <div id="preamble"><h1>Apache Module mod_actions</h1>
 <div class="toplang">
 <p><span>Available Languages: </span><a href="../de/mod/mod_actions.html" hreflang="de" rel="alternate" title="Deutsch">&nbsp;de&nbsp;</a> |
 <a href="../en/mod/mod_actions.html" title="English">&nbsp;en&nbsp;</a> |
+<a href="../fr/mod/mod_actions.html" hreflang="fr" rel="alternate" title="Français">&nbsp;fr&nbsp;</a> |
 <a href="../ja/mod/mod_actions.html" hreflang="ja" rel="alternate" title="Japanese">&nbsp;ja&nbsp;</a> |
 <a href="../ko/mod/mod_actions.html" hreflang="ko" rel="alternate" title="Korean">&nbsp;ko&nbsp;</a></p>
 </div>
@@ -48,7 +49,7 @@ media type or request method.</td></tr>
 <ul class="seealso">
 <li><code class="module"><a href="../mod/mod_cgi.html">mod_cgi</a></code></li>
 <li><a href="../howto/cgi.html">Dynamic Content with CGI</a></li>
-<li><a href="../handler.html">Apache's Handler Use</a></li>
+<li><a href="../handler.html">Apache httpd's Handler Use</a></li>
 </ul></div>
 
 <div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
@@ -74,21 +75,24 @@ introduced in Apache 2.1</td></tr>
     environment variables. The handler used for the particular request
     is passed using the <code>REDIRECT_HANDLER</code> variable.</p>
 
-    <div class="example"><h3>Examples</h3><p><code>
+    <div class="example"><h3>Example: MIME type</h3><p><code>
       # Requests for files of a particular MIME content type:<br />
       Action image/gif /cgi-bin/images.cgi<br />
       <br />
+    </code></p></div>
+
+    <p>In this example, requests for files with a MIME content
+    type of <code>image/gif</code> will be handled by the
+    specified cgi script <code>/cgi-bin/images.cgi</code>.</p>
+
+    <div class="example"><h3>Example: File extension</h3><p><code>
       # Files of a particular file extension<br />
       AddHandler my-file-type .xyz<br />
       Action my-file-type /cgi-bin/program.cgi<br />
     </code></p></div>
 
-    <p>In the first example, requests for files with a MIME content
-    type of <code>image/gif</code> will be handled by the
-    specified cgi script <code>/cgi-bin/images.cgi</code>.</p>
-
-    <p>In the second example, requests for files with a file extension of
-    <code>.xyz</code> are handled by the specified cgi script 
+    <p>In this example, requests for files with a file extension of
+    <code>.xyz</code> are handled by the specified cgi script
     <code>/cgi-bin/program.cgi</code>.</p>
 
     <p>The optional <code>virtual</code> modifier turns off the check
@@ -125,7 +129,7 @@ method.</td></tr>
     <var>method</var>. The <var>cgi-script</var> is the URL-path to a
     resource that has been designated as a CGI script using <code class="directive"><a href="../mod/mod_alias.html#scriptalias">ScriptAlias</a></code> or <code class="directive"><a href="../mod/mod_mime.html#addhandler">AddHandler</a></code>.  The URL and
     file path of the requested document is sent using the standard CGI
-    <code>PATH_INFO</code> and <code>PATH_TRANSLATED</code> environment 
+    <code>PATH_INFO</code> and <code>PATH_TRANSLATED</code> environment
     variables.</p>
 
     <div class="note">
@@ -135,16 +139,16 @@ method.</td></tr>
       effects.
     </div>
 
-    <p>Note that the <code class="directive">Script</code> command defines default 
+    <p>Note that the <code class="directive">Script</code> command defines default
     actions only. If a CGI script is called, or some other resource that is
     capable of handling the requested method internally, it will do
-    so. Also note that <code class="directive">Script</code> with a method of 
+    so. Also note that <code class="directive">Script</code> with a method of
     <code>GET</code> will only be called if there are query arguments present
     (<em>e.g.</em>, foo.html?hi). Otherwise, the request will
     proceed normally.</p>
 
     <div class="example"><h3>Examples</h3><p><code>
-      # For &lt;ISINDEX&gt;-style searching<br />
+      # All GET requests go here<br />
       Script GET /cgi-bin/search<br />
       <br />
       # A CGI PUT handler<br />
@@ -156,6 +160,7 @@ method.</td></tr>
 <div class="bottomlang">
 <p><span>Available Languages: </span><a href="../de/mod/mod_actions.html" hreflang="de" rel="alternate" title="Deutsch">&nbsp;de&nbsp;</a> |
 <a href="../en/mod/mod_actions.html" title="English">&nbsp;en&nbsp;</a> |
+<a href="../fr/mod/mod_actions.html" hreflang="fr" rel="alternate" title="Français">&nbsp;fr&nbsp;</a> |
 <a href="../ja/mod/mod_actions.html" hreflang="ja" rel="alternate" title="Japanese">&nbsp;ja&nbsp;</a> |
 <a href="../ko/mod/mod_actions.html" hreflang="ko" rel="alternate" title="Korean">&nbsp;ko&nbsp;</a></p>
 </div><div id="footer">

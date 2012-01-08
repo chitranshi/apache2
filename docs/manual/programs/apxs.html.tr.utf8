@@ -12,16 +12,17 @@
 <link href="../images/favicon.ico" rel="shortcut icon" /></head>
 <body id="manual-page"><div id="page-header">
 <p class="menu"><a href="../mod/">Modüller</a> | <a href="../mod/directives.html">Yönergeler</a> | <a href="../faq/">SSS</a> | <a href="../glossary.html">Terimler</a> | <a href="../sitemap.html">Site Haritası</a></p>
-<p class="apache">Apache HTTP Sunucusu Sürüm 2.2</p>
+<p class="apache">Apache HTTP Sunucusu Sürüm 2.3</p>
 <img alt="" src="../images/feather.gif" /></div>
 <div class="up"><a href="./"><img title="&lt;-" alt="&lt;-" src="../images/left.gif" /></a></div>
 <div id="path">
-<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">HTTP Sunucusu</a> &gt; <a href="http://httpd.apache.org/docs/">Belgeleme</a> &gt; <a href="../">Sürüm 2.2</a> &gt; <a href="./">Programlar</a></div><div id="page-content"><div id="preamble"><h1>apxs - Apache Eklenti Aracı</h1>
+<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">HTTP Sunucusu</a> &gt; <a href="http://httpd.apache.org/docs/">Belgeleme</a> &gt; <a href="../">Sürüm 2.3</a> &gt; <a href="./">Programlar</a></div><div id="page-content"><div id="preamble"><h1>apxs - Apache Eklenti Aracı</h1>
 <div class="toplang">
 <p><span>Mevcut Diller: </span><a href="../en/programs/apxs.html" hreflang="en" rel="alternate" title="English">&nbsp;en&nbsp;</a> |
 <a href="../ko/programs/apxs.html" hreflang="ko" rel="alternate" title="Korean">&nbsp;ko&nbsp;</a> |
 <a href="../tr/programs/apxs.html" title="Türkçe">&nbsp;tr&nbsp;</a></p>
 </div>
+<div class="outofdate">Bu çeviri güncel olmayabilir. Son değişiklikler için İngilizce sürüm geçerlidir.</div>
 
     <p><code><strong>apxs</strong></code>, Apache Hiper Metin Aktarım
      Protokolü (HTTP) sunucusu için ek modül derleme ve kurulum aracıdır. Bu
@@ -94,6 +95,7 @@
     -<strong>n</strong> <var>modüladı</var></code></p>
 
     <p><code><strong>apxs</strong> -<strong>q</strong>
+    [ -<strong>v</strong> ]
     [ -<strong>S</strong> <var>isim=değer</var> ]
     <var>sorgu</var> ...</code></p>
 
@@ -127,7 +129,8 @@
     <h3><a name="options.common" id="options.common">Ortak Seçenekler</a></h3>
       <dl>
         <dt><code><strong>-n</strong> <var>modüladı</var></code></dt>
-        <dd><code>-i</code> (kurulum) ve <code>-g</code> (şablon üretimi)
+        <dd><code><strong>-i</strong></code> (kurulum) ve
+         <code><strong>-g</strong></code> (şablon üretimi)
          seçenekleri için modül ismi belirtmek amacıyla kullanılır. Bir modül
          ismi belirtmek için bu seçeneği kullanın.
          <code><strong>-g</strong></code> seçeneği için bu gereklidir.
@@ -140,18 +143,16 @@
     <h3><a name="options.query" id="options.query">Sorgu Seçenekleri</a></h3>
       <dl>
         <dt><code><strong>-q</strong> <var>sorgu</var></code></dt>
-        <dd><strong><code>apxs</code></strong>'in belli ayarlar hakkında
-         bilgisine başvurmak için bir sorgu gerçekleştirir.
-         <code><var>sorgu</var></code> olarak şu dizgelerden biri veya
-         birkaçı belirtilebilir: <code>CC</code>, <code>CFLAGS</code>,
-         <code>CFLAGS_SHLIB</code>, <code>INCLUDEDIR</code>,
-         <code>LD_SHLIB</code>, <code>LDFLAGS_SHLIB</code>,
-         <code>LIBEXECDIR</code>, <code>LIBS_SHLIB</code>,
-         <code>SBINDIR</code>, <code>SYSCONFDIR</code>, <code>TARGET</code>.
+        <dd><code>httpd</code>'yi derlemekte kullanılacak değişkenler ve
+         ortam ayarları için bir sorgu gerçekleştirir.  When invoked without
+         <code><var>sorgu</var></code> belirtilmeksizin çağrıldığında, bilinen
+         değişkenleri değerleriyle birlikte basar. İsteğe bağlı
+         <code><strong>-v</strong></code> seçeneği liste çıktısını biçemler.
 
-        <p>Bu seçeneği ayarları öğrenmek için kullanın. Örneğin, Apache'nin C
-         başlık dosyalarının yerini kendi Makefile dosyalarınızın içinde
-         şöyle belirtebilirsiniz:</p>
+         <p>Modülünüzü yükleyecek <code><strong>httpd</strong></code>'yi
+          derlemek için kullanılacak ayarları elle belirtmek için kullanılır.
+          Örneğin, Apache'nin C başlık dosyalarının yerini kendi Makefile
+          dosyalarınızın içinde şöyle belirtebilirsiniz:</p>
         <div class="example"><p><code>
           INC=-I`apxs -q INCLUDEDIR`
         </code></p></div></dd>
@@ -169,8 +170,8 @@
     <h3><a name="options.template" id="options.template">Şablon Üretme Seçenekleri</a></h3>
       <dl>
       <dt><code><strong>-g</strong></code></dt>
-      <dd><var>modüladı</var> (<strong><code>-n</code></strong> seçeneğihe
-       bakınız) adında bir alt dizin oluşturur ve içine iki dosya
+      <dd><code><var>modüladı</var></code> (<strong><code>-n</code></strong>
+       seçeneğine bakınız) adında bir alt dizin oluşturur ve içine iki dosya
        yerleştirir: Kendi modülünüzü oluşturabilmeniz için veya
        <code><strong>apxs</strong></code> mekanizmaları ile hemen oynamaya
        başlayabilmeniz için <code>mod_<var>modüladı</var>.c</code> adında bir

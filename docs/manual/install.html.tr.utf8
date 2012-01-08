@@ -12,11 +12,11 @@
 <link href="./images/favicon.ico" rel="shortcut icon" /></head>
 <body id="manual-page"><div id="page-header">
 <p class="menu"><a href="./mod/">Modüller</a> | <a href="./mod/directives.html">Yönergeler</a> | <a href="./faq/">SSS</a> | <a href="./glossary.html">Terimler</a> | <a href="./sitemap.html">Site Haritası</a></p>
-<p class="apache">Apache HTTP Sunucusu Sürüm 2.2</p>
+<p class="apache">Apache HTTP Sunucusu Sürüm 2.3</p>
 <img alt="" src="./images/feather.gif" /></div>
 <div class="up"><a href="./"><img title="&lt;-" alt="&lt;-" src="./images/left.gif" /></a></div>
 <div id="path">
-<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">HTTP Sunucusu</a> &gt; <a href="http://httpd.apache.org/docs/">Belgeleme</a> &gt; <a href="./">Sürüm 2.2</a></div><div id="page-content"><div id="preamble"><h1>Derleme ve Kurulum</h1>
+<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">HTTP Sunucusu</a> &gt; <a href="http://httpd.apache.org/docs/">Belgeleme</a> &gt; <a href="./">Sürüm 2.3</a></div><div id="page-content"><div id="preamble"><h1>Derleme ve Kurulum</h1>
 <div class="toplang">
 <p><span>Mevcut Diller: </span><a href="./de/install.html" hreflang="de" rel="alternate" title="Deutsch">&nbsp;de&nbsp;</a> |
 <a href="./en/install.html" hreflang="en" rel="alternate" title="English">&nbsp;en&nbsp;</a> |
@@ -26,6 +26,7 @@
 <a href="./ko/install.html" hreflang="ko" rel="alternate" title="Korean">&nbsp;ko&nbsp;</a> |
 <a href="./tr/install.html" title="Türkçe">&nbsp;tr&nbsp;</a></p>
 </div>
+<div class="outofdate">Bu çeviri güncel olmayabilir. Son değişiklikler için İngilizce sürüm geçerlidir.</div>
 
 
     <p>Bu belge Apache HTTP Sunucusunun sadece Unix ve Unix benzeri
@@ -132,7 +133,7 @@
 
       <dt>ANSI-C Derleyici ve Derleme Sistemi</dt>
       <dd>Bir ANSI-C derleyicinin kurulu olduğundan emin olunuz. <a href="http://www.gnu.org/">Free Software Foundation (FSF)</a>
-        tarafından dağıtılan <a href="http://www.gnu.org/software/gcc/gcc.html">GNU C derleyicisini
+        tarafından dağıtılan <a href="http://gcc.gnu.org/">GNU C derleyicisini
         (GCC)</a> kullanmanız önerilir. GCC yoksa en azından satıcınızın
         derleyicisinin ANSI uyumlu olduğundan emin olunuz. Ayrıca,
         <code>PATH</code> ortam değişkeninizin içerdiği yollarda
@@ -158,49 +159,7 @@
         <code class="program"><a href="./programs/configure.html">configure</a></code> betiği sisteminizde Perl 5 yorumlayıcısı
         bulamazsa bu betikleri kullanamazsınız. Ancak, bu durum Apache
         HTTPd’nin derlenip kurulmasına engel değildir.</dd>
-
-      <dt><a href="http://apr.apache.org">apr/apr-util &gt;= 1.2</a></dt>
-      <dd><code>apr</code> ve <code>apr-util</code> Apache HTTPd kaynak
-        paketiyle gelmektedir ve hemen hemen tüm durumlarda sorunsuz
-        kullanılabilecek durumdadır. Ancak sisteminizde <code>apr</code> veya
-        <code>apr-util</code>’in 1.0 veya 1.1 sürümleri kuruluysa onları paket
-        içindeki kütüphaneleri kullanmaya zorlamak için ya 1.2 sürümlerine
-        yükseltmeli ya da ayrı HTTPd derlemeleriniz olmalıdır. Paket içinde
-        gelen <code>apr</code>/<code>apr-util</code> kaynak kodlarını
-        kullanmak için <code class="program"><a href="./programs/configure.html">configure</a></code> betiğine
-        <code>--with-included-apr</code> seçeneğini belirtiniz.
-
-      <div class="note"><h3>Ek bilgi</h3>
-        <code>--with-included-apr</code> seçeneği 2.2.3 sürümünde eklenmiştir.
-      </div>
-      <div class="example"><p><code>
-        # Paketteki apr/apr-util’in kullanımını zorlamak için<br />
-        ./configure --with-included-apr<br />
-      </code></p></div>
-
-        Apache HTTPd’yi ve <code>apr</code>/<code>apr-util</code>’i ayrı ayrı
-        derlemek için:
-      <div class="example"><p><code>
-        # apr 1.2’nin derlenmesi ve kurulması<br />
-        cd srclib/apr<br />
-        ./configure --prefix=/usr/local/apr-httpd/<br />
-        make<br />
-        make install<br />
-        <br />
-        # apr-util 1.2’nin derlenmesi ve kurulması<br />
-        cd ../apr-util<br />
-        ./configure --prefix=/usr/local/apr-util-httpd/
-          --with-apr=/usr/local/apr-httpd/<br />
-        make<br />
-        make install<br />
-        <br />
-        # HTTPd’nin derlenmesi<br />
-        cd ../../<br />
-        ./configure --with-apr=/usr/local/apr-httpd/
-          --with-apr-util=/usr/local/apr-util-httpd/
-      </code></p></div>
-    </dd>
-  </dl>
+    </dl>
 </div><div class="top"><a href="#page-header"><img alt="top" src="./images/up.gif" /></a></div>
 <div class="section">
 <h2><a name="download" id="download">İndirme</a></h2>
@@ -326,7 +285,7 @@
       yapılandırdığınız (yukarı <code>--prefix</code> seçeneğine bakınız)
       paketi kurmaya geldi. Basitçe şu komutu veriniz:</p>
 
-    <div class="example"><p><code># make install</code></p></div>
+<div class="example"><p><code># make install</code></p></div>
 
     <p><code><em>ÖNEK</em></code> dizininde genellikle yazma izinlerinin
       sınırlı oluşu nedeniyle bu adım genellikle root yetkilerini
@@ -345,8 +304,8 @@
     <div class="example"><p><code>$ vi <em>ÖNEK</em>/conf/httpd.conf</code></p></div>
 
     <p>Bu kılavuz ve kullanılabilecek <a href="mod/directives.html">yapılandırma yönergelerinin</a> kılavuzlarını
-      <a href="./">docs/manual/</a> altında bulabileceğiniz gibi en
-      son sürümünü daima <a href="http://httpd.apache.org/docs/2.2/">http://httpd.apache.org/docs/2.2/</a> adresinde
+      <code><em>ÖNEK</em>/<a href="./">docs/manual/</a></code> altında
+      bulabileceğiniz gibi en son sürümünü daima <a href="http://httpd.apache.org/docs/2.3/">http://httpd.apache.org/docs/2.3/</a> adresinde
       bulabilirsiniz.</p>
 </div><div class="top"><a href="#page-header"><img alt="top" src="./images/up.gif" /></a></div>
 <div class="section">
@@ -409,6 +368,14 @@
       farklı bir <code>--prefix</code> ile kurabilir ve farklı bir port ile
       (<code class="directive"><a href="./mod/mpm_common.html#listen">Listen</a></code> yönergesini
       ayarlamak suretiyle) çalıştırabilirsiniz.</div>
+
+    <p>Özgün <code class="program"><a href="./programs/configure.html">configure</a></code> seçeneklerinizi değiştirmek veya
+      yeni seçenekler eklemek isterseniz bunları <code>config.nice</code>
+      betiğine komut satırı argümanları olarak belirtebilirsiniz:</p>
+
+    <div class="example"><p><code>
+    $ ./config.nice --prefix=/home/dnm/apache --with-port=90
+    </code></p></div>
 </div></div>
 <div class="bottomlang">
 <p><span>Mevcut Diller: </span><a href="./de/install.html" hreflang="de" rel="alternate" title="Deutsch">&nbsp;de&nbsp;</a> |

@@ -13,15 +13,16 @@
 <body>
 <div id="page-header">
 <p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="../faq/">FAQ</a> | <a href="../glossary.html">Glossary</a> | <a href="../sitemap.html">Sitemap</a></p>
-<p class="apache">Apache HTTP Server Version 2.2</p>
+<p class="apache">Apache HTTP Server Version 2.3</p>
 <img alt="" src="../images/feather.gif" /></div>
 <div class="up"><a href="./"><img title="&lt;-" alt="&lt;-" src="../images/left.gif" /></a></div>
 <div id="path">
-<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">HTTP Server</a> &gt; <a href="http://httpd.apache.org/docs/">Documentation</a> &gt; <a href="../">Version 2.2</a> &gt; <a href="./">Modules</a></div>
+<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">HTTP Server</a> &gt; <a href="http://httpd.apache.org/docs/">Documentation</a> &gt; <a href="../">Version 2.3</a> &gt; <a href="./">Modules</a></div>
 <div id="page-content">
 <div id="preamble"><h1>Apache Module mod_unique_id</h1>
 <div class="toplang">
 <p><span>Available Languages: </span><a href="../en/mod/mod_unique_id.html" title="English">&nbsp;en&nbsp;</a> |
+<a href="../fr/mod/mod_unique_id.html" hreflang="fr" rel="alternate" title="Français">&nbsp;fr&nbsp;</a> |
 <a href="../ja/mod/mod_unique_id.html" hreflang="ja" rel="alternate" title="Japanese">&nbsp;ja&nbsp;</a> |
 <a href="../ko/mod/mod_unique_id.html" hreflang="ko" rel="alternate" title="Korean">&nbsp;ko&nbsp;</a></p>
 </div>
@@ -92,7 +93,10 @@ identifier for each request</td></tr>
     <p>Given those assumptions, at a single point in time we can
     identify any httpd process on any machine in the cluster from
     all other httpd processes. The machine's IP address and the pid
-    of the httpd process are sufficient to do this. So in order to
+    of the httpd process are sufficient to do this. A httpd process
+    can handle multiple requests simultaneously if you use a
+    multi-threaded MPM. In order to identify threads, we use a thread
+    index Apache httpd uses internally. So in order to
     generate unique identifiers for requests we need only
     distinguish between different points in time.</p>
 
@@ -162,11 +166,13 @@ identifier for each request</td></tr>
     even still, if you're running NTP then your UTC time will be
     correct very shortly after reboot.</p>
 
+    
     <p>The <code>UNIQUE_ID</code> environment variable is
-    constructed by encoding the 112-bit (32-bit IP address, 32 bit
-    pid, 32 bit time stamp, 16 bit counter) quadruple using the
+    constructed by encoding the 144-bit (32-bit IP address, 32 bit
+    pid, 32 bit time stamp, 16 bit counter, 32 bit thread index)
+    quadruple using the
     alphabet <code>[A-Za-z0-9@-]</code> in a manner similar to MIME
-    base64 encoding, producing 19 characters. The MIME base64
+    base64 encoding, producing 24 characters. The MIME base64
     alphabet is actually <code>[A-Za-z0-9+/]</code> however
     <code>+</code> and <code>/</code> need to be specially encoded
     in URLs, which makes them less desirable. All values are
@@ -192,8 +198,7 @@ identifier for each request</td></tr>
     issuing the new encodings.</p>
 
     <p>This we believe is a relatively portable solution to this
-    problem. It can be extended to multithreaded systems like
-    Windows NT, and can grow with future needs. The identifiers
+    problem. The identifiers
     generated have essentially an infinite life-time because future
     identifiers can be made longer as required. Essentially no
     communication is required between machines in the cluster (only
@@ -208,6 +213,7 @@ identifier for each request</td></tr>
 </div>
 <div class="bottomlang">
 <p><span>Available Languages: </span><a href="../en/mod/mod_unique_id.html" title="English">&nbsp;en&nbsp;</a> |
+<a href="../fr/mod/mod_unique_id.html" hreflang="fr" rel="alternate" title="Français">&nbsp;fr&nbsp;</a> |
 <a href="../ja/mod/mod_unique_id.html" hreflang="ja" rel="alternate" title="Japanese">&nbsp;ja&nbsp;</a> |
 <a href="../ko/mod/mod_unique_id.html" hreflang="ko" rel="alternate" title="Korean">&nbsp;ko&nbsp;</a></p>
 </div><div id="footer">

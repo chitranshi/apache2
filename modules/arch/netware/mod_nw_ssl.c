@@ -258,7 +258,7 @@ static int make_secure_socket(apr_pool_t *pconf, const struct sockaddr_in *serve
             (LPWSAPROTOCOL_INFO)&SecureProtoInfo, 0, 0);
 
     if (s == INVALID_SOCKET) {
-        ap_log_error(APLOG_MARK, APLOG_CRIT, WSAGetLastError(), sconf,
+        ap_log_error(APLOG_MARK, APLOG_CRIT, WSAGetLastError(), sconf, APLOGNO(02120)
                      "make_secure_socket: failed to get a socket for %s",
                      addr);
         return -1;
@@ -269,7 +269,7 @@ static int make_secure_socket(apr_pool_t *pconf, const struct sockaddr_in *serve
 
         if (WSAIoctl(s, SO_SSL_SET_FLAGS, (char *)&optParam,
             sizeof(optParam), NULL, 0, NULL, NULL, NULL)) {
-            ap_log_error(APLOG_MARK, APLOG_CRIT, WSAGetLastError(), sconf,
+            ap_log_error(APLOG_MARK, APLOG_CRIT, WSAGetLastError(), sconf, APLOGNO(02121)
                          "make_secure_socket: for %s, WSAIoctl: "
                          "(SO_SSL_SET_FLAGS)", addr);
             return -1;
@@ -284,7 +284,7 @@ static int make_secure_socket(apr_pool_t *pconf, const struct sockaddr_in *serve
 
     if (WSAIoctl(s, SO_SSL_SET_SERVER, (char *)&opts, sizeof(opts),
         NULL, 0, NULL, NULL, NULL) != 0) {
-        ap_log_error(APLOG_MARK, APLOG_CRIT, WSAGetLastError(), sconf,
+        ap_log_error(APLOG_MARK, APLOG_CRIT, WSAGetLastError(), sconf, APLOGNO(02122)
                      "make_secure_socket: for %s, WSAIoctl: "
                      "(SO_SSL_SET_SERVER)", addr);
         return -1;
@@ -295,7 +295,7 @@ static int make_secure_socket(apr_pool_t *pconf, const struct sockaddr_in *serve
 
         if(WSAIoctl(s, SO_SSL_SET_FLAGS, (char*)&optParam,
             sizeof(optParam), NULL, 0, NULL, NULL, NULL)) {
-            ap_log_error(APLOG_MARK, APLOG_CRIT, WSAGetLastError(), sconf,
+            ap_log_error(APLOG_MARK, APLOG_CRIT, WSAGetLastError(), sconf, APLOGNO(02123)
                          "make_secure_socket: for %s, WSAIoctl: "
                          "(SO_SSL_SET_FLAGS)", addr);
             return -1;
@@ -331,7 +331,7 @@ static int convert_secure_socket(conn_rec *c, apr_socket_t *csd)
                      NULL, 0, NULL, NULL, NULL);
         if (SOCKET_ERROR == rcode)
         {
-        ap_log_error(APLOG_MARK, APLOG_ERR, 0, c->base_server,
+        ap_log_error(APLOG_MARK, APLOG_ERR, 0, c->base_server, APLOGNO(02124)
                      "Error: %d with ioctlsocket(flag SO_TLS_ENABLE)", WSAGetLastError());
                 return rcode;
         }
@@ -366,7 +366,7 @@ static int convert_secure_socket(conn_rec *c, apr_socket_t *csd)
 
     /* make sure that it was successful */
         if(SOCKET_ERROR == rcode ){
-        ap_log_error(APLOG_MARK, APLOG_ERR, 0, c->base_server,
+        ap_log_error(APLOG_MARK, APLOG_ERR, 0, c->base_server, APLOGNO(02125)
                      "Error: %d with ioctl (SO_TLS_SET_CLIENT)", WSAGetLastError());
         }
         return rcode;
@@ -388,7 +388,7 @@ static int SSLize_Socket(SOCKET socketHnd, char *key, request_rec *r)
     rcode = WSAIoctl(socketHnd, SO_TLS_SET_FLAGS, &ulFlag, sizeof(unsigned long), NULL, 0, NULL, NULL, NULL);
     if(rcode)
     {
-        ap_log_error(APLOG_MARK, APLOG_ERR, 0, r->server,
+        ap_log_error(APLOG_MARK, APLOG_ERR, 0, r->server, APLOGNO(02126)
                      "Error: %d with WSAIoctl(SO_TLS_SET_FLAGS, SO_TLS_ENABLE)", WSAGetLastError());
         goto ERR;
     }
@@ -399,7 +399,7 @@ static int SSLize_Socket(SOCKET socketHnd, char *key, request_rec *r)
 
     if(rcode)
     {
-        ap_log_error(APLOG_MARK, APLOG_ERR, 0, r->server,
+        ap_log_error(APLOG_MARK, APLOG_ERR, 0, r->server, APLOGNO(02127)
                      "Error: %d with WSAIoctl(SO_TLS_SET_FLAGS, SO_TLS_SERVER)", WSAGetLastError());
         goto ERR;
     }
@@ -437,7 +437,7 @@ static int SSLize_Socket(SOCKET socketHnd, char *key, request_rec *r)
                      NULL,
                      NULL);
     if(SOCKET_ERROR == rcode) {
-        ap_log_error(APLOG_MARK, APLOG_ERR, 0, r->server,
+        ap_log_error(APLOG_MARK, APLOG_ERR, 0, r->server, APLOGNO(02128)
                      "Error: %d with WSAIoctl(SO_TLS_SET_SERVER)", WSAGetLastError());
         goto ERR;
     }
@@ -785,7 +785,7 @@ static int nwssl_post_config(apr_pool_t *pconf, apr_pool_t *plog,
                 lr->sd = sd;
                 if ((status = apr_sockaddr_info_get(&lr->bind_addr, sl->addr, APR_UNSPEC, sl->port, 0,
                                               s->process->pool)) != APR_SUCCESS) {
-                    ap_log_perror(APLOG_MARK, APLOG_CRIT, status, pconf,
+                    ap_log_perror(APLOG_MARK, APLOG_CRIT, status, pconf, APLOGNO(02129)
                                  "alloc_listener: failed to set up sockaddr for %s:%d", sl->addr, sl->port);
                     return HTTP_INTERNAL_SERVER_ERROR;
                 }
@@ -808,7 +808,7 @@ static int nwssl_post_config(apr_pool_t *pconf, apr_pool_t *plog,
             }
         }
         if (!found) {
-            ap_log_perror(APLOG_MARK, APLOG_WARNING, 0, plog,
+            ap_log_perror(APLOG_MARK, APLOG_WARNING, 0, plog, APLOGNO(02130)
                          "No Listen directive found for upgradeable listener %s:%d", slu->addr, slu->port);
         }
     }
@@ -895,7 +895,7 @@ static int nwssl_hook_Fixup(request_rec *r)
     if (!isSecure(r) && !isSecureUpgraded(r))
         return DECLINED;
 
-    apr_table_set(r->subprocess_env, "HTTPS", "on");
+    apr_table_setn(r->subprocess_env, "HTTPS", "on");
 
     return DECLINED;
 }
@@ -918,7 +918,7 @@ static apr_port_t nwssl_hook_default_port(const request_rec *r)
 
 int ssl_proxy_enable(conn_rec *c)
 {
-    apr_table_set(c->notes, "nwconv-ssl", "Y");
+    apr_table_setn(c->notes, "nwconv-ssl", "Y");
 
     return 1;
 }
@@ -1000,6 +1000,8 @@ char *ssl_var_lookup(apr_pool_t *p, server_rec *s, conn_rec *c, request_rec *r, 
                 result = r->uri;
             else if (strcEQ(var, "REQUEST_FILENAME"))
                 result = r->filename;
+            else if (strcEQ(var, "REMOTE_ADDR"))
+                result = r->useragent_ip;
             else if (strcEQ(var, "REMOTE_HOST"))
                 result = ap_get_remote_host(r->connection, r->per_dir_config,
                                             REMOTE_NAME, NULL);
@@ -1016,7 +1018,7 @@ char *ssl_var_lookup(apr_pool_t *p, server_rec *s, conn_rec *c, request_rec *r, 
             if (strcEQ(var, "SERVER_ADMIN"))
                 result = r->server->server_admin;
             else if (strcEQ(var, "SERVER_NAME"))
-                result = ap_get_server_name(r);
+                result = ap_get_server_name_for_url(r);
             else if (strcEQ(var, "SERVER_PORT"))
                 result = apr_psprintf(p, "%u", ap_get_server_port(r));
             else if (strcEQ(var, "SERVER_PROTOCOL"))
@@ -1055,8 +1057,6 @@ char *ssl_var_lookup(apr_pool_t *p, server_rec *s, conn_rec *c, request_rec *r, 
 
                 if (strlen(var) > 4 && strcEQn(var, "SSL_", 4))
                         result = NULL;
-        else if (strcEQ(var, "REMOTE_ADDR"))
-            result = c->remote_ip;
     }
 
     /*
@@ -1167,7 +1167,7 @@ static apr_status_t ssl_io_filter_Upgrade(ap_filter_t *f,
         csd = csd_data->csd;
     }
     else {
-        ap_log_error(APLOG_MARK, APLOG_ERR, 0, r->server,
+        ap_log_error(APLOG_MARK, APLOG_ERR, 0, r->server, APLOGNO(02131)
                      "Unable to get upgradeable socket handle");
         return ap_pass_brigade(f->next, bb);
     }
@@ -1184,7 +1184,7 @@ static apr_status_t ssl_io_filter_Upgrade(ap_filter_t *f,
 
     rv = ap_pass_brigade(f->next, upgradebb);
     if (rv) {
-        ap_log_rerror(APLOG_MARK, APLOG_ERR, rv, r,
+        ap_log_rerror(APLOG_MARK, APLOG_ERR, rv, r, APLOGNO(02132)
                       "could not send interim 101 Upgrade response");
         return AP_FILTER_ERROR;
     }
@@ -1202,12 +1202,12 @@ static apr_status_t ssl_io_filter_Upgrade(ap_filter_t *f,
         }
     }
     else {
-        ap_log_error(APLOG_MARK, APLOG_ERR, 0, r->server,
+        ap_log_error(APLOG_MARK, APLOG_ERR, 0, r->server, APLOGNO(02133)
                      "Upgradeable socket handle not found");
         return AP_FILTER_ERROR;
     }
 
-    ap_log_error(APLOG_MARK, APLOG_INFO, 0, r->server,
+    ap_log_error(APLOG_MARK, APLOG_INFO, 0, r->server, APLOGNO(02134)
                  "Awaiting re-negotiation handshake");
 
     /* Now that we have initialized the ssl connection which added the ssl_io_filter,
@@ -1257,7 +1257,7 @@ static void register_hooks(apr_pool_t *p)
     APR_REGISTER_OPTIONAL_FN(ssl_engine_disable);
 }
 
-module AP_MODULE_DECLARE_DATA nwssl_module =
+AP_DECLARE_MODULE(nwssl) =
 {
     STANDARD20_MODULE_STUFF,
     NULL,                       /* dir config creater */

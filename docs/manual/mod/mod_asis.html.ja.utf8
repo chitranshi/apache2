@@ -13,18 +13,22 @@
 <body>
 <div id="page-header">
 <p class="menu"><a href="../mod/">モジュール</a> | <a href="../mod/directives.html">ディレクティブ</a> | <a href="../faq/">FAQ</a> | <a href="../glossary.html">用語</a> | <a href="../sitemap.html">サイトマップ</a></p>
-<p class="apache">Apache HTTP サーバ バージョン 2.2</p>
+<p class="apache">Apache HTTP サーバ バージョン 2.3</p>
 <img alt="" src="../images/feather.gif" /></div>
 <div class="up"><a href="./"><img title="&lt;-" alt="&lt;-" src="../images/left.gif" /></a></div>
 <div id="path">
-<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">HTTP サーバ</a> &gt; <a href="http://httpd.apache.org/docs/">ドキュメンテーション</a> &gt; <a href="../">バージョン 2.2</a> &gt; <a href="./">モジュール</a></div>
+<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">HTTP サーバ</a> &gt; <a href="http://httpd.apache.org/docs/">ドキュメンテーション</a> &gt; <a href="../">バージョン
+            2.3</a> &gt; <a href="./">モジュール</a></div>
 <div id="page-content">
 <div id="preamble"><h1>Apache モジュール mod_asis</h1>
 <div class="toplang">
-<p><span>Available Languages: </span><a href="../en/mod/mod_asis.html" hreflang="en" rel="alternate" title="English">&nbsp;en&nbsp;</a> |
+<p><span>言語: </span><a href="../en/mod/mod_asis.html" hreflang="en" rel="alternate" title="English">&nbsp;en&nbsp;</a> |
+<a href="../fr/mod/mod_asis.html" hreflang="fr" rel="alternate" title="Français">&nbsp;fr&nbsp;</a> |
 <a href="../ja/mod/mod_asis.html" title="Japanese">&nbsp;ja&nbsp;</a> |
 <a href="../ko/mod/mod_asis.html" hreflang="ko" rel="alternate" title="Korean">&nbsp;ko&nbsp;</a></p>
 </div>
+<div class="outofdate">この日本語訳はすでに古くなっている可能性があります。
+          更新された内容を見るには英語版をご覧下さい。</div>
 <table class="module"><tr><th><a href="module-dict.html#Description">説明:</a></th><td>自分用の HTTP ヘッダの書かれているファイルを送信する</td></tr>
 <tr><th><a href="module-dict.html#Status">ステータス:</a></th><td>Base</td></tr>
 <tr><th><a href="module-dict.html#ModuleIdentifier">モジュール識別子:</a></th><td>asis_module</td></tr>
@@ -64,10 +68,11 @@
 
     <p>拡張子が <code>.asis</code> のすべてのファイルの内容は Apache
     からクライアントへほとんど変更無く送られます。
-    特に、HTTP ヘッダはファイルそれ自体から <code class="module"><a href="../mod/mod_cgi.html">mod_cgi</a></code> 
-    と同じ規則で読み取られますので、asis ファイルには適切なヘッダが
-    含まれていなければなりませんし、CGI での Status: ヘッダを
-    書いて HTTP レスポンスコードを決めることもできます。</p>
+    HTTP ヘッダは特別で、ファイルから <code class="module"><a href="../mod/mod_cgi.html">mod_cgi</a></code>
+    のルールに従って取り出されます。ですから asis ファイルには
+    正しいヘッダが記載されていなければなりませし、
+    また CGI での表記法であるところの Status: ヘッダを使って
+    HTTP レスポンスコードを決めることもできます。</p>
 
     <p>これはクライアントにファイルが移動したことを知らせるために
     <em>as is</em> (そのまま) で送られるファイルの内容の例です。
@@ -102,7 +107,8 @@
 </div>
 </div>
 <div class="bottomlang">
-<p><span>Available Languages: </span><a href="../en/mod/mod_asis.html" hreflang="en" rel="alternate" title="English">&nbsp;en&nbsp;</a> |
+<p><span>言語: </span><a href="../en/mod/mod_asis.html" hreflang="en" rel="alternate" title="English">&nbsp;en&nbsp;</a> |
+<a href="../fr/mod/mod_asis.html" hreflang="fr" rel="alternate" title="Français">&nbsp;fr&nbsp;</a> |
 <a href="../ja/mod/mod_asis.html" title="Japanese">&nbsp;ja&nbsp;</a> |
 <a href="../ko/mod/mod_asis.html" hreflang="ko" rel="alternate" title="Korean">&nbsp;ko&nbsp;</a></p>
 </div><div id="footer">

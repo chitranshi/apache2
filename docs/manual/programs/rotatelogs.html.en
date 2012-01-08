@@ -12,11 +12,11 @@
 <link href="../images/favicon.ico" rel="shortcut icon" /></head>
 <body id="manual-page"><div id="page-header">
 <p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="../faq/">FAQ</a> | <a href="../glossary.html">Glossary</a> | <a href="../sitemap.html">Sitemap</a></p>
-<p class="apache">Apache HTTP Server Version 2.2</p>
+<p class="apache">Apache HTTP Server Version 2.3</p>
 <img alt="" src="../images/feather.gif" /></div>
 <div class="up"><a href="./"><img title="&lt;-" alt="&lt;-" src="../images/left.gif" /></a></div>
 <div id="path">
-<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">HTTP Server</a> &gt; <a href="http://httpd.apache.org/docs/">Documentation</a> &gt; <a href="../">Version 2.2</a> &gt; <a href="./">Programs</a></div><div id="page-content"><div id="preamble"><h1>rotatelogs - Piped logging program to rotate Apache logs</h1>
+<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">HTTP Server</a> &gt; <a href="http://httpd.apache.org/docs/">Documentation</a> &gt; <a href="../">Version 2.3</a> &gt; <a href="./">Programs</a></div><div id="page-content"><div id="preamble"><h1>rotatelogs - Piped logging program to rotate Apache logs</h1>
 <div class="toplang">
 <p><span>Available Languages: </span><a href="../en/programs/rotatelogs.html" title="English">&nbsp;en&nbsp;</a> |
 <a href="../ko/programs/rotatelogs.html" hreflang="ko" rel="alternate" title="Korean">&nbsp;ko&nbsp;</a> |
@@ -38,9 +38,14 @@
 
      <p><code><strong>rotatelogs</strong>
      [ -<strong>l</strong> ]
+     [ -<strong>L</strong> <var>linkname</var> ]
+     [ -<strong>p</strong> <var>program</var> ]
      [ -<strong>f</strong> ]
+     [ -<strong>v</strong> ]
+     [ -<strong>e</strong> ]
+     [ -<strong>c</strong> ]
      <var>logfile</var>
-     <var>rotationtime</var>|<var>filesize</var>M 
+     <var>rotationtime</var>|<var>filesize</var>(B|K|M|G)
      [ <var>offset</var> ]</code></p>
 </div><div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
 <div class="section">
@@ -50,10 +55,26 @@
 
 <dt><code>-l</code></dt>
 <dd>Causes the use of local time rather than GMT as the base for the
-interval or for <code>strftime(3)</code> formatting with size-based 
-rotation.  Note that using <code>-l</code> in an environment which
-changes the GMT offset (such as for BST or DST) can lead to unpredictable
-results!</dd>
+interval or for <code>strftime(3)</code> formatting with size-based
+rotation.</dd>
+
+<dt><code>-L</code> <var>linkname</var></dt>
+<dd>Causes a hard link to be made from the current logfile
+to the specified link name.  This can be used to watch
+the log continuously across rotations using a command like
+<code>tail -F linkname</code>.</dd>
+
+<dt><code>-p</code> <var>program</var></dt>
+
+<dd>If given, <code>rotatelogs</code> will execute the specified
+program every time a new log file is opened.  The filename of the
+newly opened file is passed as the first argument to the program.  If
+executing after a rotation, the old log file is passed as the second
+argument.  <code>rotatelogs</code> does not wait for the specified
+program to terminate before continuing to operate, and will not log
+any error code returned on termination.  The spawned program uses the
+same stdin, stdout, and stderr as rotatelogs itself, and also inherits
+the environment.</dd>
 
 <dt><code>-f</code></dt>
 <dd>Causes the logfile to be opened immediately, as soon as
@@ -62,8 +83,27 @@ first logfile entry to be read (for non-busy sites, there may be
 a substantial delay between when the server is started
 and when the first request is handled, meaning that the
 associated logfile does not "exist" until then, which
-causes problems from some automated logging tools).
-<em>Available in version 2.2.9 and later.</em></dd>
+causes problems from some automated logging tools)</dd>
+
+<dt><code>-t</code></dt>
+<dd>Causes the logfile to be truncated instead of rotated. This is
+useful when a log is processed in real time by a command like tail,
+and there is no need for archived data. No suffix will be added to
+the filename, however format strings containing '%' characters
+will be respected.
+</dd>
+
+<dt><code>-v</code></dt>
+<dd>Produce verbose output on STDERR. The output contains
+the result of the configuration parsing, and all file open and
+close actions.</dd>
+
+<dt><code>-e</code></dt>
+<dd>Echo logs through to stdout. Useful when logs need to be further
+processed in real time by a further tool in the chain.</dd>
+
+<dt><code>-c</code></dt>
+<dd>Create log file for each interval, even if empty.</dd>
 
 <dt><code><var>logfile</var></code></dt>
 
@@ -71,16 +111,17 @@ causes problems from some automated logging tools).
 includes any '%' characters, it is treated as a format string for
 <code>strftime(3)</code>.  Otherwise, the suffix
 <var>.nnnnnnnnnn</var> is automatically added and is the time in
-seconds.  Both formats compute the start time from the beginning of
-the current period.  For example, if a rotation time of 86400 is 
-specified, the hour, minute, and second fields created from the
-<code>strftime(3)</code> format will all be zero, referring to the
-beginning of the current 24-hour period (midnight).</p>
+seconds (unless the -t option is used). Both formats compute the
+start time from the beginning of the current period.  For example,
+if a rotation time of 86400 is specified, the hour, minute, and
+second fields created from the <code>strftime(3)</code> format will
+all be zero, referring to the beginning of the current 24-hour
+period (midnight).</p>
 <p>When using <code>strftime(3)</code> filename formatting,
 be sure the log file format has enough granularity to produce
 a different file name each time the logs are rotated.  Otherwise
 rotation will overwrite the same file instead of starting a new
-one.  For example, if <var>logfile</var> was 
+one.  For example, if <var>logfile</var> was
 <code>/var/logs/errorlog.%Y-%m-%d</code> with log rotation at 5
 megabytes, but 5 megabytes was reached twice in the same day, the
 same log file name would be produced and log rotation would keep
@@ -96,10 +137,16 @@ of every hour; if the rotation time is 86400, the log file will be
 rotated every night at midnight.  (If no data is logged during an
 interval, no file will be created.)</dd>
 
-<dt><code><var>filesize</var>M</code></dt>
+<dt><code><var>filesize</var>(B|K|M|G)</code></dt>
 
-<dd>The maximum file size in megabytes followed by the letter
-<code>M</code> to specify size rather than time.</dd>
+<dd>The maximum file size in followed by exactly one of the letters
+<code>B</code> (Bytes), <code>K</code> (KBytes), <code>M</code> (MBytes)
+or <code>G</code> (GBytes).
+<p>
+When time and size are specified, the size must be given after the time.
+Rotation will occur whenever either time or size limits are reached.
+</p>
+</dd>
 
 <dt><code><var>offset</var></code></dt>
 
@@ -117,7 +164,7 @@ an offset.</dd>
 <div class="example"><p><code>
      CustomLog "|bin/rotatelogs /var/logs/logfile 86400" common
 </code></p></div>
-	 
+
      <p>This creates the files /var/logs/logfile.nnnn where nnnn  is
      the system time at which the log nominally starts (this time
      will always be a multiple of the rotation time, so  you  can
@@ -127,7 +174,7 @@ an offset.</dd>
 <div class="example"><p><code>
      CustomLog "|bin/rotatelogs -l /var/logs/logfile.%Y.%m.%d 86400" common
 </code></p></div>
-	 
+
      <p>This creates the files /var/logs/logfile.yyyy.mm.dd where
      yyyy is the year, mm is the month, and dd is the day of the month.
      Logging will switch to a new file every day at midnight, local time.</p>
@@ -146,7 +193,16 @@ an offset.</dd>
      reaches a size of 5 megabytes, and the suffix to the logfile name
      will be created of the form
      <code>errorlog.YYYY-mm-dd-HH_MM_SS</code>.</p>
- 
+
+<div class="example"><p><code>
+     CustomLog "|bin/rotatelogs -t /var/logs/logfile 86400" common
+</code></p></div>
+
+     <p>This creates the file /var/logs/logfile, truncating the file at
+     startup and then truncating the file once per day. It is expected
+     in this scenario that a separate process (such as tail) would
+     process the file in real time.</p>
+
 </div><div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
 <div class="section">
 <h2><a name="portability" id="portability">Portability</a></h2>
@@ -169,11 +225,11 @@ extensions.</p>
 <tr><td><code>%m</code></td><td>2-digit month</td></tr>
 <tr class="odd"><td><code>%p</code></td><td>am/pm of 12 hour clock (localized)</td></tr>
 <tr><td><code>%S</code></td><td>2-digit second</td></tr>
-<tr class="odd"><td><code>%U</code></td><td>2-digit week of year 
+<tr class="odd"><td><code>%U</code></td><td>2-digit week of year
 (Sunday first day of week)</td></tr>
-<tr><td><code>%W</code></td><td>2-digit week of year 
+<tr><td><code>%W</code></td><td>2-digit week of year
 (Monday first day of week)</td></tr>
-<tr class="odd"><td><code>%w</code></td><td>1-digit weekday 
+<tr class="odd"><td><code>%w</code></td><td>1-digit weekday
 (Sunday first day of week)</td></tr>
 <tr><td><code>%X</code></td><td>time (localized)</td></tr>
 <tr class="odd"><td><code>%x</code></td><td>date (localized)</td></tr>

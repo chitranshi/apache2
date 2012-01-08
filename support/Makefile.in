@@ -50,7 +50,7 @@ htdbm: $(htdbm_OBJECTS)
 	$(LINK) $(htdbm_LTFLAGS) $(htdbm_OBJECTS) $(PROGRAM_LDADD) $(CRYPT_LIBS)
 
 ab_OBJECTS = ab.lo
-ab_LDADD = $(PROGRAM_LDADD) $(SSL_LIBS)
+ab_LDADD = $(PROGRAM_LDADD) $(SSL_LIBS) $(MATH_LIBS)
 ab: $(ab_OBJECTS)
 	$(LINK) $(ab_LTFLAGS) $(ab_OBJECTS) $(ab_LDADD)
 
@@ -70,3 +70,6 @@ httxt2dbm_OBJECTS = httxt2dbm.lo
 httxt2dbm: $(httxt2dbm_OBJECTS)
 	$(LINK) $(httxt2dbm_LTFLAGS) $(httxt2dbm_OBJECTS) $(PROGRAM_LDADD)
 
+fcgistarter_OBJECTS = fcgistarter.lo
+fcgistarter: $(fcgistarter_OBJECTS)
+	$(LINK) $(fcgistarter_LTFLAGS) $(fcgistarter_OBJECTS) $(PROGRAM_LDADD)

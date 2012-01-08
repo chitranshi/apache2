@@ -12,19 +12,19 @@
 <link href="../images/favicon.ico" rel="shortcut icon" /></head>
 <body id="manual-page"><div id="page-header">
 <p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="../faq/">FAQ</a> | <a href="../glossary.html">Glossary</a> | <a href="../sitemap.html">Sitemap</a></p>
-<p class="apache">Apache HTTP Server Version 2.2</p>
+<p class="apache">Apache HTTP Server Version 2.3</p>
 <img alt="" src="../images/feather.gif" /></div>
 <div class="up"><a href="./"><img title="&lt;-" alt="&lt;-" src="../images/left.gif" /></a></div>
 <div id="path">
-<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">HTTP Server</a> &gt; <a href="http://httpd.apache.org/docs/">Documentation</a> &gt; <a href="../">Version 2.2</a> &gt; <a href="./">Programs</a></div><div id="page-content"><div id="preamble"><h1>httxt2dbm - Generate dbm files for use with RewriteMap</h1>
+<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">HTTP Server</a> &gt; <a href="http://httpd.apache.org/docs/">Documentation</a> &gt; <a href="../">Version 2.3</a> &gt; <a href="./">Programs</a></div><div id="page-content"><div id="preamble"><h1>httxt2dbm - Generate dbm files for use with RewriteMap</h1>
 <div class="toplang">
 <p><span>Available Languages: </span><a href="../en/programs/httxt2dbm.html" title="English">&nbsp;en&nbsp;</a> |
 <a href="../tr/programs/httxt2dbm.html" hreflang="tr" rel="alternate" title="Türkçe">&nbsp;tr&nbsp;</a></p>
 </div>
 
     <p><code>httxt2dbm</code> is used to generate dbm files from text input, for
-    use in <code class="directive"><a href="../mod/mod_rewrite.html#rewritemap">RewriteMap</a></code>RewriteMap with
-    the <code>dbm</code> map type.
+    use in <code class="directive"><a href="../mod/mod_rewrite.html#rewritemap">RewriteMap</a></code> with the
+    <code>dbm</code> map type.
     </p>
 </div>
 <div id="quickview"><ul id="toc"><li><img alt="" src="../images/down.gif" /> <a href="#synopsis">Synopsis</a></li>
@@ -65,7 +65,7 @@
     further details of this file's format and meaning.
     </dd>
 
-    <dt><code>-o  <var>OUTPUT_DBM</var></code></dt>
+    <dt><code>-o <var>OUTPUT_DBM</var></code></dt>
     <dd>Name of the output dbm files.</dd>
     </dl>
 </div><div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>

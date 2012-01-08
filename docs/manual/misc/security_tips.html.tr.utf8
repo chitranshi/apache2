@@ -12,27 +12,31 @@
 <link href="../images/favicon.ico" rel="shortcut icon" /></head>
 <body id="manual-page"><div id="page-header">
 <p class="menu"><a href="../mod/">Modüller</a> | <a href="../mod/directives.html">Yönergeler</a> | <a href="../faq/">SSS</a> | <a href="../glossary.html">Terimler</a> | <a href="../sitemap.html">Site Haritası</a></p>
-<p class="apache">Apache HTTP Sunucusu Sürüm 2.2</p>
+<p class="apache">Apache HTTP Sunucusu Sürüm 2.3</p>
 <img alt="" src="../images/feather.gif" /></div>
 <div class="up"><a href="./"><img title="&lt;-" alt="&lt;-" src="../images/left.gif" /></a></div>
 <div id="path">
-<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">HTTP Sunucusu</a> &gt; <a href="http://httpd.apache.org/docs/">Belgeleme</a> &gt; <a href="../">Sürüm 2.2</a> &gt; <a href="./">Çeşitli Belgeler</a></div><div id="page-content"><div id="preamble"><h1>Güvenlik İpuçları</h1>
+<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">HTTP Sunucusu</a> &gt; <a href="http://httpd.apache.org/docs/">Belgeleme</a> &gt; <a href="../">Sürüm 2.3</a> &gt; <a href="./">Çeşitli Belgeler</a></div><div id="page-content"><div id="preamble"><h1>Güvenlik İpuçları</h1>
 <div class="toplang">
 <p><span>Mevcut Diller: </span><a href="../en/misc/security_tips.html" hreflang="en" rel="alternate" title="English">&nbsp;en&nbsp;</a> |
+<a href="../fr/misc/security_tips.html" hreflang="fr" rel="alternate" title="Français">&nbsp;fr&nbsp;</a> |
 <a href="../ko/misc/security_tips.html" hreflang="ko" rel="alternate" title="Korean">&nbsp;ko&nbsp;</a> |
 <a href="../tr/misc/security_tips.html" title="Türkçe">&nbsp;tr&nbsp;</a></p>
 </div>
+<div class="outofdate">Bu çeviri güncel olmayabilir. Son değişiklikler için İngilizce sürüm geçerlidir.</div>
 
     <p>Bir HTTP Sunucusunu ayarlarken dikkat edilmesi gerekenler ve bazı
     ipuçları.  Öneriler kısmen Apache’ye özel kısmen de genel olacaktır.</p>
   </div>
 <div id="quickview"><ul id="toc"><li><img alt="" src="../images/down.gif" /> <a href="#uptodate">Güncel Tutma</a></li>
+<li><img alt="" src="../images/down.gif" /> <a href="#dos">Hizmet Reddi (DoS) Saldırıları</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#serverroot"><code>ServerRoot</code> Dizinlerinin İzinleri</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#ssi">Sunucu Taraflı İçerik Yerleştirme</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#cgi">CGI Genelinde</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#nsaliasedcgi"><code>ScriptAlias</code>’sız CGI</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#saliasedcgi"><code>ScriptAlias</code>’lı CGI</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#dynamic">Devingen içerikli kaynaklar</a></li>
+<li><img alt="" src="../images/down.gif" /> <a href="#dynamicsec">Devingen içeriğin güvenliği</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#systemsettings">Sistem Ayarlarının Korunması</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#protectserverfiles">Sunucu dosyalarının öntanımlı olarak korunması</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#watchyourlogs">Günlüklerin İzlenmesi</a></li>
@@ -58,6 +62,71 @@
       bakımdan, sisteminizdeki tüm yazılımların sorunları ve güncellemeleri
       hakkında bilgi sahibi olmalısınız.</p>
 
+  </div><div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
+<div class="section">
+<h2><a name="dos" id="dos">Hizmet Reddi (DoS) Saldırıları</a></h2>
+    
+
+    <p>Tüm ağ sunucuları, istemcilerin sistem kaynaklarından yararlanmalarını
+      engellemeye çalışan hizmet reddi saldırılarına (HRS) maruz kalabilir.
+      Bu tür saldırıları tamamen engellemek mümkün değildir, fakat
+      yarattıkları sorunları azaltmak için bazı şeyler yapabilirsiniz.</p>
+
+    <p>Çoğunlukla en etkili anti-HRS aracı bir güvenlik duvarı veya başka bir
+      işletim sistemi yapılandırmasıdır. Örneğin, çoğu güvenlik duvarı
+      herhangi bir IP adresinden aynı anda yapılan bağlantıların sayısına bir
+      sınırlama getirmek üzere yapılandırılabilir. Böylece basit saldırılar
+      engellenebilir. Ancak bunun dağıtık hizmet reddi saldırılarına (DHRS)
+      karşı bir etkisi olmaz.</p>
+
+    <p>Bunların yanında Apache HTTP Sunucusunun da sorunları azaltıcı
+      tedbirler alınmasını sağlayacak bazı yapılandırmaları vardır:</p>
+
+    <ul>
+      <li>HRS’ye maruz kalması olası sitelerde <code class="directive"><a href="../mod/core.html#timeout">TimeOut</a></code> yönergesinin değeri düşürülmelidir. Birkaç
+        saniye gibi mümkün olduğunca düşük bir ayar uygun olabilir. Ancak
+        <code class="directive"><a href="../mod/core.html#timeout">TimeOut</a></code> başka işlemlerde de
+        kullanıldığından çok düşük değerler, örneğin, uzun süre çalışan CGI
+        betiklerinde sorunlar çıkmasına sebep olabilir.</li>
+
+      <li>HRS’ye maruz kalması olası sitelerde <code class="directive"><a href="../mod/core.html#keepalivetimeout">KeepAliveTimeout</a></code> yönergesinin değeri de düşürülebilir.
+        Hatta bazı siteler başarımı arttırmak amacıyla <code class="directive"><a href="../mod/core.html#keepalive">KeepAlive</a></code> yönergesi üzerinden kalıcı
+        bağlantıları tamamen kapatabilirler.</li>
+
+      <li>Zaman aşımıyla ilgili yönergeler bakımından diğer modüller de
+        araştırılmalıdır.</li>
+
+      <li><code class="directive"><a href="../mod/core.html#limitrequestbody">LimitRequestBody</a></code>,
+      <code class="directive"><a href="../mod/core.html#limitrequestfields">LimitRequestFields</a></code>,
+      <code class="directive"><a href="../mod/core.html#limitrequestfieldsize">LimitRequestFieldSize</a></code>,
+      <code class="directive"><a href="../mod/core.html#limitrequestline">LimitRequestLine</a></code> ve
+      <code class="directive"><a href="../mod/core.html#limitxmlrequestbody">LimitXMLRequestBody</a></code> yönergeleri,
+        istemci girdileri ile tetiklenen özkaynak tüketimini sınırlamak için
+        yapılandırılırken dikkatli olunmalıdır.</li>
+
+      <li>İşletim sisteminiz desteklediği takdirde, işletim sisteminin isteği
+        işleyen kısmını yüksüz bırakmak için <code class="directive"><a href="../mod/core.html#acceptfilter">AcceptFilter</a></code> yönergesinin etkin olmasını sağlamalısınız.
+        Bu, Apache HTTP Sunucusunda zaten öntanımlı olarak etkindir.
+        Yapacağınız şey işletim sistemi çekirdeğini buna göre yapılandırmak
+        olacaktır.</li>
+
+      <li>Sunucu tarafından özkaynakları tüketmeden aynı anda işlenebilecek
+        bağlantıların sayısını sınırlamak için <code class="directive"><a href="../mod/mpm_common.html#maxclients">MaxClients</a></code> yönergesini kullanın. Ayrıca, <a href="perf-tuning.html">başarım arttırma belgesine</a> de
+        bakabilirsiniz.</li>
+
+      <li>HRS’lerin etkilerini azaltmak için aynı andaki bağlantı sayısını
+        arttırabilecek evreli <a href="../mpm.html">MPM</a>’lerden birini
+        kullanmak iyi olabilir. Dahası, deneysel <code class="module"><a href="../mod/event.html">event</a></code> MPM’i
+        her bağlantıya yeni bir evre atanmaması için eşzamansız işlem yapar.
+        Ancak bu çalışma henüz tamamlanmamıştır. Özellikle de,
+        <code class="module"><a href="../mod/event.html">event</a></code> MPM’i <code class="module"><a href="../mod/mod_ssl.html">mod_ssl</a></code> ve diğer girdi
+        süzgeçleri ile henüz uyumlu değildir.</li>
+
+      <li><a href="http://modules.apache.org/">http://modules.apache.org/</a>
+        adresinde, belli istemci davranışlarını sınırlayacak ve HRS ile
+        ilgili sorunları azaltmaya yardımcı olacak üçüncü parti modüller
+        bulunabilir.</li>
+    </ul>
   </div><div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
 <div class="section">
 <h2><a name="serverroot" id="serverroot"><code>ServerRoot</code> Dizinlerinin İzinleri</a></h2>
@@ -221,6 +290,28 @@
 
   </div><div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
 <div class="section">
+<h2><a name="dynamicsec" id="dynamicsec">Devingen içeriğin güvenliği</a></h2>
+    
+
+    <p><code>mod_php</code>, <code>mod_perl</code> veya
+      <code>mod_python</code> gibi devingen içeriği yapılandırırken
+      güvenlikle ilgili değerlendirmelerin çoğu <code>httpd</code>'nin
+      kapsamından çıkar ve bu modüllerin belgelerini incelemek ihtiyacı
+      duyarsınız. Örneğin, PHP çoğu zaman kapalı tutulan
+      <a href="http://www.php.net/manual/en/ini.sect.safe-mode.php">Güvenli
+      Kip</a> ayarını etkin kılmanızı önerir. Daha fazla güvenlik için bir
+      diğer örnek bir PHP eklentisi olan
+      <a href="http://www.hardened-php.net/suhosin/">Suhosin</a>'dir. Bunlar
+      hakkında daha ayrıntılı bilgi için her projenin kendi belgelerine
+      başvurun.</p>
+
+    <p>Apache seviyesinde, <a href="http://modsecurity.org/">mod_security</a>
+      adı verilen modülü bir HTTP güvenlik duvarı gibi ele alabilir, devingen
+      içeriğin güvenliğini arttırmanıza yardımcı olmak üzere inceden inceye
+      yapılandırabilirsiniz.</p>
+
+  </div><div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
+<div class="section">
 <h2><a name="systemsettings" id="systemsettings">Sistem Ayarlarının Korunması</a></h2>
     
 
@@ -325,7 +416,7 @@
     <p>Bu, sunucu yapılandırma dosyanızda aşağıdaki yapılandırmayı iptal ettiğiniz anlamına gelir:</p>
 
     <div class="example"><p><code>
-      &lt;Files ~ "^\.ht"&gt;
+      &lt;Files "^.ht*"&gt;
       <span class="indent">
         Order allow,deny <br />
         Deny from all
@@ -336,6 +427,7 @@
   </div></div>
 <div class="bottomlang">
 <p><span>Mevcut Diller: </span><a href="../en/misc/security_tips.html" hreflang="en" rel="alternate" title="English">&nbsp;en&nbsp;</a> |
+<a href="../fr/misc/security_tips.html" hreflang="fr" rel="alternate" title="Français">&nbsp;fr&nbsp;</a> |
 <a href="../ko/misc/security_tips.html" hreflang="ko" rel="alternate" title="Korean">&nbsp;ko&nbsp;</a> |
 <a href="../tr/misc/security_tips.html" title="Türkçe">&nbsp;tr&nbsp;</a></p>
 </div><div id="footer">

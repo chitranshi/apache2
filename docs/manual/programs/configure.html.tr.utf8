@@ -12,16 +12,17 @@
 <link href="../images/favicon.ico" rel="shortcut icon" /></head>
 <body id="manual-page"><div id="page-header">
 <p class="menu"><a href="../mod/">Modüller</a> | <a href="../mod/directives.html">Yönergeler</a> | <a href="../faq/">SSS</a> | <a href="../glossary.html">Terimler</a> | <a href="../sitemap.html">Site Haritası</a></p>
-<p class="apache">Apache HTTP Sunucusu Sürüm 2.2</p>
+<p class="apache">Apache HTTP Sunucusu Sürüm 2.3</p>
 <img alt="" src="../images/feather.gif" /></div>
 <div class="up"><a href="./"><img title="&lt;-" alt="&lt;-" src="../images/left.gif" /></a></div>
 <div id="path">
-<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">HTTP Sunucusu</a> &gt; <a href="http://httpd.apache.org/docs/">Belgeleme</a> &gt; <a href="../">Sürüm 2.2</a> &gt; <a href="./">Programlar</a></div><div id="page-content"><div id="preamble"><h1>configure - kaynak ağacını yapılandırır</h1>
+<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">HTTP Sunucusu</a> &gt; <a href="http://httpd.apache.org/docs/">Belgeleme</a> &gt; <a href="../">Sürüm 2.3</a> &gt; <a href="./">Programlar</a></div><div id="page-content"><div id="preamble"><h1>configure - kaynak ağacını yapılandırır</h1>
 <div class="toplang">
 <p><span>Mevcut Diller: </span><a href="../en/programs/configure.html" hreflang="en" rel="alternate" title="English">&nbsp;en&nbsp;</a> |
 <a href="../ko/programs/configure.html" hreflang="ko" rel="alternate" title="Korean">&nbsp;ko&nbsp;</a> |
 <a href="../tr/programs/configure.html" title="Türkçe">&nbsp;tr&nbsp;</a></p>
 </div>
+<div class="outofdate">Bu çeviri güncel olmayabilir. Son değişiklikler için İngilizce sürüm geçerlidir.</div>
 
     <p><code>configure</code> betiği, Apache HTTP Sunucusunun kaynak kodlarını
       belli bir platform için yapılandırmakta ve derlemekte kullanılır.
@@ -231,7 +232,7 @@
         <dd><code>httpd.conf</code>, <code>mime.types</code> gibi tek
           makinelik salt okunur sunucu yapılandırma dosyaları
           <code><em>dizin</em></code> dizinine kurulur. Öntanımlı olarak
-          <code>sysconfdir</code> bu dizini <code><var>PREFIX</var>/conf</code>
+          <code>sysconfdir</code> bu dizini <code><var>PREFIX</var>/etc</code>
           olarak tanımlar.</dd>
       </dl>
     
@@ -317,8 +318,8 @@
         <dd><code class="module"><a href="../mod/mod_asis.html">mod_asis</a></code> modülü tarafından sağlanan kendinden
           HTTP başlıklı dosya türü desteğini iptal eder.</dd>
 
-        <dt><code>--disable-auth-basic</code></dt>
-        <dd><code class="module"><a href="../mod/mod_auth.html">mod_auth</a></code> modülü tarafından sağlanan kullanıcıya
+        <dt><code>--disable-auth</code></dt>
+        <dd><code class="module"><a href="../mod/mod_authn_file.html">mod_authn_file</a></code> modülü tarafından sağlanan kullanıcıya
           dayalı erişim denetimi iptal edilir. Bu modül, kullanıcı isminin ve
           parolasının salt metin dosyalarda saklandığı Temel HTTP Kimlik
           Doğrulaması için kullanılır.</dd>
@@ -328,7 +329,7 @@
           içerik listelemesini iptal eder.</dd>
 
         <dt><code>--disable-access</code></dt>
-        <dd><code class="module"><a href="../mod/mod_access.html">mod_access</a></code> modülü tarafından sağlanan konağa
+        <dd><code class="module"><a href="../mod/mod_authz_host.html">mod_authz_host</a></code> modülü tarafından sağlanan konağa
           dayalı erişim denetimi iptal edilir.</dd>
 
         <dt><code>--disable-cgi</code></dt>
@@ -414,7 +415,7 @@
 
       <dl>
         <dt><code>--enable-authn-anon</code></dt>
-        <dd><code class="module"><a href="../mod/mod_auth_anon.html">mod_auth_anon</a></code> modülünün sağladığı anonim
+        <dd><code class="module"><a href="../mod/mod_authn_anon.html">mod_authn_anon</a></code> modülünün sağladığı anonim
           kullanıcı erişimi etkin kılınır.</dd>
 
         <dt><code>--enable-authn-dbm</code></dt>
@@ -425,7 +426,7 @@
 
         <dt><code>--enable-authz-dbm</code></dt>
         <dd><code class="module"><a href="../mod/mod_authz_dbm.html">mod_authz_dbm</a></code> modülü kullanıcı isimlerinin ve
-          parolalarının DBM türü veritabanı dosyalarında saklandığı HTTP Temel
+          gruplarının DBM türü veritabanı dosyalarında saklandığı HTTP Temel
           Kimlik Kanıtlaması için destek sağlar. Bu seçeneği bu modülü etkin
           kılmak için kullanabilirsiniz.</dd>
 
@@ -443,8 +444,7 @@
           dosya önbelleklemesi etkin kılınır. Bu deneysel modülün kullanımı,
           aşırı yüklü sunucularda ya da önbellekli vekillerde ilginç sonuçlar
           verebilir. Bunun yanında en azından bir saklama alanı yönetim modülü
-          (örn, <code class="module"><a href="../mod/mod_disk_cache.html">mod_disk_cache</a></code> veya
-          <code class="module"><a href="../mod/mod_mem_cache.html">mod_mem_cache</a></code>) gerekebilir.</dd>
+          (örn, <code class="module"><a href="../mod/mod_cache_disk.html">mod_cache_disk</a></code>) gerekebilir.</dd>
 
         <dt><code>--enable-cern-meta</code></dt>
         <dd><code class="module"><a href="../mod/mod_cern_meta.html">mod_cern_meta</a></code> modülü tarafından sağlanan CERN
@@ -484,7 +484,7 @@
           sıkıştırılmış aktarım kodlaması etkin kılınır.</dd>
 
         <dt><code>--enable-disk-cache</code></dt>
-        <dd><code class="module"><a href="../mod/mod_disk_cache.html">mod_disk_cache</a></code> modülü tarafından sağlanan diskte
+        <dd><code class="module"><a href="../mod/mod_cache_disk.html">mod_cache_disk</a></code> modülü tarafından sağlanan diskte
           önbellekleme etkin kılınır.</dd>
 
         <dt><code>--enable-expires</code></dt>
@@ -515,10 +515,6 @@
         <dd><code class="module"><a href="../mod/mod_logio.html">mod_logio</a></code> modülü tarafından sağlanan başlıklarda
           bulunan girdi ve çıktı bayt sayılarının günlüklenmesi etkin
           kılınır.</dd>
-
-        <dt><code>--enable-mem-cache</code></dt>
-        <dd><code class="module"><a href="../mod/mod_mem_cache.html">mod_mem_cache</a></code> modülü tarafından sağlanan bellekte
-          önbellekleme etkin kılınır.</dd>
 
         <dt><code>--enable-mime-magic</code></dt>
         <dd><code class="module"><a href="../mod/mod_mime_magic.html">mod_mime_magic</a></code> modülü tarafından sağlanan
@@ -692,7 +688,6 @@
           belirtilebilir. Bu seçenek kullanılmadığı takdirde işletim
           sisteminiz için <a href="../mpm.html#defaults">öntanımlı MPM</a>
           etkin olur. Bu seçenekte belirtilebilecek MPM isimleri:
-          <code class="module"><a href="../mod/beos.html">beos</a></code>, <code class="module"><a href="../mod/mpmt_os2.html">mpmt_os2</a></code>,
           <code class="module"><a href="../mod/prefork.html">prefork</a></code> ve <code class="module"><a href="../mod/worker.html">worker</a></code>.</dd>
       </dl>
     
@@ -736,7 +731,8 @@
             ./configure \<br />
             <span class="indent">
                 --with-ldap \<br />
-                --enable-mods-shared="all ssl ldap cache proxy authn_alias mem_cache file_cache authnz_ldap charset_lite dav_lock disk_cache"
+                --enable-mods-shared="all ssl ldap cache proxy authn_alias
+                file_cache authnz_ldap charset_lite dav_lock cache_disk"
             </span>
           </code></p></div>
         </dd>
@@ -822,8 +818,7 @@
       </dl>
 
       <p>Apache HTTP Sunucusunun çeşitli bölümleri,
-        <code class="module"><a href="../mod/mod_authn_dbm.html">mod_authn_dbm</a></code>, <code class="module"><a href="../mod/mod_authz_dbm.html">mod_authz_dbm</a></code> ve
-        <code class="module"><a href="../mod/mod_rewrite.html">mod_rewrite</a></code>
+        <code class="module"><a href="../mod/mod_authn_dbm.html">mod_authn_dbm</a></code> modülü ve <code class="module"><a href="../mod/mod_rewrite.html">mod_rewrite</a></code>
         modülünün <code class="directive"><a href="../mod/mod_rewrite.html#rewritemap">RewriteMap</a></code>
         yönergesi bilgilere erişimi hızlandırmak için basit anahtar/değer
         veritabanları kullanırlar. SDBM, APU içinde mevcut olduğundan bu

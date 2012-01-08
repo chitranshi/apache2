@@ -1,3 +1,10 @@
+apache2 (2.3.16-beta-1) UNRELEASED; urgency=low
+
+  * Package the coming up 2.4 branch of Apache by packaging the current
+    development release 2.3.16.
+
+ -- Arno Töll <debian@toell.net>  Sun, 08 Jan 2012 22:27:29 +0100
+
 apache2 (2.2.21-6) UNRELEASED; urgency=low
 
   [ Arno Töll ]

@@ -1,0 +1,5 @@
+/usr/lib/apache2/modules/
+/usr/sbin/apache2
+/usr/sbin/apachectl
+/usr/sbin/envvars-std
+/usr/sbin/httxt2dbm

@@ -1,0 +1,10 @@
+/usr/sbin/ab
+/usr/sbin/fcgistarter
+/usr/sbin/logresolve
+/usr/sbin/htdbm
+/usr/sbin/dbmmanage
+/usr/sbin/htpasswd
+/usr/sbin/htdigest
+/usr/sbin/rotatelogs
+/usr/sbin/htcacheclean
+/usr/sbin/checkgid

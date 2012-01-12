@@ -1,10 +1,10 @@
-/usr/sbin/ab
-/usr/sbin/fcgistarter
-/usr/sbin/logresolve
-/usr/sbin/htdbm
-/usr/sbin/dbmmanage
-/usr/sbin/htpasswd
-/usr/sbin/htdigest
-/usr/sbin/rotatelogs
-/usr/sbin/htcacheclean
-/usr/sbin/checkgid
+/usr/sbin/ab		/usr/bin
+/usr/sbin/fcgistarter	/usr/bin
+/usr/sbin/logresolve	/usr/bin
+/usr/sbin/htdbm		/usr/bin
+/usr/sbin/dbmmanage	/usr/bin
+/usr/sbin/htpasswd	/usr/bin
+/usr/sbin/htdigest	/usr/bin
+/usr/sbin/rotatelogs	/usr/bin
+/usr/sbin/htcacheclean	/usr/bin
+/usr/sbin/checkgid	/usr/bin

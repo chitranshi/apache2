@@ -2,8 +2,22 @@ apache2 (2.3.16-beta-1) UNRELEASED; urgency=low
 
   * Package the coming up 2.4 branch of Apache by packaging the current
     development release 2.3.16.
+  * Rewrite most parts of debian/rules.
+    + move cronjob and init script to debhelper configuration files
+      (apache2.cron.daily and apache2.init respectively)
+  * Refactor binary packages, now as things simplified. MPMs are simple
+    modules now, they can be bundled into the same binary package which do not
+    need to conflict with each other. Thus, Apache now primarily consists of the
+    following packages:
+    + apache2 - configuration files and init scripts
+    + apache2-bin - binaries and modules
+    + apache2-common - error pages and images
+  * Drop the ITK MPM entirely for now
+  * Drop debian/source/options again: We do not need to ignore .svn directories
+    anymore since the new package management system is based on git and includes
+    the full source
 
- -- Arno Töll <debian@toell.net>  Sun, 08 Jan 2012 22:27:29 +0100
+ -- Arno Töll <debian@toell.net>  Thu, 12 Jan 2012 03:16:24 +0100
 
 apache2 (2.2.21-6) UNRELEASED; urgency=low
 

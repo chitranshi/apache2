@@ -230,27 +230,28 @@ override_dh_install:
 #	cp debian/apache2-doc.conf debian/apache2-doc/etc/apache2/conf.d/apache2-doc
 #	perl debian/convert_docs debian/apache2-doc/usr/share/doc/apache2-doc/manual
 #
-#override_dh_fixperms:
-#	# standard suexec
-#	chmod 4754 debian/apache2-suexec/usr/lib/apache2/suexec
-#	chgrp www-data debian/apache2-suexec/usr/lib/apache2/suexec
+
+override_dh_fixperms:
+	# standard suexec
+	chmod 4754 debian/apache2-suexec/usr/lib/apache2/suexec
+	chgrp www-data debian/apache2-suexec/usr/lib/apache2/suexec
 #	# configurable suexec
 #	cp $(BUILD_DIR)/worker/support/suexec-custom debian/apache2-suexec-custom/usr/lib/apache2/suexec
 #	cp debian/suexec-custom.config debian/apache2-suexec-custom/etc/apache2/suexec/www-data
 #	chmod 4754 debian/apache2-suexec-custom/usr/lib/apache2/suexec
 #	chgrp www-data debian/apache2-suexec-custom/usr/lib/apache2/suexec
-#	dh_fixperms -Xusr/lib/apache2/suexec
+	dh_fixperms -Xusr/lib/apache2/suexec
 #	chown -R www-data:www-data debian/apache2.2-common/var/cache/apache2
 #	chown root:adm debian/apache2.2-common/var/log/apache2
 #	chmod o-rx debian/apache2.2-common/var/log/apache2
 #
-#override_dh_installinit:
-#	dh_installinit --no-start --no-restart-on-upgrade --name=apache2 -- defaults 91 09
-#
-#override_dh_installcron:
-#	dh_installcron --name=apache2
-#
-#override_dh_installdocs:
+
+override_dh_installdocs:
+	perl debian/convert_docs debian/apache2-doc/usr/share/doc/apache2-doc/manual
+	# FIXME: deal with debian/README.backtrace and debian/README.multiple-instances
+	dh_installdocs
+
+
 #	dh_installdocs debian/README.backtrace -papache2.2-bin
 #	dh_installdocs debian/README.backtrace debian/README.multiple-instances -papache2.2-common
 #	dh_installdocs -Napache2.2-common -Napache2.2-bin

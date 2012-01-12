@@ -1,2 +1,3 @@
 /usr/share/apache2/icons/
 /usr/share/apache2/error
+debian/icons/*.png      usr/share/apache2/icons

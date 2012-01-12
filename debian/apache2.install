@@ -1,0 +1,2 @@
+/etc/apache2		/usr/share/doc/apache2-doc/examples
+debian/config-dir/*	/etc/apache2

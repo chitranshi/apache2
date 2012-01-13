@@ -93,14 +93,15 @@ export DH_VERBOSE=1
 #  BUILDMAKEFLAGS = -j$(NUMJOBS)
 #endif
 #
-#prepare-custom-suexec:
-#	cp support/suexec.c support/suexec-custom.c
-#	patch -p1 < debian/patches/202_suexec-custom
-#
-#unapply-custom-suexec:
-#	rm -f support/suexec-custom.c
-#
-#override_dh_auto_clean: unapply-custom-suexec
+prepare-custom-suexec:
+	cp support/suexec.c support/suexec-custom.c
+	patch -p1 < debian/patches/202_suexec-custom
+
+unapply-custom-suexec:
+	rm -f support/suexec-custom.c
+
+override_dh_auto_clean: unapply-custom-suexec
+	dh_auto_clean
 #	rm -rf $(BUILD_DIR)
 #	rm -rf $(INSTALL_DIR)
 #	rm -f debian/tmp
@@ -177,7 +178,7 @@ export DH_VERBOSE=1
 %:
 	dh $@ --parallel
 
-override_dh_auto_configure:
+override_dh_auto_configure: prepare-custom-suexec
 	./configure --enable-layout=Debian --enable-so --with-program-name=apache2 \
 		--enable-suexec --with-suexec-caller=www-data --with-suexec-bin=/usr/lib/apache2/suexec \
 		--with-suexec-docroot=/var/www --with-suexec-userdir=public_html \
@@ -233,13 +234,11 @@ override_dh_install:
 
 override_dh_fixperms:
 	# standard suexec
-	chmod 4754 debian/apache2-suexec/usr/lib/apache2/suexec
-	chgrp www-data debian/apache2-suexec/usr/lib/apache2/suexec
-#	# configurable suexec
-#	cp $(BUILD_DIR)/worker/support/suexec-custom debian/apache2-suexec-custom/usr/lib/apache2/suexec
-#	cp debian/suexec-custom.config debian/apache2-suexec-custom/etc/apache2/suexec/www-data
-#	chmod 4754 debian/apache2-suexec-custom/usr/lib/apache2/suexec
-#	chgrp www-data debian/apache2-suexec-custom/usr/lib/apache2/suexec
+	chmod 4754 debian/apache2-suexec/usr/lib/apache2/suexec-pristine
+	chgrp www-data debian/apache2-suexec/usr/lib/apache2/suexec-pristine
+	# configurable suexec
+	chmod 4754 debian/apache2-suexec-custom/usr/lib/apache2/suexec-custom
+	chgrp www-data debian/apache2-suexec-custom/usr/lib/apache2/suexec-custom
 	dh_fixperms -Xusr/lib/apache2/suexec
 #	chown -R www-data:www-data debian/apache2.2-common/var/cache/apache2
 #	chown root:adm debian/apache2.2-common/var/log/apache2
@@ -304,3 +303,4 @@ override_dh_installdocs:
 #	dh_clean
 #
 #.PHONY: configure-% build-%-tree prepare-custom-suexec unapply-custom-suexec
+.PHONY: prepare-custom-suexec unapply-custom-suexec

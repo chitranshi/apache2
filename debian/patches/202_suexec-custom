@@ -23,7 +23,7 @@
  #if APR_HAVE_UNISTD_H
  #include <unistd.h>
  #endif
-@@ -203,6 +205,26 @@
+@@ -190,6 +192,26 @@
      return;
  }
  
@@ -50,10 +50,10 @@
  static void clean_env(void)
  {
      char pathbuf[512];
-@@ -266,6 +288,10 @@
+@@ -251,6 +273,10 @@
+     struct group *gr;       /* group entry holder        */
      struct stat dir_info;   /* directory info holder     */
      struct stat prg_info;   /* program info holder       */
-     int cwdh;               /* handle to cwd             */
 +    char *suexec_docroot        = NULL;
 +    char *suexec_userdir_suffix = NULL;
 +    char *filename              = NULL;
@@ -61,7 +61,7 @@
  
      /*
       * Start with a "clean" environment
-@@ -296,15 +322,10 @@
+@@ -280,15 +306,10 @@
              || (! strcmp(AP_HTTPD_USER, pw->pw_name)))
  #endif /* _OSD_POSIX */
          ) {
@@ -78,7 +78,7 @@
  #ifdef AP_LOG_EXEC
          fprintf(stderr, " -D AP_LOG_EXEC=\"%s\"\n", AP_LOG_EXEC);
  #endif
-@@ -317,9 +338,6 @@
+@@ -301,9 +322,6 @@
  #ifdef AP_UID_MIN
          fprintf(stderr, " -D AP_UID_MIN=%d\n", AP_UID_MIN);
  #endif
@@ -88,7 +88,7 @@
          exit(0);
      }
      /*
-@@ -334,23 +352,6 @@
+@@ -318,23 +336,6 @@
      target_gname = argv[2];
      cmd = argv[3];
  
@@ -112,7 +112,7 @@
  
      /*
       * Check for a leading '/' (absolute path) in the command to be executed,
-@@ -375,6 +376,63 @@
+@@ -359,6 +360,63 @@
      }
  
      /*
@@ -176,23 +176,23 @@
       * Error out if the target username is invalid.
       */
      if (strspn(target_uname, "1234567890") != strlen(target_uname)) {
-@@ -508,7 +566,7 @@
+@@ -487,7 +545,7 @@
  
      if (userdir) {
          if (((chdir(target_homedir)) != 0) ||
 -            ((chdir(AP_USERDIR_SUFFIX)) != 0) ||
 +            ((chdir(suexec_userdir_suffix)) != 0) ||
              ((getcwd(dwd, AP_MAXPATH)) == NULL) ||
-             ((fchdir(cwdh)) != 0)) {
+             ((chdir(cwd)) != 0)) {
              log_err("cannot get docroot information (%s)\n", target_homedir);
-@@ -516,10 +574,10 @@
+@@ -495,10 +553,10 @@
          }
      }
      else {
 -        if (((chdir(AP_DOC_ROOT)) != 0) ||
 +        if (((chdir(suexec_docroot)) != 0) ||
              ((getcwd(dwd, AP_MAXPATH)) == NULL) ||
-             ((fchdir(cwdh)) != 0)) {
+             ((chdir(cwd)) != 0)) {
 -            log_err("cannot get docroot information (%s)\n", AP_DOC_ROOT);
 +            log_err("cannot get docroot information (%s)\n", suexec_docroot);
              exit(113);

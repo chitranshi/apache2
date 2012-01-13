@@ -1,6 +1,5 @@
 /usr/lib/apache2/modules/
 /usr/sbin/apache2
-/usr/sbin/envvars-std
 /usr/sbin/httxt2dbm
 debian/a2enmod			/usr/sbin
 debian/apache2ctl		/usr/sbin

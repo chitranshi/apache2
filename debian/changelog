@@ -16,8 +16,18 @@ apache2 (2.3.16-beta-1) UNRELEASED; urgency=low
   * Drop debian/source/options again: We do not need to ignore .svn directories
     anymore since the new package management system is based on git and includes
     the full source
+  * Refresh patches but leave all hunks unchanged where possible. Notable
+    changes are:
+    + 202_suexec-custom: Keep functionality as is, but rewrite smaller parts of
+      the patch to build two binaries: suexec-pristine and suexec-custom (see
+      below)
+  * Rename the "suexec" binary to "suexec-pristine" (in package apache2-suexec),
+    which is an alternative to our Debian specific "suexec-custom" binary. Upon
+    installation of each, a symlink is installed providing "suexec" by using the
+    update-alternatives(8) mechanism. This makes the change transparent to the
+    user, but simplifies package handling quite a lot.
 
- -- Arno Töll <debian@toell.net>  Thu, 12 Jan 2012 03:16:24 +0100
+ -- Arno Töll <debian@toell.net>  Fri, 13 Jan 2012 02:05:58 +0100
 
 apache2 (2.2.21-6) UNRELEASED; urgency=low
 

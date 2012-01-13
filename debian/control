@@ -146,22 +146,23 @@ Description: Standard suexec program for Apache 2 mod_suexec
  compiled with document root /var/www and userdir suffix public_html. If you
  need different settings, use the package apache2-suexec-custom.
 
-#Package: apache2-suexec-custom
-#Priority: extra
-#Architecture: any
+Package: apache2-suexec-custom
+Priority: extra
+Architecture: any
+Depends: ${misc:Depends}, ${shlibs:Depends}
 #Depends: ${misc:Depends}, ${shlibs:Depends}, apache2.2-common
 #Provides: apache2-suexec
 #Conflicts: apache2-suexec, apache-common
 #Replaces: apache2-suexec
-#Description: Configurable suexec program for Apache 2 mod_suexec
-# Provides a customizable version of the suexec helper program for mod_suexec.
-# This is not the version from upstream, but can be configured with a
-# configuration file. 
-# .
-# If you do not need non-standard document root or userdir settings, it is
-# recommended that you use the standard suexec helper program from the
-# apache2-suexec package instead.
-#
+Description: Configurable suexec program for Apache 2 mod_suexec
+ Provides a customizable version of the suexec helper program for mod_suexec.
+ This is not the version from upstream, but can be configured with a
+ configuration file.
+ .
+ If you do not need non-standard document root or userdir settings, it is
+ recommended that you use the standard suexec helper program from the
+ apache2-suexec package instead.
+
 #Package: apache2
 #Architecture: any
 #Depends: ${misc:Depends}, apache2-mpm-worker (= ${binary:Version}) | apache2-mpm-prefork (= ${binary:Version}) | apache2-mpm-event (= ${binary:Version}) | apache2-mpm-itk (= ${binary:Version}), apache2.2-common (= ${binary:Version})

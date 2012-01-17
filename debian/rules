@@ -28,6 +28,7 @@
 ##    FOR NOW
 ##
 
+
 # Uncomment this to turn on verbose mode.
 export DH_VERBOSE=1
 
@@ -37,6 +38,7 @@ export DH_VERBOSE=1
 #INSTALL_DIR=debian/$(INSTALL_DIR_RELATIVE)
 #LSB_RELEASE := $(shell lsb_release -i -s)
 #DEFAULT_MPM=$(INSTALL_DIR)/worker
+
 #
 #MPMS=worker prefork event itk
 #
@@ -100,7 +102,7 @@ prepare-custom-suexec:
 unapply-custom-suexec:
 	rm -f support/suexec-custom.c
 
-override_dh_auto_clean: unapply-custom-suexec
+override_dh_auto_clean: unapply-custom-suexec remove-suexec-maintainer-scripts
 	dh_auto_clean
 #	rm -rf $(BUILD_DIR)
 #	rm -rf $(INSTALL_DIR)
@@ -167,18 +169,33 @@ override_dh_auto_clean: unapply-custom-suexec
 #	done
 #	rm -f debian/apache2-mpm-$*.lintian-overrides
 #
-#mpm-%-maintainer-scripts: debian/mpms.postinst debian/mpms.preinst debian/mpms.prerm debian/mpms.lintian-overrides debian/mpms.dirs debian/mpms.links
-#	for f in postinst preinst prerm links dirs ; do \
-#		perl -p -e "s/MPMXXX/$*/g" < debian/mpms.$$f > debian/apache2-mpm-$*.$$f ;\
-#	done
-#	perl -p -e "s/^/apache2-mpm-$*: /" < debian/mpms.lintian-overrides > debian/apache2-mpm-$*.lintian-overrides
-#
-#
+
+remove-suexec-maintainer-scripts:
+	set -e ; \
+	for type in custom pristine ; do \
+		for f in postinst preinst prerm links dirs install lintian-overrides; do \
+			if [ -e debian/apache2-suexec-$$type.$$f ] ; then \
+				rm -f debian/apache2-suexec-$$type.$$f ;\
+			fi ;\
+		done ;\
+	done
+
+suexec-maintainer-scripts:
+	set -e ; \
+	for type in custom pristine ; do \
+		for f in postinst preinst prerm links dirs install lintian-overrides; do \
+			if [ -e debian/apache2-suexec.$$f.in ] ; then \
+				perl -pe "s{__TYPE__}{$$type}g" < debian/apache2-suexec.$$f.in > debian/apache2-suexec-$$type.$$f ;\
+				chmod `/usr/bin/stat -c '%a' "debian/apache2-suexec.$$f.in"` debian/apache2-suexec-$$type.$$f ;\
+			fi ;\
+		done ;\
+	done
+
 
 %:
 	dh $@ --parallel
 
-override_dh_auto_configure: prepare-custom-suexec
+override_dh_auto_configure: prepare-custom-suexec suexec-maintainer-scripts
 	./configure --enable-layout=Debian --enable-so --with-program-name=apache2 \
 		--enable-suexec --with-suexec-caller=www-data --with-suexec-bin=/usr/lib/apache2/suexec \
 		--with-suexec-docroot=/var/www --with-suexec-userdir=public_html \
@@ -234,8 +251,8 @@ override_dh_install:
 
 override_dh_fixperms:
 	# standard suexec
-	chmod 4754 debian/apache2-suexec/usr/lib/apache2/suexec-pristine
-	chgrp www-data debian/apache2-suexec/usr/lib/apache2/suexec-pristine
+	chmod 4754 debian/apache2-suexec-pristine/usr/lib/apache2/suexec-pristine
+	chgrp www-data debian/apache2-suexec-pristine/usr/lib/apache2/suexec-pristine
 	# configurable suexec
 	chmod 4754 debian/apache2-suexec-custom/usr/lib/apache2/suexec-custom
 	chgrp www-data debian/apache2-suexec-custom/usr/lib/apache2/suexec-custom
@@ -266,6 +283,11 @@ override_dh_installdocs:
 #	rm -rf debian/apache2-dbg/usr/share/doc/apache2-dbg
 #	ln -s apache2.2-bin debian/apache2-dbg/usr/share/doc/apache2-dbg
 #
+
+override_dh_installman:
+	mv debian/tmp/usr/share/man/man8/suexec.8 debian/tmp/usr/share/man/man8/suexec-pristine.8
+	dh_installman
+
 #override_dh_installchangelogs:
 #	dh_installchangelogs CHANGES -Napache2-suexec -Napache2-suexec-custom -Napache2
 #	dh_installchangelogs         -papache2-suexec -papache2-suexec-custom -papache2
@@ -303,4 +325,4 @@ override_dh_installdocs:
 #	dh_clean
 #
 #.PHONY: configure-% build-%-tree prepare-custom-suexec unapply-custom-suexec
-.PHONY: prepare-custom-suexec unapply-custom-suexec
+.PHONY: prepare-custom-suexec unapply-custom-suexec suexec-maintainer-scripts

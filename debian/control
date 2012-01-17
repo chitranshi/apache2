@@ -135,7 +135,7 @@ Description: utility programs for webservers
   - checkgid (Checks whether the caller can setgid to the specified group)
   - check_forensic (Extract mod_log_forensic output from Apache log files)
 
-Package: apache2-suexec
+Package: apache2-suexec-pristine
 Architecture: any
 Depends: ${misc:Depends}, ${shlibs:Depends}
 #Depends: ${misc:Depends}, ${shlibs:Depends}, apache2.2-common

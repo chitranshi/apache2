@@ -1,12 +1,13 @@
 #! /bin/sh
-# postinst script for apache2-suexec-custom
+# postinst script for apache2-suexec-__TYPE__
 
 set -e
 
 case "$1" in
 
 configure)
-	update-alternatives --install /usr/lib/apache2/suexec suexec /usr/lib/apache2/suexec-custom 10
+	update-alternatives --install /usr/lib/apache2/suexec suexec /usr/lib/apache2/suexec-__TYPE__ 10 \
+		--slave /usr/share/man/man1/suexec.8.gz suexec.8.gz /usr/share/man/man8/suexec-__TYPE__.8.gz
 	;;
 abort-upgrade|abort-remove|abort-deconfigure)
 	;;

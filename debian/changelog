@@ -21,13 +21,18 @@ apache2 (2.3.16-beta-1) UNRELEASED; urgency=low
     + 202_suexec-custom: Keep functionality as is, but rewrite smaller parts of
       the patch to build two binaries: suexec-pristine and suexec-custom (see
       below)
-  * Rename the "suexec" binary to "suexec-pristine" (in package apache2-suexec),
-    which is an alternative to our Debian specific "suexec-custom" binary. Upon
-    installation of each, a symlink is installed providing "suexec" by using the
-    update-alternatives(8) mechanism. This makes the change transparent to the
-    user, but simplifies package handling quite a lot.
+    + 201_build_suexec-custom: Patch the makefile to build "suexec-pristine"
+      instead. Aside of that, refresh hunks. 
+  * Rework the suexec mechanism. Now there are two suexec packages providing
+    alternatives through the update-alternatives mechanism. The untouched
+    upstream "suexec" binary is provided by the apache2-suexec-pristine package,
+    whereas the configurable suexec can be found in the apache2-suexec-custom
+    package. Both are providing the "suexec" binary which are managed by the
+    update-alternatives(9) mechanism.
+    This change is transparent to users at runtime and does not need any
+    configuration changes.
 
- -- Arno Töll <debian@toell.net>  Fri, 13 Jan 2012 02:05:58 +0100
+ -- Arno Töll <debian@toell.net>  Tue, 17 Jan 2012 02:03:52 +0100
 
 apache2 (2.2.21-6) UNRELEASED; urgency=low
 

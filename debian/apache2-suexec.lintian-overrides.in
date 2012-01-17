@@ -1,0 +1,1 @@
+setuid-binary usr/lib/apache2/suexec-__TYPE__ 4754 root/www-data

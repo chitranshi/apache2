@@ -1,11 +1,11 @@
 #!/bin/sh
-# prerm script for apache2-suexec-custom
+# prerm script for apache2-suexec-__TYPE__
 
 set -e
 
 case "$1" in
     remove|upgrade|deconfigure)
-        update-alternatives --remove /usr/lib/apache2/suexec-custom suexec
+        update-alternatives --remove /usr/lib/apache2/suexec-__TYPE__ suexec
     ;;
 
     failed-upgrade)

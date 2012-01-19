@@ -1,4 +1,5 @@
 /usr/share/apache2/icons/
-/usr/share/apache2/error
-debian/icons/*.png		/usr/share/apache2/icons
-/usr/sbin/envvars-std           /usr/share/apache2/build
+/usr/share/apache2/error/
+debian/bash_completion/apache2-common	/etc/bash_completion.d/
+debian/icons/*.png			/usr/share/apache2/icons
+/usr/sbin/envvars-std           	/usr/share/apache2/build

@@ -3,8 +3,9 @@ Section: httpd
 Priority: optional
 Maintainer: Debian Apache Maintainers <debian-apache@lists.debian.org>
 Uploaders: Stefan Fritsch <sf@debian.org>, Steinar H. Gunderson <sesse@debian.org>, Arno Töll <debian@toell.net>
-#Build-Depends: debhelper (>= 8), lsb-release, libaprutil1-dev (>= 1.3.4), libapr1-dev, openssl, libpcre3-dev, mawk, zlib1g-dev, libssl-dev (>= 0.9.8m), sharutils, libcap-dev [linux-any], autoconf
-Build-Depends: debhelper (>= 8), lsb-release, dpkg-dev (>= 1.16.1~)
+#missing dependencies: openssl, mawk, sharutils, autoconf
+Build-Depends: debhelper (>= 8), lsb-release, dpkg-dev (>= 1.16.1~), libaprutil1-dev (>= 1.3.4), libapr1-dev,
+ libpcre3-dev, zlib1g-dev, libssl-dev (>= 0.9.8m), libcap-dev [linux-any]
 #Build-Conflicts: autoconf2.13
 Standards-Version: 3.9.2
 Vcs-Browser: http://anonscm.debian.org/gitweb/?p=pkg-apache/apache2.git
@@ -204,11 +205,11 @@ Description: Apache development headers - threaded MPM
  threaded versions of apache2; see the apache2 package description
  for more details.
 
-#Package: apache2-dbg
-#Section: debug
-#Priority: extra
-#Architecture: any
-#Depends: ${misc:Depends}, apache2.2-bin (= ${binary:Version})
-#Description: Apache debugging symbols
-# This package includes the debugging symbols for Apache 2.
-# See /usr/share/doc/apache2.2-common/README.backtrace for more information.
+Package: apache2-dbg
+Section: debug
+Priority: extra
+Architecture: any
+Depends: ${misc:Depends}, apache2.2-bin (= ${binary:Version})
+Description: Apache debugging symbols
+ This package includes the debugging symbols for Apache 2.
+ See /usr/share/doc/apache2.2-common/README.backtrace for more information.

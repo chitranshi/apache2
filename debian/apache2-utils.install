@@ -8,3 +8,5 @@
 /usr/sbin/rotatelogs	/usr/bin
 /usr/sbin/htcacheclean	/usr/bin
 /usr/sbin/checkgid	/usr/bin
+support/check_forensic  /usr/sbin
+support/split-logfile	/usr/sbin

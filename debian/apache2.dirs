@@ -13,3 +13,4 @@ var/cache/apache2
 var/cache/apache2/mod_disk_cache
 var/log/apache2
 var/www
+usr/share/bug/apache2/script

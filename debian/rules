@@ -99,16 +99,6 @@ prepare-custom-suexec:
 	cp support/suexec.c support/suexec-custom.c
 	patch -p1 < debian/patches/202_suexec-custom
 
-unapply-custom-suexec:
-	rm -f support/suexec-custom.c
-
-override_dh_auto_clean: unapply-custom-suexec remove-suexec-maintainer-scripts
-	rm -f config.nice
-	dh_auto_clean
-#	rm -rf $(BUILD_DIR)
-#	rm -rf $(INSTALL_DIR)
-#	rm -f debian/tmp
-#
 #build-%:
 #	mkdir "$(BUILD_DIR)/$*"
 #	cp -a `find . -maxdepth 1 -mindepth 1 -not -name debian` $(BUILD_DIR)/$*
@@ -172,20 +162,10 @@ clean-config-vars:
 #	rm -f debian/apache2-mpm-$*.lintian-overrides
 #
 
-remove-suexec-maintainer-scripts:
-	set -e ; \
-	for type in custom pristine ; do \
-		for f in postinst preinst prerm links dirs install lintian-overrides; do \
-			if [ -e debian/apache2-suexec-$$type.$$f ] ; then \
-				rm -f debian/apache2-suexec-$$type.$$f ;\
-			fi ;\
-		done ;\
-	done
-
 suexec-maintainer-scripts:
 	set -e ; \
 	for type in custom pristine ; do \
-		for f in postinst preinst prerm links dirs install lintian-overrides; do \
+		for f in postinst preinst prerm links dirs lintian-overrides; do \
 			if [ -e debian/apache2-suexec.$$f.in ] ; then \
 				perl -pe "s{__TYPE__}{$$type}g" < debian/apache2-suexec.$$f.in > debian/apache2-suexec-$$type.$$f ;\
 				chmod `/usr/bin/stat -c '%a' "debian/apache2-suexec.$$f.in"` debian/apache2-suexec-$$type.$$f ;\
@@ -331,4 +311,4 @@ override_dh_strip:
 #	dh_clean
 #
 #.PHONY: configure-% build-%-tree prepare-custom-suexec unapply-custom-suexec
-.PHONY: prepare-custom-suexec unapply-custom-suexec suexec-maintainer-scripts clean-config-vars
+.PHONY: prepare-custom-suexec suexec-maintainer-scripts clean-config-vars

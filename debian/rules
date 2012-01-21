@@ -245,7 +245,7 @@ override_dh_fixperms:
 #
 
 override_dh_installinit:
-	dh_installinit --no-start --no-restart-on-upgrade --name=Iapache2 -- defaults 91 09
+	dh_installinit --no-start --no-restart-on-upgrade  -- defaults 91 09
 
 
 override_dh_installdocs:

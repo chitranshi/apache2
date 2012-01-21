@@ -5,3 +5,4 @@ debian/manpages/httxt2dbm.8
 debian/manpages/a2enmod.8
 debian/manpages/a2dissite.8
 debian/manpages/a2dismod.8
+debian/manpages/a2ensite.8

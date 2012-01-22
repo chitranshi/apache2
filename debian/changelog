@@ -23,7 +23,9 @@ apache2 (2.3.16-beta-1) UNRELEASED; urgency=low
       the patch to build two binaries: suexec-pristine and suexec-custom (see
       below)
     + 201_build_suexec-custom: Patch the makefile to build "suexec-pristine"
-      instead. Aside of that, refresh hunks. 
+      instead. Aside of that, refresh hunks.
+    + 010_fhs_compliance: Drop config.layout patches. These have been applied
+      upstream
   * Rework the suexec mechanism. Now there are two suexec packages providing
     alternatives through the update-alternatives mechanism. The untouched
     upstream "suexec" binary is provided by the apache2-suexec-pristine package,
@@ -34,8 +36,15 @@ apache2 (2.3.16-beta-1) UNRELEASED; urgency=low
     configuration changes.
   * Remove obsolete README.source file.
   * Update doc-base metadata for the apache2-doc package
+  * Changes in the default configuration (not specific modules):
+    + Drop NameVirtualHost entirely. It is deprecated
+    + Replace Allow/Deny directives in the default configuration by by using the
+      new Require directive. Load mod_access_compat if you rely on the old syntax
+    + Replace LockFile by Mutex which consolidates all lock file synchronization
+      files among modules
+    + Update configuration to use the new IncludeOptional syntax
 
- -- Arno Töll <debian@toell.net>  Fri, 20 Jan 2012 23:59:21 +0100
+ -- Arno Töll <debian@toell.net>  Sun, 22 Jan 2012 23:16:27 +0100
 
 apache2 (2.2.21-6) UNRELEASED; urgency=low
 

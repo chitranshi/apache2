@@ -16,7 +16,8 @@ Homepage: http://httpd.apache.org/
 Package: apache2
 Architecture: any
 Depends: ${misc:Depends}, lsb-base, procps [!hurd-i386],
- perl, mime-support, apache2-bin (= ${binary:Version})
+ perl, mime-support, apache2-bin (= ${binary:Version}),
+ apache2-common (= ${source:Version})
 Recommends: ssl-cert
 Description: Apache HTTP Server
  The Apache Software Foundation's goal is to build a secure, efficient and
@@ -40,9 +41,9 @@ Description: Apache HTTP Server common files
 
 Package: apache2-bin
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, apache2-common (= ${source:Version})
+Depends: ${shlibs:Depends}, ${misc:Depends}
 # MODULE_MAGIC_NUMBER_MAJOR from apache2/include/ap_mmn.h
-Provides: apache2-bin-mmv-20111203.0
+Provides: apache2-bin-mmv-20111203-0
 Suggests: www-browser, apache2-doc, apache2-suexec | apache2-suexec-custom
 Description: Apache HTTP Server common binary files
  The Apache Software Foundation's goal is to build a secure, efficient and

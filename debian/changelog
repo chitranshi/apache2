@@ -10,10 +10,14 @@ apache2 (2.3.16-beta-1) UNRELEASED; urgency=low
     modules now, they can be bundled into the same binary package which do not
     need to conflict with each other. Thus, Apache now primarily consists of the
     following packages:
-    + apache2 - configuration files and init scripts
+    + apache2 - configuration files and init scripts, Debian specific helper
+      scripts
     + apache2-bin - binaries and modules
     + apache2-common - error pages and images
   * Drop the ITK MPM entirely for now
+  * Consolidate development packages. As MPM packages are gone, we do not need
+    specific development packages either. Thus, drop all MPM specific apache2
+    development packages and provide a single apache2-dev package instead.
   * Drop debian/source/options again: We do not need to ignore .svn directories
     anymore since the new package management system is based on git and includes
     the full source
@@ -38,13 +42,16 @@ apache2 (2.3.16-beta-1) UNRELEASED; urgency=low
   * Update doc-base metadata for the apache2-doc package
   * Changes in the default configuration (not specific modules):
     + Drop NameVirtualHost entirely. It is deprecated
-    + Replace Allow/Deny directives in the default configuration by by using the
-      new Require directive. Load mod_access_compat if you rely on the old syntax
-    + Replace LockFile by Mutex which consolidates all lock file synchronization
-      files among modules
+    + Remove DefaultType. It is deprecated.
+    + Replace Allow/Deny directives in the default configuration by using the
+      new Require directive. Load mod_access_compat if you rely on the old
+      syntax
+    + Replace LockFile by Mutex which consolidates all lock file
+      synchronization files among modules
     + Update configuration to use the new IncludeOptional syntax
+    + Enable these modules by default: authz_core authz_host alias cgi dir
 
- -- Arno Töll <debian@toell.net>  Sun, 22 Jan 2012 23:16:27 +0100
+ -- Arno Töll <debian@toell.net>  Thu, 26 Jan 2012 02:45:08 +0100
 
 apache2 (2.2.21-6) UNRELEASED; urgency=low
 

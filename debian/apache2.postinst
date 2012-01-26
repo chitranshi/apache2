@@ -1,0 +1,77 @@
+#! /bin/bash
+# postinst script
+#
+# see: dh_installdeb(1)
+
+set -e
+
+# summary of how this script can be called:
+#       * <postinst> `configure' <most-recently-configured-version>
+#       * <old-postinst> `abort-upgrade' <new version>
+#       * <conflictor's-postinst> `abort-remove' `in-favour' <package>
+#         <new-version>
+#       * <deconfigured's-postinst> `abort-deconfigure' `in-favour'
+#         <failed-install-package> <version> `removing'
+#         <conflicting-package> <version>
+#
+# for details, see http://www.debian.org/doc/debian-policy/ or
+# the debian-policy package
+#
+
+
+enable_default_modules()
+{
+        for module in authz_core authz_host alias cgi dir ; do
+                a2enmod -q $module
+        done
+}
+
+install_default_site()
+{
+
+	if [ ! -L /etc/apache2/sites-enabled/000-default -a \
+		! -f /etc/apache2/sites-enabled/000-default ]; then
+			a2ensite -q default
+	fi
+
+	touch /var/log/apache2/error.log /var/log/apache2/access.log
+	chown root:adm /var/log/apache2/error.log /var/log/apache2/access.log
+	chmod 0640 /var/log/apache2/error.log /var/log/apache2/access.log
+}
+
+install_default_files()
+{
+	[ -f /etc/apache2/httpd.conf ] || touch /etc/apache2/httpd.conf
+
+	if [ ! -e /var/www/index.html ] ; then
+		cp /usr/share/apache2/default-site/index.html /var/www/index.html
+        fi
+}
+
+case "$1" in
+        configure)
+
+        enable_default_modules
+
+	if [ -z "$2" ]; then
+		install_default_site
+	fi
+
+	install_default_files
+
+        ;;
+
+        abort-upgrade|abort-remove|abort-deconfigure)
+
+        ;;
+
+        *)
+                echo "postinst called with unknown argument \`$1'" >&2
+                exit 1
+        ;;
+esac
+
+
+#DEBHELPER#
+
+exit 0

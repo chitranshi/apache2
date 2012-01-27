@@ -215,7 +215,7 @@ sub doit {
 
             print "Enabling $obj $acton.\n";
             if ( $acton eq 'ssl' ) {
-                info("See /usr/share/doc/apache2.2-common/README.Debian.gz on " .
+                info("See /usr/share/doc/apache2/README.Debian.gz on " .
                      "how to configure SSL and create self-signed certificates.\n");
 	    }
             return add_link( $tgt, $link );

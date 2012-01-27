@@ -2,6 +2,10 @@ apache2 (2.3.16-beta-1) UNRELEASED; urgency=low
 
   * Package the coming up 2.4 branch of Apache by packaging the current
     development release 2.3.16.
+    + Fix "IndexIgnore only allowes to add in vhost context, not replace"
+     (Closes: #296886)
+    + Fix "mod_status stats are wrong." (Closes: #519322)
+    + Fix "PNG DirectoryIndex icons transparancy messed up" (Closes: #233047)
   * Rewrite most parts of debian/rules / debhelper configuration.
     + move cronjob and init script to debhelper configuration files
       (apache2.cron.daily and apache2.init respectively)
@@ -51,7 +55,7 @@ apache2 (2.3.16-beta-1) UNRELEASED; urgency=low
     + Update configuration to use the new IncludeOptional syntax
     + Enable these modules by default: authz_core authz_host alias cgi dir
 
- -- Arno Töll <debian@toell.net>  Thu, 26 Jan 2012 02:45:08 +0100
+ -- Arno Töll <debian@toell.net>  Fri, 27 Jan 2012 14:07:09 +0100
 
 apache2 (2.2.21-6) UNRELEASED; urgency=low
 

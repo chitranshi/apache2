@@ -21,7 +21,7 @@ set -e
 
 enable_default_modules()
 {
-        for module in authz_core authz_host alias cgi dir ; do
+        for module in authz_host alias cgi dir ; do
                 a2enmod -q $module
         done
 }

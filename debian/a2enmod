@@ -307,7 +307,7 @@ sub remove_link {
 
 sub threaded {
     my $result = "";
-    $result = qx{/usr/sbin/apache2 -V | grep 'threaded'} if -x '/usr/sbin/apache2';
+    $result = qx{/usr/sbin/apache2ctl -V | grep 'threaded'} if -x '/usr/sbin/apache2ctl';
     if ( $result =~ / no/ ) {
         return 0;
     }

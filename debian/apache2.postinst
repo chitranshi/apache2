@@ -51,13 +51,13 @@ install_default_files()
 case "$1" in
         configure)
 
+	install_default_files
+
         enable_default_modules
 
 	if [ -z "$2" ]; then
 		install_default_site
 	fi
-
-	install_default_files
 
         ;;
 

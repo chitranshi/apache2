@@ -7,7 +7,6 @@ usr/share/apache2
 usr/share/apache2/build
 usr/share/apache2/default-site
 usr/share/lintian/overrides
-var/lock/apache2
 var/cache/apache2
 var/cache/apache2/mod_disk_cache
 var/log/apache2

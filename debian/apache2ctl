@@ -104,10 +104,12 @@ get_status () {
     fi
 }
 
+
+[ ! -d ${APACHE_RUN_DIR:-/var/run/apache2} ] && mkdir -p ${APACHE_RUN_DIR:-/var/run/apache2}
+[ ! -d ${APACHE_LOCK_DIR:-/var/lock/apache2} ] && install -d -o ${APACHE_RUN_USER:-www-data} ${APACHE_LOCK_DIR:-/var/lock/apache2}
+
 case $ARGV in
 start)
-    mkdir -p ${APACHE_RUN_DIR:-/var/run/apache2}
-    install -d -o ${APACHE_RUN_USER:-www-data} ${APACHE_LOCK_DIR:-/var/lock/apache2}
     # ssl_scache shouldn't be here if we're just starting up.
     # (this is bad if there are several apache2 instances running)
     rm -f ${APACHE_RUN_DIR:-/var/run/apache2}/*ssl_scache*

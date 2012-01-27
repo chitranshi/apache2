@@ -24,7 +24,8 @@ Description: Apache HTTP Server
  extensible HTTP server as standards-compliant open source software. The
  result has long been the number one web server on the Internet.
  .
- This package contains the configuration and support scripts.
+ This package contains the configuration files, init scripts and support
+ scripts. It does not install the actual apache2 binaries.
 
 Package: apache2-common
 Architecture: all
@@ -38,6 +39,8 @@ Description: Apache HTTP Server common files
  extensible HTTP server as standards-compliant open source software. The
  result has long been the number one web server on the Internet.
  .
+ This package contains architecture-independent common files such as icons,
+ error pages and static index files.
 
 Package: apache2-bin
 Architecture: any
@@ -49,6 +52,11 @@ Description: Apache HTTP Server common binary files
  The Apache Software Foundation's goal is to build a secure, efficient and
  extensible HTTP server as standards-compliant open source software. The
  result has long been the number one web server on the Internet.
+ .
+ This package contains the binaries only and does not set up a working
+ web-server instance. Install the "apache2" package to get a fully working
+ instance. Do not install this package unless you want to set-up the Apache
+ HTTP server entirely on your own. 
 
 Package: apache2-utils
 Architecture: any
@@ -58,11 +66,13 @@ Depends: ${misc:Depends}, ${shlibs:Depends}
 Description: utility programs for webservers
  Provides some add-on programs useful for any webserver.  These include:
   - ab (Apache benchmark tool)
+  - fcgistarter (Start a FastCGI program)
   - logresolve (Resolve IP addresses to hostname in logfiles)
   - htpasswd (Manipulate basic authentication files)
   - htdigest (Manipulate digest authentication files)
   - dbmmanage (Manipulate basic authentication files in DBM format, using perl)
   - htdbm (Manipulate basic authentication files in DBM format, using APR)
+  - htcacheclean (Clean up the disk cache)
   - rotatelogs (Periodically stop writing to a logfile and open a new one)
   - split-logfile (Split a single log including multiple vhosts)
   - checkgid (Checks whether the caller can setgid to the specified group)
@@ -94,7 +104,7 @@ Description: Configurable suexec program for Apache 2 mod_suexec
  .
  If you do not need non-standard document root or userdir settings, it is
  recommended that you use the standard suexec helper program from the
- apache2-suexec package instead.
+ apache2-suexec-pristine package instead.
 
 Package: apache2-doc
 Section: doc
@@ -102,13 +112,14 @@ Architecture: all
 Depends: ${misc:Depends}
 Description: Apache HTTP Server documentation
  This package provides the documentation for Apache 2. For more details
- see the apache2 package description.
+ see the apache2 package description. The documentation is shipped in HTML
+ format an can be accessed from a local running Apache HTTP server instance.
 
 Package: apache2-dev
 Architecture: any
 Depends: ${misc:Depends}, apache2 (= ${binary:Version}), openssl, libaprutil1-dev
 Priority: extra
-Description: Apache development headers - threaded MPM
+Description: Apache development headers
  This package provides the development headers and apxs2 binary for
  threaded versions of apache2; see the apache2 package description
  for more details.
@@ -120,4 +131,4 @@ Architecture: any
 Depends: ${misc:Depends}, apache2 (= ${binary:Version})
 Description: Apache debugging symbols
  This package includes the debugging symbols for Apache 2.
- See /usr/share/doc/apache2.2-common/README.backtrace for more information.
+ See /usr/share/doc/apache2/README.backtrace for more information.

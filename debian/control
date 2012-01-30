@@ -106,7 +106,7 @@ Description: multiuser MPM for Apache 2.2
 
 Package: apache2-utils
 Architecture: any
-Replaces: apache2-common, apache-utils (<< 1.3.33-4)
+Replaces: apache2-common, apache-utils (<< 1.3.33-4), apache2.2-bin (<< 2.2.22-1~)
 Conflicts: apache-common (<< 1.3.28.0.1-1)
 Depends: ${misc:Depends}, ${shlibs:Depends}
 Description: utility programs for webservers
@@ -121,6 +121,7 @@ Description: utility programs for webservers
   - split-logfile (Split a single log including multiple vhosts)
   - checkgid (Checks whether the caller can setgid to the specified group)
   - check_forensic (Extract mod_log_forensic output from Apache log files)
+  - httxt2dbm (Generate dbm files for use with RewriteMap)
 
 Package: apache2-suexec
 Architecture: any

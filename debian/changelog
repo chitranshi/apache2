@@ -1,12 +1,19 @@
-apache2 (2.2.21-6) UNRELEASED; urgency=low
+apache2 (2.2.22-1) UNRELEASED; urgency=medium
+
+  [ Stefan Fritsch ]
+  * New upstream release, urgency medium due to security fixes:
+    - Fix CVE-2012-0021: mod_log_config: DoS with '%{cookiename}C' log format
+    - Fix CVE-2012-0031: Unprivileged child process could cause the parent to
+      crash at shutdown
+    - Fix CVE-2012-0053: Exposure of "httpOnly" cookies in code 400 error
+      message.
+  * Move httxt2dbm to apache2-utils
+  * Adjust debian/control to point to new git repository.
 
   [ Arno Töll ]
   * Fix "typo in /etc/apache2/apache2.conf" (Closes: #653801)
 
-  [ Stefan Fritsch ]
-  * Adjust debian/control to point to new git repository.
-
- -- Arno Töll <debian@toell.net>  Sat, 31 Dec 2011 09:45:14 +0100
+ -- Stefan Fritsch <sf@debian.org>  Sun, 29 Jan 2012 13:38:37 +0100
 
 apache2 (2.2.21-5) unstable; urgency=low
 

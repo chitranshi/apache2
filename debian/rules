@@ -205,16 +205,13 @@ override_dh_install-arch:
 		fi \
 	done
 	cd debian && ln -s $(INSTALL_DIR_RELATIVE)/worker tmp
-	for m in logresolve ab; do d=debian/tmp/usr/share/man/ ;\
-		perl -p -e 's/^([.]TH.*?) 8 (.*)/$$1 1 $$2/' < $$d/man8/$$m.8 > $$d/man1/$$m.1 ;\
-	done
 	#cleanup of death
 	rm -rf $(DEFAULT_MPM)/etc/apache2/original
 	rm -rf $(DEFAULT_MPM)/usr/include
 	rm -rf $(DEFAULT_MPM)/usr/share/apache2/build
 	rm -f $(DEFAULT_MPM)/usr/share/man/man8/httpd.8 # We install our own
 	rm -f $(DEFAULT_MPM)/usr/sbin/apxs $(DEFAULT_MPM)/usr/sbin/apache2 debian/tmp/usr/sbin/apachectl
-	mv $(DEFAULT_MPM)/usr/share/man/man8/apxs.8 $(DEFAULT_MPM)/usr/share/man/man8/apxs2.8
+	mv $(DEFAULT_MPM)/usr/share/man/man1/apxs.1 $(DEFAULT_MPM)/usr/share/man/man1/apxs2.1
 	mv $(DEFAULT_MPM)/usr/share/man/man8/apachectl.8 $(DEFAULT_MPM)/usr/share/man/man8/apache2ctl.8
 	dh_install -a --list-missing
 	# DO NOT FALL FOR THE TEMPTATION TO MV INTO PACKAGES OR DOOM

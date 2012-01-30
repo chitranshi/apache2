@@ -18,6 +18,10 @@ set -e
 # the debian-policy package
 #
 
+enable_default_mpm()
+{
+	a2enmod -q mpm_worker
+}
 
 enable_default_modules()
 {
@@ -50,6 +54,8 @@ install_default_files()
 
 case "$1" in
         configure)
+
+	enable_default_mpm
 
 	install_default_files
 

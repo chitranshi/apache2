@@ -54,8 +54,14 @@ apache2 (2.3.16-beta-1) UNRELEASED; urgency=low
       synchronization files among modules
     + Update configuration to use the new IncludeOptional syntax
     + Enable these modules by default: authz_core authz_host alias cgi dir
+    + Move MPM specific configuration to their respective configuration files.
+      Users can just load and unload MPMs like other modules, enable the worker
+      MPM by default
+  * Changes in a2enmod:
+    + Parse "Conflicts: " header to denote conflicts between modules which
+      cannot be loaded into the same Apache server.
 
- -- Arno Töll <debian@toell.net>  Fri, 27 Jan 2012 14:07:09 +0100
+ -- Arno Töll <debian@toell.net>  Mon, 30 Jan 2012 02:02:37 +0100
 
 apache2 (2.2.21-6) UNRELEASED; urgency=low
 

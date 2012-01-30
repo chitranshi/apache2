@@ -155,6 +155,11 @@ sub doit {
             $depends =~ s,^[\s\n]+,,;
             $depends =~ s,[\s\n]+$,,;
             do_deps( $acton, split( /[\n\s]+/, $depends ) ) or return 0;
+
+            my $conflicts = qx{grep "# Conflicts:" "$availdir/$acton.load"|cut -f2 -d:};
+            $conflicts =~ s,^[\s\n]+,,;
+            $conflicts =~ s,[\s\n]+$,,;
+            check_conflicts( $acton, split( /[\n\s]+/, $conflicts ) ) or return 0;
         }
         else {
             my @depends = qx{egrep "# Depends:.*${acton}( |\$)" $enabldir/*.load};
@@ -255,6 +260,30 @@ sub do_deps {
             return 0;
         }
     }
+    return 1;
+}
+
+sub check_conflicts {
+    my $acton = shift;
+    my $haderror = 0;
+    foreach my $d (@_) {
+        info("Considering conflict $d for $acton:\n");
+
+        my $tgt  = "$availdir/$d$sffx";
+        my $link = "$enabldir/$d$sffx";
+
+        my $confcheck = check_link( $tgt, $link );
+        if ( $confcheck eq 'ok' ) {
+            error("Module $d is enabled - cannot proceed due to conflicts. It needs to be disabled first!\n");
+            # Don't return immediately, there could be several conflicts
+            $haderror++;
+        }
+    }
+
+    if ($haderror) {
+        return 0;
+    }
+
     return 1;
 }
 

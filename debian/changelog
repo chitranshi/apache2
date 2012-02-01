@@ -1,4 +1,4 @@
-apache2 (2.2.22-1) UNRELEASED; urgency=medium
+apache2 (2.2.22-1) unstable; urgency=medium
 
   [ Stefan Fritsch ]
   * New upstream release, urgency medium due to security fixes:
@@ -13,7 +13,7 @@ apache2 (2.2.22-1) UNRELEASED; urgency=medium
   [ Arno Töll ]
   * Fix "typo in /etc/apache2/apache2.conf" (Closes: #653801)
 
- -- Stefan Fritsch <sf@debian.org>  Sun, 29 Jan 2012 13:38:37 +0100
+ -- Stefan Fritsch <sf@debian.org>  Wed, 01 Feb 2012 21:49:04 +0100
 
 apache2 (2.2.21-5) unstable; urgency=low
 

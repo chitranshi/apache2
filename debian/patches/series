@@ -21,9 +21,6 @@
 #077_CacheIgnoreURLSessionIdentifiers
 #079_polish_translation
 #082_ab_num_requests
-#083_CVE-2011-3368
-#084_CVE-2011-4317
-#085_CVE-2011-3607
 #099_config_guess_sub_update
 201_build_suexec-custom
 # The patch below must not be applied by quilt at extraction time.  It depends

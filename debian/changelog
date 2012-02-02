@@ -17,7 +17,7 @@ apache2 (2.3.16-beta-1) UNRELEASED; urgency=low
     + apache2 - configuration files and init scripts, Debian specific helper
       scripts
     + apache2-bin - binaries and modules
-    + apache2-common - error pages and images
+    + apache2-data - error pages and images
   * Drop the ITK MPM entirely for now
   * Consolidate development packages. As MPM packages are gone, we do not need
     specific development packages either. Thus, drop all MPM specific apache2
@@ -61,7 +61,7 @@ apache2 (2.3.16-beta-1) UNRELEASED; urgency=low
     + Parse "Conflicts: " header to denote conflicts between modules which
       cannot be loaded into the same Apache server.
 
- -- Arno Töll <debian@toell.net>  Mon, 30 Jan 2012 02:02:37 +0100
+ -- Arno Töll <debian@toell.net>  Wed, 01 Feb 2012 22:49:14 +0100
 
 apache2 (2.2.21-6) UNRELEASED; urgency=low
 

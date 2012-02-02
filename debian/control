@@ -18,6 +18,9 @@ Architecture: any
 Depends: ${misc:Depends}, lsb-base, procps [!hurd-i386],
  perl, mime-support, apache2-bin (= ${binary:Version}),
  apache2-data (= ${source:Version})
+Replaces: apache2.2-common (<< 2.3.16-beta-1~)
+Breaks: apache2.2-common (<< 2.3.16-beta-1~)
+Provides: apache2.2-common
 Recommends: ssl-cert
 Description: Apache HTTP Server
  The Apache Software Foundation's goal is to build a secure, efficient and
@@ -32,6 +35,7 @@ Architecture: all
 #Depends: ${misc:Depends}, apache2-bin (= ${binary:Version}), apache2-utils, mime-support, lsb-base, procps [!hurd-i386], perl
 Depends: ${misc:Depends}
 Recommends: ssl-cert
+Replaces: apache2.2-common
 Description: Apache HTTP Server common files
  The Apache Software Foundation's goal is to build a secure, efficient and
  extensible HTTP server as standards-compliant open source software. The
@@ -44,8 +48,12 @@ Package: apache2-bin
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 # MODULE_MAGIC_NUMBER_MAJOR from apache2/include/ap_mmn.h
-Provides: apache2-bin-mmv-20111203-0
+Provides: apache2-api-20111203-0
 Suggests: www-browser, apache2-doc, apache2-suexec | apache2-suexec-custom
+Replaces: apache2.2-bin (<< 2.3.16-beta-1~), apache2.2-common (<< 2.3.16-beta-1~),
+ apache2-mpm-worker, apache2-mpm-prefork, apache2-mpm-event
+Breaks: apache2.2-bin (<< 2.3.16-beta-1~), apache2.2-common (<< 2.3.16-beta-1~),
+ apache2-mpm-worker, apache2-mpm-prefork, apache2-mpm-event, apache2-mpm-itk
 Description: Apache HTTP Server common binary files
  The Apache Software Foundation's goal is to build a secure, efficient and
  extensible HTTP server as standards-compliant open source software. The
@@ -55,6 +63,24 @@ Description: Apache HTTP Server common binary files
  web-server instance. Install the "apache2" package to get a fully working
  instance. Do not install this package unless you want to set-up the Apache
  HTTP server entirely on your own.
+
+Package: apache2.2-common
+Architecture: any
+Section: oldlibs
+Priority: extra
+Depends: ${shlibs:Depends}, ${misc:Depends}, apache2 (>= 2.3.16-beta-1~)
+Description: Transitional package for apache2
+ This is a transitional package for apache2, and can be safely removed
+ after the installation is complete.
+
+Package: apache2.2-bin
+Architecture: any
+Section: oldlibs
+Priority: extra
+Depends: ${shlibs:Depends}, ${misc:Depends}, apache2-bin (>= 2.3.16-beta-1~)
+Description: Transitional package for apache2-bin
+ This is a transitional package for apache2-bin, and can be safely removed
+ after the installation is complete.
 
 Package: apache2-utils
 Architecture: any

@@ -1,4 +1,4 @@
-apache2 (2.3.16-beta-1) UNRELEASED; urgency=low
+apache2 (2.3.16-beta-1) experimental; urgency=low
 
   * Package the coming up 2.4 branch of Apache by packaging the current
     development release 2.3.16.
@@ -61,19 +61,25 @@ apache2 (2.3.16-beta-1) UNRELEASED; urgency=low
     + Parse "Conflicts: " header to denote conflicts between modules which
       cannot be loaded into the same Apache server.
 
- -- Arno Töll <debian@toell.net>  Wed, 01 Feb 2012 22:49:14 +0100
+ -- Arno Töll <debian@toell.net>  Thu, 02 Feb 2012 23:51:16 +0100
 
-apache2 (2.2.21-6) UNRELEASED; urgency=low
 
-  [ Arno Töll ]
-  * Fix "typo in /etc/apache2/apache2.conf" (Closes: #653801)
+   [ Stefan Fritsch ]
+   * New upstream release, urgency medium due to security fixes:
+     - Fix CVE-2012-0021: mod_log_config: DoS with '%{cookiename}C' log format
+     - Fix CVE-2012-0031: Unprivileged child process could cause the parent to
+       crash at shutdown
+     - Fix CVE-2012-0053: Exposure of "httpOnly" cookies in code 400 error
+       message.
+   * Move httxt2dbm to apache2-utils
+   * Adjust debian/control to point to new git repository.
+ 
+   [ Arno Töll ]
+   * Fix "typo in /etc/apache2/apache2.conf" (Closes: #653801)
 
-  [ Stefan Fritsch ]
-  * Adjust debian/control to point to new git repository.
+ -- Stefan Fritsch <sf@debian.org>  Wed, 01 Feb 2012 21:49:04 +0100 
 
- -- Arno Töll <debian@toell.net>  Sat, 31 Dec 2011 09:45:14 +0100
-
-apache2 (2.2.21-5) unstable; urgency=low
+pache2 (2.2.21-5) unstable; urgency=low
 
   [ Arno Töll ]
   * Fix build failures introduced as regregression by the previous build. Debian

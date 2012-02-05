@@ -270,7 +270,7 @@ override_dh_installchangelogs:
 
 override_dh_strip:
 	dh_strip --dbg-package=apache2-dbg -Napache2-dbg -Xusr/lib/apache2/mpm
-	set -e \
+	set -e && \
 	if [ "$(LSB_RELEASE)" != "Ubuntu" ] && [ -n "$(DEB_BUILD_STRIP)" ] ; then \
 		for i in $(MPMS); do \
 			MPM=usr/lib/apache2/mpm-$$i/apache2 ;\

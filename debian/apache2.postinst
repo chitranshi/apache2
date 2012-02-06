@@ -20,7 +20,7 @@ set -e
 
 enable_default_mpm()
 {
-	a2enmod -q mpm_worker
+	a2enmod -q mpm_event
 }
 
 enable_default_modules()

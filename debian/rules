@@ -184,9 +184,12 @@ override_dh_auto_configure: prepare-custom-suexec suexec-maintainer-scripts
 		--with-suexec-bin=/usr/lib/apache2/suexec --with-suexec-docroot=/var/www \
 		--with-suexec-userdir=public_html --with-suexec-logfile=/var/log/apache2/suexec.log \
 		--with-suexec-uidmin=100 --enable-suexec=shared --enable-log-config=static \
-		--enable-logio=static --with-apr=/usr/bin/apr-1-config --with-apr-util=/usr/bin/apu-1-config \
-		--with-pcre=yes --enable-pie --enable-mods-shared=all --enable-mpms-shared=all \
-		--enable-mods-static=unixd \
+		--with-apr=/usr/bin/apr-1-config --with-apr-util=/usr/bin/apu-1-config \
+		--with-pcre=yes \
+		--enable-pie \
+		--enable-mpms-shared=all \
+		--enable-mods-shared="all cgi" \
+		--enable-mods-static="unixd logio" \
 		CFLAGS="$(AP2_CFLAGS)" CPPFLAGS="$(AP2_CPPFLAGS)" LDFLAGS="$(AP2_LDFLAGS)" \
 		$(AP2_EXTRAFLAGS)
 

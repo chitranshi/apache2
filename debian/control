@@ -22,7 +22,7 @@ Replaces: apache2.2-common (<< 2.3.16-beta-1~)
 Breaks: apache2.2-common (<< 2.3.16-beta-1~)
 Provides: apache2.2-common
 Recommends: ssl-cert
-Suggests: www-browser, apache2-doc, apache2-suexec | apache2-suexec-custom
+Suggests: www-browser, apache2-doc, apache2-suexec-pristine | apache2-suexec-custom
 Description: Apache HTTP Server
  The Apache Software Foundation's goal is to build a secure, efficient and
  extensible HTTP server as standards-compliant open source software. The

@@ -7,7 +7,6 @@
 #033_dbm_read_hash_or_btree
 #034_apxs2_libtool_fixtastic
 #038_no_LD_LIBRARY_PATH
-#047_fix_usage_message
 #052_logresolve_linelength
 #058_suexec-CVE-2007-1742
 #076_apxs2_a2enmod

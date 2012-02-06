@@ -22,6 +22,7 @@ Replaces: apache2.2-common (<< 2.3.16-beta-1~)
 Breaks: apache2.2-common (<< 2.3.16-beta-1~)
 Provides: apache2.2-common
 Recommends: ssl-cert
+Suggests: www-browser, apache2-doc, apache2-suexec | apache2-suexec-custom
 Description: Apache HTTP Server
  The Apache Software Foundation's goal is to build a secure, efficient and
  extensible HTTP server as standards-compliant open source software. The
@@ -34,7 +35,6 @@ Package: apache2-data
 Architecture: all
 #Depends: ${misc:Depends}, apache2-bin (= ${binary:Version}), apache2-utils, mime-support, lsb-base, procps [!hurd-i386], perl
 Depends: ${misc:Depends}
-Recommends: ssl-cert
 Replaces: apache2.2-common
 Description: Apache HTTP Server common files
  The Apache Software Foundation's goal is to build a secure, efficient and
@@ -49,7 +49,6 @@ Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 # MODULE_MAGIC_NUMBER_MAJOR from apache2/include/ap_mmn.h
 Provides: apache2-api-20111203
-Suggests: www-browser, apache2-doc, apache2-suexec | apache2-suexec-custom
 Replaces: apache2.2-bin (<< 2.3.16-beta-1~), apache2.2-common (<< 2.3.16-beta-1~),
  apache2-mpm-worker, apache2-mpm-prefork, apache2-mpm-event
 Breaks: apache2.2-bin (<< 2.3.16-beta-1~), apache2.2-common (<< 2.3.16-beta-1~),

@@ -1,3 +1,10 @@
+apache2 (2.2.22-2) UNRELEASED; urgency=low
+
+  * Fix "Incorrect debhelper build dependency" by raising the build-dependency
+    of debhelper to 8.9.7  (Closes: #659148)
+
+ -- Arno Töll <debian@toell.net>  Wed, 08 Feb 2012 19:00:43 +0100
+
 apache2 (2.2.22-1) unstable; urgency=medium
 
   [ Stefan Fritsch ]

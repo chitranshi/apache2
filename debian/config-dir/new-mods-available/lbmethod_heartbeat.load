@@ -1,0 +1,1 @@
+LoadModule lbmethod_heartbeat_module /usr/lib/apache2/modules/mod_lbmethod_heartbeat.so

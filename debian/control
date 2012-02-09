@@ -4,7 +4,7 @@ Priority: optional
 Maintainer: Debian Apache Maintainers <debian-apache@lists.debian.org>
 Uploaders: Stefan Fritsch <sf@debian.org>, Steinar H. Gunderson <sesse@debian.org>, Arno Töll <debian@toell.net>
 #missing dependencies: openssl, mawk, sharutils, autoconf
-Build-Depends: debhelper (>= 8), lsb-release, dpkg-dev (>= 1.16.1~),
+Build-Depends: debhelper (>= 8.1.0~), lsb-release, dpkg-dev (>= 1.16.1~),
  libaprutil1-dev (>= 1.4.0), libapr1-dev, libpcre3-dev, zlib1g-dev,
  libssl-dev (>= 0.9.8m), libcap-dev [linux-any],
  liblua5.1-0-dev, libxml2-dev
@@ -19,8 +19,9 @@ Architecture: any
 Depends: ${misc:Depends}, lsb-base, procps [!hurd-i386],
  perl, mime-support, apache2-bin (= ${binary:Version}),
  apache2-data (= ${source:Version})
-Replaces: apache2.2-common (<< 2.3.16-beta-1~)
-Breaks: apache2.2-common (<< 2.3.16-beta-1~)
+Pre-Depends: ${misc:Pre-Depends}
+Replaces: apache2.2-common (<< 2.3~)
+Breaks: apache2.2-common (<< 2.3~)
 Provides: apache2.2-common
 Recommends: ssl-cert
 Suggests: www-browser, apache2-doc, apache2-suexec-pristine | apache2-suexec-custom
@@ -50,9 +51,10 @@ Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 # MODULE_MAGIC_NUMBER_MAJOR from apache2/include/ap_mmn.h
 Provides: apache2-api-20111203
-Replaces: apache2.2-bin (<< 2.3.16-beta-1~), apache2.2-common (<< 2.3.16-beta-1~),
+Suggests: www-browser, apache2-doc, apache2-suexec-pristine | apache2-suexec-custom
+Replaces: apache2.2-bin (<< 2.3~), apache2.2-common (<< 2.3~),
  apache2-mpm-worker, apache2-mpm-prefork, apache2-mpm-event
-Breaks: apache2.2-bin (<< 2.3.16-beta-1~), apache2.2-common (<< 2.3.16-beta-1~),
+Breaks: apache2.2-bin (<< 2.3~), apache2.2-common (<< 2.3~),
  apache2-mpm-worker, apache2-mpm-prefork, apache2-mpm-event, apache2-mpm-itk
 Description: Apache HTTP Server common binary files
  The Apache Software Foundation's goal is to build a secure, efficient and
@@ -68,7 +70,7 @@ Package: apache2.2-common
 Architecture: any
 Section: oldlibs
 Priority: extra
-Depends: ${shlibs:Depends}, ${misc:Depends}, apache2 (>= 2.3.16-beta-1~)
+Depends: ${shlibs:Depends}, ${misc:Depends}, apache2 (>= 2.3~)
 Description: Transitional package for apache2
  This is a transitional package for apache2, and can be safely removed
  after the installation is complete.
@@ -77,7 +79,7 @@ Package: apache2.2-bin
 Architecture: any
 Section: oldlibs
 Priority: extra
-Depends: ${shlibs:Depends}, ${misc:Depends}, apache2-bin (>= 2.3.16-beta-1~)
+Depends: ${shlibs:Depends}, ${misc:Depends}, apache2-bin (>= 2.3~)
 Description: Transitional package for apache2-bin
  This is a transitional package for apache2-bin, and can be safely removed
  after the installation is complete.
@@ -107,8 +109,10 @@ Depends: ${misc:Depends}, ${shlibs:Depends}
 #Depends: ${misc:Depends}, ${shlibs:Depends}, apache2.2-common
 #Conflicts: apache2-suexec
 Replaces: apache2-suexec
+Conflicts: apache2-suexec
+Provides: apache2-suexec
 Description: Standard suexec program for Apache 2 mod_suexec
- Provides the standard suexec helper program for mod_suexec. This version is 
+ Provides the standard suexec helper program for mod_suexec. This version is
  compiled with document root /var/www and userdir suffix public_html. If you
  need different settings, use the package apache2-suexec-custom.
 
@@ -117,9 +121,9 @@ Priority: extra
 Architecture: any
 Depends: ${misc:Depends}, ${shlibs:Depends}
 #Depends: ${misc:Depends}, ${shlibs:Depends}, apache2.2-common
-#Provides: apache2-suexec
-#Conflicts: apache2-suexec
-#Replaces: apache2-suexec
+Replaces: apache2-suexec
+Conflicts: apache2-suexec
+Provides: apache2-suexec
 Description: Configurable suexec program for Apache 2 mod_suexec
  Provides a customizable version of the suexec helper program for mod_suexec.
  This is not the version from upstream, but can be configured with a

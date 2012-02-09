@@ -60,8 +60,11 @@ apache2 (2.3.16-beta-1) experimental; urgency=low
   * Changes in a2enmod:
     + Parse "Conflicts: " header to denote conflicts between modules which
       cannot be loaded into the same Apache server.
+  * The following modules and associated configuration files were removed:
+    + mod_authz_default and mod_authn_default: Please use a proper authentication module instead
+    + mod_mem_cache: Use mod_cache_disk instead
 
- -- Arno Töll <debian@toell.net>  Mon, 06 Feb 2012 00:03:57 +0100
+ -- Arno Töll <debian@toell.net>  Thu, 09 Feb 2012 22:42:05 +0100
 
 apache2 (2.2.22-1) unstable; urgency=low
 

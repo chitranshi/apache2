@@ -20,7 +20,35 @@ set -e
 
 enable_default_mpm()
 {
-	a2enmod -q mpm_event
+	mpm="mpm_event"
+	if [ -e /etc/apache2/.apache2_mpm_selected ] ; then
+		tmpmpm=$(grep -v "^#" /etc/apache2/.apache2_mpm_selected | head -n1)
+		case "$tmpmpm" in
+			apache2-mpm-worker)
+				mpm="mpm_worker"
+			;;
+
+			apache2-mpm-event)
+				mpm="mpm_event"
+			;;
+
+			apache2-mpm-prefork)
+				mpm="mpm_prefork"
+			;;
+
+			apache2-mpm-itk)
+				# Houston, we got a problem
+			;;
+
+			*)
+				# default MPM for upgrading in case we got an unrecognized
+				# hint file
+				mpm="mpm_event"
+			;;
+		esac
+		rm -f /etc/apache2/.apache2_mpm_selected
+	fi
+	a2enmod -q $mpm
 }
 
 enable_default_modules()
@@ -52,8 +80,46 @@ install_default_files()
         fi
 }
 
+# XXX: Find out whether I am on crack removing stale modules that way
+#      n.b you can't rely on $2 for upgrades, as the user might have been using
+#      apache2.2-common only. Let's pretend we're upgrading if there is an
+#      obsolete conffile around.
+refresh_modules()
+{
+	if [ -e /etc/apache2/mods-available/authz_default.load ] || dpkg --compare-versions "$2" "le" "2.3" ; then
+		if [ -d /etc/apache2/mods-enabled ] ; then
+			for link in /etc/apache2/mods-enabled/*.load ; do
+				target=$(readlink "$link")
+				module=$(basename "$link" | sed 's/\.load//')
+				if [ ! -e "/etc/apache2/mods-enabled/$target" ] ; then
+					a2dismod -q $module
+				fi
+				# the module is already enabled, however
+				# dependencies could have changed hence re-call
+				# a2enmod again.
+				# Example: the deflate module when upgraded from
+				# Squeeze
+				if [ -e "/etc/apache2/mods-enabled/$target" ] ; then
+					a2enmod -q $module
+				fi
+			done
+		fi
+	fi
+}
+
+
+#DEBHELPER#
+
+# remove dangling symlinks of disabled modules. This needs to be executed after
+# DEBHELPER removing conffiles. dpkg will remove conffiles only if apache2 is
+# installed. If only apache2.2-common was installed instead, the code turns into
+# a no-op. Do we need to take care of that? If yes, we need to write oure own
+# maintainer-scripts-helper
+
 case "$1" in
         configure)
+
+	refresh_modules $@
 
 	enable_default_mpm
 
@@ -76,8 +142,5 @@ case "$1" in
                 exit 1
         ;;
 esac
-
-
-#DEBHELPER#
 
 exit 0

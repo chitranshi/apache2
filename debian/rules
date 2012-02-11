@@ -1,48 +1,13 @@
 #!/usr/bin/make -f
 # -*- makefile -*-
 
-#
-## Some caveats:
-## 1) This rules file is based on the short dh(1) form. However, it needs a lot
-##    of overrides to achieve what we want. The basic outline is to build the
-##    source three four times, once for each supported MPM.
-## 2) The modules aren't built for all MPMs. Given that the builtin modules are
-##    the same for all MPMs it is possible to cross-load a module built for one
-##    MPM in any other. Hence, we build modules only for the worker MPM and reuse
-##    it for all the remaining MPMs. The worker $(DEFAULT_MPM) is the basic
-##    installation path where packages are being built from. From the remaining
-##    MPMs only the respective binaries are taken. Development header are
-##    similary taken from the prefork MPM, although the threaded MPMs need their
-##    own headers partially.
-## 3) The ITK MPM needs modification in the source tree. Hence it is absolutely
-##    necessary to copy the source tree before applying patches which enable the
-##    ITK. For the remaining MPMs that's not stricly necessary
-## 4) There are being built two flavors of suexec. One is supplied upstream,
-##    another one is a Debian improvement which allows customization. The latter
-##    suexec-custom binary is built from a copy-and-patched suexec source at
-##    compile time.
-## 5) Special care must be taken to avoid having -DPLATFORM defined for apxs2.
-## 6) dh_install is not powerful enough to us. We need to copy and move into
-##    (future) binary packages.See various dh_install* overrides to get the idea.
-## 7) BEWARE arch:indep ONLY BUILDS (dpkg-buildpackage -A) ARE KNOWN TO BE BROKEN
-##    FOR NOW
-##
-
 
 # Uncomment this to turn on verbose mode.
 export DH_VERBOSE=1
 
 #
-#BUILD_DIR=debian/build-tree
-#INSTALL_DIR_RELATIVE=install-tree
-#INSTALL_DIR=debian/$(INSTALL_DIR_RELATIVE)
 LSB_RELEASE := $(shell lsb_release -i -s)
-#DEFAULT_MPM=$(INSTALL_DIR)/worker
 
-#
-#MPMS=worker prefork event itk
-#
-#
 #AP2_worker_CONFARGS = --enable-authn-alias=shared --enable-authnz-ldap=shared  \
 #                      --enable-disk-cache=shared --enable-cache=shared \
 #                      --enable-mem-cache=shared --enable-file-cache=shared \
@@ -100,49 +65,13 @@ prepare-custom-suexec:
 	cp support/suexec.c support/suexec-custom.c
 	patch -p1 < debian/patches/202_suexec-custom
 
-#build-%:
-#	mkdir "$(BUILD_DIR)/$*"
-#	cp -a `find . -maxdepth 1 -mindepth 1 -not -name debian` $(BUILD_DIR)/$*
-#	set -ex	;										\
-#	if [ $* = itk ] ; then                                                                  \
-#		cd $(BUILD_DIR)/$* ;                                                            \
-#		mkdir server/mpm/experimental/itk/ ;                                            \
-#		cp server/mpm/prefork/* server/mpm/experimental/itk/ ;                          \
-#		mv server/mpm/experimental/itk/prefork.c server/mpm/experimental/itk/itk.c ;    \
-#												\
-#		for PATCH in `tail -n +2 ../../mpm-itk/patches/series`; do                      \
-#			echo Applying $$PATCH ... ;                                             \
-#			patch -p1 < ../../mpm-itk/patches/$$PATCH ;                             \
-#			echo ;                                                                  \
-#		done ;                                                                          \
-#												\
-#		autoheader ;                                                                    \
-#		autoconf ;                                                                      \
-#	fi ;
-#	cd $(BUILD_DIR)/$* && ./configure \
-#		$(AP2_COMMON_CONFARGS) --with-mpm=$* $(AP2_$(*)_CONFARGS) $(CONFFLAGS) \
-#		CFLAGS="$(AP2_CFLAGS)" CPPFLAGS="$(AP2_CPPFLAGS)" LDFLAGS="$(AP2_LDFLAGS)"
-#	dh_auto_build -D "$(BUILD_DIR)/$*"
-#	cd "$(BUILD_DIR)/$*" && ./apache2 -l |grep -v $* > mods.list
+# TODO: Check whether the override below is still needed
 #	# force one process since mkdir.sh used by 'make install' is not
 #	# reliable otherwise
 #	dh_auto_install -D "$(BUILD_DIR)/$*" --destdir="$(INSTALL_DIR)/$*" -- -j1
-#	install -m 755 $(BUILD_DIR)/$*/apache2 debian/apache2.2-bin/usr/lib/apache2/mpm-$*/apache2
-#
-#
+
+
 clean-config-vars:
-#	set -ex ; \
-#	for i in worker prefork; do \
-#		if [ "$$i" = "prefork" ]; then \
-#			TARGET=prefork ;\
-#		else \
-#			TARGET=threaded ;\
-#		fi ;\
-#		cp $(INSTALL_DIR)/$$i/usr/include/apache2/* debian/apache2-$$TARGET-dev/usr/include/apache2/ ;\
-#		cp $(INSTALL_DIR)/$$i/usr/share/apache2/build/* debian/apache2-$$TARGET-dev/usr/share/apache2/build/ ;\
-#		cp $(BUILD_DIR)/$$i/support/apxs debian/apache2-$$TARGET-dev/usr/bin/apxs2 ;\
-#		perl -p -e s/^P=apache2/P=apache2-$${TARGET}-dev/ < debian/apache2.postinst > debian/apache2-$${TARGET}-dev.postinst ;\
-#	done
 	# Clean up config_vars.mk
 	# FIXME: Maybe someone could document here why we actually need to
 	# cleanup some stuff here
@@ -154,14 +83,6 @@ clean-config-vars:
 	printf "EXTRA_CPPFLAGS = \n" >> tmp_config_vars.mk ; \
 	printf "EXTRA_CFLAGS = \n" >> tmp_config_vars.mk ; \
 	mv tmp_config_vars.mk config_vars.mk ) ;
-#	done
-#
-#undo-mpm-%-maintainer-scripts:
-#	for f in postinst preinst prerm links dirs ; do \
-#		rm -f debian/apache2-mpm-$*.$$f ;\
-#	done
-#	rm -f debian/apache2-mpm-$*.lintian-overrides
-#
 
 suexec-maintainer-scripts:
 	set -e ; \

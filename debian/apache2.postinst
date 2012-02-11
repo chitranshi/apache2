@@ -18,10 +18,26 @@ set -e
 # the debian-policy package
 #
 
+#      n.b you can't rely on $2 (the last installed version)  for upgrades, as
+#      the user might have been using apache2.2-common only. Let's pretend we're
+#      upgrading if there is a /etc/apache2/.apache2_mpm_selected file around
+we_are_upgrading_from_squeeze()
+{
+	if [ -n $2 ] && dpkg --compare-versions "$2" "le" "2.3" ; then
+		return 0
+	fi
+
+	if [ -e /etc/apache2/.apache2_mpm_selected ] ; then
+		return 0
+	fi
+
+	return 1
+}
+
 enable_default_mpm()
 {
 	mpm="mpm_event"
-	if [ -e /etc/apache2/.apache2_mpm_selected ] ; then
+	if we_are_upgrading_from_squeeze $@ && [ -e /etc/apache2/.apache2_mpm_selected  ]; then
 		tmpmpm=$(grep -v "^#" /etc/apache2/.apache2_mpm_selected | head -n1)
 		case "$tmpmpm" in
 			apache2-mpm-worker)
@@ -46,7 +62,6 @@ enable_default_mpm()
 				mpm="mpm_event"
 			;;
 		esac
-		rm -f /etc/apache2/.apache2_mpm_selected
 	fi
 	a2enmod -q $mpm
 }
@@ -81,29 +96,31 @@ install_default_files()
 }
 
 # XXX: Find out whether I am on crack removing stale modules that way
-#      n.b you can't rely on $2 for upgrades, as the user might have been using
-#      apache2.2-common only. Let's pretend we're upgrading if there is an
-#      obsolete conffile around.
 refresh_modules()
 {
-	if [ -e /etc/apache2/mods-available/authz_default.load ] || dpkg --compare-versions "$2" "le" "2.3" ; then
-		if [ -d /etc/apache2/mods-enabled ] ; then
-			for link in /etc/apache2/mods-enabled/*.load ; do
-				target=$(readlink "$link")
-				module=$(basename "$link" | sed 's/\.load//')
-				if [ ! -e "/etc/apache2/mods-enabled/$target" ] ; then
-					a2dismod -q $module
-				fi
-				# the module is already enabled, however
-				# dependencies could have changed hence re-call
-				# a2enmod again.
-				# Example: the deflate module when upgraded from
-				# Squeeze
-				if [ -e "/etc/apache2/mods-enabled/$target" ] ; then
-					a2enmod -q $module
-				fi
-			done
-		fi
+	if we_are_upgrading_from_squeeze $@ && [ -d /etc/apache2/mods-enabled/ ] ; then
+		shopt -s nullglob
+		for link in /etc/apache2/mods-enabled/*.load ; do
+			target=$(readlink "$link") || true
+			if [ -z $target ] ; then
+				continue
+			fi
+
+			module=$(basename "$link" | sed 's/\.load//') || true
+
+			if [ ! -e "/etc/apache2/mods-enabled/$target" ] ; then
+				echo "disable obsolete module $module"
+				a2dismod -q $module
+			fi
+			# the module is already enabled, however
+			# dependencies could have changed hence re-call
+			# a2enmod again.
+			# Example: the deflate module when upgraded from
+			# Squeeze
+			if [ -e "/etc/apache2/mods-enabled/$target" ] ; then
+				a2enmod -q $module
+			fi
+		done
 	fi
 }
 
@@ -121,14 +138,19 @@ case "$1" in
 
 	refresh_modules $@
 
-	enable_default_mpm
+	enable_default_mpm $@
 
-	install_default_files
+	install_default_files $@
 
-        enable_default_modules
+        enable_default_modules $@
 
 	if [ -z "$2" ]; then
 		install_default_site
+	fi
+
+	# post installation cleanup
+	if [ -e /etc/apache2/.apache2_mpm_selected ] ; then
+		rm -f /etc/apache2/.apache2_mpm_selected
 	fi
 
         ;;

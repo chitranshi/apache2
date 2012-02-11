@@ -61,10 +61,16 @@ apache2 (2.3.16-beta-1) experimental; urgency=low
     + Parse "Conflicts: " header to denote conflicts between modules which
       cannot be loaded into the same Apache server.
   * The following modules and associated configuration files were removed:
-    + mod_authz_default and mod_authn_default: Please use a proper authentication module instead
+    + mod_authz_default and mod_authn_default: Please use a proper
+      authentication module instead
     + mod_mem_cache: Use mod_cache_disk instead
+  * The following modules and associated configuration files are provided (but
+    not enabled by default):
+    access_compat, allowmethods, authz_dbd, cache_disk, data, log_debug, lua
+    proxy_express, proxy_fcgi, proxy_fdpass, proxy_html, ratelimit, reflector
+    remoteip, request, session, session_cookie, session_crypto, session_dbd
 
- -- Arno Töll <debian@toell.net>  Thu, 09 Feb 2012 22:42:05 +0100
+ -- Arno Töll <debian@toell.net>  Sat, 11 Feb 2012 03:30:10 +0100
 
 apache2 (2.2.22-1) unstable; urgency=low
 

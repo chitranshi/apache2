@@ -137,6 +137,15 @@ sub doit {
 		if ( $act eq 'disable' ) {
 			info("removing dangling symlink $link\n");
 			unlink($link);
+
+                        # force a .conf path. It may exist as dangling link, too
+                        $conflink = "$enabldir/$acton.conf";
+
+                        if (-l $conflink && !-e $conflink) {
+                                info("removing dangling symlink $conflink\n");
+                                unlink($conflink)
+                        }
+
 			return 1;
 		}
 		else {

@@ -61,6 +61,8 @@ apache2 (2.3.16-beta-1) UNRELEASED; urgency=low
   * Changes in a2enmod:
     + Parse "Conflicts: " header to denote conflicts between modules which
       cannot be loaded into the same Apache server.
+    + Remove dangling "module.conf" files, too. They were forgotten previously
+      if they existed and only the "module.load" file was removed.
   * The following modules and associated configuration files were removed:
     + mod_authz_default and mod_authn_default: Please use a proper
       authentication module instead
@@ -76,7 +78,7 @@ apache2 (2.3.16-beta-1) UNRELEASED; urgency=low
   * Only include conf.d/*.conf, not conf.d/*.
   * Don't create httpd.conf anymore.
 
- -- Arno Töll <debian@toell.net>  Sat, 11 Feb 2012 03:30:10 +0100
+ -- Arno Töll <debian@toell.net>  Mon, 13 Feb 2012 02:00:02 +0100
 
 apache2 (2.2.22-1) unstable; urgency=low
 

@@ -1,6 +1,0 @@
-# version 2.3 does not exist at all, all 2.2 versions feature those files, but
-# no 2.3 package does
-rm_conffile /etc/apache2/mods-available/authz_default.load 2.3 apache2.2-common
-rm_conffile /etc/apache2/mods-available/authn_default.load 2.3 apache2.2-common
-rm_conffile /etc/apache2/mods-available/mem_cache.load 2.3 apache2.2-common
-rm_conffile /etc/apache2/mods-available/mem_cache.conf 2.3 apache2.2-common

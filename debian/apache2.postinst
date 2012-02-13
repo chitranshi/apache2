@@ -18,52 +18,106 @@ set -e
 # the debian-policy package
 #
 
+
+OBSOLETE_CONFFILES="/etc/apache2/mods-available/authz_default.load
+/etc/apache2/mods-available/authn_default.load
+/etc/apache2/mods-available/mem_cache.load
+/etc/apache2/mods-available/mem_cache.conf
+/etc/apache2/mods-available/authn_alias.load
+/etc/apache2/mods-available/cern_meta.load
+/etc/apache2/mods-available/disk_cache.load
+/etc/apache2/mods-available/disk_cache.conf
+/etc/apache2/mods-available/ident.load
+/etc/apache2/mods-available/imagemap.load"
+
+
+# the functions below need to be idempotent, however we guess the upgrade based
+# on obsolete conffiles which might be removed anytime. Thus, remember we were
+# already in there once.
+SQUEEZE_UPGRADE=0
+
 #      n.b you can't rely on $2 (the last installed version)  for upgrades, as
 #      the user might have been using apache2.2-common only. Let's pretend we're
-#      upgrading if there is a /etc/apache2/.apache2_mpm_selected file around
+#      upgrading if there is either a /etc/apache2/.apache2_mpm_selected file
+#      around or an /etc/apache2/.apache2_upgrade file exists.
 we_are_upgrading_from_squeeze()
 {
-	if [ -n $2 ] && dpkg --compare-versions "$2" "le" "2.3" ; then
+        if [ -n $2 ] && dpkg --compare-versions "$2" le-nl "2.3"; then
+                return 0
+        fi
+
+        if [ -e /etc/apache2/.apache2_mpm_selected ] ; then
+                return 0
+        fi
+
+	if [ $SQUEEZE_UPGRADE -eq 1 ] ; then
 		return 0
 	fi
 
-	if [ -e /etc/apache2/.apache2_mpm_selected ] ; then
-		return 0
-	fi
+	for CONFFILE in $OBSOLETE_CONFFILES ; do
+		SQUEEZE_UPGRADE=1
+		if [ -e "$CONFFILE.dpkg-backup" ] || [ -e "$CONFFILE.dpkg-remove" ] ; then
+			return 0
+		fi
+	done
 
-	return 1
+        return 1
 }
+
+
+# The function below is licensed GPL-2+ and was written by dpkg maintainers
+# See the dpkg-maintscript-helper script for details
+
+remove_conffiles()
+{
+        # we can't use dpkg-maintscript-helper as we shifted conffiles from the
+        # apache2.2-common package to apache2, too. The tool can cope with
+        # that, but additionally we didn't require apache2 to be installed. This
+        # yields the wrong result when upgrading such an installation
+        if we_are_upgrading_from_squeeze $@ ; then
+                for CONFFILE in $OBSOLETE_CONFFILES ; do
+                        if [ -e "$CONFFILE.dpkg-backup" ]; then
+                                mv -f "$CONFFILE.dpkg-backup" "$CONFFILE.dpkg-bak"
+                        fi
+                        if [ -e "$CONFFILE.dpkg-remove" ]; then
+                                echo "Removing obsolete conffile $CONFFILE ..."
+                                rm -f "$CONFFILE.dpkg-remove"
+                        fi
+                done
+        fi
+}
+
 
 enable_default_mpm()
 {
-	mpm="mpm_event"
-	if we_are_upgrading_from_squeeze $@ && [ -e /etc/apache2/.apache2_mpm_selected  ]; then
-		tmpmpm=$(grep -v "^#" /etc/apache2/.apache2_mpm_selected | head -n1)
-		case "$tmpmpm" in
-			apache2-mpm-worker)
-				mpm="mpm_worker"
-			;;
+        mpm="mpm_event"
+        if we_are_upgrading_from_squeeze $@ && [ -e /etc/apache2/.apache2_mpm_selected  ]; then
+                tmpmpm=$(grep -v "^#" /etc/apache2/.apache2_mpm_selected | head -n1)
+                case "$tmpmpm" in
+                        apache2-mpm-worker)
+                                mpm="mpm_worker"
+                        ;;
 
-			apache2-mpm-event)
-				mpm="mpm_event"
-			;;
+                        apache2-mpm-event)
+                                mpm="mpm_event"
+                        ;;
 
-			apache2-mpm-prefork)
-				mpm="mpm_prefork"
-			;;
+                        apache2-mpm-prefork)
+                                mpm="mpm_prefork"
+                        ;;
 
-			apache2-mpm-itk)
-				# Houston, we got a problem
-			;;
+                        apache2-mpm-itk)
+                                # Houston, we got a problem
+                        ;;
 
-			*)
-				# default MPM for upgrading in case we got an unrecognized
-				# hint file
-				mpm="mpm_event"
-			;;
-		esac
-	fi
-	a2enmod -q $mpm
+                        *)
+                                # default MPM for upgrading in case we got an unrecognized
+                                # hint file
+                                mpm="mpm_event"
+                        ;;
+                esac
+        fi
+        a2enmod -q $mpm
 }
 
 enable_default_modules()
@@ -76,94 +130,78 @@ enable_default_modules()
 install_default_site()
 {
 
-	if [ ! -L /etc/apache2/sites-enabled/000-default -a \
-		! -f /etc/apache2/sites-enabled/000-default ]; then
-			a2ensite -q default
-	fi
+        if [ ! -L /etc/apache2/sites-enabled/000-default -a \
+                ! -f /etc/apache2/sites-enabled/000-default ]; then
+                        a2ensite -q default
+        fi
 
-	touch /var/log/apache2/error.log /var/log/apache2/access.log
-	chown root:adm /var/log/apache2/error.log /var/log/apache2/access.log
-	chmod 0640 /var/log/apache2/error.log /var/log/apache2/access.log
+        touch /var/log/apache2/error.log /var/log/apache2/access.log
+        chown root:adm /var/log/apache2/error.log /var/log/apache2/access.log
+        chmod 0640 /var/log/apache2/error.log /var/log/apache2/access.log
 }
 
 install_default_files()
 {
 	if [ ! -e /var/www/index.html ] ; then
 		cp /usr/share/apache2/default-site/index.html /var/www/index.html
-        fi
+	fi
 }
 
 # XXX: Find out whether I am on crack removing stale modules that way
 refresh_modules()
 {
-	if we_are_upgrading_from_squeeze $@ && [ -d /etc/apache2/mods-enabled/ ] ; then
-		shopt -s nullglob
-		for link in /etc/apache2/mods-enabled/*.load ; do
-			target=$(readlink "$link") || true
-			if [ -z $target ] ; then
-				continue
-			fi
-			case "$target" in
-			*/disk_cache.load)
-				a2dismod -q disk_cache
-				a2enmod -q cache_disk
-				# XXX: Handle rename of conf file
-				continue
-				;;
-			esac
+       if we_are_upgrading_from_squeeze $@ && [ -d /etc/apache2/mods-enabled/ ] ; then
+                shopt -s nullglob
+                for link in /etc/apache2/mods-enabled/*.load ; do
+                        target=$(readlink "$link") || true
+                        if [ -z $target ] ; then
+                                continue
+                        fi
 
-			module=$(basename "$link" | sed 's/\.load//') || true
+                        module=$(basename "$link" | sed 's/\.load//') || true
 
-			if [ ! -e "/etc/apache2/mods-enabled/$target" ] ; then
-				echo "disable obsolete module $module"
-				a2dismod -q $module
-			fi
-			# the module is already enabled, however
-			# dependencies could have changed hence re-call
-			# a2enmod again.
-			# Example: the deflate module when upgraded from
-			# Squeeze
-			if [ -e "/etc/apache2/mods-enabled/$target" ] ; then
-				a2enmod -q $module
-			fi
-		done
-	fi
+                        if [ ! -e "/etc/apache2/mods-enabled/$target" ] ; then
+                                echo "disable obsolete module $module"
+                                a2dismod -q $module
+
+				# XXX enable cache_disk if the used had
+				# disk_cache enabled
+                        fi
+                        # the module is already enabled, however
+                        # dependencies could have changed hence re-call
+                        # a2enmod again.
+                        # Example: the deflate module when upgraded from
+                        # Squeeze
+                        if [ -e "/etc/apache2/mods-enabled/$target" ] ; then
+                                a2enmod -q $module
+                        fi
+                done
+        fi
 }
 
 #XXX: Move /var/cache/apache2/mod_disk_cache to /var/cache/apache2/mod_cache_disk?
-#XXX: Handle rename of conf.d/*
 #XXX: Move httpd.conf into conf.d if not empty, add comment what it used to be
 
-
-#DEBHELPER#
-
-# remove dangling symlinks of disabled modules. This needs to be executed after
-# DEBHELPER removing conffiles. dpkg will remove conffiles only if apache2 is
-# installed. If only apache2.2-common was installed instead, the code turns into
-# a no-op. Do we need to take care of that? If yes, we need to write oure own
-# maintainer-scripts-helper
 
 case "$1" in
         configure)
 
-	refresh_modules $@
+                remove_conffiles $@
+                refresh_modules $@
+                enable_default_mpm $@
+                install_default_files $@
+                enable_default_modules $@
 
-	enable_default_mpm $@
+                if [ -z "$2" ]; then
+                        install_default_site
+                fi
 
-	install_default_files $@
+                # post installation cleanup
+                if [ -e /etc/apache2/.apache2_mpm_selected ] ; then
+                        rm -f /etc/apache2/.apache2_mpm_selected
+                fi
 
-        enable_default_modules $@
-
-	if [ -z "$2" ]; then
-		install_default_site
-	fi
-
-	# post installation cleanup
-	if [ -e /etc/apache2/.apache2_mpm_selected ] ; then
-		rm -f /etc/apache2/.apache2_mpm_selected
-	fi
-
-        ;;
+       ;;
 
         abort-upgrade|abort-remove|abort-deconfigure)
 
@@ -174,5 +212,7 @@ case "$1" in
                 exit 1
         ;;
 esac
+
+#DEBHELPER#
 
 exit 0

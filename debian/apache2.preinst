@@ -14,10 +14,59 @@ set -e
 # the debian-policy package
 
 
+OBSOLETE_CONFFILES="/etc/apache2/mods-available/authz_default.load
+/etc/apache2/mods-available/authn_default.load
+/etc/apache2/mods-available/mem_cache.load
+/etc/apache2/mods-available/mem_cache.conf
+/etc/apache2/mods-available/authn_alias.load
+/etc/apache2/mods-available/cern_meta.load
+/etc/apache2/mods-available/disk_cache.load
+/etc/apache2/mods-available/disk_cache.conf
+/etc/apache2/mods-available/ident.load
+/etc/apache2/mods-available/imagemap.load"
+
+
+obsolete_conffile_exists()
+{
+	for CONFFILE in $OBSOLETE_CONFFILES ; do
+		if [ -e "$CONFFILE" ] ; then
+			return 0
+		fi
+	done
+
+	return 1
+}
+
+# The function below is licensed GPL-2+ and was written by dpkg maintainers
+# See the dpkg-maintscript-helper script for details
+prepare_rm_conffile()
+{
+        for CONFFILE in $OBSOLETE_CONFFILES ; do
+                [ -e "$CONFFILE" ] || continue
+
+                local md5sum="$(md5sum $CONFFILE | sed -e 's/ .*//')"
+                local old_md5sum="$(dpkg-query -W -f='${Conffiles}' $PACKAGE | \
+                        sed -n -e "\' $CONFFILE ' { s/ obsolete$//; s/.* //; p }")"
+                if [ "$md5sum" != "$old_md5sum" ]; then
+                        echo "Obsolete conffile $CONFFILE has been modified by you."
+                        echo "Saving as $CONFFILE.dpkg-bak ..."
+                        mv -f "$CONFFILE" "$CONFFILE.dpkg-backup"
+                else
+                        echo "Moving obsolete conffile $CONFFILE out of the way..."
+                        mv -f "$CONFFILE" "$CONFFILE.dpkg-remove"
+                fi
+        done
+}
+
+
+
 case "$1" in
     install|upgrade)
 
-        if [ ! -z "$2" ] && [ -d "/etc/apache2/" ] ; then
+        # black magic follows below. we're upgrading from Squeeze if
+
+        # 1) an apache2-mpm package exists
+        if [ -n "$2" ] && [ -d "/etc/apache2/" ] ; then
             mpm=$(dpkg-query -f '${Package}\t${Status}\n'  -W 'apache2-mpm-*' 2>/dev/null) || true
             if [ $? -eq 0 ] ; then
                 mpm=$(echo "$mpm" | grep "install ok" | cut -f1)
@@ -28,6 +77,13 @@ case "$1" in
                 fi
             fi
         fi
+
+        # 2) an apache2.2-common conffiles exists or the 2.2 apache2 package is
+	# installed
+	if [ -n "$2" ] || obsolete_conffile_exists ; then
+		prepare_rm_conffile
+       fi
+
     ;;
 
     abort-upgrade)

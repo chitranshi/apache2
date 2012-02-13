@@ -1,3 +1,5 @@
 /usr/include/apache2
 /usr/share/apache2/build
-/usr/sbin/apxs
+/usr/sbin/apxs				/usr/bin/
+debian/debhelper/dh_apache2		/usr/bin/
+debian/debhelper/apache2		/usr/share/debhelper/autoscripts/

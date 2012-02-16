@@ -184,47 +184,6 @@ int SSL_smart_shutdown(SSL *ssl)
 
 /*  _________________________________________________________________
 **
-**  Cipher Suite Spec String Creation
-**  _________________________________________________________________
-*/
-
-char *SSL_make_ciphersuite(apr_pool_t *p, SSL *ssl)
-{
-    STACK_OF(SSL_CIPHER) *sk;
-    SSL_CIPHER *c;
-    int i;
-    int l;
-    char *cpCipherSuite;
-    char *cp;
-
-    if (ssl == NULL)
-        return "";
-    if ((sk = (STACK_OF(SSL_CIPHER) *)SSL_get_ciphers(ssl)) == NULL)
-        return "";
-    l = 0;
-    for (i = 0; i < sk_SSL_CIPHER_num(sk); i++) {
-        c = sk_SSL_CIPHER_value(sk, i);
-        l += strlen(SSL_CIPHER_get_name(c))+2+1;
-    }
-    if (l == 0)
-        return "";
-    cpCipherSuite = (char *)apr_palloc(p, l+1);
-    cp = cpCipherSuite;
-    for (i = 0; i < sk_SSL_CIPHER_num(sk); i++) {
-        c = sk_SSL_CIPHER_value(sk, i);
-        l = strlen(SSL_CIPHER_get_name(c));
-        memcpy(cp, SSL_CIPHER_get_name(c), l);
-        cp += l;
-        *cp++ = '/';
-        *cp++ = (c->valid == 1 ? '1' : '0');
-        *cp++ = ':';
-    }
-    *(cp-1) = NUL;
-    return cpCipherSuite;
-}
-
-/*  _________________________________________________________________
-**
 **  Certificate Checks
 **  _________________________________________________________________
 */
@@ -301,7 +260,7 @@ char *SSL_X509_NAME_ENTRY_to_string(apr_pool_t *p, X509_NAME_ENTRY *xsne)
  * convert an X509_NAME to an RFC 2253 formatted string, optionally truncated
  * to maxlen characters (specify a maxlen of 0 for no length limit)
  */
-char *SSL_X509_NAME_to_string(apr_pool_t *p, X509_NAME *dn, unsigned int maxlen)
+char *SSL_X509_NAME_to_string(apr_pool_t *p, X509_NAME *dn, int maxlen)
 {
     char *result = NULL;
     BIO *bio;
@@ -312,8 +271,8 @@ char *SSL_X509_NAME_to_string(apr_pool_t *p, X509_NAME *dn, unsigned int maxlen)
     X509_NAME_print_ex(bio, dn, 0, XN_FLAG_RFC2253);
     len = BIO_pending(bio);
     if (len > 0) {
-        result = apr_palloc(p, maxlen ? maxlen+1 : len+1);
-        if (maxlen && maxlen < len) {
+        result = apr_palloc(p, (maxlen > 0) ? maxlen+1 : len+1);
+        if (maxlen > 0 && maxlen < len) {
             len = BIO_read(bio, result, maxlen);
             if (maxlen > 2) {
                 /* insert trailing ellipsis if there's enough space */
@@ -464,7 +423,6 @@ int SSL_CTX_use_certificate_chain(
     X509 *x509;
     unsigned long err;
     int n;
-    STACK_OF(X509) *extra_certs;
 
     if ((bio = BIO_new(BIO_s_file_internal())) == NULL)
         return -1;
@@ -481,11 +439,14 @@ int SSL_CTX_use_certificate_chain(
         X509_free(x509);
     }
     /* free a perhaps already configured extra chain */
-    extra_certs = ctx->extra_certs;
-    if (extra_certs != NULL) {
-        sk_X509_pop_free((STACK_OF(X509) *)extra_certs, X509_free);
+#ifdef OPENSSL_NO_SSL_INTERN
+    SSL_CTX_clear_extra_chain_certs(ctx);
+#else
+    if (ctx->extra_certs != NULL) {
+        sk_X509_pop_free((STACK_OF(X509) *)ctx->extra_certs, X509_free);
         ctx->extra_certs = NULL;
     }
+#endif
     /* create new extra chain by loading the certs */
     n = 0;
     while ((x509 = PEM_read_bio_X509(bio, NULL, cb, NULL)) != NULL) {

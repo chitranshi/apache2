@@ -35,6 +35,11 @@
 **  _________________________________________________________________
 */
 
+#ifndef OPENSSL_NO_EC
+#define KEYTYPES "RSA, DSA or ECC"
+#else 
+#define KEYTYPES "RSA or DSA"
+#endif
 
 static void ssl_add_version_components(apr_pool_t *p,
                                        server_rec *s)
@@ -501,6 +506,10 @@ static void ssl_init_ctx_protocol(server_rec *s,
     cp = apr_pstrcat(p,
                      (protocol & SSL_PROTOCOL_SSLV3 ? "SSLv3, " : ""),
                      (protocol & SSL_PROTOCOL_TLSV1 ? "TLSv1, " : ""),
+#ifdef HAVE_TLSV1_X
+                     (protocol & SSL_PROTOCOL_TLSV1_1 ? "TLSv1.1, " : ""),
+                     (protocol & SSL_PROTOCOL_TLSV1_2 ? "TLSv1.2, " : ""),
+#endif
                      NULL);
     cp[strlen(cp)-2] = NUL;
 
@@ -517,6 +526,18 @@ static void ssl_init_ctx_protocol(server_rec *s,
             TLSv1_client_method() : /* proxy */
             TLSv1_server_method();  /* server */
     }
+#ifdef HAVE_TLSV1_X
+    else if (protocol == SSL_PROTOCOL_TLSV1_1) {
+        method = mctx->pkp ?
+            TLSv1_1_client_method() : /* proxy */
+            TLSv1_1_server_method();  /* server */
+    }
+    else if (protocol == SSL_PROTOCOL_TLSV1_2) {
+        method = mctx->pkp ?
+            TLSv1_2_client_method() : /* proxy */
+            TLSv1_2_server_method();  /* server */
+    }
+#endif
     else { /* For multiple protocols, we need a flexible method */
         method = mctx->pkp ?
             SSLv23_client_method() : /* proxy */
@@ -538,6 +559,16 @@ static void ssl_init_ctx_protocol(server_rec *s,
     if (!(protocol & SSL_PROTOCOL_TLSV1)) {
         SSL_CTX_set_options(ctx, SSL_OP_NO_TLSv1);
     }
+
+#ifdef HAVE_TLSV1_X
+    if (!(protocol & SSL_PROTOCOL_TLSV1_1)) {
+        SSL_CTX_set_options(ctx, SSL_OP_NO_TLSv1_1);
+    }
+
+    if (!(protocol & SSL_PROTOCOL_TLSV1_2)) {
+        SSL_CTX_set_options(ctx, SSL_OP_NO_TLSv1_2);
+    }
+#endif
 
 #ifdef SSL_OP_CIPHER_SERVER_PREFERENCE
     if (sc->cipher_server_pref == TRUE) {
@@ -780,8 +811,15 @@ static void ssl_init_ctx_pkcs7_cert_chain(server_rec *s, modssl_ctx_t *mctx)
 {
     STACK_OF(X509) *certs = ssl_read_pkcs7(s, mctx->pkcs7);
     int n;
+    STACK_OF(X509) *extra_certs = NULL;
 
-    if (!mctx->ssl_ctx->extra_certs)
+#ifdef OPENSSL_NO_SSL_INTERN
+    SSL_CTX_get_extra_chain_certs(mctx->ssl_ctx, &extra_certs);
+#else
+    extra_certs = mctx->ssl_ctx->extra_certs;
+#endif
+
+    if (!extra_certs)
         for (n = 1; n < sk_X509_num(certs); ++n)
              SSL_CTX_add_extra_chain_cert(mctx->ssl_ctx, sk_X509_value(certs, n));
 }
@@ -1102,11 +1140,7 @@ static void ssl_init_server_certs(server_rec *s,
 #endif
 )) {
         ap_log_error(APLOG_MARK, APLOG_EMERG, 0, s, APLOGNO(01910)
-#ifndef OPENSSL_NO_EC
-                "Oops, no RSA, DSA or ECC server certificate found "
-#else
-                "Oops, no RSA or DSA server certificate found "
-#endif
+                "Oops, no " KEYTYPES " server certificate found "
                 "for '%s:%d'?!", s->server_hostname, s->port);
         ssl_die();
     }
@@ -1127,11 +1161,7 @@ static void ssl_init_server_certs(server_rec *s,
 #endif
           )) {
         ap_log_error(APLOG_MARK, APLOG_EMERG, 0, s, APLOGNO(01911)
-#ifndef OPENSSL_NO_EC
-                "Oops, no RSA, DSA or ECC server private key found?!");
-#else
-                "Oops, no RSA or DSA server private key found?!");
-#endif
+                "Oops, no " KEYTYPES " server private key found?!");
         ssl_die();
     }
 }
@@ -1427,21 +1457,17 @@ void ssl_init_CheckServers(server_rec *base_server, apr_pool_t *p)
         klen = strlen(key);
 
         if ((ps = (server_rec *)apr_hash_get(table, key, klen))) {
-            ap_log_error(APLOG_MARK,
 #ifdef OPENSSL_NO_TLSEXT
-                         APLOG_WARNING,
+            int level = APLOG_WARNING;
+            const char *problem = "conflict";
 #else
-                         APLOG_DEBUG,
+            int level = APLOG_DEBUG;
+            const char *problem = "overlap";
 #endif
-                         0,
-                         base_server,
-#ifdef OPENSSL_NO_TLSEXT
-                         "Init: SSL server IP/port conflict: "
-#else
-                         "Init: SSL server IP/port overlap: "
-#endif
+            ap_log_error(APLOG_MARK, level, 0, base_server,
+                         "Init: SSL server IP/port %s: "
                          "%s (%s:%d) vs. %s (%s:%d)",
-                         ssl_util_vhostid(p, s),
+                         problem, ssl_util_vhostid(p, s),
                          (s->defn_name ? s->defn_name : "unknown"),
                          s->defn_line_number,
                          ssl_util_vhostid(p, ps),
@@ -1455,11 +1481,12 @@ void ssl_init_CheckServers(server_rec *base_server, apr_pool_t *p)
     }
 
     if (conflict) {
-        ap_log_error(APLOG_MARK, APLOG_WARNING, 0, base_server, APLOGNO(01917)
 #ifdef OPENSSL_NO_TLSEXT
+        ap_log_error(APLOG_MARK, APLOG_WARNING, 0, base_server, APLOGNO(01917)
                      "Init: You should not use name-based "
                      "virtual hosts in conjunction with SSL!!");
 #else
+        ap_log_error(APLOG_MARK, APLOG_WARNING, 0, base_server, APLOGNO(02292)
                      "Init: Name-based SSL virtual hosts only "
                      "work for clients with TLS server name indication "
                      "support (RFC 4366)");
@@ -1609,6 +1636,17 @@ static void ssl_init_ctx_cleanup_proxy(modssl_ctx_t *mctx)
     ssl_init_ctx_cleanup(mctx);
 
     if (mctx->pkp->certs) {
+        int i = 0;
+        int ncerts = sk_X509_INFO_num(mctx->pkp->certs);
+
+        if (mctx->pkp->ca_certs) {
+            for (i = 0; i < ncerts; i++) {
+                if (mctx->pkp->ca_certs[i] != NULL) {
+                    sk_X509_pop_free(mctx->pkp->ca_certs[i], X509_free);
+                }
+            }
+        }
+
         sk_X509_INFO_pop_free(mctx->pkp->certs, X509_INFO_free);
         mctx->pkp->certs = NULL;
     }

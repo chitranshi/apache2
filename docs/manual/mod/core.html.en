@@ -13,11 +13,11 @@
 <body>
 <div id="page-header">
 <p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="../faq/">FAQ</a> | <a href="../glossary.html">Glossary</a> | <a href="../sitemap.html">Sitemap</a></p>
-<p class="apache">Apache HTTP Server Version 2.3</p>
+<p class="apache">Apache HTTP Server Version 2.4</p>
 <img alt="" src="../images/feather.gif" /></div>
 <div class="up"><a href="./"><img title="&lt;-" alt="&lt;-" src="../images/left.gif" /></a></div>
 <div id="path">
-<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">HTTP Server</a> &gt; <a href="http://httpd.apache.org/docs/">Documentation</a> &gt; <a href="../">Version 2.3</a> &gt; <a href="./">Modules</a></div>
+<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">HTTP Server</a> &gt; <a href="http://httpd.apache.org/docs/">Documentation</a> &gt; <a href="../">Version 2.4</a> &gt; <a href="./">Modules</a></div>
 <div id="page-content">
 <div id="preamble"><h1>Apache Core Features</h1>
 <div class="toplang">
@@ -67,6 +67,7 @@ available</td></tr>
 <li><img alt="" src="../images/down.gif" /> <a href="#ifdefine">&lt;IfDefine&gt;</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#ifmodule">&lt;IfModule&gt;</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#include">Include</a></li>
+<li><img alt="" src="../images/down.gif" /> <a href="#includeoptional">IncludeOptional</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#keepalive">KeepAlive</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#keepalivetimeout">KeepAliveTimeout</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#limit">&lt;Limit&gt;</a></li>
@@ -474,6 +475,30 @@ NoDecode option available in 2.3.12 and later.</td></tr>
 
       <dd>
       Allow use of the directives controlling host access (<code class="directive"><a href="../mod/mod_authz_host.html#allow">Allow</a></code>, <code class="directive"><a href="../mod/mod_authz_host.html#deny">Deny</a></code> and <code class="directive"><a href="../mod/mod_authz_host.html#order">Order</a></code>).</dd>
+
+      <dt>Nonfatal=[Override|Unknown|All]</dt>
+
+      <dd>
+      Allow use of AllowOverride option to treat syntax errors in
+      .htaccess as non-fatal: instead of causing an Internal Server
+      Error, disallowed or unrecognised directives will be ignored
+      and a warning logged:
+      <ul>
+          <li><strong>Nonfatal=Override</strong> treats directives
+              forbidden by AllowOverride as non-fatal.</li>
+          <li><strong>Nonfatal=Unknown</strong> treats unknown directives
+              as non-fatal.  This covers typos and directives implemented
+              by a module that's not present.</li>
+          <li><strong>Nonfatal=All</strong> treats both the above as non-fatal.</li>
+      </ul>
+      <p>Note that a syntax error in a valid directive will still cause
+      an internal server error.</p>
+      <div class="warning"><h3>Security</h3>
+          Nonfatal errors may have security implications for .htaccess users.
+          For example, if AllowOverride disallows AuthConfig, users'
+          configuration designed to restrict access to a site will be disabled.
+      </div>
+      </dd>
 
       <dt>Options[=<var>Option</var>,...]</dt>
 
@@ -2006,7 +2031,7 @@ later.</td></tr>
 <table class="directive">
 <tr><th><a href="directive-dict.html#Description">Description:</a></th><td>Includes other configuration files from within
 the server configuration files</td></tr>
-<tr><th><a href="directive-dict.html#Syntax">Syntax:</a></th><td><code>Include [<var>optional</var>|<var>strict</var>] <var>file-path</var>|<var>directory-path</var>|<var>wildcard</var></code></td></tr>
+<tr><th><a href="directive-dict.html#Syntax">Syntax:</a></th><td><code>Include <var>file-path</var>|<var>directory-path</var>|<var>wildcard</var></code></td></tr>
 <tr><th><a href="directive-dict.html#Context">Context:</a></th><td>server config, virtual host, directory</td></tr>
 <tr><th><a href="directive-dict.html#Status">Status:</a></th><td>Core</td></tr>
 <tr><th><a href="directive-dict.html#Module">Module:</a></th><td>core</td></tr>
@@ -2027,27 +2052,10 @@ wildcard matching available in 2.3.6 and later</td></tr>
     wildcard syntax shown below, to include files that match a particular
     pattern, such as *.conf, for example.</p>
 
-    <p>When a wildcard is specified for a <strong>file</strong> component of
-    the path, and no file matches the wildcard, the
-    <code class="directive"><a href="#include">Include</a></code>
-    directive will be <strong>silently ignored</strong>. When a wildcard is
-    specified for a <strong>directory</strong> component of the path, and
-    no directory matches the wildcard, the
-    <code class="directive"><a href="#include">Include</a></code> directive will
-    <strong>fail with an error</strong> saying the directory cannot be found.
-    </p>
-
-    <p>For further control over the behavior of the server when no files or
-    directories match, prefix the path with the modifiers <var>optional</var>
-    or <var>strict</var>. If <var>optional</var> is specified, any wildcard
-    file or directory that does not match will be silently ignored. If
-    <var>strict</var> is specified, any wildcard file or directory that does
-    not match at least one file will cause server startup to fail.</p>
-
-    <p>When a directory or file component of the path is
-    specified exactly, and that directory or file does not exist,
-    <code class="directive"><a href="#include">Include</a></code> directive will fail with an
-    error saying the file or directory cannot be found.</p>
+    <p>The <code class="directive"><a href="#include">Include</a></code> directive will
+    <strong>fail with an error</strong> if a wildcard expression does not
+    match any file. The <code class="directive"><a href="#includeoptional">IncludeOptional</a></code>
+    directive can be used if non-matching wildcards should be ignored.</p>
 
     <p>The file path specified may be an absolute path, or may be relative
     to the <code class="directive"><a href="#serverroot">ServerRoot</a></code> directory.</p>
@@ -2067,32 +2075,48 @@ wildcard matching available in 2.3.6 and later</td></tr>
     </code></p></div>
 
     <p>Wildcards may be included in the directory or file portion of the
-    path. In the following example, the server will fail to load if no
-    directories match conf/vhosts/*, but will load successfully if no
-    files match *.conf.</p>
+    path. This example will fail if there is no subdirectory in conf/vhosts
+    that contains at least one *.conf file:</p>
 
     <div class="example"><p><code>
-      Include conf/vhosts/*/vhost.conf<br />
       Include conf/vhosts/*/*.conf
     </code></p></div>
 
-    <p>In this example, the server will fail to load if either
-    conf/vhosts/* matches no directories, or if *.conf matches no files:</p>
+    <p>Alternatively, the following command will just be ignored in case of
+    missing files or directories:</p>
 
     <div class="example"><p><code>
-      Include strict conf/vhosts/*/*.conf
-    </code></p></div>
-
-    <p>In this example, the server load successfully if either conf/vhosts/*
-    matches no directories, or if *.conf matches no files:</p>
-
-    <div class="example"><p><code>
-      Include optional conf/vhosts/*/*.conf
+      IncludeOptional conf/vhosts/*/*.conf
     </code></p></div>
 
 
 <h3>See also</h3>
 <ul>
+<li><code class="directive"><a href="#includeoptional">IncludeOptional</a></code></li>
+<li><code class="program"><a href="../programs/apachectl.html">apachectl</a></code></li>
+</ul>
+</div>
+<div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
+<div class="directive-section"><h2><a name="IncludeOptional" id="IncludeOptional">IncludeOptional</a> <a name="includeoptional" id="includeoptional">Directive</a></h2>
+<table class="directive">
+<tr><th><a href="directive-dict.html#Description">Description:</a></th><td>Includes other configuration files from within
+the server configuration files</td></tr>
+<tr><th><a href="directive-dict.html#Syntax">Syntax:</a></th><td><code>IncludeOptional <var>file-path</var>|<var>directory-path</var>|<var>wildcard</var></code></td></tr>
+<tr><th><a href="directive-dict.html#Context">Context:</a></th><td>server config, virtual host, directory</td></tr>
+<tr><th><a href="directive-dict.html#Status">Status:</a></th><td>Core</td></tr>
+<tr><th><a href="directive-dict.html#Module">Module:</a></th><td>core</td></tr>
+<tr><th><a href="directive-dict.html#Compatibility">Compatibility:</a></th><td>Available in 2.3.6 and later</td></tr>
+</table>
+    <p>This directive allows inclusion of other configuration files
+    from within the server configuration files. It works identically to the
+    <code class="directive"><a href="#include">Include</a></code> directive, with the
+    exception that if wildcards do not match any file or directory, the
+    <code class="directive"><a href="#includeoptional">IncludeOptional</a></code> directive will be
+    silently ignored instead of causing an error.</p>
+
+<h3>See also</h3>
+<ul>
+<li><code class="directive"><a href="#include">Include</a></code></li>
 <li><code class="program"><a href="../programs/apachectl.html">apachectl</a></code></li>
 </ul>
 </div>
@@ -3235,8 +3259,8 @@ or specified mutexes</td></tr>
     will be changed from the compiled-in default to <code>sysvsem</code>.</p>
 
     <div class="example"><p><code>
-    Mutex default sysvsem<br />
-    Mutex mpm-accept fcntl:/var/httpd/locks
+    Mutex sysvsem default<br />
+    Mutex fcntl:/var/httpd/locks mpm-accept
     </code></p></div>
 
 </div>
@@ -4425,6 +4449,6 @@ hostname or IP address</td></tr>
 <a href="../ja/mod/core.html" hreflang="ja" rel="alternate" title="Japanese">&nbsp;ja&nbsp;</a> |
 <a href="../tr/mod/core.html" hreflang="tr" rel="alternate" title="Türkçe">&nbsp;tr&nbsp;</a></p>
 </div><div id="footer">
-<p class="apache">Copyright 2011 The Apache Software Foundation.<br />Licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
+<p class="apache">Copyright 2012 The Apache Software Foundation.<br />Licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
 <p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="../faq/">FAQ</a> | <a href="../glossary.html">Glossary</a> | <a href="../sitemap.html">Sitemap</a></p></div>
 </body></html>

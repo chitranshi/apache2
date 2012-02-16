@@ -64,7 +64,7 @@
 
 /* LimitXMLRequestBody handling */
 #define AP_LIMIT_UNSET                  ((long) -1)
-#define AP_DEFAULT_LIMIT_XML_BODY       ((size_t)1000000)
+#define AP_DEFAULT_LIMIT_XML_BODY       ((apr_size_t)1000000)
 
 #define AP_MIN_SENDFILE_BYTES           (256)
 
@@ -82,11 +82,17 @@
 
 APR_HOOK_STRUCT(
     APR_HOOK_LINK(get_mgmt_items)
+    APR_HOOK_LINK(insert_network_bucket)
 )
 
 AP_IMPLEMENT_HOOK_RUN_ALL(int, get_mgmt_items,
                           (apr_pool_t *p, const char *val, apr_hash_t *ht),
                           (p, val, ht), OK, DECLINED)
+
+AP_IMPLEMENT_HOOK_RUN_FIRST(apr_status_t, insert_network_bucket,
+                            (conn_rec *c, apr_bucket_brigade *bb,
+                             apr_socket_t *socket),
+                            (c, bb, socket), AP_DECLINED)
 
 /* Server core module... This module provides support for really basic
  * server operations, including options and commands which control the
@@ -1618,6 +1624,17 @@ static const char *set_override(cmd_parms *cmd, void *d_, const char *l)
         }
         else if (!strcasecmp(w, "Indexes")) {
             d->override |= OR_INDEXES;
+        }
+        else if (!strcasecmp(w, "Nonfatal")) {
+            if (!strcasecmp(v, "Override")) {
+                d->override |= NONFATAL_OVERRIDE;
+            }
+            else if (!strcasecmp(v, "Unknown")) {
+                d->override |= NONFATAL_UNKNOWN;
+            }
+            else if (!strcasecmp(v, "All")) {
+                d->override |= NONFATAL_ALL;
+            }
         }
         else if (!strcasecmp(w, "None")) {
             d->override = OR_NONE;
@@ -3347,7 +3364,7 @@ static const char *set_max_reversals(cmd_parms *cmd, void *conf_, const char *ar
     return NULL;
 }
 
-AP_DECLARE(size_t) ap_get_limit_xml_body(const request_rec *r)
+AP_DECLARE(apr_size_t) ap_get_limit_xml_body(const request_rec *r)
 {
     core_dir_config *conf;
 
@@ -3355,7 +3372,7 @@ AP_DECLARE(size_t) ap_get_limit_xml_body(const request_rec *r)
     if (conf->limit_xml_body == AP_LIMIT_UNSET)
         return AP_DEFAULT_LIMIT_XML_BODY;
 
-    return (size_t)conf->limit_xml_body;
+    return (apr_size_t)conf->limit_xml_body;
 }
 
 #if !defined (RLIMIT_CPU) || !(defined (RLIMIT_DATA) || defined (RLIMIT_VMEM) || defined(RLIMIT_AS)) || !defined (RLIMIT_NPROC)
@@ -4342,6 +4359,45 @@ AP_DECLARE(int) ap_sys_privileges_handlers(int inc)
     return sys_privileges;
 }
 
+static int check_errorlog_dir(apr_pool_t *p, server_rec *s)
+{
+    if (!s->error_fname || s->error_fname[0] == '|'
+        || strcmp(s->error_fname, "syslog") == 0) {
+        return APR_SUCCESS;
+    }
+    else {
+        char *abs = ap_server_root_relative(p, s->error_fname);
+        char *dir = ap_make_dirstr_parent(p, abs);
+        apr_finfo_t finfo;
+        apr_status_t rv = apr_stat(&finfo, dir, APR_FINFO_TYPE, p);
+        if (rv == APR_SUCCESS && finfo.filetype != APR_DIR)
+            rv = APR_ENOTDIR;
+        if (rv != APR_SUCCESS) {
+            const char *desc = "main error log";
+            if (s->defn_name)
+                desc = apr_psprintf(p, "error log of vhost defined at %s:%d",
+                                    s->defn_name, s->defn_line_number);
+            ap_log_error(APLOG_MARK, APLOG_STARTUP|APLOG_EMERG, rv,
+                          ap_server_conf, APLOGNO(02291)
+                         "Cannot access directory '%s' for %s", dir, desc);
+            return !OK;
+        }
+    }
+    return OK;
+}
+
+static int core_check_config(apr_pool_t *pconf, apr_pool_t *plog, apr_pool_t *ptemp, server_rec *s)
+{
+    int rv = OK;
+    while (s) {
+        if (check_errorlog_dir(ptemp, s) != OK)
+            rv = !OK;
+        s = s->next;
+    }
+    return rv;
+}
+
+
 static int core_pre_config(apr_pool_t *pconf, apr_pool_t *plog, apr_pool_t *ptemp)
 {
     ap_mutex_init(pconf);
@@ -4679,11 +4735,20 @@ AP_DECLARE(apr_uint32_t) ap_random_pick(apr_uint32_t min, apr_uint32_t max)
     return number;
 }
 
+static apr_status_t core_insert_network_bucket(conn_rec *c,
+                                               apr_bucket_brigade *bb,
+                                               apr_socket_t *socket)
+{
+    apr_bucket *e = apr_bucket_socket_create(socket, c->bucket_alloc);
+    APR_BRIGADE_INSERT_TAIL(bb, e);
+    return APR_SUCCESS;
+}
+
 static void core_dump_config(apr_pool_t *p, server_rec *s)
 {
     core_server_config *sconf = ap_get_core_module_config(s->module_config);
     apr_file_t *out = NULL;
-    char *tmp;
+    const char *tmp;
     const char **defines;
     int i;
     if (!ap_exists_config_define("DUMP_RUN_CFG"))
@@ -4693,7 +4758,10 @@ static void core_dump_config(apr_pool_t *p, server_rec *s)
     apr_file_printf(out, "ServerRoot: \"%s\"\n", ap_server_root);
     tmp = ap_server_root_relative(p, sconf->ap_document_root);
     apr_file_printf(out, "Main DocumentRoot: \"%s\"\n", tmp);
-    tmp = ap_server_root_relative(p, s->error_fname);
+    if (s->error_fname[0] != '|' && strcmp(s->error_fname, "syslog") != 0)
+        tmp = ap_server_root_relative(p, s->error_fname);
+    else
+        tmp = s->error_fname;
     apr_file_printf(out, "Main ErrorLog: \"%s\"\n", tmp);
     if (ap_scoreboard_fname) {
         tmp = ap_server_root_relative(p, ap_scoreboard_fname);
@@ -4713,7 +4781,6 @@ static void core_dump_config(apr_pool_t *p, server_rec *s)
         else
             apr_file_printf(out, "Define: %s\n", name);
     }
-
 }
 
 static void register_hooks(apr_pool_t *p)
@@ -4735,6 +4802,7 @@ static void register_hooks(apr_pool_t *p)
 
     ap_hook_pre_config(core_pre_config, NULL, NULL, APR_HOOK_REALLY_FIRST);
     ap_hook_post_config(core_post_config,NULL,NULL,APR_HOOK_REALLY_FIRST);
+    ap_hook_check_config(core_check_config,NULL,NULL,APR_HOOK_FIRST);
     ap_hook_test_config(core_dump_config,NULL,NULL,APR_HOOK_FIRST);
     ap_hook_translate_name(ap_core_translate,NULL,NULL,APR_HOOK_REALLY_LAST);
     ap_hook_map_to_storage(core_map_to_storage,NULL,NULL,APR_HOOK_REALLY_LAST);
@@ -4750,6 +4818,8 @@ static void register_hooks(apr_pool_t *p)
                       APR_HOOK_MIDDLE);
     ap_hook_pre_mpm(ap_create_scoreboard, NULL, NULL, APR_HOOK_MIDDLE);
     ap_hook_child_status(ap_core_child_status, NULL, NULL, APR_HOOK_MIDDLE);
+    ap_hook_insert_network_bucket(core_insert_network_bucket, NULL, NULL,
+                                  APR_HOOK_REALLY_LAST);
 
     /* register the core's insert_filter hook and register core-provided
      * filters

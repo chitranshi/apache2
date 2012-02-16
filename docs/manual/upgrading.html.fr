@@ -12,15 +12,17 @@
 <link href="./images/favicon.ico" rel="shortcut icon" /></head>
 <body id="manual-page"><div id="page-header">
 <p class="menu"><a href="./mod/">Modules</a> | <a href="./mod/directives.html">Directives</a> | <a href="./faq/">FAQ</a> | <a href="./glossary.html">Glossaire</a> | <a href="./sitemap.html">Plan du site</a></p>
-<p class="apache">Serveur Apache HTTP Version 2.3</p>
+<p class="apache">Serveur Apache HTTP Version 2.4</p>
 <img alt="" src="./images/feather.gif" /></div>
 <div class="up"><a href="./"><img title="&lt;-" alt="&lt;-" src="./images/left.gif" /></a></div>
 <div id="path">
-<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">Serveur HTTP</a> &gt; <a href="http://httpd.apache.org/docs/">Documentation</a> &gt; <a href="./">Version 2.3</a></div><div id="page-content"><div id="preamble"><h1>Mise à jour de la version 2.2 vers la version 2.4</h1>
+<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">Serveur HTTP</a> &gt; <a href="http://httpd.apache.org/docs/">Documentation</a> &gt; <a href="./">Version 2.4</a></div><div id="page-content"><div id="preamble"><h1>Mise à jour de la version 2.2 vers la version 2.4</h1>
 <div class="toplang">
 <p><span>Langues Disponibles: </span><a href="./en/upgrading.html" hreflang="en" rel="alternate" title="English">&nbsp;en&nbsp;</a> |
 <a href="./fr/upgrading.html" title="Français">&nbsp;fr&nbsp;</a></p>
 </div>
+<div class="outofdate">Cette traduction peut être périmée. Vérifiez la version
+            anglaise pour les changements récents.</div>
 
   <p>Afin d'assister les utilisateurs lors de leurs opérations de mise à
   jour, nous maintenons un document
@@ -83,7 +85,14 @@ fonctionnalités du serveur HTTP Apache 2.4</a></li></ul></div>
       <li>configure: les modules dynamiques (DSO) sont compilés par
       défaut</li>
 
+      <li>configure: par défaut, seul un jeu de modules de base est
+      chargé. Les autres directives <code class="directive">LoadModule</code>
+      sont mises en commentaires.</li>
+
       <li>configure: le jeu de modules "most" est compilé par défaut</li>
+
+      <li>configure: le jeu de modules "reallyall" ajoute les modules de
+      développeur au jeu "all".</li>
     </ul>
 
   </div><div class="top"><a href="#page-header"><img alt="top" src="./images/up.gif" /></a></div>
@@ -191,6 +200,9 @@ nécessiter une mise à jour des fichiers de configuration de la version
 
 	<li>La valeur par défaut de la directive <code class="directive"><a href="./mod/core.html#enablesendfile">EnableSendfile</a></code> est maintenant Off.</li>
 
+	<li>La valeur par défaut de la directive <code class="directive"><a href="./mod/core.html#fileetag">FileETag</a></code> est maintenant "MTime Size"
+	(sans INode).</li>
+
         <li><code class="module"><a href="./mod/mod_log_config.html">mod_log_config</a></code>: <a href="modules/mod_log_config.html#formats">${cookie}C</a>
         correspond au nom du cookie dans son ensemble, alors qu'avant,
 	toute sous-chaîne pouvait correspondre.</li>
@@ -259,6 +271,18 @@ nécessiter une mise à jour des fichiers de configuration de la version
 	configuration de la directive <code class="directive"><a href="./mod/core.html#loglevel">LogLevel</a></code> au niveau répertoire.
         </li>
 
+	<li><code class="module"><a href="./mod/mod_ssl.html">mod_ssl</a></code>: le contrôle de révocation des
+	certificats basé sur les CRL doit être maintenant explicitement
+	configuré via la directive <code class="directive"><a href="./mod/mod_ssl.html#sslcarevocationcheck">SSLCARevocationCheck</a></code>.
+        </li>
+
+        <li><code class="module"><a href="./mod/mod_substitute.html">mod_substitute</a></code>: la taille maximale d'une
+	ligne est maintenant 1Mo.
+        </li>
+
+        <li><code class="module"><a href="./mod/mod_reqtimeout.html">mod_reqtimeout</a></code>: si ce module est chargé, il
+	définit maintenant certains temps d'attente par défaut.</li>
+
     </ul>
     
   </div><div class="top"><a href="#page-header"><img alt="top" src="./images/up.gif" /></a></div>
@@ -274,7 +298,8 @@ nécessiter une mise à jour des fichiers de configuration de la version
       <li><code class="module"><a href="./mod/mod_ssl.html">mod_ssl</a></code> : le format par défaut des variables
       <code>*_DN</code> a changé. Il est cependant encore possible
       d'utiliser l'ancien format via la nouvelle option
-      <code>LegacyDNStringFormat</code> de la directive <code class="directive"><a href="./mod/mod_ssl.html#ssloptions">SSLOptions</a></code>.</li>
+      <code>LegacyDNStringFormat</code> de la directive <code class="directive"><a href="./mod/mod_ssl.html#ssloptions">SSLOptions</a></code>. Le protocole SSLv2 n'est
+      plus supporté.</li>
 
       <li><code class="program"><a href="./programs/htpasswd.html">htpasswd</a></code> utilise maintenant par défaut les
       condensés MD5 sur toutes les plates-formes.</li>
@@ -359,6 +384,6 @@ nécessiter une mise à jour des fichiers de configuration de la version
 <p><span>Langues Disponibles: </span><a href="./en/upgrading.html" hreflang="en" rel="alternate" title="English">&nbsp;en&nbsp;</a> |
 <a href="./fr/upgrading.html" title="Français">&nbsp;fr&nbsp;</a></p>
 </div><div id="footer">
-<p class="apache">Copyright 2011 The Apache Software Foundation.<br />Autorisé sous <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
+<p class="apache">Copyright 2012 The Apache Software Foundation.<br />Autorisé sous <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
 <p class="menu"><a href="./mod/">Modules</a> | <a href="./mod/directives.html">Directives</a> | <a href="./faq/">FAQ</a> | <a href="./glossary.html">Glossaire</a> | <a href="./sitemap.html">Plan du site</a></p></div>
 </body></html>

@@ -217,7 +217,7 @@ static proxy_worker *find_route_worker(proxy_balancer *balancer,
             if ( (checking_standby ? !PROXY_WORKER_IS_STANDBY(worker) : PROXY_WORKER_IS_STANDBY(worker)) )
                 continue;
             if (*(worker->s->route) && strcmp(worker->s->route, route) == 0) {
-                if (worker && PROXY_WORKER_IS_USABLE(worker)) {
+                if (PROXY_WORKER_IS_USABLE(worker)) {
                     return worker;
                 } else {
                     /*
@@ -693,7 +693,7 @@ static int balancer_post_config(apr_pool_t *pconf, apr_pool_t *plog,
 {
     apr_status_t rv;
     void *sconf = s->module_config;
-    proxy_server_conf *conf = (proxy_server_conf *) ap_get_module_config(sconf, &proxy_module);
+    proxy_server_conf *conf;
     ap_slotmem_instance_t *new = NULL;
     apr_time_t tstamp;
 
@@ -736,6 +736,13 @@ static int balancer_post_config(apr_pool_t *pconf, apr_pool_t *plog,
         proxy_balancer *balancer;
         sconf = s->module_config;
         conf = (proxy_server_conf *)ap_get_module_config(sconf, &proxy_module);
+
+        if (conf->bslot) {
+            /* Shared memory already created for this proxy_server_conf.
+             */
+            s = s->next;
+            continue;
+        }
 
         if (conf->balancers->nelts) {
             conf->max_balancers = conf->balancers->nelts + conf->bgrowth;
@@ -877,9 +884,9 @@ static void push2table(const char *input, apr_table_t *params,
             apr_table_set(params, key, val);
         }
         else {
-            const char *ok = *allowed;
-            while (ok) {
-                if (strcmp(ok, key) == 0) {
+            const char **ok = allowed;
+            while (*ok) {
+                if (strcmp(*ok, key) == 0) {
                     apr_table_set(params, key, val);
                     break;
                 }

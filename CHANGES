@@ -1,5 +1,78 @@
                                                          -*- coding: utf-8 -*-
+Changes with Apache 2.4.1
+
+  *) SECURITY: CVE-2012-0053 (cve.mitre.org)
+     Fix an issue in error responses that could expose "httpOnly" cookies
+     when no custom ErrorDocument is specified for status code 400.  
+     [Eric Covener]
+
+  *) mod_proxy_balancer: Fix crash on Windows. PR 52402 [Mladen Turk]
+
+  *) core: Check during configtest that the directories for error logs exist.
+     PR 29941 [Stefan Fritsch]
+
+  *) Core configuration: add AllowOverride option to treat syntax
+     errors in .htaccess as non-fatal. PR 52439 [Nick Kew, Jim Jagielski]
+
+  *) core: Fix memory consumption in core output filter with streaming
+     bucket types like CGI or PIPE.  [Joe Orton, Stefan Fritsch]
+
+  *) configure: Disable modules at configure time if a prerequisite module
+     is not enabled. PR 52487. [Stefan Fritsch]
+
+  *) Rewrite and proxy now decline what they don't support rather
+     than fail the request. [Joe Orton]
+
+  *) Fix building against external apr plus ap-util if apr is not installed
+     in a system default path. [Rainer Jung]
+
+  *) Doxygen fixes and improvements. [Joe Orton, Igor Galić]
+
+  *) core: Fix building against PCRE 8.30 by switching from the obsolete
+     pcre_info() to pcre_fullinfo(). PR 52623 [Ruediger Pluem, Rainer Jung]
+
+Changes with Apache 2.4.0
+
+  *) SECURITY: CVE-2012-0031 (cve.mitre.org)
+     Fix scoreboard issue which could allow an unprivileged child process
+     could cause the parent to crash at shutdown rather than terminate
+     cleanly.  [Joe Orton]
+
+  *) mod_ssl: Fix compilation with xlc on AIX. PR 52394. [Stefan Fritsch]
+
+  *) SECURITY: CVE-2012-0021 (cve.mitre.org)
+     mod_log_config: Fix segfault (crash) when the '%{cookiename}C' log format
+     string is in use and a client sends a nameless, valueless cookie, causing
+     a denial of service. The issue existed since version 2.2.17 and 2.3.3.
+     PR 52256.  [Rainer Canavan <rainer-apache 7val com>]
+
+  *) mod_ssl: when compiled against OpenSSL 1.0.1 or later, allow explicit
+     control of TLSv1.1 and TLSv1.2 through the SSLProtocol directive.
+     [Kaspar Brand]
+
+  *) mod_ssl: set OPENSSL_NO_SSL_INTERN when compiling against OpenSSL 1.0.1
+     or later, to improve binary compatibility with future OpenSSL releases.
+     [Kaspar Brand]
+
+  *) mod_mime: Don't arbitrarily bypass AddOutputFilter during a ProxyPass,
+     but then allow AddOutputFilter during a RewriteRule [P]. Make mod_mime
+     behave identically in both cases. PR52342. [Graham Leggett]
+
+  *) Move ab, logresolve, httxt2dbm and apxs to bin from sbin, along with
+     corresponding man pages. [Graham Leggett]
+
+  *) Distinguish properly between the bindir and sbindir directories when
+     installing binaries. Previously all binaries were silently installed to
+     sbindir, whether they were system administration commands or not.
+     [Graham Leggett]
+
 Changes with Apache 2.3.16
+
+  *) SECURITY: CVE-2011-4317 (cve.mitre.org)
+     Resolve additional cases of URL rewriting with ProxyPassMatch or
+     RewriteRule, where particular request-URIs could result in undesired
+     backend network exposure in some configurations.
+     [Joe Orton]
 
   *) core: Limit line length in .htaccess to 8K like in 2.2.x, to avoid
      additional DoS potential. [Stefan Fritsch]
@@ -111,6 +184,11 @@ Changes with Apache 2.3.15
   *) SECURITY: CVE-2011-3607 (cve.mitre.org)
      core: Fix integer overflow in ap_pregsub. This can be triggered e.g.
      with mod_setenvif via a malicious .htaccess. [Stefan Fritsch]
+
+  *) SECURITY: CVE-2011-3368 (cve.mitre.org)
+     Reject requests where the request-URI does not match the HTTP
+     specification, preventing unexpected expansion of target URLs in
+     some reverse proxy configurations.  [Joe Orton]
 
   *) configure: Load all modules in the generated default configuration
      when using --enable-load-all-modules. [Rainer Jung]
@@ -1606,7 +1684,8 @@ Changes with Apache 2.3.3
 
   *) mod_cache: Introduce the option to run the cache from within the
      normal request handler, and to allow fine grained control over
-     where in the filter chain content is cached. [Graham Leggett]
+     where in the filter chain content is cached. Adds CacheQuickHandler
+     directive.  [Graham Leggett]
 
   *) core: Treat timeout reading request as 408 error, not 400.
      Log 408 errors in access log as was done in Apache 1.3.x.

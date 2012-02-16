@@ -13,11 +13,11 @@
 <body>
 <div id="page-header">
 <p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="../faq/">FAQ</a> | <a href="../glossary.html">Glossaire</a> | <a href="../sitemap.html">Plan du site</a></p>
-<p class="apache">Serveur Apache HTTP Version 2.3</p>
+<p class="apache">Serveur Apache HTTP Version 2.4</p>
 <img alt="" src="../images/feather.gif" /></div>
 <div class="up"><a href="./"><img title="&lt;-" alt="&lt;-" src="../images/left.gif" /></a></div>
 <div id="path">
-<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">Serveur HTTP</a> &gt; <a href="http://httpd.apache.org/docs/">Documentation</a> &gt; <a href="../">Version 2.3</a> &gt; <a href="./">Modules</a></div>
+<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">Serveur HTTP</a> &gt; <a href="http://httpd.apache.org/docs/">Documentation</a> &gt; <a href="../">Version 2.4</a> &gt; <a href="./">Modules</a></div>
 <div id="page-content">
 <div id="preamble"><h1>Module Apache mod_access_compat</h1>
 <div class="toplang">
@@ -73,6 +73,12 @@ ce module sont devenues obsolètes depuis la refonte d'authz. Voir
     certaines méthodes, alors que les autres méthodes ne se verront
     imposée aucune restriction, en regroupant les directives à
     l'intérieur d'une section <code class="directive"><a href="../mod/core.html#limit">&lt;Limit&gt;</a></code>.</p>
+
+    <div class="note"><h3>Fusion des sections de configuration</h3>
+      <p>Lorsqu'une directive fournie par ce module est utilisée dans
+      une nouvelle section de configuration, cette dernière n'hérite
+      d'aucune directive définie dans une section précédente.</p>
+    </div>
 </div>
 <div id="quickview"><h3 class="directives">Directives</h3>
 <ul id="toc">
@@ -220,6 +226,12 @@ d'environnement</var>
     <p>Dans cet exemple, les navigateurs dont la chaîne user-agent
     commence par <code>KnockKnock/2.0</code> se verront accorder
     l'accès, alors que tous les autres seront rejetés.</p>
+
+    <div class="note"><h3>Fusion des sections de configuration</h3>
+      <p>Lorsqu'une directive fournie par ce module est utilisée dans
+      une nouvelle section de configuration, cette dernière n'hérite
+      d'aucune directive définie dans une section précédente.</p>
+    </div>
 
 </div>
 <div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
@@ -397,6 +409,12 @@ les directives <code class="directive">Allow</code> et
     le document <a href="../sections.html">Comment fonctionnent les sections Directory,
     Location et Files</a>.</p>
 
+    <div class="note"><h3>Fusion des sections de configuration</h3>
+      <p>Lorsqu'une directive fournie par ce module est utilisée dans
+      une nouvelle section de configuration, cette dernière n'hérite
+      d'aucune directive définie dans une section précédente.</p>
+    </div>
+
 </div>
 <div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
 <div class="directive-section"><h2><a name="Satisfy" id="Satisfy">Satisfy</a> <a name="satisfy" id="satisfy">Directive</a></h2>
@@ -466,6 +484,12 @@ et l'authentification utilisateur</td></tr>
     <code class="directive">Satisfy</code> peuvent être restreintes à certaines
     méthodes particulières à l'aide des sections <code class="directive"><a href="../mod/core.html#limit">&lt;Limit&gt;</a></code> et <code class="directive"><a href="../mod/core.html#limitexcept">&lt;LimitExcept&gt;</a></code>.</p>
 
+    <div class="note"><h3>Fusion des sections de configuration</h3>
+      <p>Lorsqu'une directive fournie par ce module est utilisée dans
+      une nouvelle section de configuration, cette dernière n'hérite
+      d'aucune directive définie dans une section précédente.</p>
+    </div>
+
 <h3>Voir aussi</h3>
 <ul>
 <li><code class="directive"><a href="#allow">Allow</a></code></li>
@@ -478,6 +502,6 @@ et l'authentification utilisateur</td></tr>
 <a href="../fr/mod/mod_access_compat.html" title="Français">&nbsp;fr&nbsp;</a> |
 <a href="../ja/mod/mod_access_compat.html" hreflang="ja" rel="alternate" title="Japanese">&nbsp;ja&nbsp;</a></p>
 </div><div id="footer">
-<p class="apache">Copyright 2011 The Apache Software Foundation.<br />Autorisé sous <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
+<p class="apache">Copyright 2012 The Apache Software Foundation.<br />Autorisé sous <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
 <p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="../faq/">FAQ</a> | <a href="../glossary.html">Glossaire</a> | <a href="../sitemap.html">Plan du site</a></p></div>
 </body></html>

@@ -209,8 +209,10 @@ AP_DECLARE(apr_status_t) ap_send_fd(apr_file_t *fd, request_rec *r, apr_off_t of
  * @param length The amount of data to send
  * @return The number of bytes sent
  */
-AP_DECLARE(size_t) ap_send_mmap(apr_mmap_t *mm, request_rec *r, size_t offset,
-                             size_t length);
+AP_DECLARE(apr_size_t) ap_send_mmap(apr_mmap_t *mm,
+                                    request_rec *r,
+                                    apr_size_t offset,
+                                    apr_size_t length);
 #endif
 
 
@@ -353,7 +355,7 @@ static APR_INLINE int ap_rputs(const char *str, request_rec *r)
  * @return The number of bytes sent
  */
 AP_DECLARE_NONSTD(int) ap_rvputs(request_rec *r,...)
-                       ap_func_attr_sentinel;
+                       AP_FN_ATTR_SENTINEL;
 
 /**
  * Output data to the client in a printf format

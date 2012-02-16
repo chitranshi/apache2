@@ -13,11 +13,11 @@
 <body>
 <div id="page-header">
 <p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="../faq/">FAQ</a> | <a href="../glossary.html">Glossary</a> | <a href="../sitemap.html">Sitemap</a></p>
-<p class="apache">Apache HTTP Server Version 2.3</p>
+<p class="apache">Apache HTTP Server Version 2.4</p>
 <img alt="" src="../images/feather.gif" /></div>
 <div class="up"><a href="./"><img title="&lt;-" alt="&lt;-" src="../images/left.gif" /></a></div>
 <div id="path">
-<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">HTTP Server</a> &gt; <a href="http://httpd.apache.org/docs/">Documentation</a> &gt; <a href="../">Version 2.3</a> &gt; <a href="./">Modules</a></div>
+<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">HTTP Server</a> &gt; <a href="http://httpd.apache.org/docs/">Documentation</a> &gt; <a href="../">Version 2.4</a> &gt; <a href="./">Modules</a></div>
 <div id="page-content">
 <div id="preamble"><h1>Apache Module mod_mime</h1>
 <div class="toplang">
@@ -512,6 +512,41 @@ later.</td></tr>
     be specified with or without a leading dot. Filenames may have <a href="#multipleext">multiple extensions</a> and the
     <var>extension</var> argument will be compared against each of
     them.</p>
+
+    <p>Note that when defining a set of filters using the
+    <code class="directive"><a href="#addouputfilter">AddOuputFilter</a></code> directive,
+    any definition made will replace any previous definition made by
+    the <code class="directive"><a href="#addouputfilter">AddOuputFilter</a></code>
+    directive.</p>
+
+    <div class="example"><p><code>
+    # Effective filter "DEFLATE"<br />
+    AddOutputFilter DEFLATE shtml<br />
+    &lt;Location /foo&gt;<br />
+      <span class="indent">
+      # Effective filter "INCLUDES", replacing "DEFLATE"<br />
+      AddOutputFilter INCLUDES shtml<br />
+      </span>
+    &lt;/Location&gt;<br />
+    &lt;Location /bar&gt;<br />
+      <span class="indent">
+      # Effective filter "INCLUDES;DEFLATE", replacing "DEFLATE"<br />
+      AddOutputFilter INCLUDES;DEFLATE shtml<br />
+      </span>
+    &lt;/Location&gt;<br />
+    &lt;Location /bar/baz&gt;<br />
+      <span class="indent">
+      # Effective filter "BUFFER", replacing "INCLUDES;DEFLATE"<br />
+      AddOutputFilter BUFFER shtml<br />
+      </span>
+    &lt;/Location&gt;<br />
+    &lt;Location /bar/baz/buz&gt;<br />
+      <span class="indent">
+      # No effective filter, replacing "BUFFER"<br />
+      RemoveOutputFilter shtml<br />
+      </span>
+    &lt;/Location&gt;
+    </code></p></div>
 
 <h3>See also</h3>
 <ul>
@@ -1014,6 +1049,6 @@ extensions</td></tr>
 <p><span>Available Languages: </span><a href="../en/mod/mod_mime.html" title="English">&nbsp;en&nbsp;</a> |
 <a href="../ja/mod/mod_mime.html" hreflang="ja" rel="alternate" title="Japanese">&nbsp;ja&nbsp;</a></p>
 </div><div id="footer">
-<p class="apache">Copyright 2011 The Apache Software Foundation.<br />Licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
+<p class="apache">Copyright 2012 The Apache Software Foundation.<br />Licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
 <p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="../faq/">FAQ</a> | <a href="../glossary.html">Glossary</a> | <a href="../sitemap.html">Sitemap</a></p></div>
 </body></html>

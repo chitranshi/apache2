@@ -386,7 +386,7 @@ nlms :: libs $(TARGET_nlm)
 # Updated this target to create necessary directories and copy files to the
 # correct place.  (See $(AP_WORK)/build/NWGNUhead.inc for examples)
 #
-MKCNF	= $(AWK) -v BDIR=$(BASEDIR) -v PORT=$(PORT) -v SSLPORT=$(SSLPORT) -v MODSSL=$(WITH_MOD_SSL) -v BSDSKT=$(USE_STDSOCKETS) -f build/mkconfNW.awk $1 > $2
+MKCNF	= $(AWK) -v BDIR=$(BASEDIR) -v PORT=$(PORT) -v SSLPORT=$(SSLPORT) -v MODSSL=$(WITH_SSL) -v BSDSKT=$(USE_STDSOCKETS) -f build/mkconfNW.awk $1 > $2
 
 install :: nlms instscripts FORCE
 	$(call COPY,$(OBJDIR)/$(NLM_NAME).nlm,                         $(INSTALLBASE)/)
@@ -416,7 +416,7 @@ install :: nlms instscripts FORCE
 	$(call MKCNF,docs/conf/extra/httpd-userdir.conf.in,            $(INSTALLBASE)/conf/extra/httpd-userdir.conf)
 	$(call MKCNF,docs/conf/extra/httpd-vhosts.conf.in,             $(INSTALLBASE)/conf/extra/httpd-vhosts.conf)
 	$(call MKCNF,docs/conf/extra/httpd-ssl.conf.in,                $(INSTALLBASE)/conf/extra/httpd-ssl.conf)
-	$(call MKCNF,docs/conf/extra/proxy-html.conf.in,                $(INSTALLBASE)/conf/extra/proxy-html.conf)
+	$(call MKCNF,docs/conf/extra/proxy-html.conf.in,               $(INSTALLBASE)/conf/extra/proxy-html.conf)
 	$(call COPYR,docs/docroot,                                     $(INSTALLBASE)/htdocs)
 	$(call COPYR,docs/error,                                       $(INSTALLBASE)/error)
 	$(call COPYR,docs/icons,                                       $(INSTALLBASE)/icons)

@@ -13,11 +13,11 @@
 <body id="manual-page">
 <div id="page-header">
 <p class="menu"><a href="./mod/">Modules</a> | <a href="./mod/directives.html">Directives</a> | <a href="./faq/">FAQ</a> | <a href="./glossary.html">Glossary</a> | <a href="./sitemap.html">Sitemap</a></p>
-<p class="apache">Apache HTTP Server Version 2.3</p>
+<p class="apache">Apache HTTP Server Version 2.4</p>
 <img alt="" src="./images/feather.gif" /></div>
 <div class="up"><a href="./"><img title="&lt;-" alt="&lt;-" src="./images/left.gif" /></a></div>
 <div id="path">
-<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">HTTP Server</a> &gt; <a href="http://httpd.apache.org/docs/">Documentation</a> &gt; <a href="./">Version 2.3</a></div>
+<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">HTTP Server</a> &gt; <a href="http://httpd.apache.org/docs/">Documentation</a> &gt; <a href="./">Version 2.4</a></div>
 <div id="page-content"><div id="preamble"><h1>Sitemap</h1>
 <div class="toplang">
 <p><span>Available Languages: </span><a href="./de/sitemap.html" hreflang="de" rel="alternate" title="Deutsch">&nbsp;de&nbsp;</a> |
@@ -31,7 +31,7 @@
 </div>
 
 <p>This page lists the currently available documents of the
-<a href="./">Apache HTTP Server Version 2.3
+<a href="./">Apache HTTP Server Version 2.4
 Documentation</a>.</p>
 </div>
 <div id="quickview"><ul id="toc">
@@ -280,6 +280,7 @@ Server on HPUX</a></li>
 <li><a href="mod/mod_usertrack.html">Apache Module mod_usertrack</a></li>
 <li><a href="mod/mod_version.html">Apache Module mod_version</a></li>
 <li><a href="mod/mod_vhost_alias.html">Apache Module mod_vhost_alias</a></li>
+<li><a href="mod/mod_watchdog.html">Apache Module mod_watchdog</a></li>
 <li><a href="mod/mod_xml2enc.html">Apache Module mod_xml2enc</a></li>
 </ul>
 </div><div class="top"><a href="#page-header"><img alt="top" src="./images/up.gif" /></a></div>
@@ -312,6 +313,6 @@ Server on HPUX</a></li>
 <a href="./tr/sitemap.html" hreflang="tr" rel="alternate" title="Türkçe">&nbsp;tr&nbsp;</a> |
 <a href="./zh-cn/sitemap.html" hreflang="zh-cn" rel="alternate" title="Simplified Chinese">&nbsp;zh-cn&nbsp;</a></p>
 </div><div id="footer">
-<p class="apache">Copyright 2011 The Apache Software Foundation.<br />Licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
+<p class="apache">Copyright 2012 The Apache Software Foundation.<br />Licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
 <p class="menu"><a href="./mod/">Modules</a> | <a href="./mod/directives.html">Directives</a> | <a href="./faq/">FAQ</a> | <a href="./glossary.html">Glossary</a> | <a href="./sitemap.html">Sitemap</a></p></div>
 </body></html>

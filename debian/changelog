@@ -1,5 +1,6 @@
-apache2 (2.3.16-beta-1) experimental; urgency=low
+apache2 (2.3.16-beta-1) UNRELEASED; urgency=low
 
+  [ Arno Töll ]
   * Package the coming up 2.4 branch of Apache by packaging the current
     development release 2.3.16.
     + Fix "IndexIgnore only allowes to add in vhost context, not replace"
@@ -69,6 +70,9 @@ apache2 (2.3.16-beta-1) experimental; urgency=low
     access_compat, allowmethods, authz_dbd, cache_disk, data, log_debug, lua
     proxy_express, proxy_fcgi, proxy_fdpass, proxy_html, ratelimit, reflector
     remoteip, request, session, session_cookie, session_crypto, session_dbd
+
+  [ Stefan Fritsch ]
+  * Use "dh --with autotools_dev" instead of patching config.sub/config.guess.
 
  -- Arno Töll <debian@toell.net>  Sat, 11 Feb 2012 03:30:10 +0100
 

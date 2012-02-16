@@ -97,7 +97,7 @@ suexec-maintainer-scripts:
 
 
 %:
-	dh $@ --parallel
+	dh $@ --parallel --with autotools_dev
 
 override_dh_auto_configure: prepare-custom-suexec suexec-maintainer-scripts
 	./configure --enable-layout=Debian --enable-so --with-program-name=apache2 \

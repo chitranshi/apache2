@@ -1,6 +1,6 @@
 etc/apache2/mods-enabled
+etc/apache2/conf-enabled
 etc/apache2/sites-enabled
-etc/apache2/conf.d
 etc/logrotate.d
 usr/lib/cgi-bin
 usr/share/apache2

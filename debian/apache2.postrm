@@ -30,6 +30,11 @@ OBSOLETE_CONFFILES="/etc/apache2/mods-available/authz_default.load
 /etc/apache2/mods-available/ident.load
 /etc/apache2/mods-available/imagemap.load"
 
+MOVED_CONFFILES_IN="charset
+localized-error-pages
+other-vhosts-access-log
+security"
+
 
 case "$1" in
     purge)
@@ -53,6 +58,20 @@ case "$1" in
                         mv "$CONFFILE.dpkg-backup" "$CONFFILE"
                 fi
         done
+
+	for CONFFILE in $MOVED_CONFFILES_IN ; do
+
+		CONFFILE="/etc/apache2/conf.d/$CONFFILE"
+
+		if [ -e "$CONFFILE.dpkg-remove" ]; then
+			echo "Reinstalling $CONFFILE that was moved away"
+			mv "$CONFFILE.dpkg-remove" "$CONFFILE"
+		fi
+		if [ -e "$CONFFILE.dpkg-backup" ]; then
+			echo "Reinstalling $CONFFILE that was backupped"
+			mv "$CONFFILE.dpkg-backup" "$CONFFILE"
+		fi
+	done
 
         # post installation cleanup
         if [ -e /etc/apache2/.apache2_mpm_selected ] ; then

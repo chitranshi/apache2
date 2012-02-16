@@ -30,6 +30,12 @@ OBSOLETE_CONFFILES="/etc/apache2/mods-available/authz_default.load
 /etc/apache2/mods-available/ident.load
 /etc/apache2/mods-available/imagemap.load"
 
+MOVED_CONFFILES_IN="charset
+localized-error-pages
+other-vhosts-access-log
+security"
+
+
 
 # the functions below need to be idempotent, however we guess the upgrade based
 # on obsolete conffiles which might be removed anytime. Thus, remember we were
@@ -55,8 +61,15 @@ we_are_upgrading_from_squeeze()
 	fi
 
 	for CONFFILE in $OBSOLETE_CONFFILES ; do
-		SQUEEZE_UPGRADE=1
 		if [ -e "$CONFFILE.dpkg-backup" ] || [ -e "$CONFFILE.dpkg-remove" ] ; then
+			SQUEEZE_UPGRADE=1
+			return 0
+		fi
+	done
+
+	for CONFFILE in $MOVED_CONFFILES_IN ; do
+		if [ -e "/etc/apache2/conf.d/$CONFFILE.dpkg-remove" ] ; then
+			SQUEEZE_UPGRADE=1
 			return 0
 		fi
 	done
@@ -65,7 +78,7 @@ we_are_upgrading_from_squeeze()
 }
 
 
-# The function below is licensed GPL-2+ and was written by dpkg maintainers
+# The two functions below is licensed GPL-2+ and was written by dpkg maintainers
 # See the dpkg-maintscript-helper script for details
 
 remove_conffiles()
@@ -85,6 +98,35 @@ remove_conffiles()
                         fi
                 done
         fi
+}
+
+mv_conffiles()
+{
+	# same rationale as above
+	if we_are_upgrading_from_squeeze $@ ; then
+		for CONFFILE in $MOVED_CONFFILES_IN ; do
+			OLDCONFFILE="/etc/apache2/conf.d/$CONFFILE"
+			NEWCONFFILE="/etc/apache2/conf-available/$CONFFILE.conf"
+
+			rm -f $OLDCONFFILE.dpkg-remove
+			[ -e "$OLDCONFFILE" ] || return 0
+
+			echo "Preserving user changes to $NEWCONFFILE (renamed from $OLDCONFFILE)..."
+			mv -f "$NEWCONFFILE" "$NEWCONFFILE.dpkg-new"
+			mv -f "$OLDCONFFILE" "$NEWCONFFILE"
+		done
+
+		if [ -d /etc/apache2/conf.d ] && [ ! "$(ls -A /etc/apache2/conf.d)" ] ; then
+			echo "Removing obsolete directory /etc/apache2/conf.d"
+			rmdir /etc/apache2/conf.d
+		fi
+
+		if [ -d /etc/apache2/conf.d ] && [ "$(ls -A /etc/apache2/conf.d)" ]	; then
+			echo "Directory /etc/apache2/conf.d is not empty - leaving as is"
+			echo "Please note, that directory is considered obsolete and not read anymore by a standard apache2.conf file anymore"
+		fi
+
+	fi
 }
 
 
@@ -125,6 +167,13 @@ enable_default_modules()
         for module in authz_host alias cgi dir ; do
                 a2enmod -q $module
         done
+}
+
+enable_default_conf()
+{
+	for conf in charset localized-error-pages other-vhosts-access-log security ; do
+		a2enconf -q $conf
+	done
 }
 
 install_default_site()
@@ -187,10 +236,12 @@ case "$1" in
         configure)
 
                 remove_conffiles $@
+		mv_conffiles $@
                 refresh_modules $@
                 enable_default_mpm $@
                 install_default_files $@
                 enable_default_modules $@
+		enable_default_conf $@
 
                 if [ -z "$2" ]; then
                         install_default_site

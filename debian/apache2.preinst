@@ -25,6 +25,14 @@ OBSOLETE_CONFFILES="/etc/apache2/mods-available/authz_default.load
 /etc/apache2/mods-available/ident.load
 /etc/apache2/mods-available/imagemap.load"
 
+# these are all moved from /etc/apache2/conf.d/ to /etc/apache2/conf-available.
+# The scripts deal with that. Don't put any file in here which is located
+# somewhere else.
+MOVED_CONFFILES_IN="charset
+localized-error-pages
+other-vhosts-access-log
+security"
+
 
 obsolete_conffile_exists()
 {
@@ -34,10 +42,16 @@ obsolete_conffile_exists()
 		fi
 	done
 
+	for CONFFILE in $MOVED_CONFFILES_IN ; do
+		if [ -e "/etc/apache2/conf.d/$CONFFILE" ] ; then
+			return 0
+		fi
+	done
+
 	return 1
 }
 
-# The function below is licensed GPL-2+ and was written by dpkg maintainers
+# The two functions below is licensed GPL-2+ and was written by dpkg maintainers
 # See the dpkg-maintscript-helper script for details
 prepare_rm_conffile()
 {
@@ -45,7 +59,7 @@ prepare_rm_conffile()
                 [ -e "$CONFFILE" ] || continue
 
                 local md5sum="$(md5sum $CONFFILE | sed -e 's/ .*//')"
-                local old_md5sum="$(dpkg-query -W -f='${Conffiles}' $PACKAGE | \
+                local old_md5sum="$(dpkg-query -W -f='${Conffiles}' apache2.2-common apache2 | \
                         sed -n -e "\' $CONFFILE ' { s/ obsolete$//; s/.* //; p }")"
                 if [ "$md5sum" != "$old_md5sum" ]; then
                         echo "Obsolete conffile $CONFFILE has been modified by you."
@@ -58,7 +72,21 @@ prepare_rm_conffile()
         done
 }
 
+prepare_mv_conffile()
+{
+	for CONFFILE in $OBSOLETE_CONFFILES ; do
+		CONFFILE="/etc/apache2/conf.d/$CONFFILE"
+		[ -e "$CONFFILE" ] || return 0
 
+		local md5sum="$(md5sum $CONFFILE | sed -e 's/ .*//')"
+		local old_md5sum="$(dpkg-query -W -f='${Conffiles}' apache2.2-common apache2 | \
+			sed -n -e "\' $CONFFILE ' { s/ obsolete$//; s/.* //; p }")"
+
+		if [ "$md5sum" = "$old_md5sum" ]; then
+			mv -f "$CONFFILE" "$CONFFILE.dpkg-remove"
+		fi
+	done
+}
 
 case "$1" in
     install|upgrade)
@@ -82,6 +110,7 @@ case "$1" in
 	# installed
 	if [ -n "$2" ] || obsolete_conffile_exists ; then
 		prepare_rm_conffile
+		prepare_mv_conffile
        fi
 
     ;;

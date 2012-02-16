@@ -18,7 +18,7 @@ GetOptions(
 ) or exit 2;
 
 my $basename = basename($0);
-$basename =~ /^a2(en|dis)(mod|site)((?:-.+)?)$/
+$basename =~ /^a2(en|dis)(mod|site|conf)((?:-.+)?)$/
     or die "$basename call name unknown\n";
 my $act        = $1;
 my $obj        = $2;
@@ -40,6 +40,12 @@ if ( $obj eq 'mod' ) {
     $dir    = 'mods';
     $sffx   = '.load';
     $reload = 'restart';
+}
+elsif ( $obj eq 'conf' ) {
+    $obj    = 'conf';
+    $dir    = 'conf';
+    $sffx   = '.conf';
+    $reload = 'reload';
 }
 else {
     $dir    = 'sites';

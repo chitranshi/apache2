@@ -4,3 +4,5 @@ debian/manpages/a2enmod.8
 debian/manpages/a2dissite.8
 debian/manpages/a2dismod.8
 debian/manpages/a2ensite.8
+debian/manpages/a2enconf.8
+debian/manpages/a2disconf.8

@@ -50,7 +50,7 @@ AP2_CFLAGS = -pipe $(shell dpkg-buildflags --get CFLAGS)
 AP2_LDFLAGS = -Wl,--as-needed $(shell dpkg-buildflags --get LDFLAGS)
 AP2_CPPFLAGS = -DPLATFORM='\"$(LSB_RELEASE)\"' $(shell dpkg-buildflags --get CPPFLAGS)
 
-#CONFFLAGS += ac_cv_prog_AWK=mawk ac_cv_prog_LYNX_PATH=www-browser
+#CONFFLAGS += ac_cv_prog_LYNX_PATH=www-browser
 #
 #ifeq (,$(findstring nostrip,$(DEB_BUILD_OPTIONS)))
 #DEB_BUILD_STRIP = yes

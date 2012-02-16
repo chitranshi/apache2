@@ -88,8 +88,6 @@ install_default_site()
 
 install_default_files()
 {
-	[ -f /etc/apache2/httpd.conf ] || touch /etc/apache2/httpd.conf
-
 	if [ ! -e /var/www/index.html ] ; then
 		cp /usr/share/apache2/default-site/index.html /var/www/index.html
         fi
@@ -134,6 +132,7 @@ refresh_modules()
 
 #XXX: Move /var/cache/apache2/mod_disk_cache to /var/cache/apache2/mod_cache_disk?
 #XXX: Handle rename of conf.d/*
+#XXX: Move httpd.conf into conf.d if not empty, add comment what it used to be
 
 
 #DEBHELPER#

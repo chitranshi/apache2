@@ -75,10 +75,6 @@ conf.d/
 	directory. He can then put symlinks to the files in conf.d
 	which he wants to enable into conf.d.enabled.
 
-httpd.conf
-
-	Empty file.
-
 magic
 
 	Patterns for mod_mime_magic. This is not compatible with the format

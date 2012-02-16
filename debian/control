@@ -8,7 +8,7 @@ Build-Depends: debhelper (>= 8.1.0~), lsb-release, dpkg-dev (>= 1.16.1~),
  libaprutil1-dev (>= 1.4.0), libapr1-dev, libpcre3-dev, zlib1g-dev,
  libssl-dev (>= 0.9.8m), libcap-dev [linux-any],
  liblua5.1-0-dev, libxml2-dev, autotools-dev
-#Build-Conflicts: autoconf2.13
+Build-Conflicts: autoconf2.13
 Standards-Version: 3.9.2
 Vcs-Browser: http://anonscm.debian.org/gitweb/?p=pkg-apache/apache2.git
 Vcs-Git: git://git.debian.org/git/pkg-apache/apache2.git

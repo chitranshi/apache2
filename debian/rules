@@ -187,7 +187,7 @@ mpm-%-maintainer-scripts: debian/mpms.postinst debian/mpms.preinst debian/mpms.p
 
 
 %:
-	dh $@ --parallel
+	dh $@ --parallel --with autotools_dev
 
 override_dh_auto_configure: prepare-custom-suexec $(patsubst %, mpm-%-maintainer-scripts, $(MPMS))
 	mkdir $(BUILD_DIR)

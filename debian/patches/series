@@ -20,7 +20,6 @@
 082_ab_num_requests
 083_dlopen_search_path
 084_customize_apxs.patch
-099_config_guess_sub_update
 201_build_suexec-custom
 # The patch below must not be applied by quilt at extraction time.  It depends
 # on some script-fu to be executed before. Have a look

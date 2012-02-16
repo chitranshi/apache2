@@ -1,12 +1,14 @@
-apache2 (2.3.16-beta-1) UNRELEASED; urgency=low
+apache2 (2.3.16-beta-1) experimental; urgency=low
 
-  [ Arno Töll ]
   * Package the coming up 2.4 branch of Apache by packaging the current
     development release 2.3.16.
     + Fix "IndexIgnore only allowes to add in vhost context, not replace"
      (Closes: #296886)
     + Fix "mod_status stats are wrong." (Closes: #519322)
     + Fix "PNG DirectoryIndex icons transparancy messed up" (Closes: #233047)
+
+  [ Arno Töll ]
+
   * Rewrite most parts of debian/rules / debhelper configuration.
     + move cronjob and init script to debhelper configuration files
       (apache2.cron.daily and apache2.init respectively)
@@ -58,11 +60,19 @@ apache2 (2.3.16-beta-1) UNRELEASED; urgency=low
     + Move MPM specific configuration to their respective configuration files.
       Users can just load and unload MPMs like other modules, enable the worker
       MPM by default
+    + Move per-site global configuration from conf.d to conf-available and
+     manage it similar to modules and sites. To do so, the new tools "a2enconf"
+     and "a2disconf" are provided. Moreover, such configuration files need  to
+     have a .conf suffix now. The following configuration files are enabled
+     bydefault: charset localized-error-pages other-vhosts-access-log  security.
+     These were enabled by default previously, too (Closes: #620347).
   * Changes in a2enmod:
     + Parse "Conflicts: " header to denote conflicts between modules which
       cannot be loaded into the same Apache server.
     + Remove dangling "module.conf" files, too. They were forgotten previously
       if they existed and only the "module.load" file was removed.
+    + Extend the tool to support conf-available/conf-enabled directories (see
+      also configuration changes).
   * The following modules and associated configuration files were removed:
     + mod_authz_default and mod_authn_default: Please use a proper
       authentication module instead
@@ -74,11 +84,13 @@ apache2 (2.3.16-beta-1) UNRELEASED; urgency=low
     remoteip, request, session, session_cookie, session_crypto, session_dbd
 
   [ Stefan Fritsch ]
+
   * Use "dh --with autotools_dev" instead of patching config.sub/config.guess.
   * Only include conf.d/*.conf, not conf.d/*.
   * Don't create httpd.conf anymore.
+  * Update the README.Debian file
 
- -- Arno Töll <debian@toell.net>  Mon, 13 Feb 2012 02:00:02 +0100
+ -- Arno Töll <debian@toell.net>  Thu, 16 Feb 2012 19:38:45 +0100
 
 apache2 (2.2.22-1) unstable; urgency=low
 

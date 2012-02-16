@@ -78,7 +78,7 @@ we_are_upgrading_from_squeeze()
 }
 
 
-# The two functions below is licensed GPL-2+ and was written by dpkg maintainers
+# The two functions below are licensed GPL-2+ and was written by dpkg maintainers
 # See the dpkg-maintscript-helper script for details
 
 remove_conffiles()

@@ -33,7 +33,7 @@ if [ "$1" = purge -a "$DONT_PURGE" != 1 ] ; then
 		/var/log/apache2/error.log*
 	
 	rm -rf 	/var/cache/apache2/proxy \
-		/var/cache/apache2/mod_disk_cache \
+		/var/cache/apache2/mod_cache_disk \
 		/var/run/apache2 \
 		/var/lock/apache2
 

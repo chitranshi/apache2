@@ -45,7 +45,7 @@ HTCACHECLEAN_RUN=auto
 HTCACHECLEAN_MODE=daemon
 HTCACHECLEAN_SIZE=300M
 HTCACHECLEAN_DAEMON_INTERVAL=120
-HTCACHECLEAN_PATH=/var/cache/apache2$DIR_SUFFIX/mod_disk_cache
+HTCACHECLEAN_PATH=/var/cache/apache2$DIR_SUFFIX/mod_cache_disk
 HTCACHECLEAN_OPTIONS=""
 
 APACHE_HTTPD=$(. $APACHE_ENVVARS && echo $APACHE_HTTPD)
@@ -84,7 +84,7 @@ check_htcacheclean() {
 
 	MODSDIR=$(. $APACHE_ENVVARS && echo $APACHE_MODS_ENABLED)
 	[ "$HTCACHECLEAN_RUN"  = "auto" \
-	  -a -e ${MODSDIR:-$APACHE_CONFDIR/mods-enabled}/disk_cache.load ] && \
+	  -a -e ${MODSDIR:-$APACHE_CONFDIR/mods-enabled}/cache_disk.load ] && \
 		return 0
 	
 	return 1

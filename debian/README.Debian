@@ -5,7 +5,7 @@ Contents
 		Files and Directories in /etc/apache2
 		Tools
 
-	Using mod_disk_cache
+	Using mod_cache_disk
 
 	SSL
 		Enabling SSL
@@ -150,16 +150,16 @@ for sites rather than modules.
 apxs2 -a/-A is modified to use a2enmod to activate newly installed modules.
 
 
-Using mod_disk_cache
+Using mod_cache_disk
 ====================
 
 To ensure that the disk cache does not grow indefinitely, htcacheclean is
-started when mod_disk_cache is enabled. Both daemon and cron (daily) mode
+started when mod_cache_disk is enabled. Both daemon and cron (daily) mode
 are supported. The configuration (run mode, cache size, ...) is in
 /etc/default/apache2 .
 
 Normally, htcacheclean is automatically started and stopped by
-/etc/init.d/apache2. However, if you change the state of mod_disk_cache or the
+/etc/init.d/apache2. However, if you change the state of mod_cache_disk or the
 configuration of htcacheclean while apache2 is running, you may need to
 manually start/stop htcacheclean with "/etc/init.d/apache2 start-htcacheclean"
 or "/etc/init.d/apache2 stop-htcacheclean".

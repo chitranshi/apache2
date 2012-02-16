@@ -105,6 +105,14 @@ refresh_modules()
 			if [ -z $target ] ; then
 				continue
 			fi
+			case "$target" in
+			*/disk_cache.load)
+				a2dismod -q disk_cache
+				a2enmod -q cache_disk
+				# XXX: Handle rename of conf file
+				continue
+				;;
+			esac
 
 			module=$(basename "$link" | sed 's/\.load//') || true
 
@@ -123,6 +131,8 @@ refresh_modules()
 		done
 	fi
 }
+
+#XXX: Move /var/cache/apache2/mod_disk_cache to /var/cache/apache2/mod_cache_disk?
 
 
 #DEBHELPER#

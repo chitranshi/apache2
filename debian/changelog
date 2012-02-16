@@ -1,4 +1,4 @@
-apache2 (2.3.16-beta-1) experimental; urgency=low
+apache2 (2.3.16-beta-1) UNRELEASED; urgency=low
 
   * Package the coming up 2.4 branch of Apache by packaging the current
     development release 2.3.16.
@@ -6,6 +6,11 @@ apache2 (2.3.16-beta-1) experimental; urgency=low
      (Closes: #296886)
     + Fix "mod_status stats are wrong." (Closes: #519322)
     + Fix "PNG DirectoryIndex icons transparancy messed up" (Closes: #233047)
+    + Fix "apache2-common: there should be a possibility to access the
+      parsed configuration" (Closes: #350285)
+    + Fix "AddOutputFilterByType is deprecated but used in deflate.conf"
+      (Closes: #601033)
+
 
   [ Arno Töll ]
 
@@ -82,6 +87,7 @@ apache2 (2.3.16-beta-1) experimental; urgency=low
     access_compat, allowmethods, authz_dbd, cache_disk, data, log_debug, lua
     proxy_express, proxy_fcgi, proxy_fdpass, proxy_html, ratelimit, reflector
     remoteip, request, session, session_cookie, session_crypto, session_dbd
+    (Closes: #400881)
 
   [ Stefan Fritsch ]
 
@@ -90,7 +96,7 @@ apache2 (2.3.16-beta-1) experimental; urgency=low
   * Don't create httpd.conf anymore.
   * Update the README.Debian file
 
- -- Arno Töll <debian@toell.net>  Thu, 16 Feb 2012 19:38:45 +0100
+ -- Arno Töll <debian@toell.net>  Thu, 16 Feb 2012 21:34:15 +0100
 
 apache2 (2.2.22-1) unstable; urgency=low
 

@@ -73,6 +73,7 @@ apache2 (2.3.16-beta-1) UNRELEASED; urgency=low
 
   [ Stefan Fritsch ]
   * Use "dh --with autotools_dev" instead of patching config.sub/config.guess.
+  * Only include conf.d/*.conf, not conf.d/*.
 
  -- Arno Töll <debian@toell.net>  Sat, 11 Feb 2012 03:30:10 +0100
 

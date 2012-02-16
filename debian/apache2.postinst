@@ -133,6 +133,7 @@ refresh_modules()
 }
 
 #XXX: Move /var/cache/apache2/mod_disk_cache to /var/cache/apache2/mod_cache_disk?
+#XXX: Handle rename of conf.d/*
 
 
 #DEBHELPER#

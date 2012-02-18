@@ -7,7 +7,7 @@
 @DPATCH@
 --- a/Makefile.in
 +++ b/Makefile.in
-@@ -229,14 +229,16 @@
+@@ -237,14 +237,16 @@
  	fi
  
  install-suexec:
@@ -37,9 +37,9 @@
 -CLEAN_TARGETS = suexec
 +CLEAN_TARGETS = suexec-pristine suexec-custom
  
- PROGRAMS = htpasswd htdigest rotatelogs logresolve ab htdbm htcacheclean httxt2dbm $(NONPORTABLE_SUPPORT)
- TARGETS  = $(PROGRAMS)
-@@ -58,9 +58,13 @@
+ bin_PROGRAMS = htpasswd htdigest htdbm ab logresolve httxt2dbm
+ sbin_PROGRAMS = htcacheclean rotatelogs $(NONPORTABLE_SUPPORT)
+@@ -65,9 +65,13 @@
  checkgid: $(checkgid_OBJECTS)
  	$(LINK) $(checkgid_LTFLAGS) $(checkgid_OBJECTS) $(PROGRAM_LDADD)
  

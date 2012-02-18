@@ -1,7 +1,7 @@
-apache2 (2.3.16-beta-1) UNRELEASED; urgency=low
+apache2 (2.4.1-1) experimental; urgency=low
 
   * Package the coming up 2.4 branch of Apache by packaging the current
-    development release 2.3.16.
+    release candidate 2.4.1.
     + Fix "IndexIgnore only allowes to add in vhost context, not replace"
      (Closes: #296886)
     + Fix "mod_status stats are wrong." (Closes: #519322)

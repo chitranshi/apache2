@@ -239,7 +239,7 @@ AP_DECLARE(apr_off_t) ap_get_limit_req_body(const request_rec *r);
  * @param r The current request
  * @return the maximum number of bytes in XML request msg body
  */
-AP_DECLARE(size_t) ap_get_limit_xml_body(const request_rec *r);
+AP_DECLARE(apr_size_t) ap_get_limit_xml_body(const request_rec *r);
 
 /**
  * Install a custom response handler for a given status
@@ -446,7 +446,7 @@ AP_DECLARE(void **) ap_get_request_note(request_rec *r, apr_size_t note_num);
 
 
 typedef unsigned char allow_options_t;
-typedef unsigned char overrides_t;
+typedef unsigned int overrides_t;
 
 /*
  * Bits of info that go into making an ETag for a file
@@ -680,14 +680,41 @@ AP_CORE_DECLARE(const char *) ap_add_if_conf(apr_pool_t *p, core_dir_config *con
 AP_CORE_DECLARE_NONSTD(const char *) ap_limit_section(cmd_parms *cmd, void *dummy, const char *arg);
 
 /* Core filters; not exported. */
-int ap_core_input_filter(ap_filter_t *f, apr_bucket_brigade *b,
-                         ap_input_mode_t mode, apr_read_type_e block,
-                         apr_off_t readbytes);
+apr_status_t ap_core_input_filter(ap_filter_t *f, apr_bucket_brigade *b,
+                                  ap_input_mode_t mode, apr_read_type_e block,
+                                  apr_off_t readbytes);
 apr_status_t ap_core_output_filter(ap_filter_t *f, apr_bucket_brigade *b);
 
 
 AP_DECLARE(const char*) ap_get_server_protocol(server_rec* s);
 AP_DECLARE(void) ap_set_server_protocol(server_rec* s, const char* proto);
+
+typedef struct core_output_filter_ctx core_output_filter_ctx_t;
+typedef struct core_filter_ctx        core_ctx_t;
+
+typedef struct core_net_rec {
+    /** Connection to the client */
+    apr_socket_t *client_socket;
+
+    /** connection record */
+    conn_rec *c;
+
+    core_output_filter_ctx_t *out_ctx;
+    core_ctx_t *in_ctx;
+} core_net_rec;
+
+/**
+ * Insert the network bucket into the core input filter's input brigade.
+ * This hook is intended for MPMs or protocol modules that need to do special
+ * socket setup.
+ * @param c The connection
+ * @param bb The brigade to insert the bucket into
+ * @param socket The socket to put into a bucket
+ * @return AP_DECLINED if the current function does not handle this connection,
+ *         APR_SUCCESS or an error otherwise.
+ */
+AP_DECLARE_HOOK(apr_status_t, insert_network_bucket,
+                (conn_rec *c, apr_bucket_brigade *bb, apr_socket_t *socket))
 
 /* ----------------------------------------------------------------------
  *

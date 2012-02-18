@@ -10,6 +10,14 @@ AC_INIT(ABOUT_APACHE)
 AC_CONFIG_HEADER(include/ap_config_auto.h)
 AC_CONFIG_AUX_DIR(build)
 
+dnl Absolute source/build directory
+abs_srcdir=`(cd $srcdir && pwd)`
+abs_builddir=`pwd`
+
+dnl Ensure that the httpd version is included
+HTTPD_VERSION=`$abs_srcdir/build/get-version.sh all $abs_srcdir/include/ap_release.h AP_SERVER`
+AC_SUBST(HTTPD_VERSION)
+
 dnl #
 dnl # Include our own M4 macros along with those for APR and libtool
 dnl #
@@ -78,9 +86,12 @@ AC_ARG_WITH(included-apr,
 APACHE_HELP_STRING(--with-included-apr,Use bundled copies of APR/APR-Util))
 
 if test "x$with_included_apr" = "xyes"; then
-   apr_found=reconfig
+  apr_found=reconfig
+  if test ! -d srclib/apr; then
+    AC_MSG_ERROR([Bundled APR requested but not found at ./srclib/. Download and unpack the corresponding apr and apr-util packages to ./srclib/.])
+  fi
 else 
-   APR_FIND_APR("$srcdir/srclib/apr", "./srclib/apr", 1, 1 2)
+  APR_FIND_APR("$srcdir/srclib/apr", "./srclib/apr", 1, 1 2)
 fi
 
 if test "$apr_found" = "no"; then
@@ -122,9 +133,12 @@ APR_CONFIG="$APR_BINDIR/apr-${apr_major_version}-config"
 echo $ac_n "${nl}Configuring Apache Portable Runtime Utility library...${nl}"
 
 if test "x${apr_major_version}" = "x2"; then
-   apu_found=obsolete
+  apu_found=obsolete
 elif test "x$with_included_apr" = "xyes"; then
-   apu_found=reconfig
+  apu_found=reconfig
+  if test ! -d srclib/apr-util; then
+    AC_MSG_ERROR([Bundled APR-Util requested but not found at srclib/apr-util. Download and unpack the corresponding httpd-${HTTPD_VERSION}-deps package over this one.])
+  fi
 else 
    dnl If httpd is buildconf'ed against an apr 2.x tree, then 1.x
    dnl isn't supported. 
@@ -184,10 +198,6 @@ if test "x${cache_file}" = "x/dev/null"; then
   # configure script iff caching is disabled (the autoconf 2.5x default).
   export CC; export CPP
 fi
-
-dnl Absolute source/build directory
-abs_srcdir=`(cd $srcdir && pwd)`
-abs_builddir=`pwd`
 
 AC_ARG_WITH(pcre,
 APACHE_HELP_STRING(--with-pcre=PATH,Use external PCRE library))
@@ -805,10 +815,6 @@ AC_SUBST(ap_make_delimiter)
 
 dnl Ensure that docs/conf is created.
 test -d docs/conf||$mkdir_p docs/conf
-
-dnl Ensure that the httpd version is included
-HTTPD_VERSION=`$abs_srcdir/build/get-version.sh all $abs_srcdir/include/ap_release.h AP_SERVER`
-AC_SUBST(HTTPD_VERSION)
 
 AC_OUTPUT($APACHE_OUTPUT_FILES docs/conf/httpd.conf docs/conf/extra/httpd-autoindex.conf docs/conf/extra/httpd-dav.conf docs/conf/extra/httpd-default.conf docs/conf/extra/httpd-info.conf docs/conf/extra/httpd-languages.conf docs/conf/extra/httpd-manual.conf docs/conf/extra/httpd-mpm.conf docs/conf/extra/httpd-multilang-errordoc.conf docs/conf/extra/httpd-ssl.conf docs/conf/extra/httpd-userdir.conf docs/conf/extra/httpd-vhosts.conf docs/conf/extra/proxy-html.conf include/ap_config_layout.h support/apxs support/apachectl support/dbmmanage support/envvars-std support/log_server_status support/logresolve.pl support/phf_abuse_log.cgi support/split-logfile build/rules.mk build/pkg/pkginfo build/config_vars.sh,[true],[
   APACHE_GEN_MAKEFILES

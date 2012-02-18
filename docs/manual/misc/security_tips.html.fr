@@ -12,11 +12,11 @@
 <link href="../images/favicon.ico" rel="shortcut icon" /></head>
 <body id="manual-page"><div id="page-header">
 <p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="../faq/">FAQ</a> | <a href="../glossary.html">Glossaire</a> | <a href="../sitemap.html">Plan du site</a></p>
-<p class="apache">Serveur Apache HTTP Version 2.3</p>
+<p class="apache">Serveur Apache HTTP Version 2.4</p>
 <img alt="" src="../images/feather.gif" /></div>
 <div class="up"><a href="./"><img title="&lt;-" alt="&lt;-" src="../images/left.gif" /></a></div>
 <div id="path">
-<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">Serveur HTTP</a> &gt; <a href="http://httpd.apache.org/docs/">Documentation</a> &gt; <a href="../">Version 2.3</a> &gt; <a href="./">Documentations diverses</a></div><div id="page-content"><div id="preamble"><h1>Conseils sur la sécurité</h1>
+<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">Serveur HTTP</a> &gt; <a href="http://httpd.apache.org/docs/">Documentation</a> &gt; <a href="../">Version 2.4</a> &gt; <a href="./">Documentations diverses</a></div><div id="page-content"><div id="preamble"><h1>Conseils sur la sécurité</h1>
 <div class="toplang">
 <p><span>Langues Disponibles: </span><a href="../en/misc/security_tips.html" hreflang="en" rel="alternate" title="English">&nbsp;en&nbsp;</a> |
 <a href="../fr/misc/security_tips.html" title="Français">&nbsp;fr&nbsp;</a> |
@@ -41,6 +41,7 @@
 <li><img alt="" src="../images/down.gif" /> <a href="#systemsettings">Protection de la configuration du système</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#protectserverfiles">Protection par défaut des fichiers du serveur</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#watchyourlogs">Surveillez vos journaux</a></li>
+<li><img alt="" src="../images/down.gif" /> <a href="#merging">Fusion des sections de configuration</a></li>
 </ul></div>
 <div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
 <div class="section">
@@ -135,13 +136,13 @@
 
       <li>L'utilisation d'un <a href="../mpm.html">module mpm</a> threadé
       vous permet de traiter d'avantage de connexions simultanées, ce qui
-      minimise l'effet des attaques DoS. Dans le futur, le module mpm expérimental
+      minimise l'effet des attaques DoS. Dans le futur, le module mpm
       <code class="module"><a href="../mod/event.html">event</a></code> utilisera un traitement asynchrone afin de ne pas
-      dédier un thread à chaque connexion. Il est en cours d'étude à
-      l'heure actuelle et n'est pas encore entièrement implémenté. En
-      particulier, le mpm <code class="module"><a href="../mod/event.html">event</a></code> est actuellement incompatible
+      dédier un thread à chaque connexion. De par la
+      nature de la bibliothèque OpenSSL, le module mpm <code class="module"><a href="../mod/event.html">event</a></code> est actuellement incompatible
       avec le module <code class="module"><a href="../mod/mod_ssl.html">mod_ssl</a></code> ainsi que d'autres filtres
-      en entrée.</li>
+      en entrée. Dans ces cas, son comportement se ramène à celui
+      du module mpm <code class="module"><a href="../mod/worker.html">worker</a></code>.</li>
 
       <li>Il existe de nombreux modules tiers disponibles à <a href="http://modules.apache.org/">http://modules.apache.org/</a> qui
       peuvent retreindre les comportements de certains clients et ainsi
@@ -463,6 +464,24 @@
       &lt;/Files&gt;
     </code></p></div>
 
+  </div><div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
+<div class="section">
+<h2><a name="merging" id="merging">Fusion des sections de configuration</a></h2>
+
+    
+
+    <p>La fusion des sections de configuration est complexe et dépend
+    souvent des directives utilisées. Vous devez systématiquement tester
+    vos modifications pour vérifier la manière dont les directives sont
+    fusionnées.</p>
+
+    <p>Concernant les modules qui n'implémentent aucune logique de
+    fusion, comme <code class="directive">mod_access_compat</code>, le
+    comportement des sections suivantes est tributaire de la présence
+    dans ces dernières de directives appartenant à ces modules. La
+    configuration est héritée jusqu'à ce qu'une modification soit
+    effectuée ; à ce moment, la configuration est <em>remplacée</em> et
+    non fusionnée.</p>
   </div></div>
 <div class="bottomlang">
 <p><span>Langues Disponibles: </span><a href="../en/misc/security_tips.html" hreflang="en" rel="alternate" title="English">&nbsp;en&nbsp;</a> |
@@ -470,6 +489,6 @@
 <a href="../ko/misc/security_tips.html" hreflang="ko" rel="alternate" title="Korean">&nbsp;ko&nbsp;</a> |
 <a href="../tr/misc/security_tips.html" hreflang="tr" rel="alternate" title="Türkçe">&nbsp;tr&nbsp;</a></p>
 </div><div id="footer">
-<p class="apache">Copyright 2011 The Apache Software Foundation.<br />Autorisé sous <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
+<p class="apache">Copyright 2012 The Apache Software Foundation.<br />Autorisé sous <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
 <p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="../faq/">FAQ</a> | <a href="../glossary.html">Glossaire</a> | <a href="../sitemap.html">Plan du site</a></p></div>
 </body></html>

@@ -1,12 +1,12 @@
 %define contentdir /var/www
 %define suexec_caller apache
-%define mmn 20111203
+%define mmn 20120211
 
 Summary: Apache HTTP Server
 Name: httpd
-Version: 2.3.16
+Version: 2.4.1
 Release: 1
-Epoch: 020301600%{release}
+Epoch: 020400100%{release}
 URL: http://httpd.apache.org/
 Vendor: Apache Software Foundation
 Source0: http://www.apache.org/dist/httpd/httpd-%{version}.tar.bz2
@@ -137,10 +137,6 @@ fi
 # forcibly prevent use of bundled apr, apr-util, pcre
 rm -rf srclib/{apr,apr-util,pcre}
 
-# Before configure; fix location of build dir in generated apxs
-%{__perl} -pi -e "s:\@exp_installbuilddir\@:%{_libdir}/httpd/build:g" \
-	support/apxs.in
-
 %configure \
 	--enable-layout=RPM \
 	--libdir=%{_libdir} \
@@ -160,7 +156,8 @@ rm -rf srclib/{apr,apr-util,pcre}
         --enable-pie \
         --with-pcre \
         --enable-mods-shared=all \
-        --enable-ssl --with-ssl --enable-socache-dc \
+        --enable-ssl --with-ssl --enable-socache-dc --enable-bucketeer \
+        --enable-case-filter --enable-case-filter-in \
         --disable-imagemap
 
 make %{?_smp_mflags}
@@ -332,9 +329,12 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/httpd/modules/mod_authz_owner.so
 %{_libdir}/httpd/modules/mod_authz_user.so
 %{_libdir}/httpd/modules/mod_autoindex.so
+%{_libdir}/httpd/modules/mod_bucketeer.so
 %{_libdir}/httpd/modules/mod_buffer.so
 %{_libdir}/httpd/modules/mod_cache_disk.so
 %{_libdir}/httpd/modules/mod_cache.so
+%{_libdir}/httpd/modules/mod_case_filter.so
+%{_libdir}/httpd/modules/mod_case_filter_in.so
 %{_libdir}/httpd/modules/mod_cgid.so
 %{_libdir}/httpd/modules/mod_charset_lite.so
 %{_libdir}/httpd/modules/mod_data.so
@@ -428,7 +428,6 @@ rm -rf $RPM_BUILD_ROOT
 %attr(0700,apache,apache) %dir %{_localstatedir}/cache/httpd/cache-root
 
 %{_mandir}/man1/*
-%{_mandir}/man8/ab*
 %{_mandir}/man8/suexec*
 %{_mandir}/man8/apachectl.8*
 %{_mandir}/man8/httpd.8*
@@ -441,19 +440,19 @@ rm -rf $RPM_BUILD_ROOT
 
 %files tools
 %defattr(-,root,root)
-%{_sbindir}/ab
-%{_sbindir}/htdbm
-%{_sbindir}/htdigest
-%{_sbindir}/htpasswd
-%{_sbindir}/logresolve
-%{_sbindir}/httxt2dbm
+%{_bindir}/ab
+%{_bindir}/htdbm
+%{_bindir}/htdigest
+%{_bindir}/htpasswd
+%{_bindir}/logresolve
+%{_bindir}/httxt2dbm
 %{_sbindir}/rotatelogs
-%{_mandir}/man1/dbmmanage.1*
 %{_mandir}/man1/htdbm.1*
 %{_mandir}/man1/htdigest.1*
 %{_mandir}/man1/htpasswd.1*
-%{_mandir}/man8/ab.8*
-%{_mandir}/man8/logresolve.8*
+%{_mandir}/man1/httxt2dbm.1*
+%{_mandir}/man1/ab.1*
+%{_mandir}/man1/logresolve.1*
 %{_mandir}/man8/rotatelogs.8*
 %doc LICENSE NOTICE
 
@@ -488,11 +487,12 @@ rm -rf $RPM_BUILD_ROOT
 %files devel
 %defattr(-,root,root)
 %{_includedir}/httpd
-%{_sbindir}/apxs
+%{_bindir}/apxs
 %{_sbindir}/checkgid
-%{_sbindir}/dbmmanage
+%{_bindir}/dbmmanage
 %{_sbindir}/envvars*
-%{_mandir}/man8/apxs.8*
+%{_mandir}/man1/dbmmanage.1*
+%{_mandir}/man1/apxs.1*
 %dir %{_libdir}/httpd/build
 %{_libdir}/httpd/build/*.mk
 %{_libdir}/httpd/build/instdso.sh

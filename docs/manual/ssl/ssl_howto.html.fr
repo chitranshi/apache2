@@ -12,15 +12,17 @@
 <link href="../images/favicon.ico" rel="shortcut icon" /></head>
 <body id="manual-page"><div id="page-header">
 <p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="../faq/">FAQ</a> | <a href="../glossary.html">Glossaire</a> | <a href="../sitemap.html">Plan du site</a></p>
-<p class="apache">Serveur Apache HTTP Version 2.3</p>
+<p class="apache">Serveur Apache HTTP Version 2.4</p>
 <img alt="" src="../images/feather.gif" /></div>
 <div class="up"><a href="./"><img title="&lt;-" alt="&lt;-" src="../images/left.gif" /></a></div>
 <div id="path">
-<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">Serveur HTTP</a> &gt; <a href="http://httpd.apache.org/docs/">Documentation</a> &gt; <a href="../">Version 2.3</a> &gt; <a href="./">SSL/TLS</a></div><div id="page-content"><div id="preamble"><h1>Chiffrement fort SSL/TLS : Mode d'emploi</h1>
+<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">Serveur HTTP</a> &gt; <a href="http://httpd.apache.org/docs/">Documentation</a> &gt; <a href="../">Version 2.4</a> &gt; <a href="./">SSL/TLS</a></div><div id="page-content"><div id="preamble"><h1>Chiffrement fort SSL/TLS : Mode d'emploi</h1>
 <div class="toplang">
 <p><span>Langues Disponibles: </span><a href="../en/ssl/ssl_howto.html" hreflang="en" rel="alternate" title="English">&nbsp;en&nbsp;</a> |
 <a href="../fr/ssl/ssl_howto.html" title="Français">&nbsp;fr&nbsp;</a></p>
 </div>
+<div class="outofdate">Cette traduction peut être périmée. Vérifiez la version
+            anglaise pour les changements récents.</div>
 
 
 <p>Ce document doit vous permettre de démarrer et de faire fonctionner
@@ -78,22 +80,20 @@ que le chiffrement fort ?</a></h3>
     <p>Les directives suivantes ne permettent que les
     chiffrements de plus haut niveau :</p>
     <div class="example"><h3>httpd.conf</h3><p><code>
-      SSLProtocol all -SSLv2<br />
-      SSLCipherSuite HIGH:!aNULL:!EXP:!MD5:!NULL<br />
+      SSLCipherSuite HIGH:!aNULL:!MD5<br />
     </code></p></div>
 
 
 
- <p>Avec la configuration qui suit, vous pouvez activer deux méthodes de chiffrement relativement sécurisées, et rapides :</p>
+ <p>Avec la configuration qui suit, vous indiquez une préférence pour
+ des algorityhmes de chiffrement spécifiques optimisés en matière de
+ rapidité (le choix final sera opéré par mod_ssl, dans la mesure ou le
+ client les supporte) :</p>
 
     <div class="example"><h3>httpd.conf</h3><p><code>
-      SSLProtocol all -SSLv2<br />
-      SSLCipherSuite RC4-SHA:AES128-SHA:HIGH:!aNULL:!EXP:!MD5:!NULL<br />
+      SSLCipherSuite RC4-SHA:AES128-SHA:HIGH:!aNULL:!MD5<br />
       SSLHonorCipherOrder on
-      <br />
     </code></p></div>
-    <p>Ceci correspond largement à la valeur par défaut de la directive <code class="directive"><a href="../mod/mod_ssl.html#sslciphersuite">SSLCipherSuite</a></code>,
-    et représente la pratique à conseiller.</p>
 </div><div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
 <div class="section">
 <h2><a name="strongurl" id="strongurl">Comment créer un serveur qui accepte tous les types de
@@ -115,7 +115,7 @@ accéder à une URL particulière ?</a></h2>
       &lt;Location /strong/area&gt;<br />
       # sauf pour https://hostname/strong/area/ et ses sous-répertoires<br />
       # qui exigent des chiffrements forts<br />
-      SSLCipherSuite HIGH:!aNULL:!EXP:!MD5:!NULL<br />
+      SSLCipherSuite HIGH:!aNULL:!MD5<br />
       &lt;/Location&gt;
     </code></p></div>
 </div><div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
@@ -324,6 +324,6 @@ Require              valid-user
 <p><span>Langues Disponibles: </span><a href="../en/ssl/ssl_howto.html" hreflang="en" rel="alternate" title="English">&nbsp;en&nbsp;</a> |
 <a href="../fr/ssl/ssl_howto.html" title="Français">&nbsp;fr&nbsp;</a></p>
 </div><div id="footer">
-<p class="apache">Copyright 2011 The Apache Software Foundation.<br />Autorisé sous <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
+<p class="apache">Copyright 2012 The Apache Software Foundation.<br />Autorisé sous <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
 <p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="../faq/">FAQ</a> | <a href="../glossary.html">Glossaire</a> | <a href="../sitemap.html">Plan du site</a></p></div>
 </body></html>

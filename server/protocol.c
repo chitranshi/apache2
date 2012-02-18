@@ -455,7 +455,7 @@ AP_DECLARE(apr_status_t) ap_rgetline(char **s, apr_size_t n,
      * on EBCDIC boxes, each complete http protocol input line needs to be
      * translated into the code page used by the compiler.  Since
      * ap_rgetline_core uses recursion, we do the translation in a wrapper
-     * function to insure that each input character gets translated only once.
+     * function to ensure that each input character gets translated only once.
      */
     apr_status_t rv;
 
@@ -517,9 +517,6 @@ AP_CORE_DECLARE(void) ap_parse_uri(request_rec *r, const char *uri)
         status = apr_uri_parse_hostinfo(r->pool, uri, &r->parsed_uri);
     }
     else {
-        /* Simple syntax Errors in URLs are trapped by
-         * parse_uri_components().
-         */
         status = apr_uri_parse(r->pool, uri, &r->parsed_uri);
     }
 
@@ -595,7 +592,7 @@ static int read_request_line(request_rec *r, apr_bucket_brigade *bb)
     do {
         apr_status_t rv;
 
-        /* insure ap_rgetline allocates memory each time thru the loop
+        /* ensure ap_rgetline allocates memory each time thru the loop
          * if there are empty lines
          */
         r->the_request = NULL;
@@ -654,26 +651,6 @@ static int read_request_line(request_rec *r, apr_bucket_brigade *bb)
     }
 
     ap_parse_uri(r, uri);
-
-    /* RFC 2616:
-     *   Request-URI    = "*" | absoluteURI | abs_path | authority
-     *
-     * authority is a special case for CONNECT.  If the request is not
-     * using CONNECT, and the parsed URI does not have scheme, and
-     * it does not begin with '/', and it is not '*', then, fail
-     * and give a 400 response. */
-    if (r->method_number != M_CONNECT 
-        && !r->parsed_uri.scheme 
-        && uri[0] != '/'
-        && !(uri[0] == '*' && uri[1] == '\0')) {
-        ap_log_rerror(APLOG_MARK, APLOG_INFO, 0, r, APLOGNO(00559)
-                      "invalid request-URI %s", uri);
-        r->args = NULL;
-        r->hostname = NULL;
-        r->status = HTTP_BAD_REQUEST;
-        r->uri = apr_pstrdup(r->pool, uri);
-        return 0;
-    }
 
     if (ll[0]) {
         r->assbackwards = 0;
@@ -770,15 +747,15 @@ AP_DECLARE(void) ap_get_mime_headers_core(request_rec *r, apr_bucket_brigade *bb
              * exceeds the configured limit for a field size.
              */
             if (rv == APR_ENOSPC && field) {
-                /* insure ap_escape_html will terminate correctly */
+                /* ensure ap_escape_html will terminate correctly */
                 field[len - 1] = '\0';
                 apr_table_setn(r->notes, "error-notes",
-                               apr_pstrcat(r->pool,
+                               apr_psprintf(r->pool,
                                            "Size of a request header field "
                                            "exceeds server limit.<br />\n"
-                                           "<pre>\n",
-                                           ap_escape_html(r->pool, field),
-                                           "</pre>\n", NULL));
+                                           "<pre>\n%.*s\n</pre>\n", 
+                                           field_name_len(field), 
+                                           ap_escape_html(r->pool, field)));
                 ap_log_rerror(APLOG_MARK, APLOG_INFO, 0, r, APLOGNO(00561)
                               "Request header exceeds LimitRequestFieldSize: "
                               "%.*s", field_name_len(field), field);
@@ -802,13 +779,13 @@ AP_DECLARE(void) ap_get_mime_headers_core(request_rec *r, apr_bucket_brigade *bb
                      * overflow (last_field) as the field with the problem
                      */
                     apr_table_setn(r->notes, "error-notes",
-                                   apr_pstrcat(r->pool,
+                                   apr_psprintf(r->pool,
                                                "Size of a request header field "
                                                "after folding "
                                                "exceeds server limit.<br />\n"
-                                               "<pre>\n",
-                                               ap_escape_html(r->pool, last_field),
-                                               "</pre>\n", NULL));
+                                               "<pre>\n%.*s\n</pre>\n", 
+                                               field_name_len(last_field), 
+                                               ap_escape_html(r->pool, last_field)));
                     ap_log_rerror(APLOG_MARK, APLOG_INFO, 0, r, APLOGNO(00562)
                                   "Request header exceeds LimitRequestFieldSize "
                                   "after folding: %.*s",
@@ -847,13 +824,13 @@ AP_DECLARE(void) ap_get_mime_headers_core(request_rec *r, apr_bucket_brigade *bb
                 if (!(value = strchr(last_field, ':'))) { /* Find ':' or    */
                     r->status = HTTP_BAD_REQUEST;      /* abort bad request */
                     apr_table_setn(r->notes, "error-notes",
-                                   apr_pstrcat(r->pool,
+                                   apr_psprintf(r->pool,
                                                "Request header field is "
                                                "missing ':' separator.<br />\n"
-                                               "<pre>\n",
+                                               "<pre>\n%.*s</pre>\n", 
+                                               (int)LOG_NAME_MAX_LEN,
                                                ap_escape_html(r->pool,
-                                                              last_field),
-                                               "</pre>\n", NULL));
+                                                              last_field)));
                     ap_log_rerror(APLOG_MARK, APLOG_INFO, 0, r, APLOGNO(00564)
                                   "Request header field is missing ':' "
                                   "separator: %.*s", (int)LOG_NAME_MAX_LEN,
@@ -1465,8 +1442,10 @@ AP_DECLARE(apr_status_t) ap_send_fd(apr_file_t *fd, request_rec *r,
 
 #if APR_HAS_MMAP
 /* send data from an in-memory buffer */
-AP_DECLARE(size_t) ap_send_mmap(apr_mmap_t *mm, request_rec *r, size_t offset,
-                                size_t length)
+AP_DECLARE(apr_size_t) ap_send_mmap(apr_mmap_t *mm,
+                                    request_rec *r,
+                                    apr_size_t offset,
+                                    apr_size_t length)
 {
     conn_rec *c = r->connection;
     apr_bucket_brigade *bb = NULL;

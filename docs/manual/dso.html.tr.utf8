@@ -12,11 +12,11 @@
 <link href="./images/favicon.ico" rel="shortcut icon" /></head>
 <body id="manual-page"><div id="page-header">
 <p class="menu"><a href="./mod/">Modüller</a> | <a href="./mod/directives.html">Yönergeler</a> | <a href="./faq/">SSS</a> | <a href="./glossary.html">Terimler</a> | <a href="./sitemap.html">Site Haritası</a></p>
-<p class="apache">Apache HTTP Sunucusu Sürüm 2.3</p>
+<p class="apache">Apache HTTP Sunucusu Sürüm 2.4</p>
 <img alt="" src="./images/feather.gif" /></div>
 <div class="up"><a href="./"><img title="&lt;-" alt="&lt;-" src="./images/left.gif" /></a></div>
 <div id="path">
-<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">HTTP Sunucusu</a> &gt; <a href="http://httpd.apache.org/docs/">Belgeleme</a> &gt; <a href="./">Sürüm 2.3</a></div><div id="page-content"><div id="preamble"><h1>Devingen Paylaşımlı Nesne Desteği</h1>
+<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">HTTP Sunucusu</a> &gt; <a href="http://httpd.apache.org/docs/">Belgeleme</a> &gt; <a href="./">Sürüm 2.4</a></div><div id="page-content"><div id="preamble"><h1>Devingen Paylaşımlı Nesne Desteği</h1>
 <div class="toplang">
 <p><span>Mevcut Diller: </span><a href="./en/dso.html" hreflang="en" rel="alternate" title="English">&nbsp;en&nbsp;</a> |
 <a href="./fr/dso.html" hreflang="fr" rel="alternate" title="Français">&nbsp;fr&nbsp;</a> |
@@ -24,7 +24,6 @@
 <a href="./ko/dso.html" hreflang="ko" rel="alternate" title="Korean">&nbsp;ko&nbsp;</a> |
 <a href="./tr/dso.html" title="Türkçe">&nbsp;tr&nbsp;</a></p>
 </div>
-<div class="outofdate">Bu çeviri güncel olmayabilir. Son değişiklikler için İngilizce sürüm geçerlidir.</div>
 
     <p>Apache HTTP Sunucusu modüler bir program olup, yönetici sadece bir
       grup modül seçerek sunucuya işlevsellik ekleyebilir. Modüller, Devingen
@@ -94,14 +93,29 @@
 </code></p></div>
       </li>
 
-      <li><p>Apache HTTP Sunucusunu tüm modüller etkin ve paylaşımlı nesneler
-        yüklü olarak derleyebilir. Daha sonra <code>httpd.conf</code> içindeki
-        <code class="directive"><a href="./mod/mod_so.html#loadmodule">LoadModule</a></code> yönergelerinden
-        istemediklerinizi açıklama satırları haline getirerek bunları iptal
-        edebilirsiniz.</p>
+      <li><p>Apache HTTP Sunucusunu tüm modüller etkin olarak
+        derleyebilirsiniz. Fakat sunucunun başlatılması sırasında sadece temel
+        modüller yüklenir.  Daha sonra <code>httpd.conf</code> içindeki
+        <code class="directive"><a href="./mod/mod_so.html#loadmodule">LoadModule</a></code> yönergelerini etkin
+        veya etkisiz hale getirerek yüklenecek modülleri
+        değiştirebilirsiniz.</p>
 
 <div class="example"><p><code>
 $ ./configure --enable-mods-shared=all<br />
+$ make install
+</code></p></div>
+      </li>
+
+      <li><p>Bazı modüller sadece geliştiriciler içindir ve bunlar tüm
+        modüllerin derlenmesini (<em>all</em>) seçseniz bile derlenmeyecektir.
+        Geliştirici modülleri dehil tüm modülleri derlemek isterseniz
+        <em>reallyall</em> kullanınız. Ek olarak, derlenmiş modüller için
+        kullanılan <code class="directive"><a href="./mod/mod_so.html#loadmodule">LoadModule</a></code>
+        yönergelerinin tamamını <code>--enable-load-all-modules</code> derleme
+        seçeneği ile etkin kılabilirsiniz.</p>
+
+<div class="example"><p><code>
+$ ./configure --enable-mods-shared=reallyall --enable-load-all-modules<br />
 $ make install
 </code></p></div>
       </li>
@@ -284,6 +298,6 @@ $ apxs -aci filanca mod_filanca.la
 <a href="./ko/dso.html" hreflang="ko" rel="alternate" title="Korean">&nbsp;ko&nbsp;</a> |
 <a href="./tr/dso.html" title="Türkçe">&nbsp;tr&nbsp;</a></p>
 </div><div id="footer">
-<p class="apache">Copyright 2011 The Apache Software Foundation.<br /><a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a> altında lisanslıdır.</p>
+<p class="apache">Copyright 2012 The Apache Software Foundation.<br /><a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a> altında lisanslıdır.</p>
 <p class="menu"><a href="./mod/">Modüller</a> | <a href="./mod/directives.html">Yönergeler</a> | <a href="./faq/">SSS</a> | <a href="./glossary.html">Terimler</a> | <a href="./sitemap.html">Site Haritası</a></p></div>
 </body></html>

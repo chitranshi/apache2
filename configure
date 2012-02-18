@@ -603,7 +603,6 @@ ac_includes_default="\
 
 ac_subst_vars='LTLIBOBJS
 LIBOBJS
-HTTPD_VERSION
 ap_make_delimiter
 ap_make_include
 perlbin
@@ -891,6 +890,7 @@ rel_bindir
 exp_bindir
 rel_exec_prefix
 exp_exec_prefix
+HTTPD_VERSION
 target_alias
 host_alias
 build_alias
@@ -1917,8 +1917,7 @@ Optional Features:
                           MPMs
   --enable-dav-fs         DAV provider for the filesystem. --enable-dav also
                           enables mod_dav_fs.
-  --enable-dav-lock       DAV provider for generic locking - requires
-                          --enable-dav
+  --enable-dav-lock       DAV provider for generic locking
   --enable-vhost-alias    mass virtual hosting module
   --enable-negotiation    content negotiation
   --disable-dir           directory request handling
@@ -2830,6 +2829,12 @@ ac_config_guess="$SHELL $ac_aux_dir/config.guess"  # Please don't use this var.
 ac_config_sub="$SHELL $ac_aux_dir/config.sub"  # Please don't use this var.
 ac_configure="$SHELL $ac_aux_dir/configure"  # Please don't use this var.
 
+
+
+abs_srcdir=`(cd $srcdir && pwd)`
+abs_builddir=`pwd`
+
+HTTPD_VERSION=`$abs_srcdir/build/get-version.sh all $abs_srcdir/include/ap_release.h AP_SERVER`
 
 
 
@@ -4121,7 +4126,10 @@ fi
 
 
 if test "x$with_included_apr" = "xyes"; then
-   apr_found=reconfig
+  apr_found=reconfig
+  if test ! -d srclib/apr; then
+    as_fn_error $? "Bundled APR requested but not found at ./srclib/. Download and unpack the corresponding apr and apr-util packages to ./srclib/." "$LINENO" 5
+  fi
 else
 
   apr_found="no"
@@ -4490,9 +4498,12 @@ APR_CONFIG="$APR_BINDIR/apr-${apr_major_version}-config"
 echo $ac_n "${nl}Configuring Apache Portable Runtime Utility library...${nl}"
 
 if test "x${apr_major_version}" = "x2"; then
-   apu_found=obsolete
+  apu_found=obsolete
 elif test "x$with_included_apr" = "xyes"; then
-   apu_found=reconfig
+  apu_found=reconfig
+  if test ! -d srclib/apr-util; then
+    as_fn_error $? "Bundled APR-Util requested but not found at srclib/apr-util. Download and unpack the corresponding httpd-${HTTPD_VERSION}-deps package over this one." "$LINENO" 5
+  fi
 else
 
 
@@ -5923,9 +5934,6 @@ if test "x${cache_file}" = "x/dev/null"; then
   # configure script iff caching is disabled (the autoconf 2.5x default).
   export CC; export CPP
 fi
-
-abs_srcdir=`(cd $srcdir && pwd)`
-abs_builddir=`pwd`
 
 
 # Check whether --with-pcre was given.
@@ -10390,6 +10398,7 @@ fi
   if test "$enable_authnz_ldap" != "no"; then
             { $as_echo "$as_me:${as_lineno-$LINENO}: result: checking dependencies" >&5
 $as_echo "checking dependencies" >&6; }
+            :
 
 
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for ldap support in apr/apr-util" >&5
@@ -10457,15 +10466,16 @@ $as_echo "$as_me: WARNING: apr/apr-util is compiled without ldap support" >&2;}
     enable_authnz_ldap=no
   fi
 
-                    { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to enable mod_authnz_ldap" >&5
+            :
+            { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to enable mod_authnz_ldap" >&5
 $as_echo_n "checking whether to enable mod_authnz_ldap... " >&6; }
-                    if test "$enable_authnz_ldap" = "no"; then
-                      if test "$_apmod_required" = "no"; then
-                        _apmod_extra_msg=" (disabled)"
-                      else
-                        as_fn_error $? "mod_authnz_ldap has been requested but can not be built due to prerequisite failures" "$LINENO" 5
-                      fi
-                    fi
+            if test "$enable_authnz_ldap" = "no"; then
+              if test "$_apmod_required" = "no"; then
+                _apmod_extra_msg=" (disabled)"
+              else
+                as_fn_error $? "mod_authnz_ldap has been requested but can not be built due to prerequisite failures" "$LINENO" 5
+              fi
+            fi
   fi
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: $enable_authnz_ldap$_apmod_extra_msg" >&5
 $as_echo "$enable_authnz_ldap$_apmod_extra_msg" >&6; }
@@ -11006,6 +11016,7 @@ fi
   if test "$enable_auth_digest" != "no"; then
             { $as_echo "$as_me:${as_lineno-$LINENO}: result: checking dependencies" >&5
 $as_echo "checking dependencies" >&6; }
+            :
 
 
 apr_old_cppflags=$CPPFLAGS
@@ -11035,15 +11046,16 @@ CPPFLAGS=$apr_old_cppflags
     enable_auth_digest="no"
   fi
 
-                    { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to enable mod_auth_digest" >&5
+            :
+            { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to enable mod_auth_digest" >&5
 $as_echo_n "checking whether to enable mod_auth_digest... " >&6; }
-                    if test "$enable_auth_digest" = "no"; then
-                      if test "$_apmod_required" = "no"; then
-                        _apmod_extra_msg=" (disabled)"
-                      else
-                        as_fn_error $? "mod_auth_digest has been requested but can not be built due to prerequisite failures" "$LINENO" 5
-                      fi
-                    fi
+            if test "$enable_auth_digest" = "no"; then
+              if test "$_apmod_required" = "no"; then
+                _apmod_extra_msg=" (disabled)"
+              else
+                as_fn_error $? "mod_auth_digest has been requested but can not be built due to prerequisite failures" "$LINENO" 5
+              fi
+            fi
   fi
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: $enable_auth_digest$_apmod_extra_msg" >&5
 $as_echo "$enable_auth_digest$_apmod_extra_msg" >&6; }
@@ -11800,7 +11812,28 @@ fi
       _apmod_extra_msg=" ($module_selection)"
   fi
   if test "$enable_cache_disk" != "no"; then
+            { $as_echo "$as_me:${as_lineno-$LINENO}: result: checking dependencies" >&5
+$as_echo "checking dependencies" >&6; }
+            if test "$enable_cache" = "no" ; then
+                              enable_cache_disk=no
+                              { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: \"mod_cache is disabled but required for mod_cache_disk\"" >&5
+$as_echo "$as_me: WARNING: \"mod_cache is disabled but required for mod_cache_disk\"" >&2;}
+                            elif test "$enable_cache_disk" = "static" && test "$enable_cache" != "static" ; then
+                              enable_cache_disk=no
+                              { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: \"cannot build mod_cache_disk statically if mod_cache is built shared\"" >&5
+$as_echo "$as_me: WARNING: \"cannot build mod_cache_disk statically if mod_cache is built shared\"" >&2;}
+                            else
             :
+            fi
+            { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to enable mod_cache_disk" >&5
+$as_echo_n "checking whether to enable mod_cache_disk... " >&6; }
+            if test "$enable_cache_disk" = "no"; then
+              if test "$_apmod_required" = "no"; then
+                _apmod_extra_msg=" (disabled)"
+              else
+                as_fn_error $? "mod_cache_disk has been requested but can not be built due to prerequisite failures" "$LINENO" 5
+              fi
+            fi
   fi
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: $enable_cache_disk$_apmod_extra_msg" >&5
 $as_echo "$enable_cache_disk$_apmod_extra_msg" >&6; }
@@ -12341,6 +12374,7 @@ fi
   if test "$enable_socache_dc" != "no"; then
             { $as_echo "$as_me:${as_lineno-$LINENO}: result: checking dependencies" >&5
 $as_echo "checking dependencies" >&6; }
+            :
 
 
 if test "x$ap_distcache_configured" = "x"; then
@@ -12642,15 +12676,16 @@ $as_echo "#define HAVE_DISTCACHE 1" >>confdefs.h
 fi
 
 
-                    { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to enable mod_socache_dc" >&5
+            :
+            { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to enable mod_socache_dc" >&5
 $as_echo_n "checking whether to enable mod_socache_dc... " >&6; }
-                    if test "$enable_socache_dc" = "no"; then
-                      if test "$_apmod_required" = "no"; then
-                        _apmod_extra_msg=" (disabled)"
-                      else
-                        as_fn_error $? "mod_socache_dc has been requested but can not be built due to prerequisite failures" "$LINENO" 5
-                      fi
-                    fi
+            if test "$enable_socache_dc" = "no"; then
+              if test "$_apmod_required" = "no"; then
+                _apmod_extra_msg=" (disabled)"
+              else
+                as_fn_error $? "mod_socache_dc has been requested but can not be built due to prerequisite failures" "$LINENO" 5
+              fi
+            fi
   fi
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: $enable_socache_dc$_apmod_extra_msg" >&5
 $as_echo "$enable_socache_dc$_apmod_extra_msg" >&6; }
@@ -13051,6 +13086,7 @@ fi
   if test "$enable_watchdog" != "no"; then
             { $as_echo "$as_me:${as_lineno-$LINENO}: result: checking dependencies" >&5
 $as_echo "checking dependencies" >&6; }
+            :
 
 
 apr_old_cppflags=$CPPFLAGS
@@ -13080,15 +13116,16 @@ $as_echo "$as_me: WARNING: mod_watchdog requires apr to be built with --enable-t
         enable_watchdog=no
     fi
 
-                    { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to enable mod_watchdog" >&5
+            :
+            { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to enable mod_watchdog" >&5
 $as_echo_n "checking whether to enable mod_watchdog... " >&6; }
-                    if test "$enable_watchdog" = "no"; then
-                      if test "$_apmod_required" = "no"; then
-                        _apmod_extra_msg=" (disabled)"
-                      else
-                        as_fn_error $? "mod_watchdog has been requested but can not be built due to prerequisite failures" "$LINENO" 5
-                      fi
-                    fi
+            if test "$enable_watchdog" = "no"; then
+              if test "$_apmod_required" = "no"; then
+                _apmod_extra_msg=" (disabled)"
+              else
+                as_fn_error $? "mod_watchdog has been requested but can not be built due to prerequisite failures" "$LINENO" 5
+              fi
+            fi
   fi
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: $enable_watchdog$_apmod_extra_msg" >&5
 $as_echo "$enable_watchdog$_apmod_extra_msg" >&6; }
@@ -16243,6 +16280,7 @@ fi
   if test "$enable_deflate" != "no"; then
             { $as_echo "$as_me:${as_lineno-$LINENO}: result: checking dependencies" >&5
 $as_echo "checking dependencies" >&6; }
+            :
 
 
 # Check whether --with-z was given.
@@ -16493,15 +16531,16 @@ rm -f core conftest.err conftest.$ac_objext \
 
   fi
 
-                    { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to enable mod_deflate" >&5
+            :
+            { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to enable mod_deflate" >&5
 $as_echo_n "checking whether to enable mod_deflate... " >&6; }
-                    if test "$enable_deflate" = "no"; then
-                      if test "$_apmod_required" = "no"; then
-                        _apmod_extra_msg=" (disabled)"
-                      else
-                        as_fn_error $? "mod_deflate has been requested but can not be built due to prerequisite failures" "$LINENO" 5
-                      fi
-                    fi
+            if test "$enable_deflate" = "no"; then
+              if test "$_apmod_required" = "no"; then
+                _apmod_extra_msg=" (disabled)"
+              else
+                as_fn_error $? "mod_deflate has been requested but can not be built due to prerequisite failures" "$LINENO" 5
+              fi
+            fi
   fi
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: $enable_deflate$_apmod_extra_msg" >&5
 $as_echo "$enable_deflate$_apmod_extra_msg" >&6; }
@@ -16640,6 +16679,7 @@ fi
   if test "$enable_xml2enc" != "no"; then
             { $as_echo "$as_me:${as_lineno-$LINENO}: result: checking dependencies" >&5
 $as_echo "checking dependencies" >&6; }
+            :
 
 
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for libxml2" >&5
@@ -16724,15 +16764,16 @@ $as_echo "$ac_cv_libxml2" >&6; }
     enable_xml2enc=no
   fi
 
-                    { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to enable mod_xml2enc" >&5
+            :
+            { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to enable mod_xml2enc" >&5
 $as_echo_n "checking whether to enable mod_xml2enc... " >&6; }
-                    if test "$enable_xml2enc" = "no"; then
-                      if test "$_apmod_required" = "no"; then
-                        _apmod_extra_msg=" (disabled)"
-                      else
-                        as_fn_error $? "mod_xml2enc has been requested but can not be built due to prerequisite failures" "$LINENO" 5
-                      fi
-                    fi
+            if test "$enable_xml2enc" = "no"; then
+              if test "$_apmod_required" = "no"; then
+                _apmod_extra_msg=" (disabled)"
+              else
+                as_fn_error $? "mod_xml2enc has been requested but can not be built due to prerequisite failures" "$LINENO" 5
+              fi
+            fi
   fi
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: $enable_xml2enc$_apmod_extra_msg" >&5
 $as_echo "$enable_xml2enc$_apmod_extra_msg" >&6; }
@@ -16868,6 +16909,7 @@ fi
   if test "$enable_proxy_html" != "no"; then
             { $as_echo "$as_me:${as_lineno-$LINENO}: result: checking dependencies" >&5
 $as_echo "checking dependencies" >&6; }
+            :
 
 
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for libxml2" >&5
@@ -16953,15 +16995,16 @@ $as_echo "$ac_cv_libxml2" >&6; }
   fi
 
 
-                    { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to enable mod_proxy_html" >&5
+            :
+            { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to enable mod_proxy_html" >&5
 $as_echo_n "checking whether to enable mod_proxy_html... " >&6; }
-                    if test "$enable_proxy_html" = "no"; then
-                      if test "$_apmod_required" = "no"; then
-                        _apmod_extra_msg=" (disabled)"
-                      else
-                        as_fn_error $? "mod_proxy_html has been requested but can not be built due to prerequisite failures" "$LINENO" 5
-                      fi
-                    fi
+            if test "$enable_proxy_html" = "no"; then
+              if test "$_apmod_required" = "no"; then
+                _apmod_extra_msg=" (disabled)"
+              else
+                as_fn_error $? "mod_proxy_html has been requested but can not be built due to prerequisite failures" "$LINENO" 5
+              fi
+            fi
   fi
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: $enable_proxy_html$_apmod_extra_msg" >&5
 $as_echo "$enable_proxy_html$_apmod_extra_msg" >&6; }
@@ -17447,6 +17490,7 @@ fi
   if test "$enable_ldap" != "no"; then
             { $as_echo "$as_me:${as_lineno-$LINENO}: result: checking dependencies" >&5
 $as_echo "checking dependencies" >&6; }
+            :
 
 
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for ldap support in apr/apr-util" >&5
@@ -17514,15 +17558,16 @@ $as_echo "$as_me: WARNING: apr/apr-util is compiled without ldap support" >&2;}
     enable_ldap=no
   fi
 
-                    { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to enable mod_ldap" >&5
+            :
+            { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to enable mod_ldap" >&5
 $as_echo_n "checking whether to enable mod_ldap... " >&6; }
-                    if test "$enable_ldap" = "no"; then
-                      if test "$_apmod_required" = "no"; then
-                        _apmod_extra_msg=" (disabled)"
-                      else
-                        as_fn_error $? "mod_ldap has been requested but can not be built due to prerequisite failures" "$LINENO" 5
-                      fi
-                    fi
+            if test "$enable_ldap" = "no"; then
+              if test "$_apmod_required" = "no"; then
+                _apmod_extra_msg=" (disabled)"
+              else
+                as_fn_error $? "mod_ldap has been requested but can not be built due to prerequisite failures" "$LINENO" 5
+              fi
+            fi
   fi
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: $enable_ldap$_apmod_extra_msg" >&5
 $as_echo "$enable_ldap$_apmod_extra_msg" >&6; }
@@ -18319,6 +18364,7 @@ fi
   if test "$enable_lua" != "no"; then
             { $as_echo "$as_me:${as_lineno-$LINENO}: result: checking dependencies" >&5
 $as_echo "checking dependencies" >&6; }
+            :
 
 
 
@@ -18904,15 +18950,16 @@ fi
 
   fi
 
-                    { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to enable mod_lua" >&5
+            :
+            { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to enable mod_lua" >&5
 $as_echo_n "checking whether to enable mod_lua... " >&6; }
-                    if test "$enable_lua" = "no"; then
-                      if test "$_apmod_required" = "no"; then
-                        _apmod_extra_msg=" (disabled)"
-                      else
-                        as_fn_error $? "mod_lua has been requested but can not be built due to prerequisite failures" "$LINENO" 5
-                      fi
-                    fi
+            if test "$enable_lua" = "no"; then
+              if test "$_apmod_required" = "no"; then
+                _apmod_extra_msg=" (disabled)"
+              else
+                as_fn_error $? "mod_lua has been requested but can not be built due to prerequisite failures" "$LINENO" 5
+              fi
+            fi
   fi
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: $enable_lua$_apmod_extra_msg" >&5
 $as_echo "$enable_lua$_apmod_extra_msg" >&6; }
@@ -19901,6 +19948,7 @@ fi
   if test "$enable_usertrack" != "no"; then
             { $as_echo "$as_me:${as_lineno-$LINENO}: result: checking dependencies" >&5
 $as_echo "checking dependencies" >&6; }
+            :
 
   for ac_header in sys/times.h
 do :
@@ -19926,15 +19974,16 @@ fi
 done
 
 
-                    { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to enable mod_usertrack" >&5
+            :
+            { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to enable mod_usertrack" >&5
 $as_echo_n "checking whether to enable mod_usertrack... " >&6; }
-                    if test "$enable_usertrack" = "no"; then
-                      if test "$_apmod_required" = "no"; then
-                        _apmod_extra_msg=" (disabled)"
-                      else
-                        as_fn_error $? "mod_usertrack has been requested but can not be built due to prerequisite failures" "$LINENO" 5
-                      fi
-                    fi
+            if test "$enable_usertrack" = "no"; then
+              if test "$_apmod_required" = "no"; then
+                _apmod_extra_msg=" (disabled)"
+              else
+                as_fn_error $? "mod_usertrack has been requested but can not be built due to prerequisite failures" "$LINENO" 5
+              fi
+            fi
   fi
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: $enable_usertrack$_apmod_extra_msg" >&5
 $as_echo "$enable_usertrack$_apmod_extra_msg" >&6; }
@@ -20798,7 +20847,28 @@ fi
       _apmod_extra_msg=" ($module_selection)"
   fi
   if test "$enable_proxy_connect" != "no"; then
+            { $as_echo "$as_me:${as_lineno-$LINENO}: result: checking dependencies" >&5
+$as_echo "checking dependencies" >&6; }
+            if test "$enable_proxy" = "no" ; then
+                              enable_proxy_connect=no
+                              { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: \"mod_proxy is disabled but required for mod_proxy_connect\"" >&5
+$as_echo "$as_me: WARNING: \"mod_proxy is disabled but required for mod_proxy_connect\"" >&2;}
+                            elif test "$enable_proxy_connect" = "static" && test "$enable_proxy" != "static" ; then
+                              enable_proxy_connect=no
+                              { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: \"cannot build mod_proxy_connect statically if mod_proxy is built shared\"" >&5
+$as_echo "$as_me: WARNING: \"cannot build mod_proxy_connect statically if mod_proxy is built shared\"" >&2;}
+                            else
             :
+            fi
+            { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to enable mod_proxy_connect" >&5
+$as_echo_n "checking whether to enable mod_proxy_connect... " >&6; }
+            if test "$enable_proxy_connect" = "no"; then
+              if test "$_apmod_required" = "no"; then
+                _apmod_extra_msg=" (disabled)"
+              else
+                as_fn_error $? "mod_proxy_connect has been requested but can not be built due to prerequisite failures" "$LINENO" 5
+              fi
+            fi
   fi
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: $enable_proxy_connect$_apmod_extra_msg" >&5
 $as_echo "$enable_proxy_connect$_apmod_extra_msg" >&6; }
@@ -20932,7 +21002,28 @@ fi
       _apmod_extra_msg=" ($module_selection)"
   fi
   if test "$enable_proxy_ftp" != "no"; then
+            { $as_echo "$as_me:${as_lineno-$LINENO}: result: checking dependencies" >&5
+$as_echo "checking dependencies" >&6; }
+            if test "$enable_proxy" = "no" ; then
+                              enable_proxy_ftp=no
+                              { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: \"mod_proxy is disabled but required for mod_proxy_ftp\"" >&5
+$as_echo "$as_me: WARNING: \"mod_proxy is disabled but required for mod_proxy_ftp\"" >&2;}
+                            elif test "$enable_proxy_ftp" = "static" && test "$enable_proxy" != "static" ; then
+                              enable_proxy_ftp=no
+                              { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: \"cannot build mod_proxy_ftp statically if mod_proxy is built shared\"" >&5
+$as_echo "$as_me: WARNING: \"cannot build mod_proxy_ftp statically if mod_proxy is built shared\"" >&2;}
+                            else
             :
+            fi
+            { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to enable mod_proxy_ftp" >&5
+$as_echo_n "checking whether to enable mod_proxy_ftp... " >&6; }
+            if test "$enable_proxy_ftp" = "no"; then
+              if test "$_apmod_required" = "no"; then
+                _apmod_extra_msg=" (disabled)"
+              else
+                as_fn_error $? "mod_proxy_ftp has been requested but can not be built due to prerequisite failures" "$LINENO" 5
+              fi
+            fi
   fi
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: $enable_proxy_ftp$_apmod_extra_msg" >&5
 $as_echo "$enable_proxy_ftp$_apmod_extra_msg" >&6; }
@@ -21066,7 +21157,28 @@ fi
       _apmod_extra_msg=" ($module_selection)"
   fi
   if test "$enable_proxy_http" != "no"; then
+            { $as_echo "$as_me:${as_lineno-$LINENO}: result: checking dependencies" >&5
+$as_echo "checking dependencies" >&6; }
+            if test "$enable_proxy" = "no" ; then
+                              enable_proxy_http=no
+                              { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: \"mod_proxy is disabled but required for mod_proxy_http\"" >&5
+$as_echo "$as_me: WARNING: \"mod_proxy is disabled but required for mod_proxy_http\"" >&2;}
+                            elif test "$enable_proxy_http" = "static" && test "$enable_proxy" != "static" ; then
+                              enable_proxy_http=no
+                              { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: \"cannot build mod_proxy_http statically if mod_proxy is built shared\"" >&5
+$as_echo "$as_me: WARNING: \"cannot build mod_proxy_http statically if mod_proxy is built shared\"" >&2;}
+                            else
             :
+            fi
+            { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to enable mod_proxy_http" >&5
+$as_echo_n "checking whether to enable mod_proxy_http... " >&6; }
+            if test "$enable_proxy_http" = "no"; then
+              if test "$_apmod_required" = "no"; then
+                _apmod_extra_msg=" (disabled)"
+              else
+                as_fn_error $? "mod_proxy_http has been requested but can not be built due to prerequisite failures" "$LINENO" 5
+              fi
+            fi
   fi
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: $enable_proxy_http$_apmod_extra_msg" >&5
 $as_echo "$enable_proxy_http$_apmod_extra_msg" >&6; }
@@ -21200,7 +21312,28 @@ fi
       _apmod_extra_msg=" ($module_selection)"
   fi
   if test "$enable_proxy_fcgi" != "no"; then
+            { $as_echo "$as_me:${as_lineno-$LINENO}: result: checking dependencies" >&5
+$as_echo "checking dependencies" >&6; }
+            if test "$enable_proxy" = "no" ; then
+                              enable_proxy_fcgi=no
+                              { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: \"mod_proxy is disabled but required for mod_proxy_fcgi\"" >&5
+$as_echo "$as_me: WARNING: \"mod_proxy is disabled but required for mod_proxy_fcgi\"" >&2;}
+                            elif test "$enable_proxy_fcgi" = "static" && test "$enable_proxy" != "static" ; then
+                              enable_proxy_fcgi=no
+                              { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: \"cannot build mod_proxy_fcgi statically if mod_proxy is built shared\"" >&5
+$as_echo "$as_me: WARNING: \"cannot build mod_proxy_fcgi statically if mod_proxy is built shared\"" >&2;}
+                            else
             :
+            fi
+            { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to enable mod_proxy_fcgi" >&5
+$as_echo_n "checking whether to enable mod_proxy_fcgi... " >&6; }
+            if test "$enable_proxy_fcgi" = "no"; then
+              if test "$_apmod_required" = "no"; then
+                _apmod_extra_msg=" (disabled)"
+              else
+                as_fn_error $? "mod_proxy_fcgi has been requested but can not be built due to prerequisite failures" "$LINENO" 5
+              fi
+            fi
   fi
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: $enable_proxy_fcgi$_apmod_extra_msg" >&5
 $as_echo "$enable_proxy_fcgi$_apmod_extra_msg" >&6; }
@@ -21334,7 +21467,28 @@ fi
       _apmod_extra_msg=" ($module_selection)"
   fi
   if test "$enable_proxy_scgi" != "no"; then
+            { $as_echo "$as_me:${as_lineno-$LINENO}: result: checking dependencies" >&5
+$as_echo "checking dependencies" >&6; }
+            if test "$enable_proxy" = "no" ; then
+                              enable_proxy_scgi=no
+                              { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: \"mod_proxy is disabled but required for mod_proxy_scgi\"" >&5
+$as_echo "$as_me: WARNING: \"mod_proxy is disabled but required for mod_proxy_scgi\"" >&2;}
+                            elif test "$enable_proxy_scgi" = "static" && test "$enable_proxy" != "static" ; then
+                              enable_proxy_scgi=no
+                              { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: \"cannot build mod_proxy_scgi statically if mod_proxy is built shared\"" >&5
+$as_echo "$as_me: WARNING: \"cannot build mod_proxy_scgi statically if mod_proxy is built shared\"" >&2;}
+                            else
             :
+            fi
+            { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to enable mod_proxy_scgi" >&5
+$as_echo_n "checking whether to enable mod_proxy_scgi... " >&6; }
+            if test "$enable_proxy_scgi" = "no"; then
+              if test "$_apmod_required" = "no"; then
+                _apmod_extra_msg=" (disabled)"
+              else
+                as_fn_error $? "mod_proxy_scgi has been requested but can not be built due to prerequisite failures" "$LINENO" 5
+              fi
+            fi
   fi
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: $enable_proxy_scgi$_apmod_extra_msg" >&5
 $as_echo "$enable_proxy_scgi$_apmod_extra_msg" >&6; }
@@ -21470,6 +21624,15 @@ fi
   if test "$enable_proxy_fdpass" != "no"; then
             { $as_echo "$as_me:${as_lineno-$LINENO}: result: checking dependencies" >&5
 $as_echo "checking dependencies" >&6; }
+            if test "$enable_proxy" = "no" ; then
+                              enable_proxy_fdpass=no
+                              { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: \"mod_proxy is disabled but required for mod_proxy_fdpass\"" >&5
+$as_echo "$as_me: WARNING: \"mod_proxy is disabled but required for mod_proxy_fdpass\"" >&2;}
+                            elif test "$enable_proxy_fdpass" = "static" && test "$enable_proxy" != "static" ; then
+                              enable_proxy_fdpass=no
+                              { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: \"cannot build mod_proxy_fdpass statically if mod_proxy is built shared\"" >&5
+$as_echo "$as_me: WARNING: \"cannot build mod_proxy_fdpass statically if mod_proxy is built shared\"" >&2;}
+                            else
 
   ac_fn_c_check_decl "$LINENO" "CMSG_DATA" "ac_cv_have_decl_CMSG_DATA" "
     #include <sys/types.h>
@@ -21486,15 +21649,16 @@ $as_echo "$as_me: WARNING: Your system does not support CMSG_DATA." >&2;}
     enable_proxy_fdpass=no
   fi
 
-                    { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to enable mod_proxy_fdpass" >&5
+            fi
+            { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to enable mod_proxy_fdpass" >&5
 $as_echo_n "checking whether to enable mod_proxy_fdpass... " >&6; }
-                    if test "$enable_proxy_fdpass" = "no"; then
-                      if test "$_apmod_required" = "no"; then
-                        _apmod_extra_msg=" (disabled)"
-                      else
-                        as_fn_error $? "mod_proxy_fdpass has been requested but can not be built due to prerequisite failures" "$LINENO" 5
-                      fi
-                    fi
+            if test "$enable_proxy_fdpass" = "no"; then
+              if test "$_apmod_required" = "no"; then
+                _apmod_extra_msg=" (disabled)"
+              else
+                as_fn_error $? "mod_proxy_fdpass has been requested but can not be built due to prerequisite failures" "$LINENO" 5
+              fi
+            fi
   fi
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: $enable_proxy_fdpass$_apmod_extra_msg" >&5
 $as_echo "$enable_proxy_fdpass$_apmod_extra_msg" >&6; }
@@ -21628,7 +21792,28 @@ fi
       _apmod_extra_msg=" ($module_selection)"
   fi
   if test "$enable_proxy_ajp" != "no"; then
+            { $as_echo "$as_me:${as_lineno-$LINENO}: result: checking dependencies" >&5
+$as_echo "checking dependencies" >&6; }
+            if test "$enable_proxy" = "no" ; then
+                              enable_proxy_ajp=no
+                              { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: \"mod_proxy is disabled but required for mod_proxy_ajp\"" >&5
+$as_echo "$as_me: WARNING: \"mod_proxy is disabled but required for mod_proxy_ajp\"" >&2;}
+                            elif test "$enable_proxy_ajp" = "static" && test "$enable_proxy" != "static" ; then
+                              enable_proxy_ajp=no
+                              { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: \"cannot build mod_proxy_ajp statically if mod_proxy is built shared\"" >&5
+$as_echo "$as_me: WARNING: \"cannot build mod_proxy_ajp statically if mod_proxy is built shared\"" >&2;}
+                            else
             :
+            fi
+            { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to enable mod_proxy_ajp" >&5
+$as_echo_n "checking whether to enable mod_proxy_ajp... " >&6; }
+            if test "$enable_proxy_ajp" = "no"; then
+              if test "$_apmod_required" = "no"; then
+                _apmod_extra_msg=" (disabled)"
+              else
+                as_fn_error $? "mod_proxy_ajp has been requested but can not be built due to prerequisite failures" "$LINENO" 5
+              fi
+            fi
   fi
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: $enable_proxy_ajp$_apmod_extra_msg" >&5
 $as_echo "$enable_proxy_ajp$_apmod_extra_msg" >&6; }
@@ -21762,7 +21947,28 @@ fi
       _apmod_extra_msg=" ($module_selection)"
   fi
   if test "$enable_proxy_balancer" != "no"; then
+            { $as_echo "$as_me:${as_lineno-$LINENO}: result: checking dependencies" >&5
+$as_echo "checking dependencies" >&6; }
+            if test "$enable_proxy" = "no" ; then
+                              enable_proxy_balancer=no
+                              { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: \"mod_proxy is disabled but required for mod_proxy_balancer\"" >&5
+$as_echo "$as_me: WARNING: \"mod_proxy is disabled but required for mod_proxy_balancer\"" >&2;}
+                            elif test "$enable_proxy_balancer" = "static" && test "$enable_proxy" != "static" ; then
+                              enable_proxy_balancer=no
+                              { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: \"cannot build mod_proxy_balancer statically if mod_proxy is built shared\"" >&5
+$as_echo "$as_me: WARNING: \"cannot build mod_proxy_balancer statically if mod_proxy is built shared\"" >&2;}
+                            else
             :
+            fi
+            { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to enable mod_proxy_balancer" >&5
+$as_echo_n "checking whether to enable mod_proxy_balancer... " >&6; }
+            if test "$enable_proxy_balancer" = "no"; then
+              if test "$_apmod_required" = "no"; then
+                _apmod_extra_msg=" (disabled)"
+              else
+                as_fn_error $? "mod_proxy_balancer has been requested but can not be built due to prerequisite failures" "$LINENO" 5
+              fi
+            fi
   fi
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: $enable_proxy_balancer$_apmod_extra_msg" >&5
 $as_echo "$enable_proxy_balancer$_apmod_extra_msg" >&6; }
@@ -21897,7 +22103,28 @@ fi
       _apmod_extra_msg=" ($module_selection)"
   fi
   if test "$enable_proxy_express" != "no"; then
+            { $as_echo "$as_me:${as_lineno-$LINENO}: result: checking dependencies" >&5
+$as_echo "checking dependencies" >&6; }
+            if test "$enable_proxy" = "no" ; then
+                              enable_proxy_express=no
+                              { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: \"mod_proxy is disabled but required for mod_proxy_express\"" >&5
+$as_echo "$as_me: WARNING: \"mod_proxy is disabled but required for mod_proxy_express\"" >&2;}
+                            elif test "$enable_proxy_express" = "static" && test "$enable_proxy" != "static" ; then
+                              enable_proxy_express=no
+                              { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: \"cannot build mod_proxy_express statically if mod_proxy is built shared\"" >&5
+$as_echo "$as_me: WARNING: \"cannot build mod_proxy_express statically if mod_proxy is built shared\"" >&2;}
+                            else
             :
+            fi
+            { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to enable mod_proxy_express" >&5
+$as_echo_n "checking whether to enable mod_proxy_express... " >&6; }
+            if test "$enable_proxy_express" = "no"; then
+              if test "$_apmod_required" = "no"; then
+                _apmod_extra_msg=" (disabled)"
+              else
+                as_fn_error $? "mod_proxy_express has been requested but can not be built due to prerequisite failures" "$LINENO" 5
+              fi
+            fi
   fi
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: $enable_proxy_express$_apmod_extra_msg" >&5
 $as_echo "$enable_proxy_express$_apmod_extra_msg" >&6; }
@@ -22235,7 +22462,28 @@ fi
       _apmod_extra_msg=" ($module_selection)"
   fi
   if test "$enable_session_cookie" != "no"; then
+            { $as_echo "$as_me:${as_lineno-$LINENO}: result: checking dependencies" >&5
+$as_echo "checking dependencies" >&6; }
+            if test "$enable_session" = "no" ; then
+                              enable_session_cookie=no
+                              { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: \"mod_session is disabled but required for mod_session_cookie\"" >&5
+$as_echo "$as_me: WARNING: \"mod_session is disabled but required for mod_session_cookie\"" >&2;}
+                            elif test "$enable_session_cookie" = "static" && test "$enable_session" != "static" ; then
+                              enable_session_cookie=no
+                              { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: \"cannot build mod_session_cookie statically if mod_session is built shared\"" >&5
+$as_echo "$as_me: WARNING: \"cannot build mod_session_cookie statically if mod_session is built shared\"" >&2;}
+                            else
             :
+            fi
+            { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to enable mod_session_cookie" >&5
+$as_echo_n "checking whether to enable mod_session_cookie... " >&6; }
+            if test "$enable_session_cookie" = "no"; then
+              if test "$_apmod_required" = "no"; then
+                _apmod_extra_msg=" (disabled)"
+              else
+                as_fn_error $? "mod_session_cookie has been requested but can not be built due to prerequisite failures" "$LINENO" 5
+              fi
+            fi
   fi
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: $enable_session_cookie$_apmod_extra_msg" >&5
 $as_echo "$enable_session_cookie$_apmod_extra_msg" >&6; }
@@ -22411,20 +22659,30 @@ fi
   if test "$enable_session_crypto" != "no"; then
             { $as_echo "$as_me:${as_lineno-$LINENO}: result: checking dependencies" >&5
 $as_echo "checking dependencies" >&6; }
+            if test "$enable_session" = "no" ; then
+                              enable_session_crypto=no
+                              { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: \"mod_session is disabled but required for mod_session_crypto\"" >&5
+$as_echo "$as_me: WARNING: \"mod_session is disabled but required for mod_session_crypto\"" >&2;}
+                            elif test "$enable_session_crypto" = "static" && test "$enable_session" != "static" ; then
+                              enable_session_crypto=no
+                              { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: \"cannot build mod_session_crypto statically if mod_session is built shared\"" >&5
+$as_echo "$as_me: WARNING: \"cannot build mod_session_crypto statically if mod_session is built shared\"" >&2;}
+                            else
 
 if test "$session_mods_enable_crypto" = "no" ; then
   enable_session_crypto=no
 fi
 
-                    { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to enable mod_session_crypto" >&5
+            fi
+            { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to enable mod_session_crypto" >&5
 $as_echo_n "checking whether to enable mod_session_crypto... " >&6; }
-                    if test "$enable_session_crypto" = "no"; then
-                      if test "$_apmod_required" = "no"; then
-                        _apmod_extra_msg=" (disabled)"
-                      else
-                        as_fn_error $? "mod_session_crypto has been requested but can not be built due to prerequisite failures" "$LINENO" 5
-                      fi
-                    fi
+            if test "$enable_session_crypto" = "no"; then
+              if test "$_apmod_required" = "no"; then
+                _apmod_extra_msg=" (disabled)"
+              else
+                as_fn_error $? "mod_session_crypto has been requested but can not be built due to prerequisite failures" "$LINENO" 5
+              fi
+            fi
   fi
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: $enable_session_crypto$_apmod_extra_msg" >&5
 $as_echo "$enable_session_crypto$_apmod_extra_msg" >&6; }
@@ -22559,7 +22817,28 @@ fi
       _apmod_extra_msg=" ($module_selection)"
   fi
   if test "$enable_session_dbd" != "no"; then
+            { $as_echo "$as_me:${as_lineno-$LINENO}: result: checking dependencies" >&5
+$as_echo "checking dependencies" >&6; }
+            if test "$enable_session" = "no" ; then
+                              enable_session_dbd=no
+                              { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: \"mod_session is disabled but required for mod_session_dbd\"" >&5
+$as_echo "$as_me: WARNING: \"mod_session is disabled but required for mod_session_dbd\"" >&2;}
+                            elif test "$enable_session_dbd" = "static" && test "$enable_session" != "static" ; then
+                              enable_session_dbd=no
+                              { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: \"cannot build mod_session_dbd statically if mod_session is built shared\"" >&5
+$as_echo "$as_me: WARNING: \"cannot build mod_session_dbd statically if mod_session is built shared\"" >&2;}
+                            else
             :
+            fi
+            { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to enable mod_session_dbd" >&5
+$as_echo_n "checking whether to enable mod_session_dbd... " >&6; }
+            if test "$enable_session_dbd" = "no"; then
+              if test "$_apmod_required" = "no"; then
+                _apmod_extra_msg=" (disabled)"
+              else
+                as_fn_error $? "mod_session_dbd has been requested but can not be built due to prerequisite failures" "$LINENO" 5
+              fi
+            fi
   fi
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: $enable_session_dbd$_apmod_extra_msg" >&5
 $as_echo "$enable_session_dbd$_apmod_extra_msg" >&6; }
@@ -23038,6 +23317,7 @@ fi
   if test "$enable_ssl" != "no"; then
             { $as_echo "$as_me:${as_lineno-$LINENO}: result: checking dependencies" >&5
 $as_echo "checking dependencies" >&6; }
+            :
 
 
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for OpenSSL" >&5
@@ -23497,15 +23777,16 @@ $as_echo "#define HAVE_OPENSSL 1" >>confdefs.h
         enable_ssl=no
     fi
 
-                    { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to enable mod_ssl" >&5
+            :
+            { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to enable mod_ssl" >&5
 $as_echo_n "checking whether to enable mod_ssl... " >&6; }
-                    if test "$enable_ssl" = "no"; then
-                      if test "$_apmod_required" = "no"; then
-                        _apmod_extra_msg=" (disabled)"
-                      else
-                        as_fn_error $? "mod_ssl has been requested but can not be built due to prerequisite failures" "$LINENO" 5
-                      fi
-                    fi
+            if test "$enable_ssl" = "no"; then
+              if test "$_apmod_required" = "no"; then
+                _apmod_extra_msg=" (disabled)"
+              else
+                as_fn_error $? "mod_ssl has been requested but can not be built due to prerequisite failures" "$LINENO" 5
+              fi
+            fi
   fi
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: $enable_ssl$_apmod_extra_msg" >&5
 $as_echo "$enable_ssl$_apmod_extra_msg" >&6; }
@@ -26836,6 +27117,7 @@ fi
   if test "$enable_privileges" != "no"; then
             { $as_echo "$as_me:${as_lineno-$LINENO}: result: checking dependencies" >&5
 $as_echo "checking dependencies" >&6; }
+            :
 
   for ac_header in priv.h
 do :
@@ -26857,15 +27139,16 @@ $as_echo "$as_me: WARNING: Your system does not support privileges." >&2;}
     enable_privileges="no"
   fi
 
-                    { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to enable mod_privileges" >&5
+            :
+            { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to enable mod_privileges" >&5
 $as_echo_n "checking whether to enable mod_privileges... " >&6; }
-                    if test "$enable_privileges" = "no"; then
-                      if test "$_apmod_required" = "no"; then
-                        _apmod_extra_msg=" (disabled)"
-                      else
-                        as_fn_error $? "mod_privileges has been requested but can not be built due to prerequisite failures" "$LINENO" 5
-                      fi
-                    fi
+            if test "$enable_privileges" = "no"; then
+              if test "$_apmod_required" = "no"; then
+                _apmod_extra_msg=" (disabled)"
+              else
+                as_fn_error $? "mod_privileges has been requested but can not be built due to prerequisite failures" "$LINENO" 5
+              fi
+            fi
   fi
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: $enable_privileges$_apmod_extra_msg" >&5
 $as_echo "$enable_privileges$_apmod_extra_msg" >&6; }
@@ -27057,7 +27340,28 @@ fi
       _apmod_extra_msg=" ($module_selection)"
   fi
   if test "$enable_heartbeat" != "no"; then
+            { $as_echo "$as_me:${as_lineno-$LINENO}: result: checking dependencies" >&5
+$as_echo "checking dependencies" >&6; }
+            if test "$enable_watchdog" = "no" ; then
+                              enable_heartbeat=no
+                              { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: \"mod_watchdog is disabled but required for mod_heartbeat\"" >&5
+$as_echo "$as_me: WARNING: \"mod_watchdog is disabled but required for mod_heartbeat\"" >&2;}
+                            elif test "$enable_heartbeat" = "static" && test "$enable_watchdog" != "static" ; then
+                              enable_heartbeat=no
+                              { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: \"cannot build mod_heartbeat statically if mod_watchdog is built shared\"" >&5
+$as_echo "$as_me: WARNING: \"cannot build mod_heartbeat statically if mod_watchdog is built shared\"" >&2;}
+                            else
             :
+            fi
+            { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to enable mod_heartbeat" >&5
+$as_echo_n "checking whether to enable mod_heartbeat... " >&6; }
+            if test "$enable_heartbeat" = "no"; then
+              if test "$_apmod_required" = "no"; then
+                _apmod_extra_msg=" (disabled)"
+              else
+                as_fn_error $? "mod_heartbeat has been requested but can not be built due to prerequisite failures" "$LINENO" 5
+              fi
+            fi
   fi
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: $enable_heartbeat$_apmod_extra_msg" >&5
 $as_echo "$enable_heartbeat$_apmod_extra_msg" >&6; }
@@ -28148,17 +28452,19 @@ fi
   if test "$enable_suexec" != "no"; then
             { $as_echo "$as_me:${as_lineno-$LINENO}: result: checking dependencies" >&5
 $as_echo "checking dependencies" >&6; }
+            :
 
               other_targets=suexec
-                    { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to enable mod_suexec" >&5
+            :
+            { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to enable mod_suexec" >&5
 $as_echo_n "checking whether to enable mod_suexec... " >&6; }
-                    if test "$enable_suexec" = "no"; then
-                      if test "$_apmod_required" = "no"; then
-                        _apmod_extra_msg=" (disabled)"
-                      else
-                        as_fn_error $? "mod_suexec has been requested but can not be built due to prerequisite failures" "$LINENO" 5
-                      fi
-                    fi
+            if test "$enable_suexec" = "no"; then
+              if test "$_apmod_required" = "no"; then
+                _apmod_extra_msg=" (disabled)"
+              else
+                as_fn_error $? "mod_suexec has been requested but can not be built due to prerequisite failures" "$LINENO" 5
+              fi
+            fi
   fi
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: $enable_suexec$_apmod_extra_msg" >&5
 $as_echo "$enable_suexec$_apmod_extra_msg" >&6; }
@@ -28310,6 +28616,7 @@ fi
   if test "$enable_cgid" != "no"; then
             { $as_echo "$as_me:${as_lineno-$LINENO}: result: checking dependencies" >&5
 $as_echo "checking dependencies" >&6; }
+            :
 
     case $host in
       *-solaris2*)
@@ -28348,15 +28655,16 @@ $as_echo "yes" >&6; }
         ;;
     esac
 
-                    { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to enable mod_cgid" >&5
+            :
+            { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to enable mod_cgid" >&5
 $as_echo_n "checking whether to enable mod_cgid... " >&6; }
-                    if test "$enable_cgid" = "no"; then
-                      if test "$_apmod_required" = "no"; then
-                        _apmod_extra_msg=" (disabled)"
-                      else
-                        as_fn_error $? "mod_cgid has been requested but can not be built due to prerequisite failures" "$LINENO" 5
-                      fi
-                    fi
+            if test "$enable_cgid" = "no"; then
+              if test "$_apmod_required" = "no"; then
+                _apmod_extra_msg=" (disabled)"
+              else
+                as_fn_error $? "mod_cgid has been requested but can not be built due to prerequisite failures" "$LINENO" 5
+              fi
+            fi
   fi
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: $enable_cgid$_apmod_extra_msg" >&5
 $as_echo "$enable_cgid$_apmod_extra_msg" >&6; }
@@ -29050,7 +29358,28 @@ fi
       _apmod_extra_msg=" ($module_selection)"
   fi
   if test "$enable_dav_fs" != "no"; then
+            { $as_echo "$as_me:${as_lineno-$LINENO}: result: checking dependencies" >&5
+$as_echo "checking dependencies" >&6; }
+            if test "$enable_dav" = "no" ; then
+                              enable_dav_fs=no
+                              { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: \"mod_dav is disabled but required for mod_dav_fs\"" >&5
+$as_echo "$as_me: WARNING: \"mod_dav is disabled but required for mod_dav_fs\"" >&2;}
+                            elif test "$enable_dav_fs" = "static" && test "$enable_dav" != "static" ; then
+                              enable_dav_fs=no
+                              { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: \"cannot build mod_dav_fs statically if mod_dav is built shared\"" >&5
+$as_echo "$as_me: WARNING: \"cannot build mod_dav_fs statically if mod_dav is built shared\"" >&2;}
+                            else
             :
+            fi
+            { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to enable mod_dav_fs" >&5
+$as_echo_n "checking whether to enable mod_dav_fs... " >&6; }
+            if test "$enable_dav_fs" = "no"; then
+              if test "$_apmod_required" = "no"; then
+                _apmod_extra_msg=" (disabled)"
+              else
+                as_fn_error $? "mod_dav_fs has been requested but can not be built due to prerequisite failures" "$LINENO" 5
+              fi
+            fi
   fi
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: $enable_dav_fs$_apmod_extra_msg" >&5
 $as_echo "$enable_dav_fs$_apmod_extra_msg" >&6; }
@@ -29219,7 +29548,28 @@ fi
       _apmod_extra_msg=" ($module_selection)"
   fi
   if test "$enable_dav_lock" != "no"; then
+            { $as_echo "$as_me:${as_lineno-$LINENO}: result: checking dependencies" >&5
+$as_echo "checking dependencies" >&6; }
+            if test "$enable_dav" = "no" ; then
+                              enable_dav_lock=no
+                              { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: \"mod_dav is disabled but required for mod_dav_lock\"" >&5
+$as_echo "$as_me: WARNING: \"mod_dav is disabled but required for mod_dav_lock\"" >&2;}
+                            elif test "$enable_dav_lock" = "static" && test "$enable_dav" != "static" ; then
+                              enable_dav_lock=no
+                              { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: \"cannot build mod_dav_lock statically if mod_dav is built shared\"" >&5
+$as_echo "$as_me: WARNING: \"cannot build mod_dav_lock statically if mod_dav is built shared\"" >&2;}
+                            else
             :
+            fi
+            { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to enable mod_dav_lock" >&5
+$as_echo_n "checking whether to enable mod_dav_lock... " >&6; }
+            if test "$enable_dav_lock" = "no"; then
+              if test "$_apmod_required" = "no"; then
+                _apmod_extra_msg=" (disabled)"
+              else
+                as_fn_error $? "mod_dav_lock has been requested but can not be built due to prerequisite failures" "$LINENO" 5
+              fi
+            fi
   fi
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: $enable_dav_lock$_apmod_extra_msg" >&5
 $as_echo "$enable_dav_lock$_apmod_extra_msg" >&6; }
@@ -31442,9 +31792,6 @@ esac
 
 
 test -d docs/conf||$mkdir_p docs/conf
-
-HTTPD_VERSION=`$abs_srcdir/build/get-version.sh all $abs_srcdir/include/ap_release.h AP_SERVER`
-
 
 ac_config_files="$ac_config_files $APACHE_OUTPUT_FILES docs/conf/httpd.conf docs/conf/extra/httpd-autoindex.conf docs/conf/extra/httpd-dav.conf docs/conf/extra/httpd-default.conf docs/conf/extra/httpd-info.conf docs/conf/extra/httpd-languages.conf docs/conf/extra/httpd-manual.conf docs/conf/extra/httpd-mpm.conf docs/conf/extra/httpd-multilang-errordoc.conf docs/conf/extra/httpd-ssl.conf docs/conf/extra/httpd-userdir.conf docs/conf/extra/httpd-vhosts.conf docs/conf/extra/proxy-html.conf include/ap_config_layout.h support/apxs support/apachectl support/dbmmanage support/envvars-std support/log_server_status support/logresolve.pl support/phf_abuse_log.cgi support/split-logfile build/rules.mk build/pkg/pkginfo build/config_vars.sh"
 

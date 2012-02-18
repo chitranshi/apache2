@@ -13,16 +13,19 @@ serveur HTTP Apache - Serveur Apache HTTP</title>
 <link href="./images/favicon.ico" rel="shortcut icon" /></head>
 <body id="manual-page"><div id="page-header">
 <p class="menu"><a href="./mod/">Modules</a> | <a href="./mod/directives.html">Directives</a> | <a href="./faq/">FAQ</a> | <a href="./glossary.html">Glossaire</a> | <a href="./sitemap.html">Plan du site</a></p>
-<p class="apache">Serveur Apache HTTP Version 2.3</p>
+<p class="apache">Serveur Apache HTTP Version 2.4</p>
 <img alt="" src="./images/feather.gif" /></div>
 <div class="up"><a href="./"><img title="&lt;-" alt="&lt;-" src="./images/left.gif" /></a></div>
 <div id="path">
-<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">Serveur HTTP</a> &gt; <a href="http://httpd.apache.org/docs/">Documentation</a> &gt; <a href="./">Version 2.3</a></div><div id="page-content"><div id="preamble"><h1>Vue d'ensemble des nouvelles fonctionnalités de la version 2.4 du
+<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">Serveur HTTP</a> &gt; <a href="http://httpd.apache.org/docs/">Documentation</a> &gt; <a href="./">Version 2.4</a></div><div id="page-content"><div id="preamble"><h1>Vue d'ensemble des nouvelles fonctionnalités de la version 2.4 du
 serveur HTTP Apache</h1>
 <div class="toplang">
 <p><span>Langues Disponibles: </span><a href="./en/new_features_2_4.html" hreflang="en" rel="alternate" title="English">&nbsp;en&nbsp;</a> |
-<a href="./fr/new_features_2_4.html" title="Français">&nbsp;fr&nbsp;</a></p>
+<a href="./fr/new_features_2_4.html" title="Français">&nbsp;fr&nbsp;</a> |
+<a href="./tr/new_features_2_4.html" hreflang="tr" rel="alternate" title="Türkçe">&nbsp;tr&nbsp;</a></p>
 </div>
+<div class="outofdate">Cette traduction peut être périmée. Vérifiez la version
+            anglaise pour les changements récents.</div>
 
   <p>Ce document décrit les modifications majeures apportées par
   la version 2.4 du serveur HTTP Apache. Pour les nouvelles fonctionnalités
@@ -70,6 +73,17 @@ serveur HTTP Apache</h1>
       <dd>Les sections &lt;<code class="directive"><a href="./mod/core.html#if">If</a></code>&gt;
       permettent de définir une configuration en fonction de critères
       liés à la requête.</dd>
+
+      <dt>Interpréteur d'expressions à usage général</dt>
+      <dd>Un nouvel interpréteur d'expressions permet de spécifier des
+      <a href="expr.html">conditions complexes</a> via des directives à
+      syntaxe commune comme <code class="directive"><a href="./mod/mod_setenvif.html#setenvifexpr">SetEnvIfExpr</a></code>, <code class="directive"><a href="./mod/mod_rewrite.html#rewritecond">RewriteCond</a></code>, <code class="directive"><a href="./mod/mod_headers.html#header">Header</a></code>, <code class="directive"><a href="./mod/mod_headers.html#if">&lt;If&gt;</a></code>, etc...
+      </dd>
+
+      <dt>Utilisation de la mémoire en baisse</dt>
+      <dd>Malgré l'ajout de nombreuses nouvelles fonctionnalités, la
+      version 2.4.x tend à utiliser moins de mémoire que la version
+      2.2.x.</dd>
 
       <dt>NameVirtualHost directive</dt>
       <dd>Cette directive obsolète n'est plus utile.</dd>
@@ -253,6 +267,17 @@ serveur HTTP Apache</h1>
       <code>[END]</code> qui permettent de simplifier les scénarios de
       réécriture courants.</dd>
 
+      <dt><code class="module"><a href="./mod/mod_ldap.html">mod_ldap</a></code>, <code class="module"><a href="./mod/mod_authnz_ldap.html">mod_authnz_ldap</a></code></dt>
+      <dd><code class="module"><a href="./mod/mod_authnz_ldap.html">mod_authnz_ldap</a></code> ajoute le support des
+      groupes imbriqués.</dd>
+      <dd><code class="module"><a href="./mod/mod_ldap.html">mod_ldap</a></code> apporte les directives <code class="directive"><a href="./mod/mod_ldap.html#ldapconnectionpoolttl">LDAPConnectionPoolTTL</a></code> et <code class="directive"><a href="./mod/mod_ldap.html#ldaptimeout">LDAPTimeout</a></code>, ainsi que d'autres
+      améliorations dans le traitement des délais. Ceci s'avère utile
+      pour les configurations où un pare-feu à mémoire d'état (stateful)
+      rejète les connexions inactives vers le serveur LDAP.</dd>
+      <dd><code class="module"><a href="./mod/mod_ldap.html">mod_ldap</a></code> propose la directive <code class="directive"><a href="./mod/mod_ldap.html#ldaplibrarydebug">LDAPLibraryDebug</a></code> qui permet de
+      journaliser les informations de débogage fournies par la boîte à
+      outils LDAP utilisée</dd>
+
     </dl>
   </div><div class="top"><a href="#page-header"><img alt="top" src="./images/up.gif" /></a></div>
 <div class="section">
@@ -331,8 +356,9 @@ serveur HTTP Apache</h1>
   </div></div>
 <div class="bottomlang">
 <p><span>Langues Disponibles: </span><a href="./en/new_features_2_4.html" hreflang="en" rel="alternate" title="English">&nbsp;en&nbsp;</a> |
-<a href="./fr/new_features_2_4.html" title="Français">&nbsp;fr&nbsp;</a></p>
+<a href="./fr/new_features_2_4.html" title="Français">&nbsp;fr&nbsp;</a> |
+<a href="./tr/new_features_2_4.html" hreflang="tr" rel="alternate" title="Türkçe">&nbsp;tr&nbsp;</a></p>
 </div><div id="footer">
-<p class="apache">Copyright 2011 The Apache Software Foundation.<br />Autorisé sous <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
+<p class="apache">Copyright 2012 The Apache Software Foundation.<br />Autorisé sous <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
 <p class="menu"><a href="./mod/">Modules</a> | <a href="./mod/directives.html">Directives</a> | <a href="./faq/">FAQ</a> | <a href="./glossary.html">Glossaire</a> | <a href="./sitemap.html">Plan du site</a></p></div>
 </body></html>

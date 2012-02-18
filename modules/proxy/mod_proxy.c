@@ -636,6 +636,9 @@ PROXY_DECLARE(int) ap_proxy_trans_match(request_rec *r, struct proxy_alias *ent,
             /* mod_proxy_http needs to be told.  Different module. */
             apr_table_setn(r->notes, "proxy-nocanon", "1");
         }
+        if (ent->flags & PROXYPASS_NOQUERY) {
+            apr_table_setn(r->notes, "proxy-noquery", "1");
+        }
         return OK;
     }
 
@@ -656,16 +659,9 @@ static int proxy_trans(request_rec *r)
         return OK;
     }
 
-    if (strcmp(r->unparsed_uri, "*") == 0) {
-        /* "*" cannot be proxied. */
+    if ((r->unparsed_uri[0] == '*' && r->unparsed_uri[1] == '\0')
+        || !r->uri || r->uri[0] != '/') {
         return DECLINED;
-    }
-
-    /* Check that the URI is valid. */
-    if (!r->uri || r->uri[0] != '/') {
-        ap_log_rerror(APLOG_MARK, APLOG_ERR, 0, r, APLOGNO(01137)
-                     "Invalid URI in request %s", r->the_request);
-        return HTTP_BAD_REQUEST;
     }
 
     /* XXX: since r->uri has been manipulated already we're not really
@@ -1400,6 +1396,9 @@ static const char *
         }
         else if (!strcasecmp(word,"interpolate")) {
             flags |= PROXYPASS_INTERPOLATE;
+        }
+        else if (!strcasecmp(word,"noquery")) {
+            flags |= PROXYPASS_NOQUERY;
         }
         else {
             char *val = strchr(word, '=');
@@ -2447,9 +2446,9 @@ static void child_init(apr_pool_t *p, server_rec *s)
                 ap_proxy_hashfunc(conf->forward->s->name, PROXY_HASHFUNC_FNV);
             /* Do not disable worker in case of errors */
             conf->forward->s->status |= PROXY_WORKER_IGNORE_ERRORS;
+            ap_proxy_initialize_worker(conf->forward, s, conf->pool);
             /* Disable address cache for generic forward worker */
             conf->forward->s->is_address_reusable = 0;
-            ap_proxy_initialize_worker(conf->forward, s, conf->pool);
         }
         if (!reverse) {
             ap_proxy_define_worker(p, &reverse, NULL, NULL, "http://www.apache.org", 0);
@@ -2462,11 +2461,11 @@ static void child_init(apr_pool_t *p, server_rec *s)
                 ap_proxy_hashfunc(reverse->s->name, PROXY_HASHFUNC_FNV);
             /* Do not disable worker in case of errors */
             reverse->s->status |= PROXY_WORKER_IGNORE_ERRORS;
+            conf->reverse = reverse;
+            ap_proxy_initialize_worker(conf->reverse, s, conf->pool);
             /* Disable address cache for generic reverse worker */
             reverse->s->is_address_reusable = 0;
         }
-        conf->reverse = reverse;
-        ap_proxy_initialize_worker(conf->reverse, s, conf->pool);
         s = s->next;
     }
 }

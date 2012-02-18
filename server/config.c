@@ -848,8 +848,19 @@ static const char *invoke_cmd(const command_rec *cmd, cmd_parms *parms,
          if(apr_table_get(parms->override_list, cmd->name) != NULL)
               override_list_ok = 1;
 
-    if ((parms->override & cmd->req_override) == 0 && !override_list_ok)
-        return apr_pstrcat(parms->pool, cmd->name, " not allowed here", NULL);
+    if ((parms->override & cmd->req_override) == 0 && !override_list_ok) {
+        if (parms->override & NONFATAL_OVERRIDE) {
+            ap_log_perror(APLOG_MARK, APLOG_WARNING, 0, parms->temp_pool,
+                          APLOGNO(02295)
+                          "%s in .htaccess forbidden by AllowOverride",
+                          cmd->name);
+            return NULL;
+        }
+        else {
+            return apr_pstrcat(parms->pool, cmd->name,
+                               " not allowed here", NULL);
+        }
+    }
 
     parms->info = cmd->cmd_data;
     parms->cmd = cmd;
@@ -1251,11 +1262,20 @@ static const char *ap_walk_config_sub(const ap_directive_t *current,
 
     if (ml == NULL) {
         parms->err_directive = current;
-        return apr_pstrcat(parms->pool, "Invalid command '",
-                           current->directive,
-                           "', perhaps misspelled or defined by a module "
-                           "not included in the server configuration",
-                           NULL);
+        if (parms->override & NONFATAL_UNKNOWN) {
+            ap_log_perror(APLOG_MARK, APLOG_WARNING, 0, parms->temp_pool,
+                          APLOGNO(02296) "Unknown directive %s "
+                          "perhaps misspelled or defined by a module "
+                          "not included in the server configuration", dir);
+            return NULL;
+        }
+        else {
+            return apr_pstrcat(parms->pool, "Invalid command '",
+                               current->directive,
+                               "', perhaps misspelled or defined by a module "
+                               "not included in the server configuration",
+                               NULL);
+        }
     }
 
     for ( ; ml != NULL; ml = ml->next) {
@@ -1648,7 +1668,7 @@ typedef struct {
 
 
 /* arr_elts_getstr() returns the next line from the string array. */
-static apr_status_t arr_elts_getstr(void *buf, size_t bufsiz, void *param)
+static apr_status_t arr_elts_getstr(void *buf, apr_size_t bufsiz, void *param)
 {
     arr_elts_param_t *arr_param = (arr_elts_param_t *)param;
     char *elt;

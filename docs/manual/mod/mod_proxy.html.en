@@ -13,11 +13,11 @@
 <body>
 <div id="page-header">
 <p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="../faq/">FAQ</a> | <a href="../glossary.html">Glossary</a> | <a href="../sitemap.html">Sitemap</a></p>
-<p class="apache">Apache HTTP Server Version 2.3</p>
+<p class="apache">Apache HTTP Server Version 2.4</p>
 <img alt="" src="../images/feather.gif" /></div>
 <div class="up"><a href="./"><img title="&lt;-" alt="&lt;-" src="../images/left.gif" /></a></div>
 <div id="path">
-<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">HTTP Server</a> &gt; <a href="http://httpd.apache.org/docs/">Documentation</a> &gt; <a href="../">Version 2.3</a> &gt; <a href="./">Modules</a></div>
+<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">HTTP Server</a> &gt; <a href="http://httpd.apache.org/docs/">Documentation</a> &gt; <a href="../">Version 2.4</a> &gt; <a href="./">Modules</a></div>
 <div id="page-content">
 <div id="preamble"><h1>Apache Module mod_proxy</h1>
 <div class="toplang">
@@ -478,7 +478,7 @@
 </table>
     <p>This directive allows for growth potential in the number of
     Balancers available for a virtualhost in addition to the
-    number pre-configured. It only take effect if there is at
+    number pre-configured. It only takes effect if there is at
     least 1 pre-configured Balancer.</p>
 
 </div>
@@ -888,7 +888,7 @@ through</td></tr>
 <table class="directive">
 <tr><th><a href="directive-dict.html#Description">Description:</a></th><td>Maps remote servers into the local server URL-space</td></tr>
 <tr><th><a href="directive-dict.html#Syntax">Syntax:</a></th><td><code>ProxyPass [<var>path</var>] !|<var>url</var> [<var>key=value</var>
-  <var>[key=value</var> ...]] [nocanon] [interpolate]</code></td></tr>
+  <var>[key=value</var> ...]] [nocanon] [interpolate] [noquery]</code></td></tr>
 <tr><th><a href="directive-dict.html#Context">Context:</a></th><td>server config, virtual host, directory</td></tr>
 <tr><th><a href="directive-dict.html#Status">Status:</a></th><td>Extension</td></tr>
 <tr><th><a href="directive-dict.html#Module">Module:</a></th><td>mod_proxy</td></tr>
@@ -920,8 +920,10 @@ through</td></tr>
     <code>http://example.com/mirror/foo/bar</code> to be internally converted
     into a proxy request to <code>http://backend.example.com/bar</code>.</p>
 
-    <p>The following alternative syntax is possible, however carries a
-    performance penalty when present in large numbers:</p>
+    <p>The following alternative syntax is possible, however it can carry a
+    performance penalty when present in very large numbers. The advantage of
+    the below syntax is that it allows for dynamic control via the
+    <a href="mod_proxy_balancer.html#balancer_manager">Balancer Manager</a> interface:</p>
 
     <div class="example"><p><code>
         ProxyPass /mirror/foo/ http://backend.example.com/
@@ -1301,6 +1303,11 @@ through</td></tr>
     so you may still have to resort to <code class="module"><a href="../mod/mod_rewrite.html">mod_rewrite</a></code>
     for complex rules.</p>
 
+    <p>Normally, mod_proxy will include the query string when
+    generating the <var>SCRIPT_FILENAME</var> environment variable.
+    The optional <var>noquery</var> keyword (available in
+    httpd 2.4.1 and later) prevents this.</p>
+
     <p>When used inside a <code class="directive"><a href="../mod/core.html#location">&lt;Location&gt;</a></code> section, the first argument is omitted and the local
     directory is obtained from the <code class="directive"><a href="../mod/core.html#location">&lt;Location&gt;</a></code>. The same will occur inside a
     <code class="directive"><a href="../mod/core.html#locationmatch">&lt;LocationMatch&gt;</a></code> section,
@@ -1339,7 +1346,7 @@ through</td></tr>
     <code class="directive">ProxyPassReverseCookiePath</code> directives,
     and causes them to substitute the value of an environment
     variable <code>varname</code> for the string <code>${varname}</code>
-    in configuration directives.</p>
+    in configuration directives (if the <var>interpolate</var> option is set).</p>
     <p>Keep this turned off (for server performance) unless you need it!</p>
 
 </div>
@@ -1502,10 +1509,25 @@ proxied server</td></tr>
 <tr><th><a href="directive-dict.html#Status">Status:</a></th><td>Extension</td></tr>
 <tr><th><a href="directive-dict.html#Module">Module:</a></th><td>mod_proxy</td></tr>
 </table>
-<p>Usage is basically similar to
-<code class="directive"><a href="#proxypassreverse">ProxyPassReverse</a></code>, but instead of
-rewriting headers that are a URL, this rewrites the <code>path</code>
-string in <code>Set-Cookie</code> headers.</p>
+<p>
+Useful in conjunction with
+<code class="directive"><a href="#proxypassreverse">ProxyPassReverse</a></code>
+in situations where backend URL paths are mapped to public paths on the
+reverse proxy. This directive rewrites the <code>path</code> string in
+<code>Set-Cookie</code> headers. If the beginning of the cookie path matches
+<var>internal-path</var>, the cookie path will be replaced with
+<var>public-path</var>.
+</p><p>
+In the example given with 
+<code class="directive"><a href="#proxypassreverse">ProxyPassReverse</a></code>, the directive:
+</p>
+    <div class="example"><p><code>
+      ProxyPassReverseCookiePath  /  /mirror/foo/
+    </code></p></div>
+<p>
+will rewrite a cookie with backend path <code>/</code> (or
+<code>/example</code> or, in fact, anything) to <code>/mirror/foo/</code>.
+</p>
 
 </div>
 <div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
@@ -1787,6 +1809,6 @@ header for proxied requests</td></tr>
 <a href="../fr/mod/mod_proxy.html" hreflang="fr" rel="alternate" title="Français">&nbsp;fr&nbsp;</a> |
 <a href="../ja/mod/mod_proxy.html" hreflang="ja" rel="alternate" title="Japanese">&nbsp;ja&nbsp;</a></p>
 </div><div id="footer">
-<p class="apache">Copyright 2011 The Apache Software Foundation.<br />Licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
+<p class="apache">Copyright 2012 The Apache Software Foundation.<br />Licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
 <p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="../faq/">FAQ</a> | <a href="../glossary.html">Glossary</a> | <a href="../sitemap.html">Sitemap</a></p></div>
 </body></html>

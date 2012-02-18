@@ -864,11 +864,9 @@ static apr_status_t xlate_out_filter(ap_filter_t *f, apr_bucket_brigade *bb)
                 consumed_bucket = NULL;
             }
             if (dptr == APR_BRIGADE_SENTINEL(bb)) {
-                done = 1;
                 break;
             }
             if (APR_BUCKET_IS_EOS(dptr)) {
-                done = 1;
                 cur_len = -1; /* XXX yuck, but that tells us to send
                                  * eos down; when we minimize our bb construction
                                  * we'll fix this crap */
@@ -894,7 +892,6 @@ static apr_status_t xlate_out_filter(ap_filter_t *f, apr_bucket_brigade *bb)
             }
             rv = apr_bucket_read(dptr, &cur_str, &cur_len, APR_BLOCK_READ);
             if (rv != APR_SUCCESS) {
-                done = 1;
                 ctx->ees = EES_BUCKET_READ;
                 break;
             }
@@ -972,9 +969,9 @@ static apr_status_t xlate_out_filter(ap_filter_t *f, apr_bucket_brigade *bb)
     return rv;
 }
 
-static int xlate_in_filter(ap_filter_t *f, apr_bucket_brigade *bb,
-                           ap_input_mode_t mode, apr_read_type_e block,
-                           apr_off_t readbytes)
+static apr_status_t xlate_in_filter(ap_filter_t *f, apr_bucket_brigade *bb,
+                                    ap_input_mode_t mode, apr_read_type_e block,
+                                    apr_off_t readbytes)
 {
     apr_status_t rv;
     charset_req_t *reqinfo = ap_get_module_config(f->r->request_config,

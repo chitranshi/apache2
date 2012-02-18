@@ -12,11 +12,11 @@
 <link href="./images/favicon.ico" rel="shortcut icon" /></head>
 <body id="manual-page"><div id="page-header">
 <p class="menu"><a href="./mod/">Modüller</a> | <a href="./mod/directives.html">Yönergeler</a> | <a href="./faq/">SSS</a> | <a href="./glossary.html">Terimler</a> | <a href="./sitemap.html">Site Haritası</a></p>
-<p class="apache">Apache HTTP Sunucusu Sürüm 2.3</p>
+<p class="apache">Apache HTTP Sunucusu Sürüm 2.4</p>
 <img alt="" src="./images/feather.gif" /></div>
 <div class="up"><a href="./"><img title="&lt;-" alt="&lt;-" src="./images/left.gif" /></a></div>
 <div id="path">
-<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">HTTP Sunucusu</a> &gt; <a href="http://httpd.apache.org/docs/">Belgeleme</a> &gt; <a href="./">Sürüm 2.3</a></div><div id="page-content"><div id="preamble"><h1>İçerik Uzlaşımı</h1>
+<a href="http://www.apache.org/">Apache</a> &gt; <a href="http://httpd.apache.org/">HTTP Sunucusu</a> &gt; <a href="http://httpd.apache.org/docs/">Belgeleme</a> &gt; <a href="./">Sürüm 2.4</a></div><div id="page-content"><div id="preamble"><h1>İçerik Uzlaşımı</h1>
 <div class="toplang">
 <p><span>Mevcut Diller: </span><a href="./en/content-negotiation.html" hreflang="en" rel="alternate" title="English">&nbsp;en&nbsp;</a> |
 <a href="./fr/content-negotiation.html" hreflang="fr" rel="alternate" title="Français">&nbsp;fr&nbsp;</a> |
@@ -24,7 +24,6 @@
 <a href="./ko/content-negotiation.html" hreflang="ko" rel="alternate" title="Korean">&nbsp;ko&nbsp;</a> |
 <a href="./tr/content-negotiation.html" title="Türkçe">&nbsp;tr&nbsp;</a></p>
 </div>
-<div class="outofdate">Bu çeviri güncel olmayabilir. Son değişiklikler için İngilizce sürüm geçerlidir.</div>
 
 
     <p>Apache HTTPD, içerik uzlaşımını HTTP/1.1 belirtiminde bahsedildiği şekliyle
@@ -127,15 +126,22 @@
     <div class="example"><p><code>AddHandler type-map .var</code></p></div>
 
     <p>Türeşlem dosyaları kendilerini tanımlayan özkaynak ile aynı isimde
-      olmalı ve her gösterim çeşidi için bir girdi içermelidir; bu girdiler
+      olmalı ve isim bir <code>.var</code> uzantısı içermelidir. Aşağıdaki
+      örneklerde özkaynak ismi <code>foo</code> olduğundan türeşlem dosyasının
+      ismi <code>foo.var</code>'dır.</p>
+
+    <p>Bu dosya her gösterim çeşidi için bir girdi içermelidir; bu girdiler
       ardarda belirtilen HTTP biçem başlık satırlarından oluşur. Farklı
       gösterimlerin girdileri bir boş satırla diğerlerinden ayrılır. Aynı
       girdi içinde boş satır kullanılamaz. Bir eşlem dosyasını bir birleşik
       öğenin tamamı için bir girdi ile başlatmak adet olmuştur (ise de, bu
       gerekli değildir, hele yoksayılacaksa hiç gerekli değildir). Eşlem
-      dosyası için aşağıda bir örnek verilmiştir. Dosya <code>misal</code>
-      isimli bir özkaynak hakkında olduğundan dosyaya <code>misal.var</code>
-      ismi verilebilir.</p>
+      dosyası için aşağıda bir örnek verilmiştir.</p>
+
+   <p>Bu dosyadaki URI'ler türeşlem dosyasının yerine görelidir. Dolayısıyla,
+     bu dosyaların aynı dizinde bulunması beklenirse de bu gerekli değildir.
+     Aynı sunucuda bulunan tüm dosyalar için türeşlem dosyasındaki gibi mutlak
+     veya göreli URI'ler belirtebilirsiniz.</p>
 
     <div class="example"><p><code>
       URI: misal<br />
@@ -642,6 +648,6 @@
 <a href="./ko/content-negotiation.html" hreflang="ko" rel="alternate" title="Korean">&nbsp;ko&nbsp;</a> |
 <a href="./tr/content-negotiation.html" title="Türkçe">&nbsp;tr&nbsp;</a></p>
 </div><div id="footer">
-<p class="apache">Copyright 2011 The Apache Software Foundation.<br /><a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a> altında lisanslıdır.</p>
+<p class="apache">Copyright 2012 The Apache Software Foundation.<br /><a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a> altında lisanslıdır.</p>
 <p class="menu"><a href="./mod/">Modüller</a> | <a href="./mod/directives.html">Yönergeler</a> | <a href="./faq/">SSS</a> | <a href="./glossary.html">Terimler</a> | <a href="./sitemap.html">Site Haritası</a></p></div>
 </body></html>

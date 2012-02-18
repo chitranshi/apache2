@@ -18,15 +18,16 @@
  * @file httpd.h
  * @brief HTTP Daemon routines
  *
- * @defgroup APACHE Apache
+ * @defgroup APACHE Apache HTTP Server
  *
  * Top level group of which all other groups are a member
  * @{
  *
- * @defgroup APACHE_MODS Apache Modules
- *           Top level group for Apache Modules
+ * @defgroup APACHE_MODS Loadable modules
+ *           Top level group for modules
  * @defgroup APACHE_OS Operating System Specific
- * @defgroup APACHE_CORE Apache Core
+ * @defgroup APACHE_INTERNAL Internal interfaces
+ * @defgroup APACHE_CORE Core routines
  * @{
  * @defgroup APACHE_CORE_DAEMON HTTP Daemon Routine
  * @{
@@ -383,6 +384,18 @@ extern "C" {
 #ifndef AP_CORE_DECLARE_NONSTD
 # define AP_CORE_DECLARE_NONSTD AP_DECLARE_NONSTD
 #endif
+
+/**
+ * @defgroup APACHE_APR_STATUS_T HTTPD specific values of apr_status_t
+ * @{
+ */
+#define AP_START_USERERR            (APR_OS_START_USERERR + 2000)
+#define AP_USERERR_LEN              1000
+
+/** The function declines to handle the request */
+#define AP_DECLINED                 (AP_START_USERERR + 0)
+
+/** @} */
 
 /**
  * @brief The numeric version information is broken out into fields within this
@@ -1269,30 +1282,6 @@ struct server_rec {
     void *context;
 };
 
-typedef struct core_output_filter_ctx {
-    apr_bucket_brigade *buffered_bb;
-    apr_bucket_brigade *tmp_flush_bb;
-    apr_pool_t *deferred_write_pool;
-    apr_size_t bytes_in;
-    apr_size_t bytes_written;
-} core_output_filter_ctx_t;
-
-typedef struct core_filter_ctx {
-    apr_bucket_brigade *b;
-    apr_bucket_brigade *tmpbb;
-} core_ctx_t;
-
-typedef struct core_net_rec {
-    /** Connection to the client */
-    apr_socket_t *client_socket;
-
-    /** connection record */
-    conn_rec *c;
-
-    core_output_filter_ctx_t *out_ctx;
-    core_ctx_t *in_ctx;
-} core_net_rec;
-
 /**
  * Get the context_document_root for a request. This is a generalization of
  * the document root, which is too limited in the presence of mappers like
@@ -1802,8 +1791,9 @@ AP_DECLARE(void) ap_pregfree(apr_pool_t *p, ap_regex_t *reg);
  * @param pmatch the pmatch array returned from ap_pregex
  * @return The substituted string, or NULL on error
  */
-AP_DECLARE(char *) ap_pregsub(apr_pool_t *p, const char *input, const char *source,
-                              size_t nmatch, ap_regmatch_t pmatch[]);
+AP_DECLARE(char *) ap_pregsub(apr_pool_t *p, const char *input,
+                              const char *source, apr_size_t nmatch,
+                              ap_regmatch_t pmatch[]);
 
 /**
  * After performing a successful regex match, you may use this function to
@@ -1821,7 +1811,8 @@ AP_DECLARE(char *) ap_pregsub(apr_pool_t *p, const char *input, const char *sour
  */
 AP_DECLARE(apr_status_t) ap_pregsub_ex(apr_pool_t *p, char **result,
                                        const char *input, const char *source,
-                                       size_t nmatch, ap_regmatch_t pmatch[],
+                                       apr_size_t nmatch,
+                                       ap_regmatch_t pmatch[],
                                        apr_size_t maxlen);
 
 /**
@@ -2134,7 +2125,9 @@ AP_DECLARE(void) ap_abort_on_oom(void) __attribute__((noreturn));
  * @return pointer to the allocated memory
  * @note ap_malloc may be implemented as a macro
  */
-AP_DECLARE(void *) ap_malloc(size_t size) __attribute__((malloc));
+AP_DECLARE(void *) ap_malloc(size_t size)
+                    __attribute__((malloc))
+                    AP_FN_ATTR_ALLOC_SIZE(1);
 
 /**
  * Wrapper for calloc() that calls ap_abort_on_oom() if out of memory
@@ -2143,7 +2136,9 @@ AP_DECLARE(void *) ap_malloc(size_t size) __attribute__((malloc));
  * @return pointer to the allocated memory
  * @note ap_calloc may be implemented as a macro
  */
-AP_DECLARE(void *) ap_calloc(size_t nelem, size_t size) __attribute__((malloc));
+AP_DECLARE(void *) ap_calloc(size_t nelem, size_t size)
+                   __attribute__((malloc))
+                   AP_FN_ATTR_ALLOC_SIZE2(1,2);
 
 /**
  * Wrapper for realloc() that calls ap_abort_on_oom() if out of memory
@@ -2153,7 +2148,8 @@ AP_DECLARE(void *) ap_calloc(size_t nelem, size_t size) __attribute__((malloc));
  * @note ap_realloc may be implemented as a macro
  */
 AP_DECLARE(void *) ap_realloc(void *ptr, size_t size)
-                   ap_func_attr_warn_unused_result;
+                   AP_FN_ATTR_WARN_UNUSED_RESULT
+                   AP_FN_ATTR_ALLOC_SIZE(2);
 
 
 #define AP_NORESTART APR_OS_START_USEERR + 1

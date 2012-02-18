@@ -78,16 +78,21 @@ APR_IMPLEMENT_OPTIONAL_HOOK_RUN_ALL(proxy, PROXY, int, create_req,
                                    (request_rec *r, request_rec *pr), (r, pr),
                                    OK, DECLINED)
 
-PROXY_DECLARE(apr_status_t) ap_proxy_strncpy(char *dst, const char *src, size_t dlen)
+PROXY_DECLARE(apr_status_t) ap_proxy_strncpy(char *dst, const char *src,
+                                             apr_size_t dlen)
 {
-    if ((strlen(src)+1) > dlen) {
-        /* APR_ENOSPACE would be better */
-        return APR_EGENERAL;
+    char *thenil;
+    apr_size_t thelen;
+
+    thenil = apr_cpystrn(dst, src, dlen);
+    thelen = thenil - dst;
+    /* Assume the typical case is smaller copying into bigger
+       so we have a fast return */
+    if ((thelen < dlen-1) || ((strlen(src)) == thelen)) {
+        return APR_SUCCESS;
     }
-    else {
-        apr_cpystrn(dst, src, dlen);
-    }
-    return APR_SUCCESS;
+    /* XXX: APR_ENOSPACE would be better */
+    return APR_EGENERAL;
 }
 
 /* already called in the knowledge that the characters are hex digits */
@@ -768,7 +773,7 @@ PROXY_DECLARE(int) ap_proxy_checkproxyblock(request_rec *r, proxy_server_conf *c
         ap_log_rerror(APLOG_MARK, APLOG_TRACE2, 0, r,
                       "checking remote machine [%s] against [%s]",
                       uri_addr->hostname, npent[j].name);
-        if ((npent[j].name && ap_strstr_c(uri_addr->hostname, npent[j].name))
+        if (ap_strstr_c(uri_addr->hostname, npent[j].name)
             || npent[j].name[0] == '*') {
             ap_log_rerror(APLOG_MARK, APLOG_WARNING, 0, r, APLOGNO(00916)
                           "connect to remote machine %s blocked: name %s "
@@ -921,14 +926,14 @@ PROXY_DECLARE(const char *) ap_proxy_cookie_reverse_map(request_rec *r,
     proxy_req_conf *rconf = ap_get_module_config(r->request_config,
                                                  &proxy_module);
     struct proxy_alias *ent;
-    size_t len = strlen(str);
+    apr_size_t len = strlen(str);
     const char *newpath = NULL;
     const char *newdomain = NULL;
     const char *pathp;
     const char *domainp;
     const char *pathe = NULL;
     const char *domaine = NULL;
-    size_t l1, l2, poffs = 0, doffs = 0;
+    apr_size_t l1, l2, poffs = 0, doffs = 0;
     int i;
     int ddiff = 0;
     int pdiff = 0;
@@ -2020,19 +2025,17 @@ ap_proxy_determine_connection(apr_pool_t *p, request_rec *r,
                            uri->fragment ? uri->fragment : "", NULL);
     }
     /*
-     * Make sure that we pick the the correct and valid worker.
-     * If a single keepalive connection triggers different workers,
-     * then we have a problem (we don't select the correct one).
-     * Do an expensive check in this case, where we compare the
-     * the hostnames associated between the two.
+     * Figure out if our passed in proxy_conn_rec has a usable
+     * address cached.
      *
-     * TODO: Handle this much better...
+     * TODO: Handle this much better... 
+     *
+     * XXX: If generic workers are ever address-reusable, we need 
+     *      to check host and port on the conn and be careful about
+     *      spilling the cached addr from the worker.
      */
     if (!conn->hostname || !worker->s->is_address_reusable ||
-         worker->s->disablereuse ||
-         (r->connection->keepalives &&
-         (r->proxyreq == PROXYREQ_PROXY || r->proxyreq == PROXYREQ_REVERSE) &&
-         (strcasecmp(conn->hostname, uri->hostname) != 0) ) ) {
+        worker->s->disablereuse) {
         if (proxyname) {
             conn->hostname = apr_pstrdup(conn->pool, proxyname);
             conn->port = proxyport;

@@ -12,7 +12,8 @@ apache2 (2.4.1-1) experimental; urgency=low
       (Closes: #601033)
     + Fixes "Renegotiation on POST request fails intermittently"
       (Closes: #601606)
-
+    + Allows configuring source address for proxy requests. (Closes: #465283)
+    + Supports CONNECT request through https. (Closes: #307298)
 
   [ Arno Töll ]
 

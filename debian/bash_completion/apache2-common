@@ -1,10 +1,20 @@
 # bash completion for Debian apache2 configuration tools
 # $Id: apache2,v 1.1 2005/03/16 22:51:19 guillaume Exp $
 
-_apache2_modsites()
+_apache2_allcomp()
 {
-       COMPREPLY=( $( compgen -W '$( command ls /etc/apache2/$1 2>/dev/null \
+       command ls /etc/apache2/$1 2>/dev/null
+}
+
+_apache2_mods()
+{
+       COMPREPLY=( $( compgen -W '$( _apache2_allcomp $1 \
                | sed -e 's/[.]load$//' -e 's/[.]conf$//' )' -- $cur  ) )
+}
+
+_apache2_sites()
+{
+       COMPREPLY=( $( compgen -W '$( _apache2_allcomp $1 )' -- $cur  ) )
 }
 
 _a2enmod()
@@ -14,7 +24,7 @@ _a2enmod()
        COMPREPLY=()
        cur=${COMP_WORDS[COMP_CWORD]}
 
-       _apache2_modsites mods-available
+       _apache2_mods mods-available
 }
 complete -F _a2enmod a2enmod
 
@@ -25,7 +35,7 @@ _a2ensite()
        COMPREPLY=()
        cur=${COMP_WORDS[COMP_CWORD]}
 
-       _apache2_modsites sites-available
+       _apache2_sites sites-available
 
 }
 complete -F _a2ensite a2ensite
@@ -37,7 +47,7 @@ _a2dismod()
        COMPREPLY=()
        cur=${COMP_WORDS[COMP_CWORD]}
 
-       _apache2_modsites mods-enabled
+       _apache2_mods mods-enabled
 }
 complete -F _a2dismod a2dismod
 
@@ -48,7 +58,7 @@ _a2dissite()
        COMPREPLY=()
        cur=${COMP_WORDS[COMP_CWORD]}
 
-       _apache2_modsites sites-enabled
+       _apache2_sites sites-enabled
 
 }
 complete -F _a2dissite a2dissite

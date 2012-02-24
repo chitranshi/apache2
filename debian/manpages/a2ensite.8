@@ -19,10 +19,12 @@
 a2ensite, a2dissite \- enable or disable an apache2 site / virtual host
 .SH SYNOPSIS
 .B a2ensite
-.RI [ site ]
+[ [\-q|\-\-quiet]
+.IR site ]
 .PP
 .B a2dissite
-.RI [ site ]
+[ [\-q|\-\-quiet]
+.IR site ]
 .SH DESCRIPTION
 This manual page documents briefly the
 .B a2ensite
@@ -46,6 +48,17 @@ The
 site is handled specially: The resulting symlink will be called
 .B 000-default
 in order to be loaded first.
+.SH OPTIONS
+.TP
+.B \-q, \-\-quiet
+Don't show informative messages.
+.SH "EXIT STATUS"
+.B a2ensite
+and
+.B a2dissite
+exit with status 0 if all
+.IR site s
+are processed successfully, 1 if errors occur, 2 if an invalid option was used.
 .SH EXAMPLES
 .RS
 .B "a2dissite default"

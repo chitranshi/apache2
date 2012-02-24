@@ -16,13 +16,15 @@
 .\" .sp <n>    insert n+1 empty lines
 .\" for manpage-specific macros, see man(7)
 .SH NAME
-a2enconf, a2disconf \- enable or disable an apache2 module
+a2enconf, a2disconf \- enable or disable an apache2 configuration file
 .SH SYNOPSIS
-.B a2enmod
-.RI [ configuration ]
+.B a2enconf
+[ [\-q|\-\-quiet]
+.IR configuration ]
 .PP
-.B a2dismod
-.RI [ configuration ]
+.B a2disconf
+[ [\-q|\-\-quiet]
+.IR configuration ]
 .SH DESCRIPTION
 This manual page documents briefly the
 .B a2enconf
@@ -30,7 +32,7 @@ and
 .B a2disconf
 commands.
 .PP
-.B a2enmod
+.B a2enconf
 is a script that enables the specified configuration file within the
 .B apache2
 configuration.  It does this by creating symlinks within
@@ -38,19 +40,29 @@ configuration.  It does this by creating symlinks within
 Likewise,
 .B a2disconf
 disables a specific configuration part by removing those symlinks.  It is not an
-error to enable a module which is already enabled, or to disable one which is
+error to enable a configuration which is already enabled, or to disable one which is
 already disabled.
 .PP
 Note that many configuration file may have a dependency to specific modules.
 Unlike module dependencies, these are not resolved automatically. Configuration
 fragments stored in the conf-available directory are considered non-essential or
 being installed and manged by reverse dependencies (e.g. web scripts).
-.B apache2
+.SH OPTIONS
+.TP
+.B \-q, \-\-quiet
+Don't show informative messages.
+.SH "EXIT STATUS"
+.B a2enconf
+and
+.B a2disconf
+exit with status 0 if all
+.IR configuration s
+are processed successfully, 1 if errors occur, 2 if an invalid option was used.
 .SH EXAMPLES
 .RS
-.B "a2enmod security"
+.B "a2enconf security"
 .br
-.B "a2dismod charset"
+.B "a2disconf charset"
 .RE
 .PP
 Enables Apache security directives stored in the
@@ -66,9 +78,11 @@ Directory with files giving information on available configuration files.
 .B /etc/apache2/conf-enabled
 Directory with links to the files in
 .B conf-available
-for enabled modules.
+for enabled configuration files.
 .SH "SEE ALSO"
-.BR apache2ctl (8).
+.BR apache2ctl (8),
+.BR a2enmod (8),
+.BR a2dismod (8).
 .SH AUTHOR
 This manual page was written by Arno Toell <debian@toell.net> for the Debian
 GNU/Linux distribution, as it is a Debian-specific script with the package.

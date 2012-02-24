@@ -1,0 +1,12 @@
+if [ "$1" = "purge" ] && #CONDITIONAL_VARIABLE# ; then
+	if [ -x "/usr/sbin/#HELPER#" ] ; then
+		for S in #NAMES# ; do
+			/usr/sbin/#HELPER# -q $S || #ERROR_HANDLER#
+		done
+
+		if [ -x "/etc/init.d/apache2" ]; then
+ 		      invoke-rc.d apache2 restart || #ERROR_HANDLER#
+		fi
+
+	fi
+fi

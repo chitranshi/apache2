@@ -1,0 +1,224 @@
+#! /usr/bin/perl
+
+use strict;
+use File::Find;
+use Debian::Debhelper::Dh_Lib;
+
+sub apache_api_version
+{
+	# TODO: replace me
+	return "apache2-api-20111203";
+}
+
+
+sub apache_version
+{
+	# TODO: replace me
+	return ">= 2.2~";
+}
+
+sub apache_api_installdir
+{
+	# TODO: replace me
+	return "/usr/lib/apache2/modules/";
+}
+
+sub apache_conf_installdir
+{
+	my $type = shift;
+	# TODO: replace me
+	return "etc/apache2/${type}-available/"
+}
+
+
+init(options => {
+	"conditional=s" => \$dh{CONDITIONAL},
+});
+
+if (!$dh{CONDITIONAL})
+{
+	$dh{CONDITIONAL} = "true";
+}
+
+foreach my $package (getpackages())
+{
+	my %PACKAGE_TYPE = (
+		has_a_module => [],
+		has_a_conf_file => [],
+		has_a_site_conf => [],
+		dependency_line => "",
+		handler => $dh{ERROR_HANDLER},
+		conditional => $dh{CONDITIONAL}
+	);
+
+	my $file = pkgfile($package, "apache2");
+	my $tmp  = tmpdir($package);
+
+	my @files_to_register = filedoublearray($file, ".") if $file;
+	foreach my $line (@files_to_register)
+	{
+		my $type = lc(shift @{$line}) if $line->[0];
+		my $source = shift @{$line} if $line->[0];
+		my @arguments = map {"$_ "} @{$line};
+
+		$type .= "s" unless $type eq "conf";
+		my $installdir = $tmp . "/" . apache_conf_installdir($type);
+
+		#verbose_print("$type -- $source -- @arguments\n\n");
+
+		if ($type eq "mods" or $type eq "sites" or $type eq "conf")
+		{
+			my $basesource = basename($source);
+
+			if ($type eq "mods")
+			{
+				if ($basesource =~ m/\.load$/)
+				{
+					my $enablename = $basesource;
+					$enablename =~ s/\.load$//;
+					push @{$PACKAGE_TYPE{'has_a_module'}}, $enablename;
+					verbose_print("Installing module configuration $enablename into $installdir\n");
+				}
+				elsif ($basesource =~ m/\.so$/)
+				{
+					my $modinstalldir = $tmp . "/" . apache_api_installdir();
+					verbose_print("Installing module binary $source into $modinstalldir\n");
+					if (! -d $modinstalldir)
+					{
+						complex_doit("mkdir","-p", $modinstalldir);
+					}
+					complex_doit("cp", $source, $modinstalldir);
+					complex_doit("chmod","644","$modinstalldir");
+					next;
+				}
+
+				error("module: \"$basesource\" needs .conf, .so or .load suffix") if $basesource !~ m/\.(conf|load|so)/;
+			}
+			elsif ($type eq "sites")
+			{
+				push @{$PACKAGE_TYPE{'has_a_site_conf'}}, $basesource;
+				verbose_print("Installing site configuration $basesource into $installdir\n");
+			}
+			elsif($type eq "conf")
+			{
+
+				if ($#arguments > 0)
+				{
+					$PACKAGE_TYPE{'dependency_line'} .= " | " . join("", @arguments);
+				}
+
+				if ($basesource =~ m/\.conf/)
+				{
+					my $enablename = $basesource;
+					$enablename =~ s/\.conf$//;
+					push
+					@{$PACKAGE_TYPE{'has_a_conf_file'}}, $enablename;
+					verbose_print("Installing global configuration $enablename into $installdir\n");
+				}
+				error("configuration file: \"$basesource\" needs .conf suffix") if $basesource !~ m/\.conf/;
+			}
+
+			if (! -d $installdir)
+			{
+				complex_doit("mkdir","-p",$installdir);
+			}
+			complex_doit("cp",$source,$installdir);
+			complex_doit("chmod","644","$installdir/$basesource");
+
+		}
+		else
+		{
+			error("Unknown parameter: $type\n");
+		}
+
+	}
+
+
+	if (! $file)
+	{
+		# do black magic only if there is no .apache2 configuration file
+		find({  no_chdir => 1,
+			wanted => sub
+			{
+				my ($dir, $file) = (dirname($File::Find::name), basename($File::Find::name));
+
+				if ($dir =~ m#etc/apache2/mods-available# and $file =~ m#.(load|conf)$#)
+				{
+					verbose_print("package $package appears	to be a web server module\n");
+					push @{$PACKAGE_TYPE{'has_a_module'}}, $file if $file =~ m/\.load/;
+				}
+				if ($dir =~ m#etc/apache2/sites-available# and $file =~ m#.conf$#)
+				{
+					verbose_print("package $package appears	to contain a virtual host confoguration\n");
+					push @{$PACKAGE_TYPE{'has_a_site_conf'}}, $file;
+				}
+				if ($dir =~ m#etc/apache2/conf-available# and $file =~ m#.conf$#)
+				{
+					verbose_print("package $package appears	to contaqin a global configuration file \n");
+					push @{$PACKAGE_TYPE{'has_a_conf_file'}}, $file;
+				}
+
+
+
+		}}, tmpdir($package));
+	}
+
+
+	my @postinst_autoscripts;
+
+	if ($#{$PACKAGE_TYPE{'has_a_module'}} >= 0)
+	{
+		if ($package !~ m/libapache2-mod-\w+?/)
+		{
+			warning("Package $package appears to be an Apache module. It should comply to the package naming scheme libapache2-mod-<modulename>\n");
+		}
+		addsubstvar($package, "misc:Depends", apache_api_version());
+
+		my $modules = "";
+		foreach my $module (@{$PACKAGE_TYPE{'has_a_module'}})
+		{
+			$modules .= "$module ";
+		}
+
+		push @postinst_autoscripts, ["a2enmod", $modules];
+	}
+
+	if ($#{$PACKAGE_TYPE{'has_a_conf_file'}} >= 0 or $#{$PACKAGE_TYPE{'has_a_site_conf'}} >= 0)
+	{
+		$PACKAGE_TYPE{'dependency_line'} .= "| httpd";
+		addsubstvar($package, "misc:Recommends", "apache2 (" . apache_version() . ") " . $PACKAGE_TYPE{'dependency_line'} );
+
+		my $confs = "";
+		my $sites = "";
+
+		foreach my $conf (@{$PACKAGE_TYPE{'has_a_conf_file'}})
+		{
+			$confs .= "$conf ";
+		}
+
+		foreach my $site (@{$PACKAGE_TYPE{'has_a_site_conf'}})
+		{
+			$sites .= "$site ";
+		}
+
+		if ($confs)
+		{
+			push @postinst_autoscripts, ["a2enconf", $confs];
+		}
+		if ($sites)
+		{
+			push @postinst_autoscripts, ["a2ensite", $sites];
+		}
+
+	}
+
+	if (! $dh{NOSCRIPTS})
+	{
+		foreach my $ref (@postinst_autoscripts)
+		{
+			autoscript($package, "postinst", "postinst-apache2", "s/#HELPER#/$ref->[0]/; s/#NAMES#/$ref->[1]/; s/#ERROR_HANDLER#/$PACKAGE_TYPE{'handler'}/; s/#CONDITIONAL_VARIABLE#/$PACKAGE_TYPE{'conditional'}/;");
+			$ref->[0] =~ s/a2en/a2dis/;
+			autoscript($package, "postrm", "postrm-apache2", "s/#HELPER#/$ref->[0]/; s/#NAMES#/$ref->[1]/; s/#ERROR_HANDLER#/$PACKAGE_TYPE{'handler'}/; s/#CONDITIONAL_VARIABLE#/$PACKAGE_TYPE{'conditional'}/;");
+		}
+	}
+}

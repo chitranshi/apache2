@@ -92,6 +92,11 @@ apache2 (2.4.1-1) experimental; urgency=low
     proxy_express, proxy_fcgi, proxy_fdpass, proxy_html, ratelimit, reflector
     remoteip, request, session, session_cookie, session_crypto, session_dbd
     (Closes: #400881)
+  * Provide a dh_apache2 debhelper which can be used by reverse dependencies to
+    install modules, module configuration files, site configuration files and global
+    configuration files which need to be registered to the Apache web server.
+    Thus, dh_apache2 can be used for Apache web server modules and web
+    applications providing configuration files for Apache.
 
   [ Stefan Fritsch ]
 
@@ -102,7 +107,7 @@ apache2 (2.4.1-1) experimental; urgency=low
     (Closes: #402567)
   * Update the README.Debian file
 
- -- Arno Töll <debian@toell.net>  Thu, 16 Feb 2012 21:34:15 +0100
+ -- Arno Töll <debian@toell.net>  Sat, 25 Feb 2012 00:21:03 +0100
 
 apache2 (2.2.22-1) unstable; urgency=low
 

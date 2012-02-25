@@ -35,6 +35,8 @@ localized-error-pages
 other-vhosts-access-log
 security"
 
+MORE_MOVED_CONFFILES="/etc/bash_completion.d/apache2.2-common:/etc/bash_completion.d/apache2"
+
 
 case "$1" in
     purge)
@@ -72,6 +74,21 @@ case "$1" in
 			mv "$CONFFILE.dpkg-backup" "$CONFFILE"
 		fi
 	done
+
+	for CONFFILE in $MORE_MOVED_CONFFILES ; do
+
+		CONFFILE=$( echo "$CONFFILE" | cut -d: -f1 )
+
+		if [ -e "$CONFFILE.dpkg-remove" ]; then
+			echo "Reinstalling $CONFFILE that was moved away"
+			mv "$CONFFILE.dpkg-remove" "$CONFFILE"
+		fi
+		if [ -e "$CONFFILE.dpkg-backup" ]; then
+			echo "Reinstalling $CONFFILE that was backupped"
+			mv "$CONFFILE.dpkg-backup" "$CONFFILE"
+		fi
+	done
+
 
         # post installation cleanup
         if [ -e /etc/apache2/.apache2_mpm_selected ] ; then

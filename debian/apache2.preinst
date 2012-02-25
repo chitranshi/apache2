@@ -14,6 +14,9 @@ set -e
 # the debian-policy package
 
 
+# XXX: Whichever file you add in one of the sections below, make sure you copy
+# the same file arrays to apache2.postinst and apache2.postrm, too!
+
 OBSOLETE_CONFFILES="/etc/apache2/mods-available/authz_default.load
 /etc/apache2/mods-available/authn_default.load
 /etc/apache2/mods-available/mem_cache.load
@@ -32,6 +35,10 @@ MOVED_CONFFILES_IN="charset
 localized-error-pages
 other-vhosts-access-log
 security"
+
+# conffiles which moved from one random location to another, separate source and
+# destionation by a colon
+MORE_MOVED_CONFFILES="/etc/bash_completion.d/apache2.2-common:/etc/bash_completion.d/apache2"
 
 
 obsolete_conffile_exists()
@@ -74,8 +81,16 @@ prepare_rm_conffile()
 
 prepare_mv_conffile()
 {
-	for CONFFILE in $OBSOLETE_CONFFILES ; do
-		CONFFILE="/etc/apache2/conf.d/$CONFFILE"
+	for CONFFILE in $OBSOLETE_CONFFILES $MORE_MOVED_CONFFILES ; do
+
+		if [[ ! $CONFFILE == "/*" ]] ; then
+			CONFFILE="/etc/apache2/conf.d/$CONFFILE"
+
+		else
+			CONFFILE=$( echo "$CONFFILE" | cut -d: -f1 )
+		fi
+
+
 		[ -e "$CONFFILE" ] || return 0
 
 		local md5sum="$(md5sum $CONFFILE | sed -e 's/ .*//')"

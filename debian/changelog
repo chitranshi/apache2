@@ -21,6 +21,7 @@ apache2 (2.4.1-1) experimental; urgency=low
     + move cronjob and init script to debhelper configuration files
       (apache2.cron.daily and apache2.init respectively)
     + move man pages to debian/manpages
+  * Push standards version to 3.9.3 - no special changes required
   * Refactor binary packages, now as things simplified. MPMs are simple
     modules now, they can be bundled into the same binary package which do not
     need to conflict with each other. Thus, Apache now primarily consists of the
@@ -111,7 +112,7 @@ apache2 (2.4.1-1) experimental; urgency=low
 
   * Update bash completion functions to reflect the new site setup.
 
- -- Arno Töll <debian@toell.net>  Sat, 25 Feb 2012 03:07:24 +0100
+ -- Arno Töll <debian@toell.net>  Sat, 25 Feb 2012 13:36:18 +0100
 
 apache2 (2.2.22-1) unstable; urgency=low
 

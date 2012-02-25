@@ -35,6 +35,7 @@ localized-error-pages
 other-vhosts-access-log
 security"
 
+MORE_MOVED_CONFFILES="/etc/bash_completion.d/apache2.2-common:/etc/bash_completion.d/apache2 "
 
 
 # the functions below need to be idempotent, however we guess the upgrade based
@@ -123,9 +124,21 @@ mv_conffiles()
 
 		if [ -d /etc/apache2/conf.d ] && [ "$(ls -A /etc/apache2/conf.d)" ]	; then
 			echo "Directory /etc/apache2/conf.d is not empty - leaving as is"
-			echo "Please note, that directory is considered obsolete and not read anymore by a standard apache2.conf file anymore"
+			echo "Please note, that directory is considered obsolete and not read anymore by default"
 		fi
 
+		for CONFFILE in $MORE_MOVED_CONFFILES ; do
+			OLDCONFFILE=$( echo "$CONFFILE" | cut -d: -f1 )
+			NEWCONFFILE=$( echo "$CONFFILE" | cut -d: -f2 )
+
+			rm -f $OLDCONFFILE.dpkg-remove
+			[ -e "$OLDCONFFILE" ] || return 0
+
+			echo "Preserving user changes to $NEWCONFFILE (renamed from $OLDCONFFILE)..."
+			mv -f "$NEWCONFFILE" "$NEWCONFFILE.dpkg-new"
+			mv -f "$OLDCONFFILE" "$NEWCONFFILE"
+
+		done
 	fi
 }
 

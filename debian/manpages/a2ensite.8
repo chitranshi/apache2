@@ -43,11 +43,10 @@ disables a site by removing those symlinks.  It is not an error to
 enable a site which is already enabled, or to disable one which is
 already disabled.
 .PP
-The
-.B default
-site is handled specially: The resulting symlink will be called
+Apache treats the very first virtual host enabled specially as every request not
+matching any actual directive is being redirected there. Thus it should be called
 .B 000-default
-in order to be loaded first.
+in order to sort before the remaining hosts to be loaded first.
 .SH OPTIONS
 .TP
 .B \-q, \-\-quiet
@@ -61,7 +60,7 @@ exit with status 0 if all
 are processed successfully, 1 if errors occur, 2 if an invalid option was used.
 .SH EXAMPLES
 .RS
-.B "a2dissite default"
+.B "a2dissite 000-default"
 .RE
 .PP
 Disables the

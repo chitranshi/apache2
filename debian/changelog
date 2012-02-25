@@ -124,7 +124,8 @@ apache2 (2.4.1-1) experimental; urgency=low
 
   [ Jean-Michel Vourgère ]
 
-  * Update bash completion functions to reflect the new site setup.
+  * Update bash completion functions to reflect the new site setup. (Closes:
+    #657492)
 
  -- arno <arno@build.fritz.box>  Wed, 29 Feb 2012 15:44:04 +0100
 

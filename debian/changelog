@@ -58,6 +58,8 @@ apache2 (2.4.1-1) experimental; urgency=low
   * Remove obsolete README.source file.
   * Update doc-base metadata for the apache2-doc package
   * Changes in the default configuration (not specific modules):
+    + On the head of the apache2.conf configuration file, give a short summary
+      how configuration of the Apache web server works in Debian.
     + Drop NameVirtualHost entirely. It is deprecated
     + Remove DefaultType. It is deprecated.
     + Replace Allow/Deny directives in the default configuration by using the
@@ -71,11 +73,16 @@ apache2 (2.4.1-1) experimental; urgency=low
       Users can just load and unload MPMs like other modules, enable the worker
       MPM by default
     + Move per-site global configuration from conf.d to conf-available and
-     manage it similar to modules and sites. To do so, the new tools "a2enconf"
-     and "a2disconf" are provided. Moreover, such configuration files need  to
-     have a .conf suffix now. The following configuration files are enabled
-     bydefault: charset localized-error-pages other-vhosts-access-log  security.
-     These were enabled by default previously, too (Closes: #620347).
+      manage it similar to modules and sites. To do so, the new tools "a2enconf"
+      and "a2disconf" are provided. Moreover, such configuration files need  to
+      have a .conf suffix now. The following configuration files are enabled
+      bydefault: charset localized-error-pages other-vhosts-access-log  security.
+      These were enabled by default previously, too (Closes: #620347).
+    + Give site configuration a .conf suffix, too. For example the default vhost
+      is called default.conf. Moreover, files without .conf suffix are ignored
+      upon startup. Please update your site links and confs. Also rename the
+      default vhost to 000-default.conf and don't do hacky things in a2enmod
+      anymore.
   * Changes in a2enmod:
     + Parse "Conflicts: " header to denote conflicts between modules which
       cannot be loaded into the same Apache server.
@@ -83,6 +90,9 @@ apache2 (2.4.1-1) experimental; urgency=low
       if they existed and only the "module.load" file was removed.
     + Extend the tool to support conf-available/conf-enabled directories (see
       also configuration changes).
+    + Expect a .conf suffix for sites-enabled/sites-available configurations.
+    + Remove the default vhost special handling. Instead, we expect the default
+      host to be named appropripriately (e.g. 000-default.conf).
   * The following modules and associated configuration files were removed:
     + mod_authz_default and mod_authn_default: Please use a proper
       authentication module instead
@@ -112,7 +122,7 @@ apache2 (2.4.1-1) experimental; urgency=low
 
   * Update bash completion functions to reflect the new site setup.
 
- -- Arno Töll <debian@toell.net>  Sat, 25 Feb 2012 13:36:18 +0100
+ -- Arno Töll <debian@toell.net>  Sat, 25 Feb 2012 18:47:15 +0100
 
 apache2 (2.2.22-1) unstable; urgency=low
 

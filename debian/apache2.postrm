@@ -30,13 +30,13 @@ OBSOLETE_CONFFILES="/etc/apache2/mods-available/authz_default.load
 /etc/apache2/mods-available/ident.load
 /etc/apache2/mods-available/imagemap.load"
 
-MOVED_CONFFILES_IN="charset
-localized-error-pages
-other-vhosts-access-log
-security"
-
-MORE_MOVED_CONFFILES="/etc/bash_completion.d/apache2.2-common:/etc/bash_completion.d/apache2"
-
+MOVED_CONFFILES="/etc/bash_completion.d/apache2.2-common:/etc/bash_completion.d/apache2
+/etc/apache2/sites-available/default:/etc/apache2/sites-available/000-default.conf
+/etc/apache2/sites-available/default-ssl:/etc/apache2/sites-available/default-ssl.conf
+/etc/apache2/conf.d/charset:/etc/apache2/conf-available/charset.conf
+/etc/apache2/conf.d/localized-error-pages:/etc/apache2/conf-available/localized-error-pages.conf
+/etc/apache2/conf.d/other-vhosts-access-log:/etc/apache2/conf-available/other-vhosts-access-log.conf
+/etc/apache2/conf.d/security:/etc/apache2/conf-available/security.conf"
 
 case "$1" in
     purge)
@@ -61,21 +61,7 @@ case "$1" in
                 fi
         done
 
-	for CONFFILE in $MOVED_CONFFILES_IN ; do
-
-		CONFFILE="/etc/apache2/conf.d/$CONFFILE"
-
-		if [ -e "$CONFFILE.dpkg-remove" ]; then
-			echo "Reinstalling $CONFFILE that was moved away"
-			mv "$CONFFILE.dpkg-remove" "$CONFFILE"
-		fi
-		if [ -e "$CONFFILE.dpkg-backup" ]; then
-			echo "Reinstalling $CONFFILE that was backupped"
-			mv "$CONFFILE.dpkg-backup" "$CONFFILE"
-		fi
-	done
-
-	for CONFFILE in $MORE_MOVED_CONFFILES ; do
+	for CONFFILE in $MOVED_CONFFILES ; do
 
 		CONFFILE=$( echo "$CONFFILE" | cut -d: -f1 )
 
@@ -88,7 +74,6 @@ case "$1" in
 			mv "$CONFFILE.dpkg-backup" "$CONFFILE"
 		fi
 	done
-
 
         # post installation cleanup
         if [ -e /etc/apache2/.apache2_mpm_selected ] ; then

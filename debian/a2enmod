@@ -49,7 +49,7 @@ elsif ( $obj eq 'conf' ) {
 }
 else {
     $dir    = 'sites';
-    $sffx   = '';
+    $sffx   = '.conf';
     $reload = 'reload';
 }
 $name = ucfirst($obj);
@@ -103,7 +103,6 @@ sub myglob {
     my @glob = map {
         s{^$choicedir/}{};
         s{$sffx$}{};
-        s{^000-default$}{default};
         $_
     } glob("$choicedir/$arg$sffx");
 
@@ -116,11 +115,6 @@ sub myglob {
 
 sub doit {
     my $acton = shift;
-
-    my $prio = "";
-    if ( $obj eq 'site' && $acton eq 'default' ) {
-        $prio = '000-';
-    }
 
     my ( $conftgt, $conflink );
     if ( $obj eq 'module' ) {
@@ -136,7 +130,7 @@ sub doit {
     }
 
     my $tgt  = "$availdir/$acton$sffx";
-    my $link = "$enabldir/$prio$acton$sffx";
+    my $link = "$enabldir/$acton$sffx";
 
     if ( !-e $tgt ) {
         if ( -l $link && !-e $link ) {

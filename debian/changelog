@@ -1,7 +1,7 @@
 apache2 (2.4.1-1) experimental; urgency=low
 
   * Package the coming up 2.4 branch of Apache by packaging the current
-    release candidate 2.4.1.
+    GA release 2.4.1.
     + Fix "IndexIgnore only allowes to add in vhost context, not replace"
      (Closes: #296886)
     + Fix "mod_status stats are wrong." (Closes: #519322)
@@ -111,7 +111,7 @@ apache2 (2.4.1-1) experimental; urgency=low
 
   * Update bash completion functions to reflect the new site setup.
 
- -- Arno Töll <debian@toell.net>  Sat, 25 Feb 2012 00:47:39 +0100
+ -- Arno Töll <debian@toell.net>  Sat, 25 Feb 2012 03:07:24 +0100
 
 apache2 (2.2.22-1) unstable; urgency=low
 

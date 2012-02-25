@@ -19,10 +19,8 @@ Architecture: any
 Depends: ${misc:Depends}, lsb-base, procps [!hurd-i386],
  perl, mime-support, apache2-bin (= ${binary:Version}),
  apache2-data (= ${source:Version})
-Pre-Depends: ${misc:Pre-Depends}
 Replaces: apache2.2-common (<< 2.3~)
 Breaks: apache2.2-common (<< 2.3~)
-Provides: apache2.2-common
 Recommends: ssl-cert
 Suggests: www-browser, apache2-doc, apache2-suexec-pristine | apache2-suexec-custom
 Description: Apache HTTP Server
@@ -53,9 +51,7 @@ Depends: ${shlibs:Depends}, ${misc:Depends}
 Provides: apache2-api-20111203
 Suggests: www-browser, apache2-doc, apache2-suexec-pristine | apache2-suexec-custom
 Replaces: apache2.2-bin (<< 2.3~), apache2.2-common (<< 2.3~),
- apache2-mpm-worker, apache2-mpm-prefork, apache2-mpm-event
 Breaks: apache2.2-bin (<< 2.3~), apache2.2-common (<< 2.3~),
- apache2-mpm-worker, apache2-mpm-prefork, apache2-mpm-event, apache2-mpm-itk
 Description: Apache HTTP Server common binary files
  The Apache Software Foundation's goal is to build a secure, efficient and
  extensible HTTP server as standards-compliant open source software. The
@@ -66,11 +62,14 @@ Description: Apache HTTP Server common binary files
  instance. Do not install this package unless you want to set-up the Apache
  HTTP server entirely on your own.
 
-Package: apache2.2-common
+Package: apache2-mpm-worker
+Provides: apache2-mpm-prefork, apache2-mpm-event
+Replaces: apache2-mpm-worker (<< 2.3~), apache2-mpm-prefork (<< 2.3~), apache2-mpm-event (<< 2.3~)
+Breaks: apache2-mpm-worker (<< 2.3~), apache2-mpm-prefork (<< 2.3~), apache2-mpm-event (<< 2.3~), apache2-mpm-itk (<< 2.3~)
 Architecture: any
 Section: oldlibs
 Priority: extra
-Depends: ${shlibs:Depends}, ${misc:Depends}, apache2 (>= 2.3~)
+Depends: ${shlibs:Depends}, ${misc:Depends}, apache2 (= ${binary:Version})
 Description: Transitional package for apache2
  This is a transitional package for apache2, and can be safely removed
  after the installation is complete.

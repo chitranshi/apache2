@@ -1,12 +1,11 @@
-#! /bin/sh /usr/share/dpatch/dpatch-run
-## 038_no_LD_LIBRARY_PATH by Adam Conrad <adconrad@0c3.net>
-##
-## All lines beginning with `## DP:' are a description of the patch.
-## DP: Remove LD_LIBRARY_PATH from envvars-std
-
-@DPATCH@
---- a/support/envvars-std.in
-+++ b/support/envvars-std.in
+Description: Remove LD_LIBRARY_PATH from envvars-std
+Forwarded: no
+Author: Adam Conrad <adconrad@0c3.net>
+Last-Update: 2012-02-25
+Index: apache2/support/envvars-std.in
+===================================================================
+--- apache2.orig/support/envvars-std.in
++++ apache2/support/envvars-std.in
 @@ -18,7 +18,4 @@
  #
  # This file is generated from envvars-std.in

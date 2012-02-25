@@ -1,12 +1,11 @@
-#! /bin/sh /usr/share/dpatch/dpatch-run
-## 201_make_suexec-custom.dpatch by Stefan Fritsch <sf@debian.org>
-##
-## All lines beginning with `## DP:' are a description of the patch.
-## DP: add suexec-custom to the build system
-
-@DPATCH@
---- a/Makefile.in
-+++ b/Makefile.in
+Description: add suexec-custom to the build system
+Forwarded: not-needed
+Author: Stefan Fritsch <sf@debian.org>
+Last-Update: 2012-02-25
+Index: apache2/Makefile.in
+===================================================================
+--- apache2.orig/Makefile.in
++++ apache2/Makefile.in
 @@ -237,14 +237,16 @@
  	fi
  
@@ -28,8 +27,10 @@
  
  x-local-distclean:
  	@rm -rf autom4te.cache
---- a/support/Makefile.in
-+++ b/support/Makefile.in
+Index: apache2/support/Makefile.in
+===================================================================
+--- apache2.orig/support/Makefile.in
++++ apache2/support/Makefile.in
 @@ -1,7 +1,7 @@
  DISTCLEAN_TARGETS = apxs apachectl dbmmanage log_server_status \
  	logresolve.pl phf_abuse_log.cgi split-logfile envvars-std

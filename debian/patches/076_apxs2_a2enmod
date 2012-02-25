@@ -1,13 +1,12 @@
-#! /bin/sh /usr/share/dpatch/dpatch-run
-## 076_apxs2_a2enmo.dpatch by Stefan Fritsch <sf@debian.org>
-##
-## All lines beginning with `## DP:' are a description of the patch.
-## DP: Make apxs2 use a2enmod and /etc/apache2/mods-available
-
-@DPATCH@
---- a/support/apxs.in
-+++ b/support/apxs.in
-@@ -521,7 +521,7 @@
+Description: Make apxs2 use a2enmod and /etc/apache2/mods-available
+Forwarded: not-needed
+Author: Stefan Fritsch <sf@debian.org>
+Last-Update: 2012-02-25
+Index: apache2/support/apxs.in
+===================================================================
+--- apache2.orig/support/apxs.in
++++ apache2/support/apxs.in
+@@ -541,7 +541,7 @@
  	# $dir =~ s|^$CFG_PREFIX/?||;
          $dir =~ s|(.)$|$1/|;
  	$t =~ s|\.la$|.so|;
@@ -16,7 +15,7 @@
      }
  
      #   execute the commands
-@@ -529,108 +529,35 @@
+@@ -549,108 +549,35 @@
  
      #   activate module via LoadModule/AddModule directive
      if ($opt_a or $opt_A) {
@@ -65,7 +64,15 @@
 -                    error('Configuration file is not valid. There are sections'
 -                          . ' closed before opened.');
 -                    exit(1);
--                }
++        my $entry;
++        foreach $entry (@lmd) {
++            my ($name, $lmd) = @{$entry};
++            my $filename = "$CFG_SYSCONFDIR/mods-available/$name.load";
++            if (-f $filename) {
++                my $cmd = "mv $filename $filename.bak~";
++                if (system($cmd) != 0) {
++                    die "'$cmd' failed\n";
+                 }
 -                else {
 -                    # put our cmd after the section containing the last
 -                    # LoadModule.
@@ -105,21 +112,7 @@
 -                              . 'sections opened and not closed.');
 -                        exit(1);
 -                    }
-+        my $entry;
-+        foreach $entry (@lmd) {
-+            my ($name, $lmd) = @{$entry};
-+            my $filename = "$CFG_SYSCONFDIR/mods-available/$name.load";
-+            if (-f $filename) {
-+                my $cmd = "mv $filename $filename.bak~";
-+                if (system($cmd) != 0) {
-+                    die "'$cmd' failed\n";
-                 }
--            } else {
--                # replace already existing LoadModule line
--                $content =~ s|^(.*\n)#?\s*$lmd_re[^\n]*\n|$1$c$lmd\n|s;
-             }
--            $lmd =~ m|LoadModule\s+(.+?)_module.*|;
--            notice("[$what module `$1' in $CFG_SYSCONFDIR/httpd.conf]");
++            }
 +
 +            notice("[preparing module `$name' in $filename]");
 +            open(FP, ">$filename") || die;
@@ -130,8 +123,13 @@
 +                my $cmd = "a2enmod $name";
 +                if (system($cmd) != 0) {
 +                    die "'$cmd' failed\n";
-+                }
-+            }               
+                 }
+-            } else {
+-                # replace already existing LoadModule line
+-                $content =~ s|^(.*\n)#?\s*$lmd_re[^\n]*\n|$1$c$lmd\n|s;
+             }
+-            $lmd =~ m|LoadModule\s+(.+?)_module.*|;
+-            notice("[$what module `$1' in $CFG_SYSCONFDIR/httpd.conf]");
 +
          }
 -        if (@lmd) {

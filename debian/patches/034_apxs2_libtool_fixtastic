@@ -1,12 +1,12 @@
-#! /bin/sh /usr/share/dpatch/dpatch-run
-## 034_apxs2_libtool_fixtastic by Peter Samuelson <peter@p12n.org>
-##
-## All lines beginning with `## DP:' are a description of the patch.
-## DP: Make libtool happier
-
---- a/support/apxs.in
-+++ b/support/apxs.in
-@@ -410,7 +410,7 @@
+Description: Make libtool happier
+Forwarded: no
+Author: Peter Samuelson <peter@p12n.org>
+Last-Update: 2012-02-25
+Index: apache2/support/apxs.in
+===================================================================
+--- apache2.orig/support/apxs.in
++++ apache2/support/apxs.in
+@@ -427,7 +427,7 @@
          $la =~ s|\.c$|.la|;
          my $o = $s;
          $o =~ s|\.c$|.o|;
@@ -15,7 +15,7 @@
          unshift(@objs, $lo);
      }
  
-@@ -447,7 +447,7 @@
+@@ -467,7 +467,7 @@
          $opt .= " -rpath $CFG_LIBEXECDIR -module -avoid-version $apr_ldflags";
      }
  

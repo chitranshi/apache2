@@ -126,6 +126,14 @@ apache2 (2.4.1-1) experimental; urgency=low
 
   * Update bash completion functions to reflect the new site setup. (Closes:
     #657492)
+  * Migrate patches to DEP-3 format.
+  * Drop patches:
+    + 004_usr_bin_perl_0wnz_j00: printenv exemple doesn't refer to
+      /usr/local/bin/perl anymore
+    + 008_make_include_safe: Include doesn't support directory anymore.
+      Include dir/*.conf must be used.
+    + 009_apache2_has_dso: Upstream is no longer testing DSO is available. So
+      we don't need to remove that test anymore.
 
  -- arno <arno@build.fritz.box>  Wed, 29 Feb 2012 15:44:04 +0100
 

@@ -1,12 +1,11 @@
-#! /bin/sh /usr/share/dpatch/dpatch-run
-## 033_dbm_read_hash_or_btree by Adam Conrad <adconrad@0c3.net>
-##
-## All lines beginning with `## DP:' are a description of the patch.
-## DP: Be more liberal in the sorts of DBM files we accept.
-
-@DPATCH@
---- a/support/dbmmanage.in
-+++ b/support/dbmmanage.in
+Description: Be more liberal in the sorts of DBM files we accept.
+Forwarded: no
+Author: Adam Conrad <adconrad@0c3.net>
+Last-Update: 2012-02-25
+Index: apache2/support/dbmmanage.in
+===================================================================
+--- apache2.orig/support/dbmmanage.in
++++ apache2/support/dbmmanage.in
 @@ -25,7 +25,7 @@
  BEGIN { @AnyDBM_File::ISA = qw(DB_File NDBM_File GDBM_File SDBM_File) }
  use strict;

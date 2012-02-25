@@ -1,13 +1,12 @@
-#! /bin/sh /usr/share/dpatch/dpatch-run
-## 010_more_fhs_compliance by Adam Conrad <adconrad@0c3.net>
-##
-## All lines beginning with `## DP:' are a description of the patch.
-## DP: Fix up FHS file locations for apache2 droppings.
-
-@DPATCH@
---- a/configure
-+++ b/configure
-@@ -31402,17 +31402,17 @@
+Description: Fix up FHS file locations for apache2 droppings.
+Forwarded: not-needed
+Author: Adam Conrad <adconrad@0c3.net>
+Last-Update: 2012-02-25
+Index: apache2/configure
+===================================================================
+--- apache2.orig/configure
++++ apache2/configure
+@@ -31752,17 +31752,17 @@
  
  
  cat >>confdefs.h <<_ACEOF
@@ -28,9 +27,11 @@
  _ACEOF
  
  
---- a/configure.in
-+++ b/configure.in
-@@ -770,11 +770,11 @@
+Index: apache2/configure.in
+===================================================================
+--- apache2.orig/configure.in
++++ apache2/configure.in
+@@ -780,11 +780,11 @@
  echo $MODLIST | $AWK -f $srcdir/build/build-modules-c.awk > modules.c
  
  APR_EXPAND_VAR(ap_prefix, $prefix)
@@ -45,8 +46,10 @@
  	[Location of the MIME types config file, relative to the Apache root directory])
  
  perlbin=`$ac_aux_dir/PrintPath perl`
---- a/include/ap_config_layout.h.in
-+++ b/include/ap_config_layout.h.in
+Index: apache2/include/ap_config_layout.h.in
+===================================================================
+--- apache2.orig/include/ap_config_layout.h.in
++++ apache2/include/ap_config_layout.h.in
 @@ -60,5 +60,6 @@
  #define DEFAULT_REL_LOGFILEDIR "@rel_logfiledir@"
  #define DEFAULT_EXP_PROXYCACHEDIR "@exp_proxycachedir@"

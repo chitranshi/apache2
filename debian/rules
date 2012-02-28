@@ -110,7 +110,7 @@ override_dh_auto_configure: prepare-custom-suexec suexec-maintainer-scripts
 		--enable-pie \
 		--enable-mpms-shared=all \
 		--enable-mods-shared="all cgi" \
-		--enable-mods-static="unixd logio" \
+		--enable-mods-static="unixd logio watchdog" \
 		CFLAGS="$(AP2_CFLAGS)" CPPFLAGS="$(AP2_CPPFLAGS)" LDFLAGS="$(AP2_LDFLAGS)" \
 		$(AP2_EXTRAFLAGS)
 

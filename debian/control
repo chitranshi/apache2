@@ -22,7 +22,8 @@ Depends: ${misc:Depends}, lsb-base, procps [!hurd-i386],
 Replaces: apache2.2-common (<< 2.3~)
 Breaks: apache2.2-common (<< 2.3~)
 Recommends: ssl-cert
-Suggests: www-browser, apache2-doc, apache2-suexec-pristine | apache2-suexec-custom
+Suggests: www-browser, apache2-doc, apache2-suexec-pristine | apache2-suexec-custom,
+ apache2-utils
 Description: Apache HTTP Server
  The Apache Software Foundation's goal is to build a secure, efficient and
  extensible HTTP server as standards-compliant open source software. The
@@ -33,7 +34,6 @@ Description: Apache HTTP Server
 
 Package: apache2-data
 Architecture: all
-#Depends: ${misc:Depends}, apache2-bin (= ${binary:Version}), apache2-utils, mime-support, lsb-base, procps [!hurd-i386], perl
 Depends: ${misc:Depends}
 Replaces: apache2.2-common
 Description: Apache HTTP Server common files
@@ -106,7 +106,6 @@ Package: apache2-suexec-pristine
 Architecture: any
 Depends: ${misc:Depends}, ${shlibs:Depends}
 #Depends: ${misc:Depends}, ${shlibs:Depends}, apache2.2-common
-#Conflicts: apache2-suexec
 Replaces: apache2-suexec
 Conflicts: apache2-suexec
 Provides: apache2-suexec
@@ -135,6 +134,8 @@ Description: Configurable suexec program for Apache 2 mod_suexec
 Package: apache2-doc
 Section: doc
 Architecture: all
+Pre-Depends: ${misc:Pre-Depends}
+Recommends: apache2
 Depends: ${misc:Depends}
 Description: Apache HTTP Server documentation
  This package provides the documentation for Apache 2. For more details
@@ -145,7 +146,9 @@ Package: apache2-dev
 Architecture: any
 Depends: ${misc:Depends}, apache2 (= ${binary:Version}), openssl, libaprutil1-dev
 Priority: extra
+Provides: apache2-prefork-dev, apache2-threaded-dev
 Replaces: apache2-prefork-dev, apache2-threaded-dev
+Conflicts: apache2-prefork-dev, apache2-threaded-dev
 Description: Apache development headers
  This package provides the development headers and apxs2 binary for
  threaded versions of apache2; see the apache2 package description

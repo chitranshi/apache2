@@ -4,7 +4,6 @@ etc/apache2/sites-enabled
 etc/logrotate.d
 usr/lib/cgi-bin
 usr/share/apache2
-usr/share/apache2/build
 usr/share/apache2/default-site
 usr/share/lintian/overrides
 var/cache/apache2

@@ -1,0 +1,24 @@
+#! /bin/sh
+
+set -e
+
+# conffiles be moved before invoking rc.d
+#DEBHELPER#
+
+# This code should use dh_apache2 once it is available as build dependency
+
+if [ "$1" = "configure" ] ; then
+        if [ -x "/usr/sbin/a2enconf" ] ; then
+                for S in apache2-doc ; do
+                        /usr/sbin/a2enconf -q $S || true
+                done
+
+                if [ -x "/etc/init.d/apache2" ]; then
+                      invoke-rc.d apache2 restart || true
+                fi
+
+        fi
+fi
+
+exit 0
+

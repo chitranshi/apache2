@@ -135,7 +135,7 @@ apache2 (2.4.1-1) experimental; urgency=low
     + 009_apache2_has_dso: Upstream is no longer testing DSO is available. So
       we don't need to remove that test anymore.
 
- -- arno <arno@build.fritz.box>  Wed, 29 Feb 2012 15:44:04 +0100
+ -- Arno Töll <debian@toell.net>  Wed, 29 Feb 2012 17:55:49 +0100
 
 apache2 (2.2.22-1) unstable; urgency=low
 

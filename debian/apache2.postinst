@@ -208,6 +208,8 @@ install_default_site()
 	fi
 }
 
+# XXX: This site is installed in the apache2-data package. Should the postinst
+# scriptlet move there too? 
 install_default_files()
 {
 	if [ ! -e /var/www/index.html ] ; then

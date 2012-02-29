@@ -73,11 +73,12 @@ apache2 (2.4.1-1) experimental; urgency=low
       Users can just load and unload MPMs like other modules, enable the worker
       MPM by default
     + Move per-site global configuration from conf.d to conf-available and
-      manage it similar to modules and sites. To do so, the new tools "a2enconf"
-      and "a2disconf" are provided. Moreover, such configuration files need  to
-      have a .conf suffix now. The following configuration files are enabled
-      bydefault: charset localized-error-pages other-vhosts-access-log  security.
-      These were enabled by default previously, too (Closes: #620347).
+      manage it similar to modules and sites. To do so, the new tools
+      "a2enconf" and "a2disconf" are provided. Moreover, such configuration
+      files need  to have a .conf suffix now. The following configuration
+      files are enabled by default: charset localized-error-pages
+      other-vhosts-access-log  security.  These were enabled by default
+      previously, too (Closes: #620347).
     + Give site configuration a .conf suffix, too. For example the default vhost
       is called default.conf. Moreover, files without .conf suffix are ignored
       upon startup. Please update your site links and confs. Also rename the
@@ -92,7 +93,8 @@ apache2 (2.4.1-1) experimental; urgency=low
       also configuration changes).
     + Expect a .conf suffix for sites-enabled/sites-available configurations.
     + Remove the default vhost special handling. Instead, we expect the default
-      host to be named appropripriately (e.g. 000-default.conf; Closes: #605535).
+      host to be named appropripriately (for example 000-default.conf;
+      Closes: #605535).
   * The following modules and associated configuration files were removed:
     + mod_authz_default and mod_authn_default: Please use a proper
       authentication module instead
@@ -104,8 +106,9 @@ apache2 (2.4.1-1) experimental; urgency=low
     remoteip, request, session, session_cookie, session_crypto, session_dbd
     (Closes: #400881)
   * Provide a dh_apache2 debhelper which can be used by reverse dependencies to
-    install modules, module configuration files, site configuration files and global
-    configuration files which need to be registered to the Apache web server.
+    install modules, module configuration files, site configuration files and
+    global configuration files which need to be registered to the Apache web
+    server.
     Thus, dh_apache2 can be used for Apache web server modules and web
     applications providing configuration files for Apache.
 
@@ -113,7 +116,8 @@ apache2 (2.4.1-1) experimental; urgency=low
 
   * Use "dh --with autotools_dev" instead of patching config.sub/config.guess.
   * Only include conf.d/*.conf, not conf.d/*.
-  * Don't create httpd.conf anymore. (Closes: #639383)
+  * Don't create httpd.conf anymore. Also, do a proper transition of existing
+    httpd.conf files to /etc/apache2/conf-available (Closes: #639383)
   * Add "AddCharset" for .brf files in default mod_mime config.
     (Closes: #402567)
   * Update the README.Debian file
@@ -122,7 +126,7 @@ apache2 (2.4.1-1) experimental; urgency=low
 
   * Update bash completion functions to reflect the new site setup.
 
- -- Arno Töll <debian@toell.net>  Sat, 25 Feb 2012 21:34:50 +0100
+ -- arno <arno@build.fritz.box>  Wed, 29 Feb 2012 15:44:04 +0100
 
 apache2 (2.2.22-1) unstable; urgency=low
 

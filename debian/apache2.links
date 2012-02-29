@@ -1,4 +1,4 @@
-usr/share/bug/apache2-common/script	usr/share/bug/apache2/script
+usr/share/bug/apache2-data/script	usr/share/bug/apache2/script
 usr/sbin/a2enmod 			usr/sbin/a2dismod
 usr/sbin/a2enmod 			usr/sbin/a2ensite
 usr/sbin/a2enmod 			usr/sbin/a2dissite

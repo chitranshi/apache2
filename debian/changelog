@@ -15,6 +15,25 @@ apache2 (2.4.1-1) experimental; urgency=low
     + Allows configuring source address for proxy requests. (Closes: #465283)
     + Supports CONNECT request through https. (Closes: #307298)
 
+  * Refresh patches but leave all hunks unchanged where possible. Notable
+    changes are:
+    + [AT] 202_suexec-custom: Keep functionality as is, but rewrite smaller parts of
+      the patch to build two binaries: suexec-pristine and suexec-custom (see
+      below)
+    + [AT] 201_build_suexec-custom: Patch the makefile to build "suexec-pristine"
+      instead. Aside of that, refresh hunks.
+    + [AT] 010_fhs_compliance: Drop config.layout patches. These have been applied
+      upstream
+    + [JMV] Drop patches:
+      + 004_usr_bin_perl_0wnz_j00: printenv exemple doesn't refer to
+        /usr/local/bin/perl anymore
+      + 008_make_include_safe: Include doesn't support directory anymore.
+        Include dir/*.conf must be used.
+      + 009_apache2_has_dso: Upstream is no longer testing DSO is available. So
+        we don't need to remove that test anymore.
+     + [JMV] Reresh 031_apxs2_sucks_more: <explain what you did>
+
+
   [ Arno Töll ]
 
   * Rewrite most parts of debian/rules / debhelper configuration.
@@ -38,15 +57,6 @@ apache2 (2.4.1-1) experimental; urgency=low
   * Drop debian/source/options again: We do not need to ignore .svn directories
     anymore since the new package management system is based on git and includes
     the full source
-  * Refresh patches but leave all hunks unchanged where possible. Notable
-    changes are:
-    + 202_suexec-custom: Keep functionality as is, but rewrite smaller parts of
-      the patch to build two binaries: suexec-pristine and suexec-custom (see
-      below)
-    + 201_build_suexec-custom: Patch the makefile to build "suexec-pristine"
-      instead. Aside of that, refresh hunks.
-    + 010_fhs_compliance: Drop config.layout patches. These have been applied
-      upstream
   * Rework the suexec mechanism. Now there are two suexec packages providing
     alternatives through the update-alternatives mechanism. The untouched
     upstream "suexec" binary is provided by the apache2-suexec-pristine package,
@@ -126,16 +136,10 @@ apache2 (2.4.1-1) experimental; urgency=low
 
   * Update bash completion functions to reflect the new site setup. (Closes:
     #657492)
-  * Migrate patches to DEP-3 format.
-  * Drop patches:
-    + 004_usr_bin_perl_0wnz_j00: printenv exemple doesn't refer to
-      /usr/local/bin/perl anymore
-    + 008_make_include_safe: Include doesn't support directory anymore.
-      Include dir/*.conf must be used.
-    + 009_apache2_has_dso: Upstream is no longer testing DSO is available. So
-      we don't need to remove that test anymore.
+  * Migrate patches to DEP-3 format. For particular changes see the summary
+    above.
 
- -- Arno Töll <debian@toell.net>  Wed, 29 Feb 2012 17:55:49 +0100
+ -- Arno Töll <debian@toell.net>  Wed, 29 Feb 2012 18:18:24 +0100
 
 apache2 (2.2.22-1) unstable; urgency=low
 

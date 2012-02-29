@@ -1,1 +1,2 @@
 non-standard-dir-perm var/log/apache2/ 0750 != 0755
+package-contains-empty-directory usr/lib/cgi-bin/

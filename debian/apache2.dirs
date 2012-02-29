@@ -3,7 +3,6 @@ etc/apache2/conf-enabled
 etc/apache2/sites-enabled
 etc/logrotate.d
 usr/lib/cgi-bin
-usr/share/apache2
 usr/share/lintian/overrides
 var/cache/apache2
 var/cache/apache2/mod_cache_disk

@@ -17,13 +17,13 @@ apache2 (2.4.1-1) experimental; urgency=low
 
   * Refresh patches but leave all hunks unchanged where possible. Notable
     changes are:
-    + [AT] 202_suexec-custom: Keep functionality as is, but rewrite smaller parts of
-      the patch to build two binaries: suexec-pristine and suexec-custom (see
-      below)
-    + [AT] 201_build_suexec-custom: Patch the makefile to build "suexec-pristine"
-      instead. Aside of that, refresh hunks.
-    + [AT] 010_fhs_compliance: Drop config.layout patches. These have been applied
-      upstream
+    + [AT] 202_suexec-custom: Keep functionality as is, but rewrite smaller
+      parts of the patch to build two binaries: suexec-pristine and suexec-custom
+      (see below)
+    + [AT] 201_build_suexec-custom: Patch the makefile to build
+      "suexec-pristine" instead. Aside of that, refresh hunks.
+    + [AT] 010_fhs_compliance: Drop config.layout patches. These have been
+      applied upstream
     + [JMV] Drop patches:
       + 004_usr_bin_perl_0wnz_j00: printenv exemple doesn't refer to
         /usr/local/bin/perl anymore
@@ -139,7 +139,7 @@ apache2 (2.4.1-1) experimental; urgency=low
   * Migrate patches to DEP-3 format. For particular changes see the summary
     above.
 
- -- Arno Töll <debian@toell.net>  Wed, 29 Feb 2012 18:18:24 +0100
+ -- Arno Töll <debian@toell.net>  Wed, 29 Feb 2012 19:20:15 +0100
 
 apache2 (2.2.22-1) unstable; urgency=low
 

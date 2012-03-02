@@ -41,9 +41,39 @@ MOVED_CONFFILES="/etc/bash_completion.d/apache2.2-common:/etc/bash_completion.d/
 case "$1" in
     purge)
 
+	# back to the future - yay!
+	if [ -x /etc/apache2/our_future_ourselves_thinks_we_are_crazy ] ; then
+		if  /etc/apache2/our_future_ourselves_thinks_we_are_crazy $@ ; then
+			return
+		fi
+	fi
+
         for CONFFILE in $OBSOLETE_CONFFILES ; do
                 rm -f "$CONFFILE.dpkg-bak" "$CONFFILE.dpkg-remove" "$CONFFILE.dpkg-backup"
         done
+
+	for d in var/cache/apache2 \
+		 var/cache/apache2/mod_cache_disk \
+		 var/log/apache2 ; do
+		[ -d $d ] && rm -rf $d
+	done
+
+
+	for f in /etc/apache2/sites-enabled/* \
+		/etc/apache2/conf-enabled/* \
+		/etc/apache2/mods-enabled/* ; do
+		[ -L "$f" ] && rm -f "$f"
+	done
+
+	for d in /etc/apache2/sites-enabled/ \
+		/etc/apache2/mods-enabled/ \
+		/etc/apache2/conf-enabled/ \
+		/etc/apache2 \
+		/var/cache/apache2 ; do
+		rmdir $d 2> /dev/null || true
+	done
+
+	#XXX: index.html is intentionally(?) left back
     ;;
 
     abort-install|abort-upgrade)

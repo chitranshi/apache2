@@ -234,8 +234,10 @@ refresh_modules()
                                 echo "disable obsolete module $module"
                                 a2dismod -q $module
 
-				# XXX enable cache_disk if the user had
-				# disk_cache enabled
+				if [ $module = "disk_cache" ] ; then
+					echo "Enable cache_disk as disk_cache was enabled in Apache 2.2"
+					a2enmod -q cache_disk
+				fi
                         fi
                         # the module is already enabled, however
                         # dependencies could have changed hence re-call
@@ -268,9 +270,28 @@ move_httpd_conf()
 	fi
 }
 
-#XXX: Move /var/cache/apache2/mod_disk_cache to /var/cache/apache2/mod_cache_disk?
+migrate_data()
+{
+	#XXX enable mod_cache_disk?
+	if we_are_upgrading_from_squeeze $@ ; then
+		# /var/cache/apache2/mod_disk_cache -> /var/cache/apache2/mod_cache_disk
+		if [ -d /var/cache/apache2/mod_disk_cache ] && [ "$(ls -A /var/cache/apache2/mod_disk_cache)" ] ; then
+			echo "Migrate mod_disk_cache cache data to /var/cache/apache2/mod_cache_disk/"
+			mv /var/cache/apache2/mod_disk_cache/* /var/cache/apache2/mod_cache_disk/
+			rmdir /var/cache/apache2/mod_disk_cache
+		fi
+	fi
+}
+
 #XXX: Deal with the sites-available/sites-enabled *.conf transition, e.g. rename
-#     all files which look like site configuration? 
+#     all files which look like site configuration?
+#XXX: Re-enable modules which were enabled in 2.2 but aren't in 2.4 so far:
+#      autoindex env mime negotiation setenvif status auth_basic deflate
+#      authz_default authz_user authz_groupfile authn_file
+#     n.b. most of these modules are loaded as dependency if a module.conf file
+#     demands it.
+
+
 
 case "$1" in
         configure)
@@ -284,6 +305,7 @@ case "$1" in
 		enable_default_conf $@
                 install_default_site $@
 		move_httpd_conf $@
+		migrate_data $@
 
                 # post installation cleanup
                 if [ -e /etc/apache2/.apache2_mpm_selected ] ; then

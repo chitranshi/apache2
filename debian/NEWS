@@ -1,3 +1,37 @@
+apache2 (2.4.1-1) experimental; urgency=low
+
+  This package introduces a new major release of the Apache HTTP server. It is
+  likely the site configuration needs changes to work with this release. Notable
+  changes which need special care are:
+
+  The authorization and authentication system changed. Existing configurations
+  using deprecated Order/Allow/Deny directives should be upgraded to the new
+  system. Please review upstream's "Authentication, Authorization and Access
+  Control Howto" [1]. Existing configurations can load the "mod_access_compat"
+  module for compatibility with 2.2 configurations by loading
+
+  a2enmod access_compat
+
+  Furthermore, MPMs are simple modules now. Thus, the MPM can be changed anytime
+  by (un-)loading a specific module. Note the ITK MPM is not available anymore.
+  Be careful when upgrading. An example of changing the MPM is given below
+
+  a2dismod mpm_worker
+  a2enmod mpm_prefork
+
+  Morevoer, the configuration mechanism in Debian changed. All configurations
+  in sites-enabled and conf-enabled need a ".conf" suffix now. The latter was
+  transitioned from the deprecated /etc/apache2/conf.d/ directory which is not
+  supported anymore and works just like {sites,mods}-{available,enabled} by
+  using the "a2enconf" tool. The upgrade tries to migrate known configuration
+  files from /etc/apache2/conf.d/ to /etc/apache2/conf-available/ - please
+  review this changes. In addition, the default site was renamed to
+  "000-default.conf" to avoid naming confusions.
+
+  [1] http://httpd.apache.org/docs/2.4/howto/auth.html
+
+ -- Arno Töll <debian@toell.net>  Fri, 02 Mar 2012 17:38:23 +0100
+
 apache2 (2.2.15-4) unstable; urgency=low
 
   * Note to people using mod_proxy as forward proxy, i.e. with

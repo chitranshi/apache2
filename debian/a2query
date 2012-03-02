@@ -1,0 +1,226 @@
+#! /usr/bin/perl
+
+use strict;
+use Getopt::Std;
+
+our $APACHE2 = "apache2ctl";
+our $API = "20111203";
+our $MODULE_DIR = "/usr/lib/apache2/modules/";
+our $SERVER_VERSION = "2.4.1";
+our $MPM = "invalid";
+our $CONFIG_DIR = "/etc/apache2";
+our @MODULES = ();
+our @CONFS = ();
+our @SITES =();
+our @HELP = ();
+
+sub fail
+{
+	my $reason = shift;
+	print STDERR "$reason\n";
+	exit 1;
+}
+
+sub load_defaults
+{
+	my @out = `$APACHE2 -V`;
+	return if $?;
+	for (my $line; $line <= $#out; $line++)
+	{
+		if ($out[$line] =~ m/(Server version|Server MPM|Magic Number):\s+(.*?)$/)
+		{
+			my ($pattern, $value) = ($1, $2);
+			if ($pattern =~ /version/)
+			{
+				$SERVER_VERSION = $value;
+				$SERVER_VERSION =~ s/[^\d\.]//g;
+			}
+			elsif($pattern =~ /MPM/)
+			{
+				$MPM = $value;
+			}
+			elsif($pattern =~ /Magic/)
+			{
+				$API = $value;
+				$API =~ s/\:\d+//;
+			}
+		}
+	}
+
+}
+
+sub load_modules
+{
+	my $conf_dir = $CONFIG_DIR . "/mods-enabled";
+	opendir(DIR, $conf_dir) || fail("$conf_dir: $!");
+	while( readdir(DIR) )
+	{
+		my $file = $_;
+		next if $file !~ m/\.load$/;
+		$file =~ s/\.load//;
+		if ($file =~ /mpm_(\w+)/)
+		{
+			$MPM = $1 if $MPM eq 'invalid';
+			if(grep { $_ =~ m/^mpm_/ } @MODULES)
+			{
+				fail("There is more than one MPM loaded. Do not proceed due to undefined results");
+			}
+		}
+		push @MODULES, $file;
+	}
+	closedir(DIR);
+}
+
+
+sub load_conf
+{
+	if ($#CONFS >= 0)
+	{
+		return;
+	}
+	my $conf_dir = $CONFIG_DIR . "/conf-enabled";
+	opendir(DIR, $conf_dir) || fail("$conf_dir: $!");
+	while( readdir(DIR) )
+	{
+		my $file = $_;
+		next if $file !~ m/\.conf$/;
+		push @CONFS, $file;
+	}
+	closedir(DIR);
+}
+
+
+sub load_sites
+{
+	if ($#SITES >= 0)
+	{
+		return;
+	}
+	my $conf_dir = $CONFIG_DIR . "/sites-enabled";
+	opendir(DIR, $conf_dir) || fail("$conf_dir: $!");
+	while( readdir(DIR) )
+	{
+		my $file = $_;
+		next if $file !~ m/\.conf$/;
+		push @SITES, $file;
+	}
+	closedir(DIR);
+}
+
+load_defaults();
+load_modules();
+
+my %opts;
+my $help = 1;
+getopt('m:s:c:havMd', \%opts);
+
+
+push @HELP, ["m [MODULE]", "checks whether the module MODULE is enabled, lists all modules if no argument was given"];
+if (exists $opts{'m'})
+{
+	--$help;
+	my $matches = 0;
+	if (not $opts{'m'})
+	{
+		$opts{'m'} = ".";
+	}
+	foreach my $module (grep { $_ =~ m/$opts{'m'}/ } @MODULES)
+	{
+		print("$module\n");
+		$matches++;
+	}
+	if (!$matches)
+	{
+		fail("No module matches $opts{'m'}");
+	}
+}
+
+
+push @HELP, ["s [SITE]", "checks whether the site SITE is enabled, lists all sites if no argument was given"];
+if (exists $opts{'s'})
+{
+	--$help;
+	load_sites();
+	my $matches = 0;
+	if (not $opts{'s'})
+	{
+		$opts{'s'} = ".";
+	}
+	foreach my $site (grep { $_ =~ m/$opts{'s'}/ } @SITES)
+	{
+		print("$site\n");
+		$matches++;
+	}
+	if (!$matches)
+	{
+		fail("No site matches $opts{'s'}");
+	}
+}
+
+
+push @HELP, ["c [CONF]", "checks whether the configuration CONF is enabled, lists all configurations if no argument was given"];
+if (exists $opts{'c'})
+{
+	--$help;
+	load_conf();
+	my $matches = 0;
+	if (not $opts{'c'})
+	{
+		$opts{'c'} = ".";
+	}
+	foreach my $conf (grep { $_ =~ m/$opts{'c'}/ } @CONFS)
+	{
+		print("$conf\n");
+		$matches++;
+	}
+	if (!$matches)
+	{
+		fail("No conf matches $opts{'c'}");
+	}
+}
+
+
+push @HELP, ["a", "returns the current Apache 2 module magic version"];
+if (exists $opts{'a'})
+{
+	--$help;
+	print("$API\n");
+}
+
+
+push @HELP, ["v", "returns the current Apache 2 version"];
+if (exists $opts{'v'})
+{
+	--$help;
+	print("$SERVER_VERSION\n");
+}
+
+push @HELP, ["M", "returns the enabled Apache 2 MPM"];
+if (exists $opts{'M'})
+{
+	--$help;
+	print("$MPM\n");
+}
+
+push @HELP, ["d", "returns the Apache 2 module directory"];
+if (exists $opts{'d'})
+{
+	--$help;
+	print("$MODULE_DIR\n");
+}
+
+push @HELP, ["h", "display this help"];
+if (exists $opts{'h'} or $help == 1)
+{
+	my $usage = "$0 ";
+	map { $usage .= "-$_->[0] " } @HELP;
+	print("Usage: $usage\n");
+	foreach my $switch (@HELP)
+	{
+		my ($switch, $description) = ($switch->[0], $switch->[1]);
+		print("-$switch\t\t$description\n");
+	}
+	exit 0;
+}
+
+

@@ -48,7 +48,7 @@ Package: apache2-bin
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 # MODULE_MAGIC_NUMBER_MAJOR from apache2/include/ap_mmn.h
-Provides: apache2-api-20111203
+Provides: apache2-api-20120211
 Suggests: www-browser, apache2-doc, apache2-suexec-pristine | apache2-suexec-custom
 Replaces: apache2.2-bin (<< 2.3~), apache2.2-common (<< 2.3~),
 Breaks: apache2.2-bin (<< 2.3~), apache2.2-common (<< 2.3~),

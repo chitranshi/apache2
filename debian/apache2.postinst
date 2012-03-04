@@ -55,6 +55,12 @@ we_are_upgrading_from_squeeze()
                 return 0
         fi
 
+	# this check is a probably tautology but makes it easier to understand
+	# the logic
+	if [ -n $2 ] && dpkg --compare-versions "$2" ge-nl "2.3"; then
+                return 1
+        fi
+
         if [ -e /etc/apache2/.apache2_mpm_selected ] ; then
                 return 0
         fi
@@ -79,6 +85,14 @@ we_are_upgrading_from_squeeze()
 	done
 
         return 1
+}
+
+is_fresh_install()
+{
+        if [ -z $2 ] ; then
+                return 0
+        fi
+	return 1
 }
 
 
@@ -163,22 +177,33 @@ enable_default_mpm()
                                 mpm="mpm_event"
                         ;;
                 esac
+
+        	a2enmod -q $mpm
+		return 0
         fi
-        a2enmod -q $mpm
+
+	if is_fresh_install $@ ; then
+		a2enmod -q $mpm
+	fi
+
 }
 
 enable_default_modules()
 {
-        for module in authz_host alias cgi dir ; do
-                a2enmod -q $module
-        done
+	if is_fresh_install $@ || we_are_upgrading_from_squeeze $@; then
+	        for module in authz_host alias cgi dir ; do
+        	        a2enmod -q $module
+	        done
+	fi
 }
 
 enable_default_conf()
 {
-	for conf in charset localized-error-pages other-vhosts-access-log security ; do
-		a2enconf -q $conf
-	done
+	if is_fresh_install $@ || we_are_upgrading_from_squeeze $@ ; then
+		for conf in charset localized-error-pages other-vhosts-access-log security ; do
+			a2enconf -q $conf
+		done
+	fi
 }
 
 install_default_site()
@@ -196,7 +221,7 @@ install_default_site()
 				fi
 			fi
 		done
-	else
+	elif is_fresh_install $@ ; then
         	if [ ! -L /etc/apache2/sites-enabled/000-default.conf -a \
         	        ! -f /etc/apache2/sites-enabled/000-default.conf ]; then
         	                a2ensite -q 000-default
@@ -205,15 +230,27 @@ install_default_site()
         	touch /var/log/apache2/error.log /var/log/apache2/access.log
 	        chown root:adm /var/log/apache2/error.log /var/log/apache2/access.log
         	chmod 0640 /var/log/apache2/error.log /var/log/apache2/access.log
+
+		touch /var/log/apache2/other_vhosts_access.log
+		chown root:adm /var/log/apache2/other_vhosts_access.log
+		chmod 0640 /var/log/apache2/other_vhosts_access.log
 	fi
 }
 
 # XXX: This site is installed in the apache2-data package. Should the postinst
-# scriptlet move there too? 
+# scriptlet move there too?
 install_default_files()
 {
-	if [ ! -e /var/www/index.html ] ; then
-		cp /usr/share/apache2/default-site/index.html /var/www/index.html
+	if is_fresh_install $@ ; then
+		if [ ! -e /var/www/index.html  -a \
+			! -h /var/www/index.html  -a \
+			! -e /var/www/index.cgi   -a \
+			! -e /var/www/index.pl    -a \
+			! -e /var/www/index.php   -a \
+			! -e /var/www/index.xhtml -a \
+			! -e /var/www/index.htm ] ; then
+				cp /usr/share/apache2/default-site/index.html /var/www/index.html
+		fi
 	fi
 }
 

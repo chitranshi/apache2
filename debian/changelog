@@ -14,6 +14,7 @@ apache2 (2.4.1-1) experimental; urgency=low
       (Closes: #601606)
     + Allows configuring source address for proxy requests. (Closes: #465283)
     + Supports CONNECT request through https. (Closes: #307298)
+    + New Upstream (2.4). (Closes: #662115)
 
   * Refresh patches but leave all hunks unchanged where possible. Notable
     changes are:
@@ -40,6 +41,10 @@ apache2 (2.4.1-1) experimental; urgency=low
     + move cronjob and init script to debhelper configuration files
       (apache2.cron.daily and apache2.init respectively)
     + move man pages to debian/manpages
+    + Remove Ubuntu hacks in debian/rules, we expect them to carry Ubuntu
+      specifics in their own patch set, as it diverges already anyway.
+    + shake-up files installed in different packages
+    + Do not copy the source tree anymore, build package in place.
   * Push standards version to 3.9.3 - no special changes required
   * Refactor binary packages, now as things simplified. MPMs are simple
     modules now, they can be bundled into the same binary package which do not
@@ -139,7 +144,7 @@ apache2 (2.4.1-1) experimental; urgency=low
   * Migrate patches to DEP-3 format. For particular changes see the summary
     above.
 
- -- Arno Töll <debian@toell.net>  Wed, 29 Feb 2012 19:20:15 +0100
+ -- Arno Töll <debian@toell.net>  Sun, 04 Mar 2012 23:38:59 +0100
 
 apache2 (2.2.22-1) unstable; urgency=low
 

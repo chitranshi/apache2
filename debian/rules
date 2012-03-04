@@ -11,17 +11,9 @@ AP2_CFLAGS = -pipe $(shell dpkg-buildflags --get CFLAGS)
 AP2_LDFLAGS = -Wl,--as-needed $(shell dpkg-buildflags --get LDFLAGS)
 AP2_CPPFLAGS = -DPLATFORM='\"$(LSB_RELEASE)\"' $(shell dpkg-buildflags --get CPPFLAGS)
 
-# TODO: This flag used to be appended to the configure line. Is it still needed?
-#CONFFLAGS += ac_cv_prog_LYNX_PATH=www-browser
-
 prepare-custom-suexec:
 	cp support/suexec.c support/suexec-custom.c
 	patch -p1 < debian/patches/202_suexec-custom
-
-# TODO: Check whether the override below is still needed
-#	# force one process since mkdir.sh used by 'make install' is not
-#	# reliable otherwise
-#	dh_auto_install -D "$(BUILD_DIR)/$*" --destdir="$(INSTALL_DIR)/$*" -- -j1
 
 
 clean-config-vars:
@@ -113,28 +105,10 @@ override_dh_installman:
 
 override_dh_strip:
 	dh_strip --dbg-package=apache2-dbg
-#TODO: Probably not needed anymore?
-#	set -e \
-#	if [ "$(LSB_RELEASE)" != "Ubuntu" ] && [ -n "$(DEB_BUILD_STRIP)" ] ; then \
-#		for i in $(MPMS); do \
-#			MPM=usr/lib/apache2/mpm-$$i/apache2 ;\
-#			objcopy --only-keep-debug $(BUILD_DIR)/$$i/apache2 \
-#				debian/apache2-dbg/usr/lib/debug/$$MPM-mpm-$$i ;\
-#			chmod 644 debian/apache2-dbg/usr/lib/debug/$$MPM-mpm-$$i ;\
-#			strip --remove-section=.comment --remove-section=.note --strip-unneeded \
-#			debian/apache2.2-bin/$$MPM ;\
-#			objcopy --add-gnu-debuglink=debian/apache2-dbg/usr/lib/debug/$$MPM-mpm-$$i \
-#				debian/apache2.2-bin/$$MPM ;\
-#			done ;\
-#	fi
-#override_dh_builddeb:
-#	if [ "$(LSB_RELEASE)" = "Ubuntu" ]; then \
-#		rm -rf debian/apache2-dbg; \
-#		sed -i '/apache2-dbg/d' debian/files; \
-#		dh_builddeb -Napache2-dbg; \
-#	else \
-#		dh_builddeb; \
-#	fi
-#
+
+override_dh_auto_install:
+	dh_auto_install -- -j1
+
+
 
 .PHONY: prepare-custom-suexec suexec-maintainer-scripts clean-config-vars

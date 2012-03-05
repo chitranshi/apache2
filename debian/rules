@@ -81,23 +81,15 @@ override_dh_installinit:
 override_dh_installdocs:
 	# TODO: So, did anyone check convert_docs needs an update? ;)
 	perl debian/convert_docs debian/apache2-doc/usr/share/doc/apache2-doc/manual
+	dh_installdocs --link-doc=apache2 -papache2 -papache2-dev -papache2-dbg
 	dh_installdocs
-#TODO: Or that stuff
-#	dh_installdocs debian/README.backtrace -papache2.2-bin
-#	dh_installdocs debian/README.backtrace debian/README.multiple-instances -papache2.2-common
-#	dh_installdocs -Napache2.2-common -Napache2.2-bin
-#	cp debian/mpm-itk/README debian/apache2.2-common/usr/share/doc/apache2.2-common/README.mpm-itk
-#	cp debian/mpm-itk/CHANGES debian/apache2.2-common/usr/share/doc/apache2.2-common/changelog.mpm-itk
-#	cp debian/mpm-itk/debian/changelog debian/apache2.2-common/usr/share/doc/apache2.2-common/changelog.mpm-itk.Debian
-#	for p in apache2-prefork-dev apache2-threaded-dev apache2-mpm-prefork apache2-mpm-event \
-#		apache2-mpm-worker apache2-mpm-itk apache2; \
-#	do \
-#		rm -rf debian/$$p/usr/share/doc/$$p ;\
-#		ln -s apache2.2-common debian/$$p/usr/share/doc/$$p ;\
-#	done
-#	rm -rf debian/apache2-dbg/usr/share/doc/apache2-dbg
-#	ln -s apache2.2-bin debian/apache2-dbg/usr/share/doc/apache2-dbg
-#
+
+override_dh_installchangelogs:
+	# Do not install changelogs for transitional packages and the -data
+	# package not to trash the disk at the installation site. Together with
+	# dh_installdocs this means that changelogs are installed in a few
+	# packages only.
+	dh_installchangelogs -Napache2.2-bin -Napache2-suexec -Napache2-mpm -Napache2-data
 
 override_dh_installman:
 	mv debian/tmp/usr/share/man/man8/suexec.8 debian/tmp/usr/share/man/man8/suexec-pristine.8

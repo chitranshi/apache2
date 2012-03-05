@@ -19,8 +19,8 @@ apache2 (2.4.1-1) experimental; urgency=low
   * Refresh patches but leave all hunks unchanged where possible. Notable
     changes are:
     + [AT] 202_suexec-custom: Keep functionality as is, but rewrite smaller
-      parts of the patch to build two binaries: suexec-pristine and suexec-custom
-      (see below)
+      parts of the patch to build two binaries: suexec-pristine and
+      suexec-custom (see below)
     + [AT] 201_build_suexec-custom: Patch the makefile to build
       "suexec-pristine" instead. Aside of that, refresh hunks.
     + [AT] 010_fhs_compliance: Drop config.layout patches. These have been
@@ -144,7 +144,7 @@ apache2 (2.4.1-1) experimental; urgency=low
   * Migrate patches to DEP-3 format. For particular changes see the summary
     above.
 
- -- Arno Töll <debian@toell.net>  Sun, 04 Mar 2012 23:38:59 +0100
+ -- Arno Töll <debian@toell.net>  Mon, 05 Mar 2012 17:54:39 +0100
 
 apache2 (2.2.22-1) unstable; urgency=low
 

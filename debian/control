@@ -62,15 +62,16 @@ Description: Apache HTTP Server (binary files and modules)
  instance. Do not install this package unless you want to set-up the Apache
  HTTP server entirely on your own.
 
-Package: apache2-mpm-worker
-Provides: apache2-mpm-prefork, apache2-mpm-event
-Replaces: apache2-mpm-prefork (<< 2.3~), apache2-mpm-event (<< 2.3~)
-Breaks: apache2-mpm-prefork (<< 2.3~), apache2-mpm-event (<< 2.3~), apache2-mpm-itk (<< 2.3~)
+Package: apache2-mpm
+Provides: apache2-mpm-worker, apache2-mpm-prefork, apache2-mpm-event
+Replaces: apache2-mpm-worker (<< 2.3~), apache2-mpm-prefork (<< 2.3~), apache2-mpm-event (<< 2.3~)
+Breaks: apache2-mpm-worker (<< 2.3~), apache2-mpm-prefork (<< 2.3~),
+ apache2-mpm-event (<< 2.3~), apache2-mpm-itk (<< 2.3~)
 Architecture: any
 Section: oldlibs
 Priority: extra
 Depends: ${shlibs:Depends}, ${misc:Depends}, apache2 (= ${binary:Version})
-Description: Transitional package for apache2
+Description: transitional package for apache2
  This is a transitional package for apache2, and can be safely removed
  after the installation is complete.
 
@@ -102,12 +103,22 @@ Description: Apache HTTP Server (utility programs for web servers)
   - check_forensic (Extract mod_log_forensic output from Apache log files)
   - httxt2dbm (Generate dbm files for use with RewriteMap)
 
+Package: apache2-suexec
+Architecture: any
+Section: oldlibs
+Priority: extra
+Depends: ${shlibs:Depends}, ${misc:Depends},
+ apache2-suexec-pristine (= ${binary:Version}) | apache2-suexec-custom (= ${binary:Version})
+Description: transitional package for apache2-suexec-pristine
+ This is a transitional package for apache2-suexec-pristine, and can be safely
+ removed after the installation is complete.
+
 Package: apache2-suexec-pristine
 Architecture: any
 Depends: ${misc:Depends}, ${shlibs:Depends}
 #Depends: ${misc:Depends}, ${shlibs:Depends}, apache2.2-common
-Replaces: apache2-suexec
-Conflicts: apache2-suexec
+Replaces: apache2-suexec (<< 2.3~)
+Breaks: apache2-suexec (<< 2.3~)
 Provides: apache2-suexec
 Description: Apache HTTP Server standard suexec program for mod_suexec
  Provides the standard suexec helper program for mod_suexec. This version is
@@ -119,8 +130,8 @@ Priority: extra
 Architecture: any
 Depends: ${misc:Depends}, ${shlibs:Depends}
 #Depends: ${misc:Depends}, ${shlibs:Depends}, apache2.2-common
-Replaces: apache2-suexec
-Conflicts: apache2-suexec
+Replaces: apache2-suexec (<< 2.3~)
+Breaks: apache2-suexec (<< 2.3~)
 Provides: apache2-suexec
 Description: Apache HTTP Server configurable suexec program for mod_suexec
  Provides a customizable version of the suexec helper program for mod_suexec.

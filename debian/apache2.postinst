@@ -309,7 +309,8 @@ move_httpd_conf()
 
 migrate_data()
 {
-	#XXX enable mod_cache_disk?
+	#XXX: jimjag recommends purging the cache albeit it is probably not
+	#     technically required. 
 	if we_are_upgrading_from_squeeze $@ ; then
 		# /var/cache/apache2/mod_disk_cache -> /var/cache/apache2/mod_cache_disk
 		if [ -d /var/cache/apache2/mod_disk_cache ] && [ "$(ls -A /var/cache/apache2/mod_disk_cache)" ] ; then

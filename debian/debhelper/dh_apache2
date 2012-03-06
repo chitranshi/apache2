@@ -49,27 +49,47 @@ dh_apache2 - register configuration snippets to the Apache web server
 
 sub apache_api_version
 {
-	# TODO: replace me
-	return "apache2-api-20111203";
+	if (! -x "/usr/sbin/a2query")
+	{
+		error("package appears to be an Apache module, however there is	no a2query executable available. Missing apache2-dev build dependency?");
+	}
+	my $api = `a2query -a`;
+	chomp($api);
+	return "apache2-api-$api";
 }
 
 
 sub apache_version
 {
-	# TODO: replace me
-	return ">= 2.2~";
+	# Use a2query when available. However, some web application don't need a
+	# build-dependency against apache2 (or even apache2-dev). Return
+	# something sensible then as fallback
+	if (-x "/usr/sbin/a2query")
+	{
+		my $version = `a2query -v`;
+		chomp($version);
+		return ">= $version~";
+	}
+	else
+	{
+		return ">= 2.3~";
+	}
 }
 
 sub apache_api_installdir
 {
-	# TODO: replace me
-	return "/usr/lib/apache2/modules/";
+	if (! -x "/usr/sbin/a2query")
+	{
+		error("package appears to be an Apache module, however there is	no a2query executable available. Missing apache2-dev build dependency?");
+	}
+	my $md = `a2query -d`;
+	chomp($md);
+	return "$md";
 }
 
 sub apache_conf_installdir
 {
 	my $type = shift;
-	# TODO: replace me
 	return "etc/apache2/${type}-available/"
 }
 
@@ -426,7 +446,7 @@ foreach my $package (getpackages())
 			$modules .= "$module ";
 		}
 
-		push @postinst_autoscripts, ["a2enmod", $modules];
+		push @postinst_autoscripts, ["enmod", $modules];
 	}
 
 	if ($#{$PACKAGE_TYPE{'has_a_conf_file'}} >= 0 or $#{$PACKAGE_TYPE{'has_a_site_conf'}} >= 0)
@@ -449,11 +469,11 @@ foreach my $package (getpackages())
 
 		if ($confs)
 		{
-			push @postinst_autoscripts, ["a2enconf", $confs];
+			push @postinst_autoscripts, ["enconf", $confs];
 		}
 		if ($sites)
 		{
-			push @postinst_autoscripts, ["a2ensite", $sites];
+			push @postinst_autoscripts, ["ensite", $sites];
 		}
 
 	}
@@ -463,7 +483,7 @@ foreach my $package (getpackages())
 		foreach my $ref (@postinst_autoscripts)
 		{
 			autoscript($package, "postinst", "postinst-apache2", "s/#HELPER#/$ref->[0]/; s/#NAMES#/$ref->[1]/; s/#ERROR_HANDLER#/$PACKAGE_TYPE{'handler'}/; s/#CONDITIONAL_VARIABLE#/$PACKAGE_TYPE{'conditional'}/;");
-			$ref->[0] =~ s/a2en/a2dis/;
+			$ref->[0] =~ s/en/dis/;
 			autoscript($package, "postrm", "postrm-apache2", "s/#HELPER#/$ref->[0]/; s/#NAMES#/$ref->[1]/; s/#ERROR_HANDLER#/$PACKAGE_TYPE{'handler'}/; s/#CONDITIONAL_VARIABLE#/$PACKAGE_TYPE{'conditional'}/;");
 		}
 	}

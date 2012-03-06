@@ -5,8 +5,9 @@
 # Uncomment this to turn on verbose mode.
 export DH_VERBOSE=1
 
-LSB_RELEASE := $(shell lsb_release -i -s)
-
+SERVER_VERSION := $(shell dpkg-parsechangelog | perl -ne 'print $$1 if m/Version:\s*([\d\.]+)/')
+MODULE_DIR := /usr/lib/apache2/modules/
+API = $(shell perl -ne 'print $$1 if m/define\s+MODULE_MAGIC_NUMBER_MAJOR\s+?(.*)$$/' < include/ap_mmn.h)
 AP2_CFLAGS = -pipe $(shell dpkg-buildflags --get CFLAGS)
 AP2_LDFLAGS = -Wl,--as-needed $(shell dpkg-buildflags --get LDFLAGS)
 AP2_CPPFLAGS = -DPLATFORM='\"$(LSB_RELEASE)\"' $(shell dpkg-buildflags --get CPPFLAGS)
@@ -28,6 +29,11 @@ clean-config-vars:
 	printf "EXTRA_CPPFLAGS = \n" >> tmp_config_vars.mk ; \
 	printf "EXTRA_CFLAGS = \n" >> tmp_config_vars.mk ; \
 	mv tmp_config_vars.mk config_vars.mk ) ;
+
+prepare-a2query:
+	sed 's#__SERVER_VERSION__#$(SERVER_VERSION)#; s#__MODULE_DIR__#$(MODULE_DIR)#; s#__API__#$(API)#;' debian/a2query.in > debian/a2query ; \
+	(grep -s -v apache2:API debian/apache2-bin.substvars; echo apache2:API=apache2-api-$(API)) > debian/apache2-bin.substvars.new ; \
+	mv debian/apache2-bin.substvars.new debian/apache2-bin.substvars
 
 suexec-maintainer-scripts:
 	set -e ; \
@@ -59,7 +65,7 @@ override_dh_auto_configure: prepare-custom-suexec suexec-maintainer-scripts
 		CFLAGS="$(AP2_CFLAGS)" CPPFLAGS="$(AP2_CPPFLAGS)" LDFLAGS="$(AP2_LDFLAGS)" \
 		$(AP2_EXTRAFLAGS)
 
-override_dh_install: clean-config-vars
+override_dh_install: clean-config-vars prepare-a2query
 	dh_install --list-missing
 
 override_dh_fixperms:
@@ -103,4 +109,4 @@ override_dh_auto_install:
 
 
 
-.PHONY: prepare-custom-suexec suexec-maintainer-scripts clean-config-vars
+.PHONY: prepare-custom-suexec suexec-maintainer-scripts clean-config-vars prepare-a2query

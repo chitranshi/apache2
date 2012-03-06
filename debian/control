@@ -48,7 +48,7 @@ Package: apache2-bin
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 # MODULE_MAGIC_NUMBER_MAJOR from apache2/include/ap_mmn.h
-Provides: apache2-api-20120211
+Provides: ${apache2:API}
 Suggests: www-browser, apache2-doc, apache2-suexec-pristine | apache2-suexec-custom
 Replaces: apache2.2-bin (<< 2.3~), apache2.2-common (<< 2.3~),
 Breaks: apache2.2-bin (<< 2.3~), apache2.2-common (<< 2.3~),
@@ -159,7 +159,8 @@ Description: Apache HTTP Server (on-site documentation)
 
 Package: apache2-dev
 Architecture: any
-Depends: ${misc:Depends}, apache2 (= ${binary:Version}), openssl, libaprutil1-dev
+Depends: ${misc:Depends}, apache2 (= ${binary:Version}), openssl,
+ libaprutil1-dev, dh-apache2
 Priority: extra
 Provides: apache2-prefork-dev, apache2-threaded-dev
 Replaces: apache2-prefork-dev, apache2-threaded-dev
@@ -186,3 +187,16 @@ Description: Apache debugging symbols
  This package includes the debugging symbols. It can be used to debug
  crashing server instances and modules.  See
  /usr/share/doc/apache2/README.backtrace for more information.
+
+Package: dh-apache2
+Section: devel
+Priority: optional
+Architecture: all
+Depends: debhelper (>= 7.0.50~), ${misc:Depends}
+Description: Apache debhelper utilities
+ The apache debhelper provides dh_apache2 and dh sequence addons useful to
+ install various Debian Apache2 extensions. It supports
+ - Apache 2 module configurations and shared objects
+ - Site configuration files
+ - Global configuration files
+

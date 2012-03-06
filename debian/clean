@@ -10,5 +10,6 @@ debian/apache2-suexec-pristine.prerm
 debian/apache2-suexec-pristine.links
 debian/apache2-suexec-pristine.dirs
 debian/apache2-suexec-pristine.lintian-overrides
+debian/a2query
 support/suexec-custom.c
 config.nice

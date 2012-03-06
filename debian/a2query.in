@@ -1,12 +1,13 @@
 #! /usr/bin/perl
 
+use feature "switch";
 use strict;
 use Getopt::Std;
 
 our $APACHE2 = "apache2ctl";
-our $API = "20111203";
-our $MODULE_DIR = "/usr/lib/apache2/modules/";
-our $SERVER_VERSION = "2.4.1";
+our $API = "__API__";
+our $MODULE_DIR = "__MODULE_DIR__";
+our $SERVER_VERSION = "__SERVER_VERSION__";
 our $MPM = "invalid";
 our $CONFIG_DIR = "/etc/apache2";
 our @MODULES = ();
@@ -106,6 +107,7 @@ sub load_sites
 	}
 	closedir(DIR);
 }
+
 
 load_defaults();
 load_modules();

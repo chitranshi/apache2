@@ -1,0 +1,102 @@
+EXPORT_APACHE2_MAINTSCRIPT_HELPER=1
+
+apache2_has_module()
+{
+	[ -x /usr/sbin/a2query ] || return 1
+	local MODULE="$1"
+	if a2query -m $MODULE > /dev/null ; then
+		return 0
+	fi
+
+	return 1
+}
+
+apache2_switch_mpm()
+{
+	[ -x /usr/sbin/a2query ] || return 1
+	[ -x /usr/sbin/a2dismod ] || return 1
+	[ -x /usr/sbin/a2enmod ] || return 1
+
+	local MPM="$1"
+	MPM=$(echo "$MPM" | sed -e 's/^mpm_//')
+
+	if [ ! -e "/etc/apache2/mods-available/mpm_$MPM.load" ] ; then
+		return 1
+	fi
+
+	CUR_MPM=$(a2query -M) || return 1
+
+	if [ $CUR_MPM != $MPM ] ; then
+		a2dismod -q "mpm_$CUR_MPM";
+		a2enmod -q "mpm_$MPM";
+	fi
+
+	if ! apache2_has_module "mpm_$MPM" ; then
+		# rollback
+		a2enmod -q "mpm_$CUR_MPM"
+		return 1
+	fi
+
+}
+
+apache2_invoke()
+{
+	local CMD=$1
+	shift
+	local invoke_rcd=0
+	local check_switch=""
+
+	[ -x "/usr/sbin/a2$CMD" ] || return 1
+	[ -x "/usr/sbin/a2query" ] || return 1
+
+	case "$CMD" in
+		*conf)
+			check_switch="-c"
+			;;
+		*mod)
+			check_switch="-m"
+			;;
+		*site)
+			check_switch="-s"
+			;;
+		*)
+			;;
+	esac
+
+	for CONF in $@ ; do
+		case "$CMD" in
+			enconf|enmod|ensite)
+				if a2query $check_switch $CONF > /dev/null 2>&1 ; then
+					continue
+				fi
+				invoke_rcd=1
+				a2$CMD -q "$CONF" || return 1
+				;;
+			disconf|dismod|dissite)
+				if ! a2query $check_switch $CONF > /dev/null 2>&1 ; then
+					continue
+				fi
+				invoke_rcd=1
+				a2$CMD -q "$CONF" || return 1
+				;;
+			*)
+				return 1
+				;;
+		esac
+	done
+
+	if [ $invoke_rcd -eq 1 ] ; then
+		apache2_reload
+	fi
+
+}
+
+
+apache2_reload()
+{
+	if apache2ctl configtest 2>/dev/null; then
+		invoke-rc.d apache2 force-reload || true
+	else
+		echo "Your configuration is broken. Not restarting Apache 2."
+	fi
+}

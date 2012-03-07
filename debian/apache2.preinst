@@ -101,7 +101,7 @@ case "$1" in
         # black magic follows below. we're upgrading from Squeeze if
 
         # 1) an apache2-mpm package exists
-        if [ -n "$2" ] && [ -d "/etc/apache2/" ] ; then
+        if [ -d "/etc/apache2/" ] ; then
             mpm=$(dpkg-query -f '${Package}\t${Status}\n'  -W 'apache2-mpm-*' 2>/dev/null) || true
             if [ $? -eq 0 ] ; then
                 mpm=$(echo "$mpm" | grep "install ok" | cut -f1)

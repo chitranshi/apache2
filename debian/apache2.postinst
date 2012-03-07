@@ -51,13 +51,13 @@ SQUEEZE_UPGRADE=0
 #      around or an /etc/apache2/.apache2_upgrade file exists.
 we_are_upgrading_from_squeeze()
 {
-        if [ -n $2 ] && dpkg --compare-versions "$2" le-nl "2.3"; then
+        if [ -n "$2" ] && dpkg --compare-versions "$2" le-nl "2.3"; then
                 return 0
         fi
 
 	# this check is a probably tautology but makes it easier to understand
 	# the logic
-	if [ -n $2 ] && dpkg --compare-versions "$2" ge-nl "2.3"; then
+	if [ -n "$2" ] && dpkg --compare-versions "$2" ge-nl "2.3"; then
                 return 1
         fi
 
@@ -188,10 +188,15 @@ enable_default_mpm()
 
 }
 
+#XXX: Modules which were enabled in 2.2 but aren't in 2.4 so far:
+#      env setenvif status auth_basic deflate
+#      authz_default authz_user authz_groupfile authn_file
+#     n.b. most of these modules are loaded as dependency if a module.conf file
+#     demands it.
 enable_default_modules()
 {
 	if is_fresh_install $@ || we_are_upgrading_from_squeeze $@; then
-	        for module in authz_host alias cgi dir ; do
+	        for module in authz_host alias cgi dir autoindex mime negotiation ; do
         	        a2enmod -q $module
 	        done
 	fi
@@ -310,40 +315,66 @@ move_httpd_conf()
 migrate_data()
 {
 	#XXX: jimjag recommends purging the cache albeit it is probably not
-	#     technically required. 
+	#     technically required.
+	#if we_are_upgrading_from_squeeze $@ ; then
+	#	# /var/cache/apache2/mod_disk_cache -> /var/cache/apache2/mod_cache_disk
+	#	if [ -d /var/cache/apache2/mod_disk_cache ] && [ "$(ls -A /var/cache/apache2/mod_disk_cache)" ] ; then
+	#		echo "Migrate mod_disk_cache cache data to /var/cache/apache2/mod_cache_disk/"
+	#		mv /var/cache/apache2/mod_disk_cache/* /var/cache/apache2/mod_cache_disk/
+	#		rmdir /var/cache/apache2/mod_disk_cache
+	#	fi
+	#fi
 	if we_are_upgrading_from_squeeze $@ ; then
-		# /var/cache/apache2/mod_disk_cache -> /var/cache/apache2/mod_cache_disk
-		if [ -d /var/cache/apache2/mod_disk_cache ] && [ "$(ls -A /var/cache/apache2/mod_disk_cache)" ] ; then
-			echo "Migrate mod_disk_cache cache data to /var/cache/apache2/mod_cache_disk/"
-			mv /var/cache/apache2/mod_disk_cache/* /var/cache/apache2/mod_cache_disk/
-			rmdir /var/cache/apache2/mod_disk_cache
+		if [ -d /var/cache/apache2/mod_disk_cache ] ; then
+			echo "Purge obsolete mod_disk_cache cache data in /var/cache/apache2/mod_cache_disk/"
+			rm -rf /var/cache/apache2/mod_disk_cache
 		fi
+	fi
+}
+
+guess_access_compat()
+{
+	if we_are_upgrading_from_squeeze $@ ; then
+		CONFS=""
+		if [ -f /etc/apache2/apache2.conf ] ; then
+			CONFS="/etc/apache2/apache2.conf"
+		fi
+                shopt -s nullglob
+		for confdir in /etc/apache2/sites-enabled /etc/apache2/conf-enabled /etc/apache2/mods-enabled ; do
+			if [ -d $confdir ] ; then
+				for conffile in $confdir/*.load ; do
+					CONFS="$CONFS $conffile"
+				done
+			fi
+		done
+
+		for conffile in $CONFS ; do
+			if grep -Ei "^\s*\b(Order|Allow|Deny)\b" $conffile > /dev/null ; then
+				echo "Enable mod_access_compat for Apache 2.2 compatibility"
+				a2enmod -q access_compat
+				return
+			fi
+		done
 	fi
 }
 
 #XXX: Deal with the sites-available/sites-enabled *.conf transition, e.g. rename
 #     all files which look like site configuration?
-#XXX: Re-enable modules which were enabled in 2.2 but aren't in 2.4 so far:
-#      autoindex env mime negotiation setenvif status auth_basic deflate
-#      authz_default authz_user authz_groupfile authn_file
-#     n.b. most of these modules are loaded as dependency if a module.conf file
-#     demands it.
-
-
 
 case "$1" in
         configure)
 
                 remove_conffiles $@
 		mv_conffiles $@
-                refresh_modules $@
                 enable_default_mpm $@
+                refresh_modules $@
                 install_default_files $@
                 enable_default_modules $@
 		enable_default_conf $@
                 install_default_site $@
 		move_httpd_conf $@
 		migrate_data $@
+		guess_access_compat $@
 
                 # post installation cleanup
                 if [ -e /etc/apache2/.apache2_mpm_selected ] ; then

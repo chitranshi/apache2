@@ -1,5 +1,16 @@
 EXPORT_APACHE2_MAINTSCRIPT_HELPER=1
 
+#
+# Function apache2_has_module
+# 	checks whether a supplied module is enabled in the current Apache server
+# 	configuration
+# Parameters:
+#	module - the module name which should be checked. Can be a regular
+#		string or a Perl compatible regular expression e.g. cgi(d|)
+# Returns:
+#	0 if the module(s) was/were found
+#	1 otherwise
+# Since: 2.4.1-1
 apache2_has_module()
 {
 	[ -x /usr/sbin/a2query ] || return 1
@@ -11,6 +22,19 @@ apache2_has_module()
 	return 1
 }
 
+#
+# Function apache2_switch_mpm
+#	switches the MPM enabled on the web server. This function switches the
+#	MPM unconditionally but does careful checks to make sure the web server
+#	is left back with a working MPM.
+#	It checks whether the supplied MPM exists and enables it on purpose.
+# Parameters:
+#	mpm - change the MPM to the supplied argument. It should be given
+#	without "mpm_" prefix, e.g. "worker", "prefork", and so on.
+# Returns:
+#	0 if the MPM could be changed
+#	1 otherwise
+# Since: 2.4.1-1
 apache2_switch_mpm()
 {
 	[ -x /usr/sbin/a2query ] || return 1
@@ -39,6 +63,24 @@ apache2_switch_mpm()
 
 }
 
+#
+# Function apache2_invoke
+#	invokes an Apache 2 configuration helper to enable or disable a
+#	particular piece of configuration, a site or a module. It carefully
+#	checks whether the supplied configuration snippet exists and reloads the
+#	web server if the site administrator desires that by calling the
+#	apache2_reload function.
+# Parameters:
+#	command - The command to invoke. Recognized commands are "enconf",
+#		"enmod", "ensite", "disconf", "dismod", "dissite"
+#	arguments - A variable number or arguments (e.g. modules) which shall be
+#		enabled or disabled respectively. Do not enable module
+#		dependencies that way, instead use module dependencies as
+#		documented in </usr/share/doc/apache2/PROGRAMMING>.
+# Returns:
+#	0 if the changes could be activated
+#	1 otherwise
+# Since: 2.4.1-1
 apache2_invoke()
 {
 	local CMD=$1
@@ -91,7 +133,17 @@ apache2_invoke()
 
 }
 
-
+#
+# Function apache2_reload
+#	reloads the web server to activate a changed configuration. It does not
+#	actually reload the web server if the current configuration fails to
+#	parse.
+# Parameters:
+#	This function does not take any arguments
+# Returns:
+#	0 if the changes could be activated
+#	1 otherwise
+# Since: 2.4.1-1
 apache2_reload()
 {
 	if apache2ctl configtest 2>/dev/null; then

@@ -126,6 +126,11 @@ apache2 (2.4.1-1) experimental; urgency=low
     server.
     Thus, dh_apache2 can be used for Apache web server modules and web
     applications providing configuration files for Apache.
+  * Write apache2-maintscript-helper which packagers can use to interface in a
+    reliable way with the Apache 2 web server in maintainer scripts
+  * Document programming hints how to interface with the Apache 2 web server for
+  * packagers of web applications and module maintainer in
+    /usr/share/doc/apache2/PROGRAMMING
 
   [ Stefan Fritsch ]
 
@@ -144,7 +149,7 @@ apache2 (2.4.1-1) experimental; urgency=low
   * Migrate patches to DEP-3 format. For particular changes see the summary
     above.
 
- -- Arno Töll <debian@toell.net>  Mon, 05 Mar 2012 17:54:39 +0100
+ -- Arno Töll <debian@toell.net>  Fri, 09 Mar 2012 00:24:02 +0100
 
 apache2 (2.2.22-1) unstable; urgency=low
 

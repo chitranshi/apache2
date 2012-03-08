@@ -1,0 +1,225 @@
+Contents
+========
+
+	Overview
+
+	Packaging Modules
+
+	Packaging Sites and Configurations for Web Applications
+
+	Tools
+		a2query
+		apache2-maint-helper
+		dh_apache2
+
+
+Overview
+========
+
+The Apache 2 web server package in Debian supports two types of reverse
+dependencies: modules and web applications. They need to be treated differently
+as their requirements are different. We have special requirements how to declare
+dependencies against Apache 2 web server packages depending on the type of
+package. Refer to the respective parts for extensive information.
+
+Furthermore, there are several helper tools available to assist on common tasks.
+These are outlined in their respective sub sections as well. You should use
+these tools to get maintainer scripts and dependencies right.
+
+Packaging Modules
+=================
+
+Modules are packages which are installing third party extensions to the Apache 2
+web server which can be loaded at runtim to extend the functionality of the core
+server. Please realize such modules make us of a stable Application Binary
+Interface (ABI) once compiled which need a recompile if the web server changes.
+Hence be careful how you declare dependencies against the web server. You need
+to make sure it does not break upon upgrades.
+
+A module package providing an Apache module must obey our policies to make sure
+it can be upgraded without breakage at the installation site. To achieve this, a
+package must build-depend on apache2-dev. This package provides the 'apxs'
+compile helper which makes sure the module is compatible with the Apache 2 web
+server and required include header.
+
+The resulting binary package should be called libapache2-mod-<modulename> and
+MUST NOT depend on apache2 or apache2-bin. Instead a module package must depend
+on our virtual package providing the module magic number denoting the ABI
+compatibility version number. The virtual package is called apache2-api-YYYYMMDD
+and guaranteed to be stable among all binary updates. The dh_apache2 helper
+assists to get dependencies right.
+
+The module must install a 'module.load' file to /etc/apache2/modules-available
+where 'module' is the name of the installed module without "mod_" prefix. The
+'.load' file must contain an appropriate "LoadModule" directive only.
+Additionally maintainer can declare module dependencies and conflicts in a magic
+line in '.load' files which need to be resolved to load a module at the
+installation site. This is useful if a module depends that other modules to be
+loaded, or to conflict with other modules if they can't be loaded at the same
+time. a2enmod and a2dismod will parse "# Depends: module[, module]" and "#
+Conflicts: module[, module]" magic comments, for example to load mod_foo:
+
+foo.load:
+
+	# Depends: bar
+	# Conflicts: baz
+	LoadModule foo_module /usr/lib/modules/mod_foo.so
+
+
+Additionally, a 'foo.conf' configuration file can be installed along the 'load'
+file to configure the module if required. This is useful if the module in
+question requires some initial configuration to be useful. No magic comments are
+recognized in '.conf' files.
+
+Maintainer scripts should not invoke a2enmod directly. Instead, the
+apache2-maintscript-helper should be used. Please realize, the helper is not
+guaranteed to be installed on the target system. There are certain setups which
+do not require Debian specific configurations, so modules must not do anything
+in maintainer scripts which makes use of Debian specific enhancements like
+apache2-maintscript-helper, a2enmod or a2query unconditionall. It is recommended
+to invoke it like this:
+
+        if [ -e /usr/share/apache2/apache2-maintscript-helper ] ; then
+		. /usr/share/apache2/apache2-maintscript-helper
+		apache2_invoke enmod foo
+	fi
+
+The dh_apache2 helper can be used to install module configuration and load
+files. Additionally it generates appropriate maintainer scripts. The
+apache2-maintscript-helper provides a few functions for common tasks. See their
+respective reference documentations below.
+
+Packaging Sites and Configurations for Web Applications
+=======================================================
+
+Web applications are different to modules in a way, that they do not have a hard
+dependency agains the web server. Typically they require a running web server,
+but they do not need to worry about binary compatibility of modules. We accept
+there are other web servers aside of Apache, thus we discourage package
+maintainer of web applications not to depend unconditionally on Apache. That
+said, we provide several helper to assist web application packagers to invoke
+configuration snippets to enable a web application in the Apache 2 web server.
+
+We differentiate between two sub types: Site configuration and global
+configuration. Sites are installed to /etc/apache2/sites-available and should
+configure particular virtual hosts. Special care must be taken when installing a
+site configuration to mak sure it does not interfere with site local
+configuration the administrator uses.
+The globale configuration snippets are installed to /etc/apache2/conf-available
+instead. Package maintainers are advised to avoid "local-" prefixes to installed
+conffiles, and ideally use "packagename.conf" to avoid name clashes. This type
+of configration shall be used when installing a global (i.e. virtual host
+independent) configuration. In both cases dh_apache2 can be used to assist
+packagers.
+
+Web applications must depend (or recommend) apache2 only. Web applications must
+not depend or recommend apache2-bin or apache2-data packages. Generally web
+server dependencies should be declared in the form:
+
+	Depends: apache2 | <alternative web servers you support> | httpd-cgi
+
+Using dh_apache2 assists you to do so, although dh_apache2 declares a weaker
+Recommends relation only. If your web application depends on a particular web
+server module you need to depend on it, too. For example, PHP applications might
+need to formulate dependency lines in the form:
+
+	Depends: libapache2-mod-php5 | php5-cgi | php5-fpm
+	Recommends: apache2 | <alternative web servers you support> | httpd-cgi
+
+Similar to modules, web applications can enable their configuration files in
+maintainer scripts. Use of dh_apache2 is recommended to achieve this. Generally
+special care must be taken not to use Apache2 Debian helper scripts like a2query
+and a2enmod unconditionally. You can use the apache2-maintscript-helper tools
+provided by the apache2 package for common tasks this way:
+
+        if [ -e /usr/share/apache2/apache2-maintscript-helper ] ; then
+		. /usr/share/apache2/apache2-maintscript-helper
+		apache2_invoke enconf foo
+	fi
+
+Refer to the reference documentation below to learn how to use
+apache2-maintscript-helper. Do not enable or disable modules in web
+application maintainer scripts, instead protect your configuration by <IfModule>
+clauses if you require non-standard modules.
+
+Tools
+=====
+
+apache2-maint-helper
+--------------------
+
+The apache2-maint-helper is a collection of functions which can be sourced in
+maintainer scripts to do often required tasks in a simple and standardized way
+to package maintainers. It is NOT a script, it is a library (insofar shell
+functions can be called as such). The helper is installed within the apache2
+binary package. Thus you MUST NOT use any function of it unconditionally, as for
+both modules and web applications there are use cases when this package is not
+added as a dependency. Thus, use it in a protected conditional like this only:
+
+        if [ -e /usr/share/apache2/apache2-maintscript-helper ] ; then
+		. /usr/share/apache2/apache2-maintscript-helper
+		<call apache2-maintscript-helper specific functions>
+	fi
+
+If you use various debhelper, chances are the apache2-maintscript-helper was
+already sourced. In such cases you can check the
+$EXPORT_APACHE2_MAINTSCRIPT_HELPER variable which is defined once the helper was
+loaded. For example in a clause like this:
+
+	if [ -z $EXPORT_APACHE2_MAINTSCRIPT_HELPER ] ; then
+		. /usr/share/apache2/apache2-maintscript-helper
+	fi
+
+The helper provides functions to enable and disable configuration files, restart
+the web server, switch the MPM in use and similar. Refer to the source code for
+detailed interface documentation. When available, please use the
+apache2-maintscript-helper instead of calling helper scripts directly, as these
+functions are careful to invoke and use particular helper. Always check the
+return code of the called function to find out whether something went wrong:
+
+	if ! apache2_invoke enmod modulename ; then
+		echo "Whoops! Something went wrong"
+	fi
+
+dh_apache2
+----------
+
+dh_apache2 is a debhelper which can be used to install modules, module
+configuration, site configuration and global configuration snippets. It assists
+you to set appropriate dependencies and maintainer scripts. Refer to
+dh_apache2(1) for full usage guidelines.
+
+a2enmod
+-------
+
+a2enmod and its special invokations a2enconf, a2ensite, a2dismod, a2dissite and
+a2disconf can be used to enable all types of Apache 2 configuration files. When
+invoking these helpers in maintainer scripts, you should carefully check their
+error return codes. Use these scripts with the -q (quiet) switch only in
+maintainer scripts. Ideally you should not interface with this scripts directly,
+instead it is recommended to use apache2-maint-helper. For detailed usage refer
+to their respective man pages.
+
+a2query
+------
+
+a2query is a query tool to retrieve runtime status information about the Apache
+2 web server instance. You can use this tool to get information about loaded
+modules, the MPM used on the installation site, the module magic number and
+other useful information. Use this script instead of accessing configuration
+files in /etc/apache2 directly as it tries its best to return useful information
+even on incomplete or broken configurations.
+
+For example you can use a2query to retrieve the MPM enabled at the installation
+site and make actions dependent on the result like this:
+
+        [ -x /usr/sbin/a2query ] || exit $?
+        CUR_MPM=$(a2query -M) || exit $?
+	case "$CUR_MPM" in
+		worker)
+		;;
+	...
+	esac
+
+Refer to the a2query(1) man page for the full documentation. Please note, the
+apache2-maint-helper can be used to inteface with this task as well.

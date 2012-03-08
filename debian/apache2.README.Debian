@@ -13,13 +13,14 @@ Contents
 		SSL workaround for MSIE
 
 	Suexec
-	
+
 	Documentation
 
 	Upgrades
 
 	Common Problems
 
+	For Developers
 
 Apache2 Configuration under Debian GNU/Linux
 ============================================
@@ -31,7 +32,7 @@ administering the server as easy as possible.
 
 Please be aware that this layout is quite different from the standard
 Apache configuration. Due to the use of environment variables, apache2
-needs to be started/stopped with /etc/init.d/apache2 or apache2ctl. 
+needs to be started/stopped with /etc/init.d/apache2 or apache2ctl.
 Calling /usr/bin/apache2 directly will not work with the default
 configuration. To call apache2 with specific command line arguments,
 just call apache2ctl with the same arguments.
@@ -41,7 +42,27 @@ Files and Directories in /etc/apache2:
 
 apache2.conf
 
-	This is the main configuration file.
+	This is the main configuration file. It does not include any
+	actual configuration we expect to be adapted on your site. Thus,
+	please do not touch it when possible. This file is the building
+	block of the Apache configuration in Debian and should be up to
+	date after upgrades to make sure all configuration pieces are
+	properly included.
+
+	If you want to extend the global configuration you can customize
+	the Apache web server by including configuration files through the
+	conf-available mechanism. To change listening ports and socket
+	configuration use ports.conf (see below).
+
+ports.conf
+
+	Configuration directives for which ports and IP addresses to
+	listen to.
+
+magic
+
+	Patterns for mod_mime_magic. This is not compatible with the format
+	used by current versions of the file/libmagic packages.
 
 envvars
 
@@ -53,32 +74,29 @@ envvars
 	Here is also the default LANG=C setting that can be changed
 	to a different language.
 
-conf.d/
+conf-available/
 
 	Files in this directory are included by this line in
 	apache2.conf:
 
 	# Include generic snippets of statements
-	Include /etc/apache2/conf.d
+        IncludeOptional conf-enabled/*.conf
 
 	This is a good place to add additional configuration
-	directives. Packages should not use configuration
-	files that start with 'local-' or end with '.local'.
-	The local administrator can use these filenames to make
-	sure that there are no conflicts with files provided by
-	packages.
+	directives. All configuration snippets need a '.conf' suffix to be
+	included as actual configuration. The local administrator should
+	use file names starting with 'local-' to avoid name clashes with
+	files installed by packages.
 
-	If the local administrator is not comfortable with packages
-	activating their config files by default, it is possible
-	to change the 'Include /etc/apache2/conf.d/' in apache2.conf
-	into 'Include /etc/apache2/conf.d.enabled/' and create that
-	directory. He can then put symlinks to the files in conf.d
-	which he wants to enable into conf.d.enabled.
+	Configuration snippets can be enabled and disabled by using the
+	a2enconf and a2disconf executables. This works similar to the
+	approach used for modules and sites below.
 
-magic
+conf-enabled/
 
-	Patterns for mod_mime_magic. This is not compatible with the format
-	used by current versions of the file/libmagic packages.
+	Like mods-enabled/ and sites-enabled/, a piece of configuration is
+	enabled by symlinking a file from conf-available/ into this
+	directory. The a2enconf helper is provided to assist this task.
 
 mods-available/
 
@@ -97,17 +115,15 @@ mods-enabled/
 
 	cgi.load -> /etc/apache2/mods-available/cgi.load
 
-ports.conf
-
-	Configuration directives for which ports and IP addresses to
-	listen to.
+	The a2enmod helper can be used to enable a module.
 
 sites-available/
 
 	Like mods-available/, except it contains configuration
 	directives for different virtual hosts that might be used with
 	apache2.  Note that the hostname doesn't have to correspond
-	exactly with the filename.  'default' is the default host.
+	exactly with the filename.  '000-default' is the default host
+	which is provided by Debian.
 
 sites-enabled/
 
@@ -117,16 +133,16 @@ sites-enabled/
 
 	Apache uses the first VirtualHost that matches the IP/Port
 	as default for named virtual hosts. Therefore the 'default'
-	site is linked to '000-default' so that it will be read first.
+	site should be called '000-default' to make sure it sorts before
+	other sites.
 
 	Example:
 	dedasys -> /etc/apache2/sites-available/dedasys
 
-The Include directive ignores files with names that
+	The a2ensite helper can be used to enable a site.
 
-- do not begin with a letter or number
-- contain a character that is neither letter nor number nor _-.
-- contain .dpkg
+The Include directives ignore files with names that do not end with a
+.conf suffix. This behavior changed to previous releases!
 
 Other files
 -----------
@@ -141,7 +157,15 @@ a2enmod and a2dismod are available for enabling and disabling modules utilizing
 the above configuration system.
 
 a2ensite and a2dissite do essentially the same thing as the above tools, but
-for sites rather than modules.
+for sites rather than modules. Finally a2enconf and a2disconf are the
+respective tools for configuration snippets.
+
+a2query is a helper script providing runtime information about the running
+server instance. For example it can be used to query enabled modules, the
+picked MPM and other information. This tool is primarily meant to package
+maintainers who need to interact with the Apache packages to activate
+their configurations upon package installations, but can be used by users
+as well.
 
 apxs2 -a/-A is modified to use a2enmod to activate newly installed modules.
 
@@ -224,18 +248,22 @@ already contains this workaround.
 Suexec
 ======
 
-Debian ships two version of the suexec helper program required by mod_suexec.
-It is not installed by default, to avoid possible security issues. The package
-apache2-suexec contains the standard version that works only with document root
-/var/www, userdir suffix public_html, and Apache run user www-data. The package
-apache2-suexec-custom contains a customizable version, that can be configured
-with a config file to use different settings (like /srv/www as document root).
-For more information see the suexec(8) man page in the apache2-suexec-custom
-package.
+Debian ships two version of the suexec helper program required by
+mod_suexec. It is not installed by default, to avoid possible security
+issues. The package apache2-suexec-pristine contains the standard version
+that works only with document root /var/www, userdir suffix public_html,
+and Apache run user www-data. The package apache2-suexec-custom contains a
+customizable version, that can be configured with a config file to use
+different settings (like /srv/www as document root). For more information
+see the suexec(8) man page in the apache2-suexec-custom package.
 
 Since apache2-suexec-custom has received less testing and might be slightly
 slower, apache2-suexec is the recommended version unless you need the features
 from apache2-suexec-custom.
+
+Starting with Apache 2.4 both alternatives can be installed at the same
+time and the default suexec mechanism can be picked by using the
+update-alternatives(8) system.
 
 
 Documentation
@@ -388,3 +416,11 @@ later use.
 
 Apache also needs write permission to the directory containing the file, in
 order to replace it atomically.
+
+For Developers
+==============
+
+The Apache 2 web server package provides several helpers to assist
+packagers to interact with the web server for both, build and installation
+time. Please refer to the PROGRAMMING file in the apache2-dev package for
+detailed information.

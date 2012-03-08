@@ -5,6 +5,7 @@
 # Uncomment this to turn on verbose mode.
 export DH_VERBOSE=1
 
+LSB_RELEASE := $(shell lsb_release -i -s)
 SERVER_VERSION := $(shell dpkg-parsechangelog | perl -ne 'print $$1 if m/Version:\s*([\d\.]+)/')
 MODULE_DIR := /usr/lib/apache2/modules/
 API = $(shell perl -ne 'print $$1 if m/define\s+MODULE_MAGIC_NUMBER_MAJOR\s+?(.*)$$/' < include/ap_mmn.h)

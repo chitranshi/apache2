@@ -75,7 +75,7 @@ apache2 (2.4.1-1) experimental; urgency=low
   * Changes in the default configuration (not specific modules):
     + On the head of the apache2.conf configuration file, give a short summary
       how configuration of the Apache web server works in Debian.
-    + Drop NameVirtualHost entirely. It is deprecated
+    + Drop NameVirtualHost entirely. It is deprecated (Closes: #511594)
     + Remove DefaultType. It is deprecated.
     + Replace Allow/Deny directives in the default configuration by using the
       new Require directive. Load mod_access_compat if you rely on the old
@@ -93,7 +93,9 @@ apache2 (2.4.1-1) experimental; urgency=low
       files need  to have a .conf suffix now. The following configuration
       files are enabled by default: charset localized-error-pages
       other-vhosts-access-log  security.  These were enabled by default
-      previously, too (Closes: #620347).
+      previously, too (Closes: #620347, Closes: #605227).
+      This holds for apache2-doc as well, which is still enabled by default but
+      can be disabled easily anytime by using a2disconf (Closes: #604980).
     + Give site configuration a .conf suffix, too. For example the default vhost
       is called default.conf. Moreover, files without .conf suffix are ignored
       upon startup. Please update your site links and confs. Also rename the
@@ -151,7 +153,7 @@ apache2 (2.4.1-1) experimental; urgency=low
   * Migrate patches to DEP-3 format. For particular changes see the summary
     above.
 
- -- Arno Töll <debian@toell.net>  Fri, 09 Mar 2012 00:41:22 +0100
+ -- Arno Töll <debian@toell.net>  Fri, 09 Mar 2012 03:03:54 +0100
 
 apache2 (2.2.22-1) unstable; urgency=low
 

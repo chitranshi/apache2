@@ -130,7 +130,9 @@ apache2 (2.4.1-1) experimental; urgency=low
     reliable way with the Apache 2 web server in maintainer scripts
   * Document programming hints how to interface with the Apache 2 web server for
   * packagers of web applications and module maintainer in
-    /usr/share/doc/apache2/PROGRAMMING
+    /usr/share/doc/apache2/PROGRAMMING.
+  * Fix the watch file, thanks to Jean-Michel Vourgère for pointing out the
+    problem.
 
   [ Stefan Fritsch ]
 
@@ -149,7 +151,7 @@ apache2 (2.4.1-1) experimental; urgency=low
   * Migrate patches to DEP-3 format. For particular changes see the summary
     above.
 
- -- Arno Töll <debian@toell.net>  Fri, 09 Mar 2012 00:24:02 +0100
+ -- Arno Töll <debian@toell.net>  Fri, 09 Mar 2012 00:41:22 +0100
 
 apache2 (2.2.22-1) unstable; urgency=low
 

@@ -1,3 +1,16 @@
+# apache2-maintscript-helper - Apache2 helper function for maintainer scripts
+# Copyright (C) 2012 Arno Töll <debian@toell.net>
+#
+# As a special exception this file is not subject to any copyright and released
+# to the general public without any restriction in inclusion, embedding,
+# modification or distribution of this file. It can be included and used in any
+# other program without limitation.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+
 EXPORT_APACHE2_MAINTSCRIPT_HELPER=1
 
 #

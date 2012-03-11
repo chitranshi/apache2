@@ -2,23 +2,18 @@
 
 set -e
 
-# conffiles be moved before invoking rc.d
+# conffiles must be moved before invoking rc.d
 #DEBHELPER#
 
 # This code should use dh_apache2 once it is available as build dependency
 
 if [ "$1" = "configure" ] ; then
-        if [ -x "/usr/sbin/a2enconf" ] ; then
-                for S in apache2-doc ; do
-                        /usr/sbin/a2enconf -q $S || true
-                done
-
-                if [ -x "/etc/init.d/apache2" ]; then
-                      invoke-rc.d apache2 restart || true
-                fi
-
-        fi
+	if [ -e /usr/share/apache2/apache2-maintscript-helper ] ; then
+		if [ -z $EXPORT_APACHE2_MAINTSCRIPT_HELPER ] ; then
+			. /usr/share/apache2/apache2-maintscript-helper
+		fi
+		apache2_invoke enconf apache2-doc || true
+	fi
 fi
 
-exit 0
-
+exit

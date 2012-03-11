@@ -135,6 +135,8 @@ apache2 (2.4.1-1) experimental; urgency=low
     /usr/share/doc/apache2/PROGRAMMING.
   * Fix the watch file, thanks to Jean-Michel Vourgère for pointing out the
     problem.
+  * Update debian/copyright and switch it to the copyright-format 1.0 (formerly
+    known as DEP5)
 
   [ Stefan Fritsch ]
 
@@ -153,7 +155,7 @@ apache2 (2.4.1-1) experimental; urgency=low
   * Migrate patches to DEP-3 format. For particular changes see the summary
     above.
 
- -- Arno Töll <debian@toell.net>  Fri, 09 Mar 2012 03:03:54 +0100
+ -- Arno Töll <debian@toell.net>  Sun, 11 Mar 2012 01:00:01 +0100
 
 apache2 (2.2.22-1) unstable; urgency=low
 

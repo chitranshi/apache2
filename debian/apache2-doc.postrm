@@ -5,17 +5,15 @@ set -e
 # This code should use dh_apache2 once it is available as build dependency
 
 if [ "$1" = "purge" ] ; then
-        if [ -x "/usr/sbin/a2disconf" ] ; then
-                for S in apache2-doc ; do
-                        /usr/sbin/a2disconf -q $S || true
-                done
+	if [ -e /usr/share/apache2/apache2-maintscript-helper ] ; then
+		if [ -z $EXPORT_APACHE2_MAINTSCRIPT_HELPER ] ; then
+			. /usr/share/apache2/apache2-maintscript-helper
+		fi
+		apache2_invoke disconf apache2-doc || true
 
-                if [ -x "/etc/init.d/apache2" ]; then
-                      invoke-rc.d apache2 restart || true
-                fi
-
-        fi
+	fi
 fi
+
 
 #DEBHELPER#
 

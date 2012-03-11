@@ -36,7 +36,7 @@ prepare-a2query:
 	(grep -s -v apache2:API debian/apache2-bin.substvars; echo apache2:API=apache2-api-$(API)) > debian/apache2-bin.substvars.new ; \
 	mv debian/apache2-bin.substvars.new debian/apache2-bin.substvars
 
-suexec-maintainer-scripts:
+generate-maintainer-scripts:
 	set -e ; \
 	for type in custom pristine ; do \
 		for f in postinst preinst prerm links dirs lintian-overrides; do \
@@ -47,11 +47,10 @@ suexec-maintainer-scripts:
 		done ;\
 	done
 
-
 %:
 	dh $@ --parallel --with autotools_dev
 
-override_dh_auto_configure: prepare-custom-suexec suexec-maintainer-scripts
+override_dh_auto_configure: prepare-custom-suexec generate-maintainer-scripts
 	./configure --enable-layout=Debian --enable-so --with-program-name=apache2 \
 		--enable-suexec --with-suexec-caller=www-data \
 		--with-suexec-bin=/usr/lib/apache2/suexec --with-suexec-docroot=/var/www \
@@ -88,7 +87,10 @@ override_dh_installinit:
 override_dh_installdocs:
 	# TODO: So, did anyone check convert_docs needs an update? ;)
 	perl debian/convert_docs debian/apache2-doc/usr/share/doc/apache2-doc/manual
-	dh_installdocs --link-doc=apache2 -papache2 -papache2-dev -papache2-dbg
+	dh_installdocs --link-doc=apache2 -papache2 -papache2-dev -papache2-dbg \
+		-papache2-mpm-worker -papache2-mpm-prefork -papache2-mpm-event
+	dh_installdocs --link-doc=apache2-bin -papache2.2-bin
+	dh_installdocs --link-doc=apache2-suexec-pristine -papache2-suexec
 	dh_installdocs
 
 override_dh_installchangelogs:
@@ -96,7 +98,8 @@ override_dh_installchangelogs:
 	# package not to trash the disk at the installation site. Together with
 	# dh_installdocs this means that changelogs are installed in a few
 	# packages only.
-	dh_installchangelogs -Napache2.2-bin -Napache2-suexec -Napache2-mpm -Napache2-data
+	dh_installchangelogs -Napache2.2-bin -Napache2-suexec -Napache2-mpm-worker \
+		-Napache2-mpm-prefork -Napache2-mpm-event -Napache2-data
 
 override_dh_installman:
 	mv debian/tmp/usr/share/man/man8/suexec.8 debian/tmp/usr/share/man/man8/suexec-pristine.8
@@ -110,4 +113,4 @@ override_dh_auto_install:
 
 
 
-.PHONY: prepare-custom-suexec suexec-maintainer-scripts clean-config-vars prepare-a2query
+.PHONY: prepare-custom-suexec generate-maintainer-scripts clean-config-vars prepare-a2query

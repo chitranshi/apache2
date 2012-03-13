@@ -16,8 +16,9 @@ apache2 (2.4.1-1) experimental; urgency=low
     + Supports CONNECT request through https. (Closes: #307298)
     + New Upstream (2.4). (Closes: #662115)
 
-  * Refresh patches but leave all hunks unchanged where possible. Notable
-    changes are:
+  * Refresh patches but leave all hunks unchanged where possible. Give all
+  * patches a ".patch" suffix, drop sequence numbers as they are not needed when
+  * using quilt. Notable changes are.
     + [AT] 202_suexec-custom: Keep functionality as is, but rewrite smaller
       parts of the patch to build two binaries: suexec-pristine and
       suexec-custom (see below)
@@ -32,8 +33,8 @@ apache2 (2.4.1-1) experimental; urgency=low
         Include dir/*.conf must be used.
       + 009_apache2_has_dso: Upstream is no longer testing DSO is available. So
         we don't need to remove that test anymore.
-     + [JMV] Reresh 031_apxs2_sucks_more: <explain what you did>
-
+    + [AT] customize_apxs.patch: Aggregate changes from various apxs2 patches,
+      drop obsolete hunks
 
   [ Arno Töll ]
 
@@ -155,7 +156,7 @@ apache2 (2.4.1-1) experimental; urgency=low
   * Migrate patches to DEP-3 format. For particular changes see the summary
     above.
 
- -- Arno Töll <debian@toell.net>  Sun, 11 Mar 2012 01:00:01 +0100
+ -- Arno Töll <debian@toell.net>  Tue, 13 Mar 2012 22:19:34 +0100
 
 apache2 (2.2.22-1) unstable; urgency=low
 

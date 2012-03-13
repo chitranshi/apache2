@@ -15,7 +15,7 @@ AP2_CPPFLAGS = -DPLATFORM='\"$(LSB_RELEASE)\"' $(shell dpkg-buildflags --get CPP
 
 prepare-custom-suexec:
 	cp support/suexec.c support/suexec-custom.c
-	patch -p1 < debian/patches/202_suexec-custom
+	patch -p1 < debian/patches/suexec-custom.patch
 
 
 clean-config-vars:

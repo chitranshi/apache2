@@ -19,7 +19,7 @@ echo Setting up /etc/apache2-$SUFFIX ...
 cp -a /etc/apache2 /etc/apache2-$SUFFIX
 
 echo Setting up /etc/init.d/apache2-$SUFFIX ...
-cp /usr/share/doc/apache2.2-common/examples/secondary-init-script /etc/init.d/apache2-$SUFFIX
+cp /usr/share/doc/apache2/examples/secondary-init-script /etc/init.d/apache2-$SUFFIX
 # adjust service name (this prevents us from using a simple symlink)
 perl -p -i -e s,XXX,$SUFFIX, /etc/init.d/apache2-$SUFFIX
 chmod 755 /etc/init.d/apache2-$SUFFIX

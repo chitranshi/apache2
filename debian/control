@@ -206,7 +206,6 @@ Description: Apache debugging symbols
 
 Package: dh-apache2
 Section: devel
-Priority: optional
 Architecture: all
 Depends: debhelper (>= 7.0.50~), ${misc:Depends}
 Description: Apache debhelper utilities

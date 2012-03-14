@@ -298,7 +298,9 @@ move_httpd_conf()
         if we_are_upgrading_from_squeeze $@ ; then
 		if [ -e /etc/apache2/httpd.conf ] && [ -f /etc/apache2/httpd.conf ] ; then
 			local md5sum="$(md5sum /etc/apache2/httpd.conf | sed -e 's/ .*//')"
-			if [ $md5sum = "d41d8cd98f00b204e9800998ecf8427e" ] ;	then
+			if [ $md5sum = "d41d8cd98f00b204e9800998ecf8427e" ] ||
+			   [ $md5sum = "a20c3e53dd07836481a5e64bc71e1a33" ]
+			then
 				echo "Remove obsolete configuration file /etc/apache2/httpd.conf"
 				rm -f /etc/apache2/httpd.conf
 			else

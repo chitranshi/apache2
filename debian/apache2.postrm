@@ -48,9 +48,9 @@ case "$1" in
 		fi
 	fi
 
-        for CONFFILE in $OBSOLETE_CONFFILES ; do
-                rm -f "$CONFFILE.dpkg-bak" "$CONFFILE.dpkg-remove" "$CONFFILE.dpkg-backup"
-        done
+	for CONFFILE in $OBSOLETE_CONFFILES ; do
+		rm -f "$CONFFILE.dpkg-bak" "$CONFFILE.dpkg-remove" "$CONFFILE.dpkg-backup"
+	done
 
 	for d in var/cache/apache2 \
 		 var/cache/apache2/mod_cache_disk \
@@ -79,17 +79,17 @@ case "$1" in
     abort-install|abort-upgrade)
 
 
-        for CONFFILE in $OBSOLETE_CONFFILES ; do
+	for CONFFILE in $OBSOLETE_CONFFILES ; do
 
-                if [ -e "$CONFFILE.dpkg-remove" ]; then
-                        echo "Reinstalling $CONFFILE that was moved away"
-                        mv "$CONFFILE.dpkg-remove" "$CONFFILE"
-                fi
-                if [ -e "$CONFFILE.dpkg-backup" ]; then
-                        echo "Reinstalling $CONFFILE that was backupped"
-                        mv "$CONFFILE.dpkg-backup" "$CONFFILE"
-                fi
-        done
+		if [ -e "$CONFFILE.dpkg-remove" ]; then
+			echo "Reinstalling $CONFFILE that was moved away"
+			mv "$CONFFILE.dpkg-remove" "$CONFFILE"
+		fi
+		if [ -e "$CONFFILE.dpkg-backup" ]; then
+			echo "Reinstalling $CONFFILE that was backupped"
+			mv "$CONFFILE.dpkg-backup" "$CONFFILE"
+		fi
+	done
 
 	for CONFFILE in $MOVED_CONFFILES ; do
 
@@ -105,10 +105,10 @@ case "$1" in
 		fi
 	done
 
-        # post installation cleanup
-        if [ -e /etc/apache2/.apache2_mpm_selected ] ; then
-                rm -f /etc/apache2/.apache2_mpm_selected
-        fi
+	# post installation cleanup
+	if [ -e /etc/apache2/.apache2_mpm_selected ] ; then
+		rm -f /etc/apache2/.apache2_mpm_selected
+	fi
 
     ;;
 
@@ -116,8 +116,8 @@ case "$1" in
     ;;
 
     *)
-        echo "postrm called with unknown argument \`$1'" >&2
-        exit 1
+	echo "postrm called with unknown argument \`$1'" >&2
+	exit 1
     ;;
 esac
 

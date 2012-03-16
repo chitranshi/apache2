@@ -60,21 +60,21 @@ obsolete_conffile_exists()
 # See the dpkg-maintscript-helper script for details
 prepare_rm_conffile()
 {
-        for CONFFILE in $OBSOLETE_CONFFILES ; do
-                [ -e "$CONFFILE" ] || continue
+	for CONFFILE in $OBSOLETE_CONFFILES ; do
+		[ -e "$CONFFILE" ] || continue
 
-                local md5sum="$(md5sum $CONFFILE | sed -e 's/ .*//')"
-                local old_md5sum="$(dpkg-query -W -f='${Conffiles}' apache2.2-common apache2 | \
-                        sed -n -e "\' $CONFFILE ' { s/ obsolete$//; s/.* //; p }")"
-                if [ "$md5sum" != "$old_md5sum" ]; then
-                        echo "Obsolete conffile $CONFFILE has been modified by you."
-                        echo "Saving as $CONFFILE.dpkg-bak ..."
-                        mv -f "$CONFFILE" "$CONFFILE.dpkg-backup"
-                else
-                        echo "Moving obsolete conffile $CONFFILE out of the way..."
-                        mv -f "$CONFFILE" "$CONFFILE.dpkg-remove"
-                fi
-        done
+		local md5sum="$(md5sum $CONFFILE | sed -e 's/ .*//')"
+		local old_md5sum="$(dpkg-query -W -f='${Conffiles}' apache2.2-common apache2 | \
+			sed -n -e "\' $CONFFILE ' { s/ obsolete$//; s/.* //; p }")"
+		if [ "$md5sum" != "$old_md5sum" ]; then
+			echo "Obsolete conffile $CONFFILE has been modified by you."
+			echo "Saving as $CONFFILE.dpkg-bak ..."
+			mv -f "$CONFFILE" "$CONFFILE.dpkg-backup"
+		else
+			echo "Moving obsolete conffile $CONFFILE out of the way..."
+			mv -f "$CONFFILE" "$CONFFILE.dpkg-remove"
+		fi
+	done
 }
 
 prepare_mv_conffile()
@@ -98,27 +98,27 @@ prepare_mv_conffile()
 case "$1" in
     install|upgrade)
 
-        # black magic follows below. we're upgrading from Squeeze if
+	# black magic follows below. we're upgrading from Squeeze if
 
-        # 1) an apache2-mpm package exists
-        if [ -d "/etc/apache2/" ] ; then
-            mpm=$(dpkg-query -f '${Package}\t${Status}\n'  -W 'apache2-mpm-*' 2>/dev/null) || true
-            if [ $? -eq 0 ] ; then
-                mpm=$(echo "$mpm" | grep "install ok" | cut -f1)
-                if [ ! -f /etc/apache2/.apache2_mpm_selected ] ; then
-                    echo "# automatically created during upgrade" >> /etc/apache2/.apache2_mpm_selected
-                    echo "# it can be safely removed anytime" >> /etc/apache2/.apache2_mpm_selected
-                    echo "$mpm" >> /etc/apache2/.apache2_mpm_selected
-                fi
-            fi
-        fi
+	# 1) an apache2-mpm package exists
+	if [ -d "/etc/apache2/" ] ; then
+		mpm=$(dpkg-query -f '${Package}\t${Status}\n'  -W 'apache2-mpm-*' 2>/dev/null) || true
+		if [ $? -eq 0 ] ; then
+			mpm=$(echo "$mpm" | grep "install ok" | cut -f1)
+			if [ ! -f /etc/apache2/.apache2_mpm_selected ] ; then
+				echo "# automatically created during upgrade" >> /etc/apache2/.apache2_mpm_selected
+				echo "# it can be safely removed anytime" >> /etc/apache2/.apache2_mpm_selected
+				echo "$mpm" >> /etc/apache2/.apache2_mpm_selected
+			fi
+		fi
+	fi
 
-        # 2) an apache2.2-common conffiles exists or the 2.2 apache2 package is
+	# 2) an apache2.2-common conffiles exists or the 2.2 apache2 package is
 	# installed
 	if [ -n "$2" ] || obsolete_conffile_exists ; then
 		prepare_rm_conffile
 		prepare_mv_conffile
-       fi
+	fi
 
     ;;
 
@@ -126,8 +126,8 @@ case "$1" in
     ;;
 
     *)
-        echo "preinst called with unknown argument \`$1'" >&2
-        exit 1
+	echo "preinst called with unknown argument \`$1'" >&2
+	exit 1
     ;;
 esac
 

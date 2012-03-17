@@ -125,8 +125,8 @@ sites-available/
 	Like mods-available/, except it contains configuration
 	directives for different virtual hosts that might be used with
 	apache2.  Note that the hostname doesn't have to correspond
-	exactly with the filename.  '000-default' is the default host
-	which is provided by Debian.
+	exactly with the filename.  '000-default.conf' is the default
+	host which is provided by Debian.
 
 sites-enabled/
 
@@ -140,7 +140,7 @@ sites-enabled/
 	other sites.
 
 	Example:
-	dedasys -> /etc/apache2/sites-available/dedasys
+	dedasys.conf -> /etc/apache2/sites-available/dedasys.conf
 
 	The a2ensite helper can be used to enable a site.
 
@@ -203,8 +203,8 @@ To enable SSL, type (as user root):
 
 If you want to use self-signed certificates, you should install the ssl-cert
 package (see below). Otherwise, just adjust the SSLCertificateFile and
-SSLCertificateKeyFile directives in /etc/apache2/sites-available/default-ssl to
-point to your SSL certificate. Then restart apache:
+SSLCertificateKeyFile directives in /etc/apache2/sites-available/default-ssl.conf
+to point to your SSL certificate. Then restart apache:
 
 	/etc/init.d/apache2 restart
 
@@ -246,7 +246,7 @@ disabled even for non-SSL connections):
 		downgrade-1.0 force-response-1.0
 	BrowserMatch "MSIE [17-9]" ssl-unclean-shutdown
 
-The default SSL virtual host in /etc/apache2/sites-available/default-ssl
+The default SSL virtual host in /etc/apache2/sites-available/default-ssl.conf
 already contains this workaround.
 
 
@@ -322,7 +322,8 @@ This can usually be ignored but it means that Apache httpd was unable to obtain
 a fully-qualified hostname by doing a reverse lookup on your server's IP
 address. You may want to add the fully-qualified hostname to /etc/hosts .
 An alternative is to specify "ServerName 127.0.0.1" in the global server
-context of the configuration, e.g. in /etc/apache2/conf-enabled/servername.local .
+context of the configuration, e.g. in
+/etc/apache2/conf-enabled/local-servername.conf .
 
 2) Error message "mod_rewrite: could not create rewrite_log_lock"
 
@@ -404,8 +405,8 @@ Use apache2ctl (it accepts all options of apache2).
 By default, Apache will not give back unused memory but keep it around for
 later use.
 
-  * Tune StartServers, MaxRequestsPerChild, MinSpareThreads/MinSpareServers,
-    MaxSpareThreads/MaxSpareServers in /etc/apache2/apache2.conf
+  * Tune StartServers, MaxConnectionsPerChild, MinSpareThreads/MinSpareServers,
+    MaxSpareThreads/MaxSpareServers in /etc/apache2/mods-enabled/mpm_*.conf
 
   * If you are really starved for memory, try adding 'MaxMemFree 4' to your
     Apache configuration. This will reduce Apache's performance.

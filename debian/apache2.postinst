@@ -403,4 +403,14 @@ esac
 
 #DEBHELPER#
 
+# And now the traditional insanity of apache2 upgrades (see #390823):
+# If everything went well, we need to purge apache2.2-common's postrm, or
+# purging that package will remove our logs, caches, ...
+if [ "$1" = configure ] ; then
+	oldpostrm=$(dpkg-query -c apache2.2-common postrm||true)
+	if [ -n "$oldpostrm" ] ; then
+		rm -f "$oldpostrm"
+	fi
+fi
+
 exit 0

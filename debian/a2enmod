@@ -367,7 +367,7 @@ sub threaded {
         return 1;
     }
     else {
-        return 1;
+        die("Can't parse output from apache2ctl -V:\n$result\n");
     }
 }
 

@@ -346,8 +346,25 @@ sub remove_link {
 sub threaded {
     my $result = "";
     $result = qx{/usr/sbin/apache2ctl -V | grep 'threaded'} if -x '/usr/sbin/apache2ctl';
+    if ($? != 0) {
+        # config doesn't work
+        if ( -e "$enabldir/mpm_prefork.load" || -e "$enabldir/mpm_itk.load" ) {
+            return 0;
+        }
+        elsif ( -e "$enabldir/mpm_worker.load" || -e "$enabldir/mpm_event.load" ) {
+            return 1;
+        }
+        else {
+            error("Can't determine enabled MPM");
+            # do what user requested
+            return 0;
+        }
+    }
     if ( $result =~ / no/ ) {
         return 0;
+    }
+    elsif ( $result =~ / yes/ ) {
+        return 1;
     }
     else {
         return 1;

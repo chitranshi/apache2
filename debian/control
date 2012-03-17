@@ -19,8 +19,8 @@ Architecture: any
 Depends: ${misc:Depends}, lsb-base, procps [!hurd-i386],
  perl, mime-support, apache2-bin (= ${binary:Version}),
  apache2-data (= ${source:Version})
-Replaces: apache2.2-common (<< 2.3~)
-Breaks: apache2.2-common (<< 2.3~)
+Replaces: apache2.2-common
+Conflicts: apache2.2-common
 Recommends: ssl-cert
 Suggests: www-browser, apache2-doc, apache2-suexec-pristine | apache2-suexec-custom,
  apache2-utils
@@ -36,6 +36,7 @@ Package: apache2-data
 Architecture: all
 Depends: ${misc:Depends}
 Replaces: apache2.2-common
+Conflicts: apache2.2-common
 Description: Apache HTTP Server (common files)
  The Apache Software Foundation's goal is to build a secure, efficient and
  extensible HTTP server as standards-compliant open source software. The
@@ -50,8 +51,8 @@ Depends: ${shlibs:Depends}, ${misc:Depends}
 # MODULE_MAGIC_NUMBER_MAJOR from apache2/include/ap_mmn.h
 Provides: ${apache2:API}
 Suggests: www-browser, apache2-doc, apache2-suexec-pristine | apache2-suexec-custom
-Replaces: apache2.2-bin (<< 2.3~), apache2.2-common (<< 2.3~),
-Breaks: apache2.2-bin (<< 2.3~), apache2.2-common (<< 2.3~),
+Replaces: apache2.2-bin, apache2.2-common
+Conflicts: apache2.2-bin, apache2.2-common
 Description: Apache HTTP Server (binary files and modules)
  The Apache Software Foundation's goal is to build a secure, efficient and
  extensible HTTP server as standards-compliant open source software. The

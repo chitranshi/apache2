@@ -133,7 +133,7 @@ apache2 (2.4.1-1) experimental; urgency=low
     reliable way with the Apache 2 web server in maintainer scripts
   * Document programming hints how to interface with the Apache 2 web server for
   * packagers of web applications and module maintainer in
-    /usr/share/doc/apache2/PROGRAMMING.
+    /usr/share/doc/apache2/PACKAGING.gz.
   * Fix the watch file, thanks to Jean-Michel Vourgère for pointing out the
     problem.
   * Update debian/copyright and switch it to the copyright-format 1.0 (formerly

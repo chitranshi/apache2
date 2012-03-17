@@ -422,5 +422,5 @@ For Developers
 
 The Apache 2 web server package provides several helpers to assist
 packagers to interact with the web server for both, build and installation
-time. Please refer to the PROGRAMMING file in the apache2-dev package for
+time. Please refer to the PACKAGING file in the apache2 package for
 detailed information.

@@ -89,7 +89,7 @@ apache2_switch_mpm()
 #	arguments - A variable number or arguments (e.g. modules) which shall be
 #		enabled or disabled respectively. Do not enable module
 #		dependencies that way, instead use module dependencies as
-#		documented in </usr/share/doc/apache2/PROGRAMMING>.
+#		documented in </usr/share/doc/apache2/PACKAGING>.
 # Returns:
 #	0 if the changes could be activated
 #	1 otherwise

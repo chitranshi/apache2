@@ -41,13 +41,6 @@ MOVED_CONFFILES="/etc/bash_completion.d/apache2.2-common:/etc/bash_completion.d/
 case "$1" in
     purge)
 
-	# back to the future - yay!
-	if [ -x /etc/apache2/our_future_ourselves_thinks_we_are_crazy ] ; then
-		if  /etc/apache2/our_future_ourselves_thinks_we_are_crazy $@ ; then
-			return
-		fi
-	fi
-
 	for CONFFILE in $OBSOLETE_CONFFILES ; do
 		rm -f "$CONFFILE.dpkg-bak" "$CONFFILE.dpkg-remove" "$CONFFILE.dpkg-backup"
 	done

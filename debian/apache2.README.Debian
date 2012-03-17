@@ -32,10 +32,10 @@ administering the server as easy as possible.
 
 Please be aware that this layout is quite different from the standard
 Apache configuration. Due to the use of environment variables, apache2
-needs to be started/stopped with /etc/init.d/apache2 or apache2ctl.
-Calling /usr/bin/apache2 directly will not work with the default
-configuration. To call apache2 with specific command line arguments,
-just call apache2ctl with the same arguments.
+needs to be started/stopped with /etc/init.d/apache2, apachectl, or
+apache2ctl. Calling /usr/bin/apache2 directly will not work with the
+default configuration. To call apache2 with specific command line
+arguments, just call apache2ctl with the same arguments.
 
 Files and Directories in /etc/apache2:
 -------------------------------------
@@ -76,8 +76,8 @@ envvars
 
 conf-available/
 
-	Files in this directory are included by this line in
-	apache2.conf:
+	Files in this directory are included in the global server scope by
+	this line in apache2.conf:
 
 	# Include generic snippets of statements
         IncludeOptional conf-enabled/*.conf
@@ -91,6 +91,9 @@ conf-available/
 	Configuration snippets can be enabled and disabled by using the
 	a2enconf and a2disconf executables. This works similar to the
 	approach used for modules and sites below.
+
+	Configuration snippets can of course also be included in individual
+	virtual hosts.
 
 conf-enabled/
 
@@ -184,6 +187,8 @@ configuration of htcacheclean while apache2 is running, you may need to
 manually start/stop htcacheclean with "/etc/init.d/apache2 start-htcacheclean"
 or "/etc/init.d/apache2 stop-htcacheclean".
 
+Note that mod_cache_disk was named mod_disk_cache in versions 2.2 and earlier.
+
 
 SSL
 ===
@@ -271,7 +276,7 @@ Documentation
 
 The full Apache 2 documentation can be found on the web at
 
-http://httpd.apache.org/docs/2.2/
+http://httpd.apache.org/docs/2.4/
 
 or, if you have installed the apache2-doc package, in
 
@@ -303,7 +308,7 @@ Multiple instances
 ==================
 
 There is some support for running multiple instances of Apache2 on the same
-machine. See /usr/share/doc/apache2.2-common/README.multiple-instances for more
+machine. See /usr/share/doc/apache2/README.multiple-instances for more
 information.
 
 
@@ -317,7 +322,7 @@ This can usually be ignored but it means that Apache httpd was unable to obtain
 a fully-qualified hostname by doing a reverse lookup on your server's IP
 address. You may want to add the fully-qualified hostname to /etc/hosts .
 An alternative is to specify "ServerName 127.0.0.1" in the global server
-context of the configuration, e.g. in /etc/apache2/conf.d/servername.local .
+context of the configuration, e.g. in /etc/apache2/conf-enabled/servername.local .
 
 2) Error message "mod_rewrite: could not create rewrite_log_lock"
 
@@ -327,20 +332,14 @@ clean up the semaphores with:
 
 	ipcs -s | grep www-data | awk ' { print $2 } ' | xargs ipcrm sem
 
-3) Message "NameVirtualHost *:80 has no VirtualHosts" in error log
-
-Probably the VirtualHost definitions have not been adjusted after the 
-NameVirtualHost directive was changed in ports.conf. 
-See /usr/share/doc/apache2.2-common/NEWS.Debian.gz
-
-4) Message "File does not exist: /etc/apache2/htdocs" in error log
+3) Message "File does not exist: /etc/apache2/htdocs" in error log
 
 In most cases this means that no matching VirtualHost definition could be
 found for an incoming request. Check that the target IP address/port and the
 name in the Host: header of the request actually match one of the virtual
 hosts.
 
-5) Message "Couldn't create pollset in child; check user or system limits" in
+4) Message "Couldn't create pollset in child; check user or system limits" in
   error log
 
 On Linux kernels since 2.6.27.8, the value in
@@ -365,13 +364,15 @@ On the other hand, errors about to adding to a pollset are related to the
 setting fs.epoll.max_user_watches. On most systems, max_user_watches should be
 high enough by default.
 
-6) Message "Server should be SSL-aware but has no certificate configured" in
+5) Message "Server should be SSL-aware but has no certificate configured" in
    error log
 
 Since 2.2.12, Apache is stricter about certain misconfigurations concerning
 name based SSL virtual hosts. See NEWS.Debian.gz for more details.
 
-7) Apache does not pass Authorization header to CGI scripts
+XXX: TODO: document "Listen 443 http" quirk
+
+6) Apache does not pass Authorization header to CGI scripts
 
 This is intentional to avoid security holes. If you really want to change it,
 you can use mod_rewrite:
@@ -379,7 +380,7 @@ you can use mod_rewrite:
 	RewriteCond %{HTTP:Authorization} (.*)
 	RewriteRule . - [env=HTTP_AUTHORIZATION:%1]
 
-8) mod_dav is behaving strangely
+7) mod_dav is behaving strangely
 
 In general, if you use mod_dav_fs, you need to disable multiviews and script
 execution for that directory. For example:
@@ -393,12 +394,12 @@ execution for that directory. For example:
         </IfModule>
     </Directory>
 
-9) Message "apache2: bad user name ${APACHE_RUN_USER}" when starting apache2
+8) Message "apache2: bad user name ${APACHE_RUN_USER}" when starting apache2
    directly
 
 Use apache2ctl (it accepts all options of apache2).
 
-10) Apache is using a lot of memory and is not freeing it even when idle
+9) Apache is using a lot of memory and is not freeing it even when idle
 
 By default, Apache will not give back unused memory but keep it around for
 later use.
@@ -411,7 +412,7 @@ later use.
     Because of the way Apache's memory allocator interacts with glibc's malloc,
     higher values of MaxMemFree don't have much effect.
 
-11) A PUT with mod_dav_fs fails with "Unable to PUT new contents for /...
+10) A PUT with mod_dav_fs fails with "Unable to PUT new contents for /...
 [403, #0]" even if Apache has permission to write the file.
 
 Apache also needs write permission to the directory containing the file, in

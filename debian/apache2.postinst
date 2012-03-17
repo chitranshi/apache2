@@ -206,13 +206,6 @@ enable_default_modules()
 		for module in filter access_compat ; do
 			a2enmod -q $module
 		done
-		# re-enable modules to update dependencies
-		# (socache_shmcb for ssl, etc.)
-		for module in /etc/apache2/mods-enabled/*.load ; do
-			module=${module##*/}
-			module=${module%.load}
-			a2enmod -q $module
-		done
 	fi
 }
 

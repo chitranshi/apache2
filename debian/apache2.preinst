@@ -13,6 +13,8 @@ set -e
 # for details, see http://www.debian.org/doc/debian-policy/ or
 # the debian-policy package
 
+# XXX remove
+echo apache2.preinst $@ running
 
 # XXX: Whichever file you add in one of the sections below, make sure you copy
 # the same file arrays to apache2.postinst and apache2.postrm, too!

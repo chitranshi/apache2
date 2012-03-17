@@ -142,6 +142,8 @@ mv_conffiles()
 		if [ -d /etc/apache2/conf.d ] && [ "$(ls -A /etc/apache2/conf.d)" ]	; then
 			echo "Directory /etc/apache2/conf.d is not empty - leaving as is"
 			echo "Please note, that directory is considered obsolete and not read anymore by default"
+			# XXX order of processing??? this may become empty later on (after upgrade of apache2-doc)
+			ls -A /etc/apache2/conf.d
 		fi
 	fi
 }

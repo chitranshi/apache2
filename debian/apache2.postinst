@@ -195,8 +195,9 @@ enable_default_mpm()
 #     demands it.
 enable_default_modules()
 {
+	# XXX different sets of modules depending on upgrade/new-install !!!
 	if is_fresh_install $@ || we_are_upgrading_from_squeeze $@; then
-		for module in authz_host alias cgi dir autoindex mime negotiation ; do
+		for module in authz_host alias filter cgi dir autoindex mime negotiation ; do
 			a2enmod -q $module
 		done
 	fi
@@ -336,6 +337,7 @@ migrate_data()
 
 guess_access_compat()
 {
+	# XXX problematic with htaccess files -> enable always?
 	if we_are_upgrading_from_squeeze $@ ; then
 		CONFS=""
 		if [ -f /etc/apache2/apache2.conf ] ; then

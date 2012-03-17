@@ -192,16 +192,25 @@ enable_default_mpm()
 
 }
 
-#XXX: Modules which were enabled in 2.2 but aren't in 2.4 so far:
-#      env setenvif status auth_basic deflate
-#      authz_default authz_user authz_groupfile authn_file
-#     n.b. most of these modules are loaded as dependency if a module.conf file
-#     demands it.
 enable_default_modules()
 {
-	# XXX different sets of modules depending on upgrade/new-install !!!
-	if is_fresh_install $@ || we_are_upgrading_from_squeeze $@; then
-		for module in authz_host alias filter cgi dir autoindex mime negotiation ; do
+	if is_fresh_install $@; then
+		for module in authz_host auth_basic access_compat authn_file authz_user \
+				alias dir autoindex \
+				env mime negotiation setenvif \
+				filter deflate \
+				status ; do
+			a2enmod -q $module
+		done
+	elif we_are_upgrading_from_squeeze $@; then
+		for module in filter access_compat ; do
+			a2enmod -q $module
+		done
+		# re-enable modules to update dependencies
+		# (socache_shmcb for ssl, etc.)
+		for module in /etc/apache2/mods-enabled/*.load ; do
+			module=${module##*/}
+			module=${module%.load}
 			a2enmod -q $module
 		done
 	fi
@@ -339,33 +348,6 @@ migrate_data()
 	fi
 }
 
-guess_access_compat()
-{
-	# XXX problematic with htaccess files -> enable always?
-	if we_are_upgrading_from_squeeze $@ ; then
-		CONFS=""
-		if [ -f /etc/apache2/apache2.conf ] ; then
-			CONFS="/etc/apache2/apache2.conf"
-		fi
-		shopt -s nullglob
-		for confdir in /etc/apache2/sites-enabled /etc/apache2/conf-enabled /etc/apache2/mods-enabled ; do
-			if [ -d $confdir ] ; then
-				for conffile in $confdir/*.load ; do
-					CONFS="$CONFS $conffile"
-				done
-			fi
-		done
-
-		for conffile in $CONFS ; do
-			if grep -Ei "^\s*\b(Order|Allow|Deny)\b" $conffile > /dev/null ; then
-				echo "Enable mod_access_compat for Apache 2.2 compatibility"
-				a2enmod -q access_compat
-				return
-			fi
-		done
-	fi
-}
-
 #XXX: Deal with the sites-available/sites-enabled *.conf transition, e.g. rename
 #     all files which look like site configuration?
 
@@ -382,7 +364,6 @@ case "$1" in
 		install_default_site $@
 		move_httpd_conf $@
 		migrate_data $@
-		guess_access_compat $@
 
 		# post installation cleanup
 		if [ -e /etc/apache2/.apache2_mpm_selected ] ; then

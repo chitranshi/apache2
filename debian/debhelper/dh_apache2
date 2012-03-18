@@ -266,8 +266,8 @@ The examples below lists valid entries for a debian/I<package>.apache2 file. For
 example, the two lines below install a fictional I<mod_foo> Apache module along
 a Debian specific I<.load> file:
 
- conf src/foo/mod_foo.so
- conf debian/foo.load
+ mod src/foo/mod_foo.so
+ mod debian/foo.load
 
 The example below installs a fictional web application called phpmyfoo supplied
 in a package which also supports Lighttpd and nginx:
@@ -281,9 +281,9 @@ Or, the same example again this time without support for other web servers:
 As a final example, install a module called I<mod_foo> along with a site
 configuration for a fictional site configuration for the site I<example.com>:
 
- conf src/foo/mod_foo.so
- conf debian/foo.load
- conf debian/foo.conf
+ mod  src/foo/mod_foo.so
+ mod  debian/foo.load
+ mod  debian/foo.conf
  site debian/example_com.conf
 
 =head1 SEE ALSO

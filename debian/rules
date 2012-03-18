@@ -33,6 +33,7 @@ clean-config-vars:
 
 %: %.in
 	sed 's#__SERVER_VERSION__#$(SERVER_VERSION)#; s#__MODULE_DIR__#$(MODULE_DIR)#; s#__API__#$(API)#;' $< > $@
+	chmod `/usr/bin/stat -c '%a' "$<"` $@
 
 prepare-scripts: debian/a2query debian/debhelper/dh_apache2
 	(grep -s -v apache2:API debian/apache2-bin.substvars; echo apache2:API=apache2-api-$(API)) > debian/apache2-bin.substvars.new

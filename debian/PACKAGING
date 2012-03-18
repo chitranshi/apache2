@@ -9,7 +9,7 @@ Contents
 
 	Tools
 		a2query
-		apache2-maint-helper
+		apache2-maintscript-helper
 		dh_apache2
 
 
@@ -96,7 +96,7 @@ apache2-maintscript-helper should be used. Please realize, the helper is not
 guaranteed to be installed on the target system. There are certain setups which
 do not require Debian specific configurations, so modules must not do anything
 in maintainer scripts which makes use of Debian specific enhancements like
-apache2-maintscript-helper, a2enmod or a2query unconditionall. It is recommended
+apache2-maintscript-helper, a2enmod, or a2query unconditionally. It is recommended
 to invoke it like this:
 
         if [ -e /usr/share/apache2/apache2-maintscript-helper ] ; then
@@ -112,24 +112,24 @@ respective reference documentations below.
 Packaging Sites and Configurations for Web Applications
 =======================================================
 
-Web applications are different to modules in a way, that they do not have a hard
-dependency agains the web server. Typically they require a running web server,
+Web applications are different from modules in that they do not have a hard
+dependency on the web server. Typically they require a running web server,
 but they do not need to worry about binary compatibility of modules. We accept
-there are other web servers aside of Apache, thus we discourage package
-maintainer of web applications not to depend unconditionally on Apache. That
-said, we provide several helper to assist web application packagers to invoke
+there are other web servers besides Apache, thus we discourage package
+maintainers of web applications to depend unconditionally on Apache. That
+said, we provide several helpers to assist web application packagers to invoke
 configuration snippets to enable a web application in the Apache 2 web server.
 
 We differentiate between two sub types: Site configuration and global
-configuration. Sites are installed to /etc/apache2/sites-available and should
-configure particular virtual hosts. Special care must be taken when installing a
-site configuration to mak sure it does not interfere with site local
-configuration the administrator uses.
-The globale configuration snippets are installed to /etc/apache2/conf-available
-instead. Package maintainers are advised to avoid "local-" prefixes to installed
-conffiles, and ideally use "packagename.conf" to avoid name clashes. This type
-of configration shall be used when installing a global (i.e. virtual host
-independent) configuration. In both cases dh_apache2 can be used to assist
+configuration. Sites are installed to /etc/apache2/sites-available and
+configure a particular virtual hosts. Special care must be taken when
+installing a site configuration to make sure it does not interfere with site
+local configuration the administrator uses.
+The global configuration snippets are installed to /etc/apache2/conf-available
+instead. Package maintainers are advised to avoid "local-" prefixes to
+installed conffiles, and ideally use "packagename.conf" to avoid name clashes.
+This type of configration shall be used when installing a global (i.e. virtual
+host independent) configuration. In both cases dh_apache2 can be used to assist
 packagers.
 
 Web applications must depend (or recommend) apache2 only. Web applications must
@@ -165,16 +165,17 @@ clauses if you require non-standard modules.
 Tools
 =====
 
-apache2-maint-helper
---------------------
+apache2-maintscript-helper
+--------------------------
 
-The apache2-maint-helper is a collection of functions which can be sourced in
-maintainer scripts to do often required tasks in a simple and standardized way
-to package maintainers. It is NOT a script, it is a library (insofar shell
-functions can be called as such). The helper is installed within the apache2
-binary package. Thus you MUST NOT use any function of it unconditionally, as for
-both modules and web applications there are use cases when this package is not
-added as a dependency. Thus, use it in a protected conditional like this only:
+The apache2-maintscript-helper is a collection of functions which can be
+sourced in maintainer scripts to do often required tasks in a simple and
+standardized way to package maintainers. It is NOT a script, it is a library
+(insofar shell functions can be called as such). The helper is installed within
+the apache2 binary package. Thus you MUST NOT use any function of it
+unconditionally, as for both modules and web applications there are use cases
+when this package is not added as a dependency. Thus, use it in a protected
+conditional like this only:
 
         if [ -e /usr/share/apache2/apache2-maintscript-helper ] ; then
 		. /usr/share/apache2/apache2-maintscript-helper
@@ -186,7 +187,7 @@ already sourced. In such cases you can check the
 $EXPORT_APACHE2_MAINTSCRIPT_HELPER variable which is defined once the helper was
 loaded. For example in a clause like this:
 
-	if [ -z $EXPORT_APACHE2_MAINTSCRIPT_HELPER ] ; then
+	if [ -z "$EXPORT_APACHE2_MAINTSCRIPT_HELPER" ] ; then
 		. /usr/share/apache2/apache2-maintscript-helper
 	fi
 
@@ -216,9 +217,9 @@ a2enmod and its special invokations a2enconf, a2ensite, a2dismod, a2dissite and
 a2disconf can be used to enable all types of Apache 2 configuration files. When
 invoking these helpers in maintainer scripts, you should carefully check their
 error return codes. Use these scripts with the -q (quiet) switch only in
-maintainer scripts. Ideally you should not interface with this scripts directly,
-instead it is recommended to use apache2-maint-helper. For detailed usage refer
-to their respective man pages.
+maintainer scripts. Ideally you should not interface with this scripts
+directly, instead it is recommended to use apache2-maintscript-helper. For
+detailed usage refer to their respective man pages.
 
 a2query
 ------
@@ -242,4 +243,4 @@ site and make actions dependent on the result like this:
 	esac
 
 Refer to the a2query(1) man page for the full documentation. Please note, the
-apache2-maint-helper can be used to inteface with this task as well.
+apache2-maintscript-helper can be used to inteface with this task as well.

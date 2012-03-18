@@ -132,8 +132,7 @@ Description: transitional package for apache2-suexec-pristine
 
 Package: apache2-suexec-pristine
 Architecture: any
-Depends: ${misc:Depends}, ${shlibs:Depends}
-#Depends: ${misc:Depends}, ${shlibs:Depends}, apache2.2-common
+Depends: ${misc:Depends}, ${shlibs:Depends}, apache2-bin
 Replaces: apache2-suexec (<< 2.3~)
 Breaks: apache2-suexec (<< 2.3~)
 Provides: apache2-suexec
@@ -145,8 +144,7 @@ Description: Apache HTTP Server standard suexec program for mod_suexec
 Package: apache2-suexec-custom
 Priority: extra
 Architecture: any
-Depends: ${misc:Depends}, ${shlibs:Depends}
-#Depends: ${misc:Depends}, ${shlibs:Depends}, apache2.2-common
+Depends: ${misc:Depends}, ${shlibs:Depends}, apache2-bin
 Replaces: apache2-suexec (<< 2.3~)
 Breaks: apache2-suexec (<< 2.3~)
 Provides: apache2-suexec

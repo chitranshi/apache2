@@ -46,8 +46,8 @@ The resulting binary package should be called libapache2-mod-<modulename> and
 MUST NOT depend on apache2 or apache2-bin. Instead a module package must depend
 on our virtual package providing the module magic number denoting the ABI
 compatibility version number. The virtual package is called apache2-api-YYYYMMDD
-and guaranteed to be stable among all binary updates. The dh_apache2 helper
-assists to get dependencies right.
+and guaranteed to be stable among all binary updates of 2.4.x. The dh_apache2
+helper assists to get dependencies right.
 
 The module must install a 'module.load' file to /etc/apache2/modules-available
 where 'module' is the name of the installed module without "mod_" prefix. The
@@ -65,6 +65,8 @@ foo.load:
 	# Conflicts: baz
 	LoadModule foo_module /usr/lib/modules/mod_foo.so
 
+
+XXX: TODO: Explain workaround for load-order dependency
 
 Additionally, a 'foo.conf' configuration file can be installed along the 'load'
 file to configure the module if required. This is useful if the module in

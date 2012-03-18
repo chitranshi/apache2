@@ -46,45 +46,26 @@ dh_apache2 - register configuration snippets to the Apache web server
 
 =cut
 
+# auto-generated do not edit
+our $API = "__API__";
+our $MODULE_DIR = "__MODULE_DIR__";
+our $SERVER_VERSION = "__SERVER_VERSION__";
+
 
 sub apache_api_version
 {
-	if (! -x "/usr/sbin/a2query")
-	{
-		error("package appears to be an Apache module, however there is	no a2query executable available. Missing apache2-dev build dependency?");
-	}
-	my $api = `a2query -a`;
-	chomp($api);
-	return "apache2-api-$api";
+	return "apache2-api-$API";
 }
 
 
 sub apache_version
 {
-	# Use a2query when available. However, some web application don't need a
-	# build-dependency against apache2 (or even apache2-dev). Return
-	# something sensible then as fallback
-	if (-x "/usr/sbin/a2query")
-	{
-		my $version = `a2query -v`;
-		chomp($version);
-		return ">= $version~";
-	}
-	else
-	{
-		return ">= 2.3~";
-	}
+	return ">= $SERVER_VERSION~";
 }
 
 sub apache_api_installdir
 {
-	if (! -x "/usr/sbin/a2query")
-	{
-		error("package appears to be an Apache module, however there is	no a2query executable available. Missing apache2-dev build dependency?");
-	}
-	my $md = `a2query -d`;
-	chomp($md);
-	return "$md";
+	return $MODULE_DIR;
 }
 
 sub apache_conf_installdir
@@ -135,6 +116,10 @@ for recognized files and guess their purpose depending on their installation
 path in the file system. Use with caution.
 
 =head1 INVOKATION
+
+B<dh_apache2> is not part of debhelper and might require information available
+in the apache2-dev package. Packages making use of B<dh_apache2> should declare
+a build-dependency against the virtual B<dh-apache2> package.
 
 B<dh_apache2> supports both, called directly from a debian/rules file or as
 L<dh(1)> addon. In the former case the helper should run after L<dh_install(1)>

@@ -34,7 +34,7 @@ clean-config-vars:
 %: %.in
 	sed 's#__SERVER_VERSION__#$(SERVER_VERSION)#; s#__MODULE_DIR__#$(MODULE_DIR)#; s#__API__#$(API)#;' $< > $@
 
-prepare-a2query: debian/a2query
+prepare-scripts: debian/a2query debian/debhelper/dh_apache2
 	(grep -s -v apache2:API debian/apache2-bin.substvars; echo apache2:API=apache2-api-$(API)) > debian/apache2-bin.substvars.new
 	mv debian/apache2-bin.substvars.new debian/apache2-bin.substvars
 
@@ -67,7 +67,7 @@ override_dh_auto_configure: prepare-custom-suexec generate-maintainer-scripts
 		CFLAGS="$(AP2_CFLAGS)" CPPFLAGS="$(AP2_CPPFLAGS)" LDFLAGS="$(AP2_LDFLAGS)" \
 		$(AP2_EXTRAFLAGS)
 
-override_dh_install: clean-config-vars prepare-a2query
+override_dh_install: clean-config-vars prepare-scripts
 	dh_install --list-missing
 
 override_dh_fixperms:
@@ -117,4 +117,4 @@ override_dh_auto_install:
 
 
 
-.PHONY: prepare-custom-suexec generate-maintainer-scripts clean-config-vars prepare-a2query
+.PHONY: prepare-custom-suexec generate-maintainer-scripts clean-config-vars prepare-scripts

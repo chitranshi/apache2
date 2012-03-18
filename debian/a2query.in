@@ -41,6 +41,13 @@ use feature "switch";
 use strict;
 use Getopt::Std;
 
+=head1 NAME
+
+a2query - retrieve runtime configuration from a local Apache 2 HTTP server
+
+=cut
+
+
 our $APACHE2 = "apache2ctl";
 our $API = "__API__";
 our $MODULE_DIR = "__MODULE_DIR__";
@@ -51,6 +58,70 @@ our @MODULES = ();
 our @CONFS = ();
 our @SITES =();
 our @HELP = ();
+
+=head1 SYNOPSIS
+
+B<a2query>  [S<-m> [I<MODULE>]] [S<-s> [I<SITE>]] [S<-c> [I<CONF>]] [S<-a>] [S<-v>]
+[S<-M>] [S<-d>] [S<-h>]
+
+=head1 DESCRIPTION
+
+B<a2query> is a program designed to retrieve configuration values from a locally
+available Apache 2 HTTP web server. It was designed to be as robust as possible
+by returning feasible values even if the Apache 2 syntax validator fails.
+
+This program is primarily meant to be used from maintainer scripts.
+
+=head1 OPTIONS
+
+=over 4
+
+=item S<-a>
+
+Returns the Apache 2 "Module Magic Version" (API version) number, the server was
+compiled with. The returned version does not contain any minor versions which
+are known to be compatible with the major version returned.
+
+=item S<-c> [I<CONF>]
+
+Checks whether the configuration I<CONF> is enabled. If no argument was given,
+all enabled configuration files are being returned. I<CONF> is evaluated as
+L<perl>(1) compatible regular expression.
+
+=item S<-h>
+
+Displays a brief summary how the program can be called and exits.
+
+=item S<-m> [I<MODULE>]
+
+Checks whether the module I<MODULE> is enabled, The argument is interpreted in
+the same way, as for configuration files queried by the S<-c> switch.
+
+=item S<-M>
+
+Returns the currently enabled Apache 2 MPM (Multi Processing Module).
+
+=item S<-s> [I<SITE>]
+
+Checks whether the module I<SITE> is enabled, The argument is interpreted in
+the same way, as for configuration files queried by the S<-c> switch.
+
+
+=item S<-v>
+
+returns the currently installed Apache 2 HTTP server version
+
+=back
+
+=head1 SEE ALSO
+
+L<apache2ctl>(8), L<apache2>(8), L<perl>(1)
+
+=head1 AUTHOR
+
+This manual and L<a2query> was written by Arno Toell <debian@toell.net>.
+
+=cut
 
 sub fail
 {

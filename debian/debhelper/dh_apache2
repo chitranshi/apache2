@@ -286,6 +286,10 @@ configuration for a fictional site configuration for the site I<example.com>:
  conf debian/foo.conf
  site debian/example_com.conf
 
+=head1 SEE ALSO
+
+L<apache2ctl>(8), L<a2query>(8), L<debhelper>(7), L<dh>(1)
+
 =head1 AUTHOR
 
 This manual and L<dh_apache2> was written by Arno Toell <debian@toell.net>.

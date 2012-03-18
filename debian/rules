@@ -104,6 +104,7 @@ override_dh_installchangelogs:
 override_dh_installman:
 	mv debian/tmp/usr/share/man/man8/suexec.8 debian/tmp/usr/share/man/man8/suexec-pristine.8
 	pod2man debian/debhelper/dh_apache2 > debian/manpages/dh_apache2.1
+	pod2man debian/a2query.in > debian/manpages/a2query.8
 	dh_installman
 
 override_dh_strip:

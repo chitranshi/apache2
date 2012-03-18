@@ -195,13 +195,13 @@ Such stanzas accept an optional third I<arguments> which is interpreted as
 dependency line of alternative web servers the package supports. See I<EXAMPLES>
 below.
 
-B<dh_apache2> will set dependencies in B<${misc:Recommends]> accordingly when
-this type of configuration is found. Alternatives from the optional [I<argument>
+B<dh_apache2> will set dependencies in B<${misc:Recommends}> accordingly when
+this type of configuration is found. Alternatives from the optional I<argument>
 is incorporated into this dependency line.
 
 =head2 SITE CONFIGURATION FILES
 
-Site configuration files (determined by hte B<site> type) must have a I<.conf>
+Site configuration files (determined by the B<site> type) must have a I<.conf>
 suffix and are installed to I</etc/apache2/sites-available>. Moreover, the
 configuration is activated in the maintainer script at installation time.
 
@@ -213,17 +213,17 @@ configuration sets the same dependencies as configuration files.
 
 Modules are handled specially and are determined by the B<mod> type. Modules can
 either have a I<.conf> or I<.load> suffix. In that case the file is interpreted
-as module load file or module configuration file and installed to
-I</etc/apache2/mods-available>. If the file is ending with a I<.so>
-suffix it is interpreted as module shared object and installed to the Apache
-modules directory. Moreover, if a I<.load> file is installed the configuration
-is activated in the maintainer script at installation time.
+as module load file or module configuration file respectively and is nstalled to
+I</etc/apache2/mods-available>. If the file is ending with a I<.so> suffix it is
+interpreted as actual module shared object and is installed to the Apache module
+directory. Moreover, if a I<.load> file is installed the configuration is
+activated in the maintainer script at installation time.
 
 A typical module configuration has two lines, one for the I<.load> file, and one
 for the I<.so> file, albeit the latter could be installed by upstream's
 makefile, too.
 
-B<dh_apache2> will set dependencies in B<${misc:Depends]> accordingly when
+B<dh_apache2> will set dependencies in B<${misc:Depends}> accordingly when
 this type of configuration is found.
 
 =head1 OPTIONS
@@ -243,9 +243,10 @@ true value at installation time. This is useful to web applications which want
 to install Apache configuration files depending on a user input, for example if
 they interface to the user through L<debconf(1)>.
 
-Defaults to B<true> and is subject to shell expansion (see Debian bug #660794).
-The expression should be provided in the postrm and postinst scripts before the
-B<#DEBHELPER#> token.
+Defaults to B<true> and is subject to shell expansion (see Debian bug #660794 or
+build-depend on debhelper >= 9.20120311 to avoid this problem). The expression
+should be provided in the postrm and postinst scripts before the B<#DEBHELPER#>
+token.
 
 =item B<-n>, B<--noscripts>
 

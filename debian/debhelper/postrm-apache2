@@ -1,8 +1,6 @@
 if [ "$1" = "purge" ] && #CONDITIONAL_VARIABLE#; then
 	if [ -e /usr/share/apache2/apache2-maintscript-helper ] ; then
-		if [ -z $EXPORT_APACHE2_MAINTSCRIPT_HELPER ] ; then
-			. /usr/share/apache2/apache2-maintscript-helper
-		fi
+		. /usr/share/apache2/apache2-maintscript-helper
 		apache2_invoke #HELPER# #NAMES# || #ERROR_HANDLER#
 	fi
 fi

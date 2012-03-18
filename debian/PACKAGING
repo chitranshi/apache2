@@ -169,8 +169,8 @@ apache2-maintscript-helper
 --------------------------
 
 The apache2-maintscript-helper is a collection of functions which can be
-sourced in maintainer scripts to do often required tasks in a simple and
-standardized way to package maintainers. It is NOT a script, it is a library
+sourced in maintainer scripts to do required tasks in a simple and
+standardized way. It is NOT a script, it is a library
 (insofar shell functions can be called as such). The helper is installed within
 the apache2 binary package. Thus you MUST NOT use any function of it
 unconditionally, as for both modules and web applications there are use cases
@@ -182,21 +182,16 @@ conditional like this only:
 		<call apache2-maintscript-helper specific functions>
 	fi
 
-If you use various debhelper, chances are the apache2-maintscript-helper was
-already sourced. In such cases you can check the
-$EXPORT_APACHE2_MAINTSCRIPT_HELPER variable which is defined once the helper was
-loaded. For example in a clause like this:
-
-	if [ -z "$EXPORT_APACHE2_MAINTSCRIPT_HELPER" ] ; then
-		. /usr/share/apache2/apache2-maintscript-helper
-	fi
-
-The helper provides functions to enable and disable configuration files, restart
-the web server, switch the MPM in use and similar. Refer to the source code for
-detailed interface documentation. When available, please use the
+The helper provides functions to enable and disable configuration files,
+restart the web server, switch the MPM in use and similar. Refer to the source
+code for detailed interface documentation. When available, please use the
 apache2-maintscript-helper instead of calling helper scripts directly, as these
-functions are careful to invoke and use particular helper. Always check the
-return code of the called function to find out whether something went wrong:
+functions are careful to invoke and use particular helper. Later versions may
+be configurable to allow the administrator to influence which actions are
+preformed.
+
+Always check the return code of the called function to find out whether
+something went wrong:
 
 	if ! apache2_invoke enmod modulename ; then
 		echo "Whoops! Something went wrong"
@@ -222,7 +217,7 @@ directly, instead it is recommended to use apache2-maintscript-helper. For
 detailed usage refer to their respective man pages.
 
 a2query
-------
+-------
 
 a2query is a query tool to retrieve runtime status information about the Apache
 2 web server instance. You can use this tool to get information about loaded

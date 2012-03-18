@@ -92,15 +92,6 @@ Description: transitional event MPM package for apache2
 
 #XXX: apache2-mpm-itk transitional?
 
-Package: apache2.2-bin
-Architecture: any
-Section: oldlibs
-Priority: extra
-Depends: ${misc:Depends}, apache2-bin (>= 2.3~)
-Description: Transitional package for apache2-bin
- This is a transitional package for apache2-bin, and can be safely removed
- after the installation is complete.
-
 Package: apache2-utils
 Architecture: any
 Depends: ${misc:Depends}, ${shlibs:Depends}, ${perl:Depends}

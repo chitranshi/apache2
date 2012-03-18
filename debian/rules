@@ -92,7 +92,6 @@ override_dh_installdocs:
 	perl debian/convert_docs debian/apache2-doc/usr/share/doc/apache2-doc/manual
 	dh_installdocs --link-doc=apache2 -papache2 -papache2-dev -papache2-dbg \
 		-papache2-mpm-worker -papache2-mpm-prefork -papache2-mpm-event
-	dh_installdocs --link-doc=apache2-bin -papache2.2-bin
 	dh_installdocs --link-doc=apache2-suexec-pristine -papache2-suexec
 	dh_installdocs
 
@@ -101,7 +100,7 @@ override_dh_installchangelogs:
 	# package not to trash the disk at the installation site. Together with
 	# dh_installdocs this means that changelogs are installed in a few
 	# packages only.
-	dh_installchangelogs -Napache2.2-bin -Napache2-suexec -Napache2-mpm-worker \
+	dh_installchangelogs -Napache2-suexec -Napache2-mpm-worker \
 		-Napache2-mpm-prefork -Napache2-mpm-event -Napache2-data
 
 override_dh_installman:

@@ -177,9 +177,8 @@ Description: Apache HTTP Server (on-site documentation)
 Package: apache2-dev
 Architecture: any
 Depends: ${misc:Depends}, apache2 (= ${binary:Version}), openssl,
- libaprutil1-dev, dh-apache2
-Priority: extra
-Provides: apache2-prefork-dev, apache2-threaded-dev
+ libapr1-dev, libaprutil1-dev, debhelper (>= 7.0.50~)
+Provides: apache2-prefork-dev, apache2-threaded-dev, dh-apache2
 Replaces: apache2-prefork-dev, apache2-threaded-dev
 Conflicts: apache2-prefork-dev, apache2-threaded-dev
 Description: Apache HTTP Server (development headers)
@@ -190,6 +189,12 @@ Description: Apache HTTP Server (development headers)
  This package provides development headers and the apxs2 binary for the Apache 2
  HTTP server useful to develop and link third party additions to the Debian
  Apache HTTP server package.
+ .
+ It also provides dh_apache2 and dh sequence addons useful to install various
+ Debian Apache2 extensions with debhelper. It supports
+  - Apache 2 module configurations and shared objects
+  - Site configuration files
+  - Global configuration files
 
 Package: apache2-dbg
 Section: debug
@@ -204,15 +209,3 @@ Description: Apache debugging symbols
  This package includes the debugging symbols. It can be used to debug
  crashing server instances and modules.  See
  /usr/share/doc/apache2/README.backtrace for more information.
-
-Package: dh-apache2
-Section: devel
-Architecture: all
-Depends: debhelper (>= 7.0.50~), ${misc:Depends}
-Description: Apache debhelper utilities
- The Apache debhelper provides dh_apache2 and dh sequence addons useful to
- install various Debian Apache2 extensions. It supports
-  - Apache 2 module configurations and shared objects
-  - Site configuration files
-  - Global configuration files
-

@@ -31,8 +31,10 @@ clean-config-vars:
 	printf "EXTRA_CFLAGS = \n" >> tmp_config_vars.mk ; \
 	mv tmp_config_vars.mk config_vars.mk ) ;
 
-prepare-a2query:
-	sed 's#__SERVER_VERSION__#$(SERVER_VERSION)#; s#__MODULE_DIR__#$(MODULE_DIR)#; s#__API__#$(API)#;' debian/a2query.in > debian/a2query
+%: %.in
+	sed 's#__SERVER_VERSION__#$(SERVER_VERSION)#; s#__MODULE_DIR__#$(MODULE_DIR)#; s#__API__#$(API)#;' $< > $@
+
+prepare-a2query: debian/a2query
 	(grep -s -v apache2:API debian/apache2-bin.substvars; echo apache2:API=apache2-api-$(API)) > debian/apache2-bin.substvars.new
 	mv debian/apache2-bin.substvars.new debian/apache2-bin.substvars
 

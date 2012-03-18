@@ -66,12 +66,30 @@ foo.load:
 	LoadModule foo_module /usr/lib/modules/mod_foo.so
 
 
-XXX: TODO: Explain workaround for load-order dependency
-
 Additionally, a 'foo.conf' configuration file can be installed along the 'load'
 file to configure the module if required. This is useful if the module in
 question requires some initial configuration to be useful. No magic comments are
 recognized in '.conf' files.
+
+In some rare cases it can't be avoided that a module depends on a loaded module
+before another module can be loaded. However, modules are loaded in a sorted
+alphabetical order. In most cases such pre-load dependencies could be avoided
+upstream. If there is no way out that problem, you may want to add a conditional
+Include in your own module file. Suppose mod_foo relies on mod_bar to be loaded
+before, you may want to write a module 'load' file like this:
+
+	# Depends: bar
+	<IfModule !mod_bar.c>
+		Include mods-enabled/bar.load
+		IncludeOptional mods-enabled/bar.conf
+	</IfModule>
+
+	LoadModule foo_module /usr/lib/modules/mod_foo.so
+
+Use this method extremely sparingly. In most cases a simple "Depends:"
+dependency does the job, too. The "Depends:" magic line is still needed, as this
+makes sure, the module is actually enabled on the local installation site.
+
 
 Maintainer scripts should not invoke a2enmod directly. Instead, the
 apache2-maintscript-helper should be used. Please realize, the helper is not

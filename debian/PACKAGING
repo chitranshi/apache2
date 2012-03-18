@@ -81,15 +81,15 @@ before, you may want to write a module 'load' file like this:
 	# Depends: bar
 	<IfModule !mod_bar.c>
 		Include mods-enabled/bar.load
-		IncludeOptional mods-enabled/bar.conf
 	</IfModule>
 
 	LoadModule foo_module /usr/lib/modules/mod_foo.so
 
-Use this method extremely sparingly. In most cases a simple "Depends:"
-dependency does the job, too. The "Depends:" magic line is still needed, as this
-makes sure, the module is actually enabled on the local installation site.
-
+The bar.load file must also contain an "<IfModule !mod_bar.c>" guard, so you
+have to talk to the maintainer of the package containing mod_bar. Use this
+method extremely sparingly. In most cases a simple "Depends:" dependency does
+the job, too. The "Depends:" magic line is still needed, to make sure that the
+a2enmod/a2dismod scripts work correctly.
 
 Maintainer scripts should not invoke a2enmod directly. Instead, the
 apache2-maintscript-helper should be used. Please realize, the helper is not

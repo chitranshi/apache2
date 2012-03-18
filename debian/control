@@ -200,7 +200,7 @@ Package: apache2-dbg
 Section: debug
 Priority: extra
 Architecture: any
-Depends: ${misc:Depends}, apache2 (= ${binary:Version})
+Depends: ${misc:Depends}, apache2-bin (= ${binary:Version})
 Description: Apache debugging symbols
  The Apache Software Foundation's goal is to build a secure, efficient and
  extensible HTTP server as standards-compliant open source software. The

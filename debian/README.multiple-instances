@@ -6,7 +6,7 @@ support for handling multiple instances of apache2 running on the same machine.
 
 The basic idea is to copy /etc/apache2 to /etc/apache2-xxx. An example script
 that demonstrates what else needs to be done can be found in
-/usr/share/doc/apache2.2-common/examples/setup-instance. Use with:
+/usr/share/doc/apache2/examples/setup-instance. Use with:
 
 	sh /usr/share/doc/apache2/examples/setup-instance xxx
 

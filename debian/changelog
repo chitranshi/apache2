@@ -156,7 +156,7 @@ apache2 (2.4.1-1) experimental; urgency=low
   * Migrate patches to DEP-3 format. For particular changes see the summary
     above.
 
- -- Arno Töll <debian@toell.net>  Tue, 13 Mar 2012 22:19:34 +0100
+ -- Stefan Fritsch <sf@debian.org>  Mon, 19 Mar 2012 10:46:02 +0100
 
 apache2 (2.2.22-1) unstable; urgency=low
 

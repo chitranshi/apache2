@@ -62,7 +62,9 @@ case "$1" in
 		/etc/apache2/mods-enabled/ \
 		/etc/apache2/conf-enabled/ \
 		/etc/apache2 \
-		/var/cache/apache2 ; do
+		/var/cache/apache2 \
+		/var/run/apache2 \
+		/var/lock/apache2 ; do
 		rmdir $d 2> /dev/null || true
 	done
 

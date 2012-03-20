@@ -71,29 +71,35 @@ override_dh_auto_configure: prepare-custom-suexec generate-maintainer-scripts
 override_dh_install: clean-config-vars prepare-scripts
 	dh_install --list-missing
 
-override_dh_fixperms:
+override_dh_fixperms-arch:
 	# standard suexec
 	chmod 4754 debian/apache2-suexec-pristine/usr/lib/apache2/suexec-pristine
 	chgrp www-data debian/apache2-suexec-pristine/usr/lib/apache2/suexec-pristine
 	# configurable suexec
 	chmod 4754 debian/apache2-suexec-custom/usr/lib/apache2/suexec-custom
 	chgrp www-data debian/apache2-suexec-custom/usr/lib/apache2/suexec-custom
-	dh_fixperms -Xusr/lib/apache2/suexec-custom -Xusr/lib/apache2/suexec-pristine
+	dh_fixperms -a -Xusr/lib/apache2/suexec-custom -Xusr/lib/apache2/suexec-pristine
 	chown -R www-data:www-data debian/apache2/var/cache/apache2
 	chown root:adm debian/apache2/var/log/apache2
 	chmod o-rx debian/apache2/var/log/apache2
+
+override_dh_fixperms-indep:
+	dh_fixperms -i
 
 override_dh_installinit:
 	dh_installinit --no-start --no-restart-on-upgrade  -- defaults 91 09
 
 
-override_dh_installdocs:
+override_dh_installdocs-indep:
 	# TODO: So, did anyone check convert_docs needs an update? ;)
 	perl debian/convert_docs debian/apache2-doc/usr/share/doc/apache2-doc/manual
+	dh_installdocs -i
+
+override_dh_installdocs-arch:
 	dh_installdocs --link-doc=apache2 -papache2 -papache2-dev -papache2-dbg \
 		-papache2-mpm-worker -papache2-mpm-prefork -papache2-mpm-event
 	dh_installdocs --link-doc=apache2-suexec-pristine -papache2-suexec
-	dh_installdocs
+	dh_installdocs -a
 
 override_dh_installchangelogs:
 	# Do not install changelogs for transitional packages and the -data

@@ -1,3 +1,13 @@
+apache2 (2.4.1-2) experimental; urgency=low
+
+  * Shift convert_docs script to a arch-indep target only. Debhelper does not
+    build apache2-doc on binary only builds causing a FTBS on binary-only (-B)
+    builds
+  * Raise debhelper build-dependency to 8.9.7~ due to the use of arch-indep
+    targets
+
+ -- Arno Töll <debian@toell.net>  Tue, 20 Mar 2012 11:15:14 +0100
+
 apache2 (2.4.1-1) experimental; urgency=low
 
   * Package the coming up 2.4 branch of Apache by packaging the current

@@ -3,8 +3,7 @@ Section: httpd
 Priority: optional
 Maintainer: Debian Apache Maintainers <debian-apache@lists.debian.org>
 Uploaders: Stefan Fritsch <sf@debian.org>, Steinar H. Gunderson <sesse@debian.org>, Arno Töll <debian@toell.net>
-#missing dependencies: autoconf
-Build-Depends: debhelper (>= 8.1.0~), lsb-release, dpkg-dev (>= 1.16.1~),
+Build-Depends: debhelper (>= 8.9.7~), lsb-release, dpkg-dev (>= 1.16.1~),
  libaprutil1-dev (>= 1.4.0), libapr1-dev, libpcre3-dev, zlib1g-dev,
  libssl-dev (>= 0.9.8m), libcap-dev [linux-any], perl,
  liblua5.1-0-dev, libxml2-dev, autotools-dev, gawk | awk

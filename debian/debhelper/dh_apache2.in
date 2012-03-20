@@ -228,7 +228,7 @@ true value at installation time. This is useful to web applications which want
 to install Apache configuration files depending on a user input, for example if
 they interface to the user through L<debconf(1)>.
 
-Defaults to B<true> and is subject to shell expansion (see Debian bug #660794 or
+Defaults to B<test -n "$2"> and is subject to shell expansion (see Debian bug #660794 or
 build-depend on debhelper >= 9.20120311 to avoid this problem). The expression
 should be provided in the postrm and postinst scripts before the B<#DEBHELPER#>
 token.
@@ -293,7 +293,7 @@ init(options => {
 
 if (!$dh{CONDITIONAL})
 {
-	$dh{CONDITIONAL} = "true";
+	$dh{CONDITIONAL} = 'test -n "$2"';
 }
 
 foreach my $package (getpackages())
@@ -472,9 +472,23 @@ foreach my $package (getpackages())
 	{
 		foreach my $ref (@postinst_autoscripts)
 		{
-			autoscript($package, "postinst", "postinst-apache2", "s/#HELPER#/$ref->[0]/; s/#NAMES#/$ref->[1]/; s/#ERROR_HANDLER#/$PACKAGE_TYPE{'handler'}/; s/#CONDITIONAL_VARIABLE#/$PACKAGE_TYPE{'conditional'}/;");
+			my %replacements = (
+				HELPER => $ref->[0],
+				NAMES  => $ref->[1],
+				ERROR_HANDLER => $PACKAGE_TYPE{handler},
+				CONDITIONAL_VARIABLE => $PACKAGE_TYPE{conditional},
+			);
+			my $sed_command = "";
+			foreach my $key (sort keys %replacements) {
+				my $val = $replacements{$key};
+				# escape slashes and backslashes from sed
+				$val =~ s,([/\\]),\\$1,g;
+				$sed_command .= "s/#$key#/$val/g; ";
+			}
+
+			autoscript($package, "postinst", "postinst-apache2", $sed_command);
 			$ref->[0] =~ s/en/dis/;
-			autoscript($package, "postrm", "postrm-apache2", "s/#HELPER#/$ref->[0]/; s/#NAMES#/$ref->[1]/; s/#ERROR_HANDLER#/$PACKAGE_TYPE{'handler'}/; s/#CONDITIONAL_VARIABLE#/$PACKAGE_TYPE{'conditional'}/;");
+			autoscript($package, "postrm", "postrm-apache2", $sed_command);
 		}
 	}
 }

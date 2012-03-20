@@ -112,6 +112,10 @@ respective reference documentations below.
 Packaging Sites and Configurations for Web Applications
 =======================================================
 
+NOTE: This version of the apache2 package is still experimental. We expect
+that the general configuration will still change in ways that may make it
+necessary to adjust configuration files that are included in web applications.
+
 Web applications are different from modules in that they do not have a hard
 dependency on the web server. Typically they require a running web server,
 but they do not need to worry about binary compatibility of modules. We accept
@@ -120,17 +124,22 @@ maintainers of web applications to depend unconditionally on Apache. That
 said, we provide several helpers to assist web application packagers to invoke
 configuration snippets to enable a web application in the Apache 2 web server.
 
-We differentiate between two sub types: Site configuration and global
-configuration. Sites are installed to /etc/apache2/sites-available and
-configure a particular virtual hosts. Special care must be taken when
-installing a site configuration to make sure it does not interfere with site
-local configuration the administrator uses.
-The global configuration snippets are installed to /etc/apache2/conf-available
+We differentiate between two sub types: Sites and general configuration. Sites
+are installed to /etc/apache2/sites-available and configure a particular
+virtual hosts. Special care must be taken when installing a site configuration
+to make sure it does not interfere with site local configuration the
+administrator uses.
+
+The general configuration snippets are installed to /etc/apache2/conf-available
 instead. Package maintainers are advised to avoid "local-" prefixes to
 installed conffiles, and ideally use "packagename.conf" to avoid name clashes.
 This type of configration shall be used when installing a global (i.e. virtual
-host independent) configuration. In both cases dh_apache2 can be used to assist
-packagers.
+host independent) configuration. Usually these configuration snippets will be
+included in the global server context via the conf-enabled directory. However,
+it is planned to allow the administrator to only enable the configuration
+snippets in a selected set of virtual hosts.
+
+For both types of configuration, dh_apache2 can be used to assist packagers.
 
 Web applications must depend (or recommend) apache2 only. Web applications must
 not depend or recommend apache2-bin or apache2-data packages. Generally web

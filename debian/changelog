@@ -1,4 +1,4 @@
-apache2 (2.4.1-2) UNRELEASED; urgency=low
+apache2 (2.4.1-2) experimental; urgency=low
 
   [ Arno Töll ]
   * Shift convert_docs script to a arch-indep target only. Debhelper does not
@@ -11,7 +11,7 @@ apache2 (2.4.1-2) UNRELEASED; urgency=low
   * dh_apache2: Make autoscripts only run on upgrades by default. Bump
     debhelper dependency of apache2-dev. Escape slashes in conditionals.
 
- -- Arno Töll <debian@toell.net>  Tue, 20 Mar 2012 11:15:14 +0100
+ -- Stefan Fritsch <sf@debian.org>  Tue, 20 Mar 2012 21:32:43 +0100
 
 apache2 (2.4.1-1) experimental; urgency=low
 

@@ -4,11 +4,11 @@
 set -e
 
 case "$1" in
-    remove|upgrade|deconfigure)
-	update-alternatives --remove /usr/lib/apache2/suexec-__TYPE__ suexec
+    remove)
+	update-alternatives --remove suexec /usr/lib/apache2/suexec-__TYPE__
     ;;
 
-    failed-upgrade)
+    upgrade|deconfigure|failed-upgrade)
     ;;
 
     *)

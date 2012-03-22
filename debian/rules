@@ -42,7 +42,7 @@ prepare-scripts: debian/a2query debian/debhelper/dh_apache2
 generate-maintainer-scripts:
 	set -e ; \
 	for type in custom pristine ; do \
-		for f in postinst preinst prerm links dirs lintian-overrides; do \
+		for f in postinst preinst prerm links dirs lintian-overrides postrm; do \
 			if [ -e debian/apache2-suexec.$$f.in ] ; then \
 				perl -pe "s{__TYPE__}{$$type}g" < debian/apache2-suexec.$$f.in > debian/apache2-suexec-$$type.$$f ;\
 				chmod `/usr/bin/stat -c '%a' "debian/apache2-suexec.$$f.in"` debian/apache2-suexec-$$type.$$f ;\

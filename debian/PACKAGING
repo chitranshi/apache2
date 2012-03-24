@@ -31,7 +31,7 @@ Packaging Modules
 
 Modules are packages which are installing third party extensions to the Apache 2
 web server which can be loaded at runtim to extend the functionality of the core
-server. Please realize such modules make us of a stable Application Binary
+server. Please realize such modules make use of a stable Application Binary
 Interface (ABI) once compiled which need a recompile if the web server changes.
 Hence be careful how you declare dependencies against the web server. You need
 to make sure it does not break upon upgrades.
@@ -52,7 +52,7 @@ helper assists to get dependencies right.
 The module must install a 'module.load' file to /etc/apache2/modules-available
 where 'module' is the name of the installed module without "mod_" prefix. The
 '.load' file must contain an appropriate "LoadModule" directive only.
-Additionally maintainer can declare module dependencies and conflicts in a magic
+Additionally maintainers can declare module dependencies and conflicts in a magic
 line in '.load' files which need to be resolved to load a module at the
 installation site. This is useful if a module depends that other modules to be
 loaded, or to conflict with other modules if they can't be loaded at the same
@@ -67,8 +67,9 @@ foo.load:
 
 
 Additionally, a 'foo.conf' configuration file can be installed along the 'load'
-file to configure the module if required. This is useful if the module in
-question requires some initial configuration to be useful. No magic comments are
+file to configure the module following the same naming scheme if required. This
+is useful if the module in question requires some initial configuration to be
+useful. No magic comments are
 recognized in '.conf' files.
 
 In some rare cases it can't be avoided that a module depends on a loaded module
@@ -85,9 +86,9 @@ before, you may want to write a module 'load' file like this:
 
 	LoadModule foo_module /usr/lib/modules/mod_foo.so
 
-The bar.load file must also contain an "<IfModule !mod_bar.c>" guard, so you
-have to talk to the maintainer of the package containing mod_bar. Use this
-method extremely sparingly. In most cases a simple "Depends:" dependency does
+Please note, that th bar.load file must also contain a respective "<IfModule
+!mod_bar.c>" guard as it would be loaded twice oterhwise. Use this method
+extremely sparingly. In most cases a simple "Depends:" dependency does
 the job, too. The "Depends:" magic line is still needed, to make sure that the
 a2enmod/a2dismod scripts work correctly.
 
@@ -128,7 +129,8 @@ We differentiate between two sub types: Sites and general configuration. Sites
 are installed to /etc/apache2/sites-available and configure a particular
 virtual hosts. Special care must be taken when installing a site configuration
 to make sure it does not interfere with site local configuration the
-administrator uses.
+administrator uses. Typically there are a few use cases only, where a Debian
+package should include a virtual host configuration.
 
 The general configuration snippets are installed to /etc/apache2/conf-available
 instead. Package maintainers are advised to avoid "local-" prefixes to
@@ -138,6 +140,30 @@ host independent) configuration. Usually these configuration snippets will be
 included in the global server context via the conf-enabled directory. However,
 it is planned to allow the administrator to only enable the configuration
 snippets in a selected set of virtual hosts.
+
+Typically a "packagename.conf" should enable a global alias pointing to your web
+application along a script-dependendent per-script configuration, for example:
+
+	Alias /packagename /usr/share/packagename
+
+	<Directory /usr/share/packagename>
+	  ...
+	</Directory>
+
+Please be careful about the directives you are using. Some might be available in
+modules not enabled by default only. Suppose your <Directory> configuration can
+be enhanced, but does not necessarily need to use mod_rewrite rules you could do
+something like:
+
+	<Directory /usr/share/packagename>
+	  ...
+	  <IfModule mod_rewrite.c>
+	   RewriteEngine on
+	   RewriteRule ...
+	  </IfModule>
+	</Directory>
+
+# XXX: TODO: What should web apps do if they /depend/ on optional modules?
 
 For both types of configuration, dh_apache2 can be used to assist packagers.
 
@@ -180,8 +206,9 @@ apache2-maintscript-helper
 The apache2-maintscript-helper is a collection of functions which can be
 sourced in maintainer scripts to do required tasks in a simple and
 standardized way. It is NOT a script, it is a library
-(insofar shell functions can be called as such). The helper is installed within
-the apache2 binary package. Thus you MUST NOT use any function of it
+(insofar shell functions can be called as such). This is to avoid users to call
+these functions. They are not meant to be used by users. The helper is installed
+within the apache2 binary package. Thus you MUST NOT use any function of it
 unconditionally, as for both modules and web applications there are use cases
 when this package is not added as a dependency. Thus, use it in a protected
 conditional like this only:

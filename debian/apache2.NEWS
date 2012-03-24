@@ -31,7 +31,11 @@ apache2 (2.4.1-1) experimental; urgency=low
   *.conf makes the special handling inside apache2 to ignore *.dpkg-* backup
   files obsolete. This special handling has been removed.
 
+  Packagers are advised to review their packages whether they comply with this
+  new version. Please see [2] for detailed documentation and instructions
+
   [1] http://httpd.apache.org/docs/2.4/howto/auth.html
+  [2] </usr/share/doc/apache2/PACKAGING>
 
  -- Arno Töll <debian@toell.net>  Fri, 02 Mar 2012 17:38:23 +0100
 

@@ -4,6 +4,9 @@ apache2 (2.4.1-1) experimental; urgency=low
   likely the site configuration needs changes to work with this release. Notable
   changes which need special care are:
 
+  The module interface (ABI) has changed. If you have any locally compiled
+  modules, you have to re-compile them for apache2 2.4.
+
   The authorization and authentication system changed. Existing configurations
   using deprecated Order/Allow/Deny directives should be upgraded to the new
   system. Please review upstream's "Authentication, Authorization and Access

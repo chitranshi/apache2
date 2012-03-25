@@ -293,7 +293,7 @@ init(options => {
 
 if (!$dh{CONDITIONAL})
 {
-	$dh{CONDITIONAL} = 'test -n "$2"';
+	$dh{CONDITIONAL} = 'true';
 }
 
 foreach my $package (getpackages())

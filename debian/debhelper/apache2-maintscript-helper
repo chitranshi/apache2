@@ -23,6 +23,41 @@ if [ -n "${EXPORT_APACHE2_MAINTSCRIPT_HELPER:-}" ] ; then
 fi
 EXPORT_APACHE2_MAINTSCRIPT_HELPER=1
 
+
+
+
+#### XXX: TODOS:
+# To cope with updates / fresh installations maintscript helper needs to parse
+# $@. From our discussion:
+# For that, the maint-script-helper needs to store $@ somewhere when it is first
+# sourced. Document somewhere that $@ must be intact at that time. Complain if $1
+# is empty (that's meant as sanity check because $1 contains the maintainer script
+# argument and is guaranteed to be set by dpkg).
+#
+#
+# Moreover it needs to remember if a module/web app was disabled (or enabled) by
+# a maintainer script or by the user. Again, from our discussion:
+# The rembering could be done like:
+# touch /var/lib/apache2/modules_disabled_by_maintscript/$module
+# purge should then do
+# rm -f /var/lib/apache2/modules_disabled_by_maintscript/$module
+# in addition.
+#
+# And even more work:
+# - change the API of apache2_invoke to be more easily extensible (maybe only one
+#   module/conf per invocation, this would allow adding optional parameters later)
+# - change dh_apache2 accordingly (which is not that trivial as there is no easy
+#   way to source script fragments in autoscripts)
+# - If the complexity overboards, the maint-helper can be changed to a shell
+# - the maint helper should log problems into some dedicated log file in
+#    /var/log/apache2
+#    (in addition to printing them to the screen unless the maintainer set
+#     APACHE2_MAINTSCRIPT_HELPER_QUIET=1)
+
+
+
+
+
 #
 # Function apache2_has_module
 # 	checks whether a supplied module is enabled in the current Apache server

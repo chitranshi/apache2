@@ -5,12 +5,16 @@ apache2 (2.4.1-3) experimental; urgency=low
     alternatives, do not remove alternatives on upgrades. Thanks Andreas
     Beckmann for spotting the issue (Closes: #665002)
   * Install suexec(8) link to /usr/share/man/man8/...
+  * Enable mod_version statically, drop associated module load file.
+  * Update PACKAGING hints and cope several questions raised among the
+    discussions with packagers. Thus, invokation of apache2-maintscript-helper
+    in maintainer scripts are covered now.
 
   [ Stefan Fritsch ]
   * Move /usr/share/doc alias to separate config file and don't enable it
     by default.
 
- -- Stefan Fritsch <sf@debian.org>  Sat, 24 Mar 2012 17:55:03 +0100
+ -- Arno Töll <debian@toell.net>  Sun, 25 Mar 2012 13:42:49 +0200
 
 apache2 (2.4.1-2) experimental; urgency=low
 

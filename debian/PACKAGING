@@ -7,6 +7,10 @@ Contents
 
 	Packaging Sites and Configurations for Web Applications
 
+	Maintainer Scripts
+		Enabling Configurations
+		Switching MPMs
+
 	Tools
 		a2query
 		apache2-maintscript-helper
@@ -196,6 +200,81 @@ Refer to the reference documentation below to learn how to use
 apache2-maintscript-helper. Do not enable or disable modules in web
 application maintainer scripts, instead protect your configuration by <IfModule>
 clauses if you require non-standard modules.
+
+Maintainer Scripts
+==================
+
+While it was already discussed briefly in previous sections, here follow some
+clarifications regarding the invokation of wrapper scripts in maintainer scripts
+of modules and web applications.
+
+Enabling Configurations
+-----------------------
+
+Both, modules and web applications should use the apache2-maintscript-helper in
+general. The helper will obey local policies to decide when to enable a piece of
+configuration, to reload the web server and such. Moreover, it will remember
+whether a module was activated by the site administrator or a maintainer script.
+Thus, it is particularly important you do not use "a2enmod" and such directly
+(a2query is acceptable though).
+
+This is a summary how the apache2-maintscript-helper shall be invoked in
+maintainer scripts:
+
+Modules:
+	Modules should unconditionally call apache2_invoke (unless a maintainer
+	or debconf script verified not to install any configuration at all, e.g.
+	for scripts supporting several web servers) in their "postinst configure"
+	sections. It will obey site local policies in future. the maintainer helper
+	will make sure that during upgrade of a module package, disabled modules
+	are not enabled again.
+	Modules need to be disabled on removal (and purge anyway), otherwise
+	their configuration will be broken (as LoadModule would fail because of
+	the missing shared object file). Thus, modules need to call
+	apache2_invoke dismod on both, removal and purge. It's apache2_invoke's
+	job to deal with upgrades and it will remember modules it removed during
+	removal and will reenable it during reinstall.
+
+Web Applications:
+	Web Application derive the same behavior as modules if the web
+	application can be run with a feasible out-of-box configuration, don't
+	enable it otherwise. Likewise, web application should also be disabled
+	on removal (and on purge anyway), because important files may be missing
+	(and that's the point of package removal, anyway).
+
+Switching MPMs
+--------------
+
+Only modules are allowed to switch the enabled MPM. Web applications must not
+switch the enabled MPM in their maintainer scripts. To actually switch the MPM,
+packagers can use a2query to find out whether it is necessary and eventually
+switch it by using the corresponding helper function provided in
+apache2-maintscript-helper. Do not try to switch the MPM yourself - the helper
+function takes special care not to leave the site back in a state without enabled
+MPM which is a fatal error.
+
+
+The helper call may fail. Your maintainer script must cope with this
+possibility. It is not recommended to make your maintainer script fail if the
+MPM could not be changed. Instead emit a warning - if you are using debconf
+anyway you may want to consider using that - but continue operation. However,
+make sure you only invoke the module in question if the MPM could be changed.
+Below you find an example snippet:
+
+
+	if [ -e /usr/share/apache2/apache2-maintscript-helper ] ; then
+		. /usr/share/apache2/apache2-maintscript-helper
+
+		# mod_foo requires the prefork MPM
+		if [ $(a2query -M) != 'prefork' ] ; then
+			apache2_switch_mpm prefork || echo "Switching MPMs failed"
+			apache2_invoke enmod foo
+		else
+			apache2_invoke enmod foo
+		fi
+
+	fi
+
 
 Tools
 =====

@@ -18,11 +18,34 @@
 # IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+set -x 
+
 if [ -n "${EXPORT_APACHE2_MAINTSCRIPT_HELPER:-}" ] ; then
 	return
-fi
-EXPORT_APACHE2_MAINTSCRIPT_HELPER=1
+else
+	EXPORT_APACHE2_MAINTSCRIPT_HELPER=1
 
+	if [ -z "$1" ] ; then
+		echo "You must invoke apache2-maintscript-helper with an nmodified environment when sourcing it"
+		return 1
+	fi
+
+	APACHE2_MAINTSCRIPT_NAME="$0"
+	APACHE2_MAINTSCRIPT_NAME=$(echo "$APACHE2_MAINTSCRIPT_NAME" | sed -re 's#^.*?\.(\w+)#\1#'  )
+	case "$APACHE2_MAINTSCRIPT_NAME" in
+		preinst|prerm|postrm|postinst)
+			# yay - recognized script
+		;;
+		*)
+			echo "Invoked from an unrecognized maintainer script: exiting"
+			return 1
+		;;
+	esac
+
+	APACHE2_MAINTSCRIPT_METHOD="$1"
+	APACHE2_MAINTSCRIPT_ARGUMENT="$2"
+
+fi
 
 
 
@@ -56,7 +79,74 @@ EXPORT_APACHE2_MAINTSCRIPT_HELPER=1
 
 
 
+#
+# Function apache2_is_upgrade
+# 	succeeds if the package invoking the maintscript helper
+# 	is being upgraded. This is useful to find out whether the maintainer
+# 	script logic was already invoked once.
+# Parameters:
+#	none
+# Returns:
+#	0 if an older version of the maintainer script invoking the helper is
+#	already installed
+#	1 otherwise
+# Since: 2.4.1-3
+apache2_is_upgrade()
+{
 
+	# For postinst scripts we're upgrading if we're invoked in "postins configure <most recently installed version>"
+	if [ -n "$APACHE2_MAINTSCRIPT_NAME" ] && [ "$APACHE2_MAINTSCRIPT_NAME" = 'postinst' ] ; then
+		case "$APACHE2_MAINTSCRIPT_METHOD" in
+			configure)
+				if [ -n "$APACHE2_MAINTSCRIPT_ARGUMENT" ] ; then
+					return 0
+				fi
+
+				return 1
+				;;
+			*)
+				return 1
+				;;
+		esac
+	fi
+
+	# For preinst scripts we're upgrading if we're invoked as "preinst install|upgrade <most recently installed version>"
+	if [ -n "$APACHE2_MAINTSCRIPT_NAME" ] && [ "$APACHE2_MAINTSCRIPT_NAME" = 'preinst' ] ; then
+		case "$APACHE2_MAINTSCRIPT_METHOD" in
+			install|upgrade)
+				if [ -n "$APACHE2_MAINTSCRIPT_ARGUMENT" ] ; then
+					return 0
+				fi
+
+				return 1
+				;;
+			*)
+				return 1
+				;;
+		esac
+	fi
+
+	return 1
+}
+
+#
+# Function apache2_is_fresh_installation
+# 	succeeds if the package invoking the maintscript helper
+# 	is being newly installed. This is useful to find out whether the maintainer
+# 	script logic was already invoked once.
+# Parameters:
+#	none
+# Returns:
+#	0 if no older version of the package was previously installed
+#	1 otherwise
+# Since: 2.4.1-3
+apache2_is_fresh_installation()
+{
+	if apache2_is_upgrade ; then
+		return 1
+	fi
+	return 0
+}
 
 #
 # Function apache2_has_module
@@ -98,6 +188,10 @@ apache2_switch_mpm()
 	[ -x /usr/sbin/a2query ] || return 1
 	[ -x /usr/sbin/a2dismod ] || return 1
 	[ -x /usr/sbin/a2enmod ] || return 1
+
+	if apache2_is_upgrade ; then
+		return 0
+	fi
 
 	local MPM="$1"
 	MPM=$(echo "$MPM" | sed -e 's/^mpm_//')
@@ -149,6 +243,10 @@ apache2_invoke()
 	[ -x "/usr/sbin/a2$CMD" ] || return 1
 	[ -x "/usr/sbin/a2query" ] || return 1
 
+	if apache2_is_upgrade && [ $APACHE2_MAINTSCRIPT_NAME = 'postinst' ] ; then
+		return 0
+	fi
+
 	case "$CMD" in
 		*conf)
 			check_switch="-c"
@@ -173,11 +271,12 @@ apache2_invoke()
 				a2$CMD -q "$CONF" || return 1
 				;;
 			disconf|dismod|dissite)
-				if ! a2query $check_switch $CONF > /dev/null 2>&1 ; then
+				if a2query $check_switch $CONF > /dev/null 2>&1 ; then
+					invoke_rcd=1
+					a2$CMD -q "$CONF" || return 1
+				else
 					continue
 				fi
-				invoke_rcd=1
-				a2$CMD -q "$CONF" || return 1
 				;;
 			*)
 				return 1

@@ -472,23 +472,31 @@ foreach my $package (getpackages())
 	{
 		foreach my $ref (@postinst_autoscripts)
 		{
-			my %replacements = (
-				HELPER => $ref->[0],
-				NAMES  => $ref->[1],
-				ERROR_HANDLER => $PACKAGE_TYPE{handler},
-				CONDITIONAL_VARIABLE => $PACKAGE_TYPE{conditional},
-			);
-			my $sed_command = "";
-			foreach my $key (sort keys %replacements) {
-				my $val = $replacements{$key};
-				# escape slashes and backslashes from sed
-				$val =~ s,([/\\]),\\$1,g;
-				$sed_command .= "s/#$key#/$val/g; ";
-			}
+			for my $script_type (qw/postinst postrm/)
+			{
+				my %replacements = (
+					HELPER => $ref->[0],
+					NAMES  => $ref->[1],
+					ERROR_HANDLER => $PACKAGE_TYPE{handler},
+					CONDITIONAL_VARIABLE => $PACKAGE_TYPE{conditional},
+				);
 
-			autoscript($package, "postinst", "postinst-apache2", $sed_command);
-			$ref->[0] =~ s/en/dis/;
-			autoscript($package, "postrm", "postrm-apache2", $sed_command);
+				if ($script_type eq "postrm")
+				{
+					$replacements{'HELPER'} =~ s/en/dis/;
+				}
+
+				my $sed_command = "";
+				foreach my $key (sort keys %replacements)
+				{
+					my $val = $replacements{$key};
+					# escape slashes and backslashes from sed
+					$val =~ s,([/\\]),\\$1,g;
+					$sed_command .= "s/#$key#/$val/g; ";
+				}
+
+				autoscript($package, "$script_type", "$script_type-apache2", $sed_command);
+			}
 		}
 	}
 }

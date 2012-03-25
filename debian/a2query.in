@@ -132,7 +132,7 @@ sub fail
 
 sub load_defaults
 {
-	my @out = `$APACHE2 -V`;
+	my @out = `$APACHE2 -V 2>/dev/null`;
 	return if $?;
 	for (my $line; $line <= $#out; $line++)
 	{

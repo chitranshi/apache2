@@ -228,7 +228,7 @@ true value at installation time. This is useful to web applications which want
 to install Apache configuration files depending on a user input, for example if
 they interface to the user through L<debconf(1)>.
 
-Defaults to B<test -n "$2"> and is subject to shell expansion (see Debian bug #660794 or
+Defaults to B<true> and is subject to shell expansion (see Debian bug #660794 or
 build-depend on debhelper >= 9.20120311 to avoid this problem). The expression
 should be provided in the postrm and postinst scripts before the B<#DEBHELPER#>
 token.
@@ -491,7 +491,7 @@ foreach my $package (getpackages())
 				{
 					my $val = $replacements{$key};
 					# escape slashes and backslashes from sed
-					$val =~ s,([/\\]),\\$1,g;
+					$val =~ s,([/\\]),\$1,g;
 					$sed_command .= "s/#$key#/$val/g; ";
 				}
 

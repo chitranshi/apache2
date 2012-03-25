@@ -62,14 +62,6 @@ fi
 # purge should then do
 # rm -f /var/lib/apache2/modules_disabled_by_maintscript/$module
 # in addition.
-#
-# And even more work:
-# - change the API of apache2_invoke to be more easily extensible (maybe only one
-#   module/conf per invocation, this would allow adding optional parameters later)
-# - change dh_apache2 accordingly (which is not that trivial as there is no easy
-#   way to source script fragments in autoscripts)
-
-
 
 
 #
@@ -255,17 +247,18 @@ apache2_switch_mpm()
 # Parameters:
 #	command - The command to invoke. Recognized commands are "enconf",
 #		"enmod", "ensite", "disconf", "dismod", "dissite"
-#	arguments - A variable number or arguments (e.g. modules) which shall be
+#	argument - A single argument (e.g. a module) which shall be
 #		enabled or disabled respectively. Do not enable module
 #		dependencies that way, instead use module dependencies as
 #		documented in </usr/share/doc/apache2/PACKAGING>.
 # Returns:
 #	0 if the changes could be activated
 #	1 otherwise
-# Since: 2.4.1-1
+# Since: 2.4.1-3
 apache2_invoke()
 {
 	local CMD=$1
+	local CONF=$2
 	shift
 	local invoke_rcd=0
 	local check_switch=""
@@ -296,30 +289,28 @@ apache2_invoke()
 			;;
 	esac
 
-	for CONF in $@ ; do
-		case "$CMD" in
-			enconf|enmod|ensite)
-				if a2query $check_switch $CONF > /dev/null 2>&1 ; then
-					continue
-				fi
+	case "$CMD" in
+		enconf|enmod|ensite)
+			if a2query $check_switch $CONF > /dev/null 2>&1 ; then
+				continue
+			fi
+			invoke_rcd=1
+			a2$CMD -q "$CONF" > /dev/null 2>&1 || return 1
+			apache2_msg "info" "apache2_invoke: Enable $invoke_string $CONF"
+			;;
+		disconf|dismod|dissite)
+			if a2query $check_switch $CONF > /dev/null 2>&1 ; then
 				invoke_rcd=1
 				a2$CMD -q "$CONF" > /dev/null 2>&1 || return 1
-				apache2_msg "info" "apache2_invoke: Enable $invoke_string $CONF"
-				;;
-			disconf|dismod|dissite)
-				if a2query $check_switch $CONF > /dev/null 2>&1 ; then
-					invoke_rcd=1
-					a2$CMD -q "$CONF" > /dev/null 2>&1 || return 1
-					apache2_msg "info" "apache2_invoke: Disable $invoke_string $CONF"
-				else
-					continue
-				fi
-				;;
-			*)
-				return 1
-				;;
-		esac
-	done
+				apache2_msg "info" "apache2_invoke: Disable $invoke_string $CONF"
+			else
+				continue
+			fi
+			;;
+		*)
+			return 1
+			;;
+	esac
 
 	if [ $invoke_rcd -eq 1 ] ; then
 		apache2_reload

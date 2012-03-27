@@ -7,6 +7,7 @@ use strict;
 use Cwd 'realpath';
 use File::Spec;
 use File::Basename;
+use File::Path;
 use Getopt::Long;
 
 my $quiet;
@@ -32,6 +33,14 @@ my $env_file = $ENV{APACHE_ENVVARS}
     );
 $ENV{LANG}='C';
 read_env_file($env_file);
+
+# TODO: those should be moved to envvars ASAP!
+# TODO: follow $suffix policy to allow more instances
+our %STATE_DIRS = ();
+$STATE_DIRS{'apache2'} = "/var/lib/apache2";
+$STATE_DIRS{'module'} = "$STATE_DIRS{'apache2'}/modules";
+$STATE_DIRS{'site'} = "$STATE_DIRS{'apache2'}/sites";
+$STATE_DIRS{'conf'} = "$STATE_DIRS{'apache2'}/conf";
 
 $act .= 'able';
 my ( $name, $dir, $sffx, $reload );
@@ -141,7 +150,6 @@ sub doit {
                                 info("removing dangling symlink $conflink\n");
                                 unlink($conflink)
                         }
-
 			return 1;
 		}
 		else {
@@ -190,31 +198,32 @@ sub doit {
             warn_deps( $acton, @depends ) or return 0;
     }
 
-    if ( $act eq 'enable' ) {
-        my $check = check_link( $tgt, $link );
-        if ( $check eq 'ok' ) {
-            if ($conflink) {
+	if ( $act eq 'enable' ) {
+		my $check = check_link( $tgt, $link );
+		if ( $check eq 'ok' ) {
+			if ($conflink) {
 
-                # handle .conf file
-                my $confcheck = check_link( $conftgt, $conflink );
-                if ( $confcheck eq 'ok' ) {
-                    info("$name $acton already enabled\n");
-                    return 1;
-                }
-                elsif ( $confcheck eq 'missing' ) {
-                    print "Enabling config file $acton.conf.\n";
-                    add_link( $conftgt, $conflink ) or return 0;
-                }
-                else {
-                    error("Config file $acton.conf not properly enabled: $confcheck\n");
-                    return 0;
-                }
-            }
-            else {
-                info("$name $acton already enabled\n");
-                return 1;
-            }
-        }
+				# handle .conf file
+				my $confcheck = check_link( $conftgt, $conflink );
+				if ( $confcheck eq 'ok' ) {
+					info("$name $acton already enabled\n");
+					return 1;
+				}
+				elsif ( $confcheck eq 'missing' ) {
+				print "Enabling config file $acton.conf.\n";
+				add_link( $conftgt, $conflink ) or return 0;
+		
+				}
+				else {
+					error("Config file $acton.conf not properly enabled: $confcheck\n");
+					return 0;
+				}
+			}
+			else {
+				info("$name $acton already enabled\n");
+				return 1;
+			}
+		}
         elsif ( $check eq 'missing' ) {
             if ($conflink) {
 
@@ -234,7 +243,7 @@ sub doit {
                 info("See /usr/share/doc/apache2/README.Debian.gz on " .
                      "how to configure SSL and create self-signed certificates.\n");
 	    }
-            return add_link( $tgt, $link );
+		return add_link( $tgt, $link ) && switch_marker($obj, $act, $acton);
         }
         else {
             error("$name $acton not properly enabled: $check\n");
@@ -243,11 +252,12 @@ sub doit {
     }
     else {
         if ( -e $link || -l $link ) {
-            remove_link($link);
+            	remove_link($link);
             if ( $conflink && -e $conflink ) {
                 remove_link($conflink);
-            }
-            print "$name $acton disabled.\n";
+            } 
+		switch_marker($obj, $act, $acton);
+		print "$name $acton disabled.\n";
         }
         elsif ( $conflink && -e $conflink ) {
             print "Disabling stale config file $acton.conf.\n";
@@ -442,4 +452,34 @@ sub read_env_file {
         $l =~ /^(.*)?=(.*)$/ or die "Could not parse $file\n";
         $ENV{$1} = $2;
     }
+}
+
+sub switch_marker {
+	die('usage: switch_marker([module|site|conf], [enable|disable], $name)') if @_ != 3;
+	my $which = shift;
+	my $what = shift;
+	my $name = shift;
+	# TODO: get rid of the magic string(s)
+	my $state_marker_dir = "$STATE_DIRS{$which}/$what" . "d" . "_by_maint";
+	my $state_marker = "$state_marker_dir/$name";
+	if ( !-d $state_marker_dir ) {
+		File::Path::mkpath("$state_marker_dir") || error("Failed to create marker directory: '$state_marker_dir'\n");
+	}
+	# XXX: swap find with perl alternative
+	my @markers = qx{find "$STATE_DIRS{$which}" -type f -a -name "$name"};
+	chomp(@markers);
+	foreach (@markers) {
+		if(unlink $_) {
+			info("Old marker '$_' removed\n");
+		}
+		else {
+			error("Failed to remove old marker '$_'!\n") && return 0;
+		}
+	}
+	info("Creating '$state_marker'\n");
+	qx{touch "$state_marker"};
+	if ($? != 0) {
+		error("Failed to create marker '$state_marker'!\n") && return 0;
+	}
+	return 1;
 }

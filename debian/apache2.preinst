@@ -28,7 +28,8 @@ OBSOLETE_CONFFILES="/etc/apache2/mods-available/authz_default.load
 /etc/apache2/mods-available/disk_cache.load
 /etc/apache2/mods-available/disk_cache.conf
 /etc/apache2/mods-available/ident.load
-/etc/apache2/mods-available/imagemap.load"
+/etc/apache2/mods-available/imagemap.load
+/etc/apache2/mods-available/version.load"
 
 # conffiles which moved from one random location to another, separate source and
 # destionation by a colon

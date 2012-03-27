@@ -30,7 +30,8 @@ OBSOLETE_CONFFILES="/etc/apache2/mods-available/authz_default.load
 /etc/apache2/mods-available/disk_cache.load
 /etc/apache2/mods-available/disk_cache.conf
 /etc/apache2/mods-available/ident.load
-/etc/apache2/mods-available/imagemap.load"
+/etc/apache2/mods-available/imagemap.load
+/etc/apache2/mods-available/version.load"
 
 
 MOVED_CONFFILES="/etc/bash_completion.d/apache2.2-common:/etc/bash_completion.d/apache2

@@ -24,12 +24,14 @@ apache2 (2.4.1-3) experimental; urgency=low
       known.
   * Build the apache2.2-bin transitional package again, without it updates from
     Squeeze are broken from some use cases
+  * Remove 2.2's postrm script only if we're actually upgrading. This previously
+    didn't have bad side-effects, but caused a disturbing warning.
 
   [ Stefan Fritsch ]
   * Move /usr/share/doc alias to separate config file and don't enable it
     by default.
 
- -- Arno Töll <debian@toell.net>  Tue, 27 Mar 2012 16:52:46 +0200
+ -- Arno Töll <debian@toell.net>  Tue, 27 Mar 2012 19:14:25 +0200
 
 apache2 (2.4.1-2) experimental; urgency=low
 

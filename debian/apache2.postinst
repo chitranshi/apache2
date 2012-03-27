@@ -54,6 +54,7 @@ SQUEEZE_UPGRADE=0
 we_are_upgrading_from_squeeze()
 {
 	if [ -n "$2" ] && dpkg --compare-versions "$2" le-nl "2.3"; then
+		SQUEEZE_UPGRADE=1
 		return 0
 	fi
 
@@ -64,6 +65,7 @@ we_are_upgrading_from_squeeze()
 	fi
 
 	if [ -e /etc/apache2/.apache2_mpm_selected ] ; then
+		SQUEEZE_UPGRADE=1
 		return 0
 	fi
 
@@ -380,8 +382,8 @@ esac
 # And now the traditional insanity of apache2 upgrades (see #390823):
 # If everything went well, we need to purge apache2.2-common's postrm, or
 # purging that package will remove our logs, caches, ...
-if [ "$1" = configure ] ; then
-	oldpostrm=$(dpkg-query -c apache2.2-common postrm||true)
+if [ "$1" = configure ] && we_are_upgrading_from_squeeze $@ ; then
+	oldpostrm=$(dpkg-query -c apache2.2-common postrm  2>/dev/null || true)
 	if [ -n "$oldpostrm" ] ; then
 		rm -f "$oldpostrm"
 	fi

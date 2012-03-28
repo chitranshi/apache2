@@ -27,7 +27,7 @@ else
 	EXPORT_APACHE2_MAINTSCRIPT_HELPER=1
 
 	if [ -z "$1" ] ; then
-		echo "You must invoke apache2-maintscript-helper with an nmodified environment when sourcing it"
+		echo "You must invoke apache2-maintscript-helper with an unmodified environment when sourcing it"
 		return 1
 	fi
 
@@ -101,29 +101,48 @@ apache2_msg()
 }
 
 #
-# Function apache2_is_upgrade
+# Function apache2_needs_action
 # 	succeeds if the package invoking the maintscript helper
-# 	is being upgraded. This is useful to find out whether the maintainer
-# 	script logic was already invoked once.
-# Parameters:
+# 	needs any work. This function can be used as a conditional whether a
+# 	certain function should be executed by means of the package state
+#Parameters:
 #	none
 # Returns:
 #	0 if an older version of the maintainer script invoking the helper is
 #	already installed
 #	1 otherwise
 # Since: 2.4.1-3
-apache2_is_upgrade()
+apache2_needs_action()
 {
+	# Summary how the maintscript behaves:
+	# preinst:
+	#	Not sure why anyone would like to call this function in preinst. Die loud.
+	# prerm remove:
+	#	Basically the same as postrm. If a maintainer would like to
+	#	disable his module before removing his stuff, be it.
+	#	However, we have nothing useful to do if we're called in any
+	#	other way than "remove" in prerm.
+	# postinst configure
+	#	Probably the most important invokation. When invoked in configure we:
+	#	- enable the piece of configuration on fresh installs
+	#	- do nothing on upgrades UNLESS the configuration was removed automatically in the past
+	# postrm remove|purge
+	#	- disable the configuration, mark it as automatically disabled in remove
+	#	- disable the configuration, remove any trace we have on purge
 
-	# For postinst scripts we're upgrading if we're invoked in "postins configure <most recently installed version>"
-	if [ -n "$APACHE2_MAINTSCRIPT_NAME" ] && [ "$APACHE2_MAINTSCRIPT_NAME" = 'postinst' ] ; then
+	if [ -z "$APACHE2_MAINTSCRIPT_NAME" ] ; then
+		return 1
+	fi
+
+	if [ "$APACHE2_MAINTSCRIPT_NAME" = 'preinst' ] ; then
+		apache2_msg "info" "apache2_needs_action: The maintainer helper can not be called in preinst"
+		return 1
+	fi
+
+	if [ "$APACHE2_MAINTSCRIPT_NAME" = 'prerm' ] || [ "$APACHE2_MAINTSCRIPT_NAME" = 'postrm' ] ; then
 		case "$APACHE2_MAINTSCRIPT_METHOD" in
-			configure)
-				if [ -n "$APACHE2_MAINTSCRIPT_ARGUMENT" ] ; then
-					return 0
-				fi
-
-				return 1
+			remove|purge)
+				return 0
 				;;
 			*)
 				return 1
@@ -131,43 +150,15 @@ apache2_is_upgrade()
 		esac
 	fi
 
-	# For preinst scripts we're upgrading if we're invoked as "preinst install|upgrade <most recently installed version>"
-	if [ -n "$APACHE2_MAINTSCRIPT_NAME" ] && [ "$APACHE2_MAINTSCRIPT_NAME" = 'preinst' ] ; then
-		case "$APACHE2_MAINTSCRIPT_METHOD" in
-			install|upgrade)
-				if [ -n "$APACHE2_MAINTSCRIPT_ARGUMENT" ] ; then
-					return 0
-				fi
-
-				return 1
-				;;
-			*)
-				return 1
-				;;
-		esac
+	if [ "$APACHE2_MAINTSCRIPT_NAME" = 'postinst' ] && [ "$APACHE2_MAINTSCRIPT_METHOD" = "configure" ] && \
+		[ -z "$APACHE2_MAINTSCRIPT_ARGUMENT" ] ; then
+			return 0
 	fi
 
 	return 1
 }
 
-#
-# Function apache2_is_fresh_installation
-# 	succeeds if the package invoking the maintscript helper
-# 	is being newly installed. This is useful to find out whether the maintainer
-# 	script logic was already invoked once.
-# Parameters:
-#	none
-# Returns:
-#	0 if no older version of the package was previously installed
-#	1 otherwise
-# Since: 2.4.1-3
-apache2_is_fresh_installation()
-{
-	if apache2_is_upgrade ; then
-		return 1
-	fi
-	return 0
-}
+
 
 #
 # Function apache2_has_module
@@ -210,12 +201,15 @@ apache2_switch_mpm()
 	[ -x /usr/sbin/a2dismod ] || return 1
 	[ -x /usr/sbin/a2enmod ] || return 1
 
-	if apache2_is_upgrade ; then
+	local MPM="$1"
+	MPM=$(echo "$MPM" | sed -e 's/^mpm_//')
+
+
+	if ! apache2_needs_action ; then
+		apache2_msg "info" "apache2_switch_mpm $MPM: No action required"
 		return 0
 	fi
 
-	local MPM="$1"
-	MPM=$(echo "$MPM" | sed -e 's/^mpm_//')
 
 	if [ ! -e "/etc/apache2/mods-available/mpm_$MPM.load" ] ; then
 		apache2_msg "err" "apache2_switch_mpm: MPM $MPM not found"
@@ -227,11 +221,13 @@ apache2_switch_mpm()
 	if [ $CUR_MPM != $MPM ] ; then
 		a2dismod -q "mpm_$CUR_MPM";
 		a2enmod -q "mpm_$MPM";
+		apache2_msg "info" "apache2_switch_mpm Switch to $MPM"
 	fi
 
 	if ! apache2_has_module "mpm_$MPM" ; then
 		# rollback
 		a2enmod -q "mpm_$CUR_MPM"
+		apache2_msg "warning" "apache2_switch_mpm Switch to $MPM failed. Rolling back to $CUR_MPM"
 		return 1
 	fi
 
@@ -259,7 +255,6 @@ apache2_invoke()
 {
 	local CMD=$1
 	local CONF=$2
-	shift
 	local invoke_rcd=0
 	local check_switch=""
 	local invoke_string=""
@@ -267,8 +262,8 @@ apache2_invoke()
 	[ -x "/usr/sbin/a2$CMD" ] || return 1
 	[ -x "/usr/sbin/a2query" ] || return 1
 
-	if apache2_is_upgrade && [ $APACHE2_MAINTSCRIPT_NAME = 'postinst' ] ; then
-		apache2_msg "info" "apache2_invoke: Doing nothing upon upgrade"
+	if ! apache2_needs_action ; then
+		apache2_msg "info" "apache2_invoke $CONF: No action required"
 		return 0
 	fi
 
@@ -301,7 +296,12 @@ apache2_invoke()
 		disconf|dismod|dissite)
 			if a2query $check_switch $CONF > /dev/null 2>&1 ; then
 				invoke_rcd=1
-				a2$CMD -q "$CONF" > /dev/null 2>&1 || return 1
+				if [ "$APACHE2_MAINTSCRIPT_NAME" = 'postrm' ] && [ "$APACHE2_MAINTSCRIPT_METHOD" = "purge" ] ; then
+					#XXX: Replace me by the "forget-state-switch" call
+					a2$CMD -q "$CONF" > /dev/null 2>&1 || return 1
+				else
+					a2$CMD -q "$CONF" > /dev/null 2>&1 || return 1
+				fi
 				apache2_msg "info" "apache2_invoke: Disable $invoke_string $CONF"
 			else
 				continue
@@ -331,6 +331,10 @@ apache2_invoke()
 # Since: 2.4.1-1
 apache2_reload()
 {
+	if ! apache2_needs_action ; then
+		return 0
+	fi
+
 	if apache2ctl configtest 2>/dev/null; then
 		invoke-rc.d apache2 force-reload || true
 	else

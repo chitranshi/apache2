@@ -106,10 +106,6 @@ sub myglob {
         $_
     } glob("$choicedir/$arg$sffx");
 
-    # use same rules as apache's Include directive
-    @glob = grep( /^[[:alnum:]][-._[:alnum:]]*$/, @glob );
-    @glob = grep( !/\.dpkg/, @glob );
-
     return @glob;
 }
 

@@ -73,11 +73,13 @@ foo.load:
 Additionally, a 'foo.conf' configuration file can be installed along the 'load'
 file to configure the module following the same naming scheme if required. This
 is useful if the module in question requires some initial configuration to be
-useful. No magic comments are
-recognized in '.conf' files.
+useful. No magic comments are recognized in '.conf' files. Aside they have the
+same functionality and requirements as configuration files (see below). You may
+use only directives provided by default or provided by your module in a module
+'.conf' file.
 
 In some rare cases it can't be avoided that a module depends on a loaded module
-before another module can be loaded. However, modules are loaded in a sorted
+before the load process can succeed. However, modules are loaded in a sorted
 alphabetical order. In most cases such pre-load dependencies could be avoided
 upstream. If there is no way out that problem, you may want to add a conditional
 Include in your own module file. Suppose mod_foo relies on mod_bar to be loaded
@@ -90,11 +92,10 @@ before, you may want to write a module 'load' file like this:
 
 	LoadModule foo_module /usr/lib/modules/mod_foo.so
 
-Please note, that th bar.load file must also contain a respective "<IfModule
+Please note, that the bar.load file must also contain a respective "<IfModule
 !mod_bar.c>" guard as it would be loaded twice oterhwise. Use this method
-extremely sparingly. In most cases a simple "Depends:" dependency does
-the job, too. The "Depends:" magic line is still needed, to make sure that the
-a2enmod/a2dismod scripts work correctly.
+extremely sparingly. The "Depends:" magic line is still needed, to make sure
+that the a2enmod/a2dismod dependency resolver works correctly.
 
 Maintainer scripts should not invoke a2enmod directly. Instead, the
 apache2-maintscript-helper should be used. Please realize, the helper is not
@@ -154,10 +155,17 @@ application along a script-dependendent per-script configuration, for example:
 	  ...
 	</Directory>
 
-Please be careful about the directives you are using. Some might be available in
-modules not enabled by default only. Suppose your <Directory> configuration can
-be enhanced, but does not necessarily need to use mod_rewrite rules you could do
-something like:
+Please be careful about the directives you are using. Some might be provided by
+modules which are not enabled by default. By default you can unconditionally use
+directives from these modules: mod_access_compat, mod_alias, mod_auth_basic,
+mod_authn_file, mod_authz_host, mod_authz_user, mod_autoindex, mod_deflate,
+mod_dir, mod_env, mod_filter, mod_logio, mod_mime, mod_negotiation,
+mod_setenvif, mod_unixd, mod_version, mod_watchdog. Check the respective module
+documentations about the modules providing directives you are using.
+
+Note, not all directives are really required. Suppose your <Directory>
+configuration can be enhanced, but does not necessarily need to use mod_rewrite
+rules you could do something like:
 
 	<Directory /usr/share/packagename>
 	  ...
@@ -167,9 +175,26 @@ something like:
 	  </IfModule>
 	</Directory>
 
-# XXX: TODO: What should web apps do if they /depend/ on optional modules?
 
-For both types of configuration, dh_apache2 can be used to assist packagers.
+On the other hand, there are use cases where a configuration really needs a
+certain module to be enabled. This is tricky to achieve for web applications as
+dependency chains could yield to complex dependency chains which could break
+unrelated web applications installed along your package. Thus, we do not resolve
+module dependencies for web applications automatically, but they can be
+expressed. Moreover, modules can be arbitrarly enabled and disabled, thus a web
+application must make sure not to break the web server start-up if a required
+module is not available.
+
+The strategy for modules is to express dependencies in the same way as modules
+do support them (see the corresponding module ".load" file section). They are
+not resolved automatically, but a2enconf will warn the site administrator about
+modules which need to enabled. Within your package.conf file you still need to
+protect non-default directives by <IfModule> clauses as there is no guarantee,
+they are actually available at runtime. It is acceptable if your configuration
+file turns to a no-op then, as long as it does not break the server start-up.
+
+For both types of configuration, configurations and sites dh_apache2 can be used
+to assist packagers.
 
 Web applications must depend (or recommend) apache2 only. Web applications must
 not depend or recommend apache2-bin or apache2-data packages. Generally web

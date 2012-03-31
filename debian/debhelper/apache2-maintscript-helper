@@ -129,30 +129,29 @@ apache2_needs_action()
 	#	- disable the configuration, mark it as automatically disabled in remove
 	#	- disable the configuration, remove any trace we have on purge
 
-	if [ -z "$APACHE2_MAINTSCRIPT_NAME" ] ; then
-		return 1
-	fi
-
-	if [ "$APACHE2_MAINTSCRIPT_NAME" = 'preinst' ] ; then
+	case "$APACHE2_MAINTSCRIPT_NAME" in
+	preinst)
 		apache2_msg "info" "apache2_needs_action: The maintainer helper can not be called in preinst"
 		return 1
-	fi
-
-	if [ "$APACHE2_MAINTSCRIPT_NAME" = 'prerm' ] || [ "$APACHE2_MAINTSCRIPT_NAME" = 'postrm' ] ; then
+		;;
+	prerm|postrm)
 		case "$APACHE2_MAINTSCRIPT_METHOD" in
-			remove|purge)
-				return 0
-				;;
-			*)
-				return 1
-				;;
-		esac
-	fi
-
-	if [ "$APACHE2_MAINTSCRIPT_NAME" = 'postinst' ] && [ "$APACHE2_MAINTSCRIPT_METHOD" = "configure" ] && \
-		[ -z "$APACHE2_MAINTSCRIPT_ARGUMENT" ] ; then
+		remove|purge)
 			return 0
-	fi
+			;;
+		*)
+			return 1
+			;;
+		esac
+		;;
+	postinst)
+		if [ "$APACHE2_MAINTSCRIPT_METHOD" = "configure" ] && \
+		   [ -z "$APACHE2_MAINTSCRIPT_ARGUMENT" ]
+		then
+			return 0
+		fi
+		;;
+	esac
 
 	return 1
 }

@@ -1,0 +1,174 @@
+Description: add r1294306 and r1307067 from upstream trunk
+Forwarded: not-needed
+Author: Stefan Fritsch <sf@debian.org>
+Last-Update: 2012-03-31
+commit b9feb2ddc332776a4bb02dc493a75ee091d9e3b3
+Author: Stefan Fritsch <sf@apache.org>
+Date:   Mon Feb 27 20:01:40 2012 +0000
+
+    Initialize EC temporary key on server startup, as for DH and
+    RSA. This fixes a race condition that could lead to a crash with threaded
+    MPMs.
+    
+    
+    git-svn-id: https://svn.apache.org/repos/asf/httpd/httpd/trunk@1294306 13f79535-47bb-0310-9956-ffa450edef68
+
+diff --git a/modules/ssl/ssl_engine_init.c b/modules/ssl/ssl_engine_init.c
+index acaf5d5..5d81647 100644
+--- a/modules/ssl/ssl_engine_init.c
++++ b/modules/ssl/ssl_engine_init.c
+@@ -77,6 +77,9 @@ static void ssl_tmp_keys_free(server_rec *s)
+ 
+     MODSSL_TMP_KEYS_FREE(mc, RSA);
+     MODSSL_TMP_KEYS_FREE(mc, DH);
++#ifndef OPENSSL_NO_EC
++    MODSSL_TMP_KEY_FREE(mc, EC_KEY, SSL_TMP_KEY_EC_256);
++#endif
+ }
+ 
+ static int ssl_tmp_key_init_rsa(server_rec *s,
+@@ -157,6 +160,40 @@ static int ssl_tmp_key_init_dh(server_rec *s,
+     return OK;
+ }
+ 
++#ifndef OPENSSL_NO_EC
++static int ssl_tmp_key_init_ec(server_rec *s,
++                               int bits, int idx)
++{
++    SSLModConfigRec *mc = myModConfig(s);
++    EC_KEY *ecdh = NULL;
++
++    /* XXX: Are there any FIPS constraints we should enforce? */
++
++    if (bits != 256) {
++        ap_log_error(APLOG_MARK, APLOG_ERR, 0, s, APLOGNO(02298)
++                     "Init: Failed to generate temporary "
++                     "%d bit EC parameters, only 256 bits supported", bits);
++        return !OK;
++    }
++
++    if ((ecdh = EC_KEY_new()) == NULL ||
++        EC_KEY_set_group(ecdh, EC_GROUP_new_by_curve_name(NID_X9_62_prime256v1)) != 1)
++    {
++        ap_log_error(APLOG_MARK, APLOG_ERR, 0, s, APLOGNO(02299)
++                     "Init: Failed to generate temporary "
++                     "%d bit EC parameters", bits);
++        return !OK;
++    }
++
++    mc->pTmpKeys[idx] = ecdh;
++    return OK;
++}
++
++#define MODSSL_TMP_KEY_INIT_EC(s, bits) \
++    ssl_tmp_key_init_ec(s, bits, SSL_TMP_KEY_EC_##bits)
++
++#endif
++
+ #define MODSSL_TMP_KEY_INIT_RSA(s, bits) \
+     ssl_tmp_key_init_rsa(s, bits, SSL_TMP_KEY_RSA_##bits)
+ 
+@@ -181,6 +218,15 @@ static int ssl_tmp_keys_init(server_rec *s)
+         return !OK;
+     }
+ 
++#ifndef OPENSSL_NO_EC
++    ap_log_error(APLOG_MARK, APLOG_TRACE1, 0, s,
++                 "Init: Generating temporary EC parameters (256 bits)");
++
++    if (MODSSL_TMP_KEY_INIT_EC(s, 256)) {
++        return !OK;
++    }
++#endif
++
+     return OK;
+ }
+ 
+diff --git a/modules/ssl/ssl_engine_kernel.c b/modules/ssl/ssl_engine_kernel.c
+index 8d1aad8..35b2a85 100644
+--- a/modules/ssl/ssl_engine_kernel.c
++++ b/modules/ssl/ssl_engine_kernel.c
+@@ -1386,24 +1386,20 @@ DH *ssl_callback_TmpDH(SSL *ssl, int export, int keylen)
+ EC_KEY *ssl_callback_TmpECDH(SSL *ssl, int export, int keylen)
+ {
+     conn_rec *c = (conn_rec *)SSL_get_app_data(ssl);
+-    static EC_KEY *ecdh = NULL;
+-    static int init = 0;
++    SSLModConfigRec *mc = myModConfigFromConn(c);
++    int idx;
+ 
+     /* XXX Uses 256-bit key for now. TODO: support other sizes. */
+     ap_log_cerror(APLOG_MARK, APLOG_TRACE2, 0, c,
+                   "handing out temporary 256 bit ECC key");
+ 
+-    if (init == 0) {
+-        ecdh = EC_KEY_new();
+-        if (ecdh != NULL) {
+-            /* ecdh->group = EC_GROUP_new_by_nid(NID_secp160r2); */
+-            EC_KEY_set_group(ecdh,
+-              EC_GROUP_new_by_curve_name(NID_X9_62_prime256v1));
+-        }
+-        init = 1;
++    switch (keylen) {
++      case 256:
++      default:
++        idx = SSL_TMP_KEY_EC_256;
+     }
+ 
+-    return ecdh;
++    return (EC_KEY *)mc->pTmpKeys[idx];
+ }
+ #endif
+ 
+diff --git a/modules/ssl/ssl_private.h b/modules/ssl/ssl_private.h
+index fb9ac26..1b5d042 100644
+--- a/modules/ssl/ssl_private.h
++++ b/modules/ssl/ssl_private.h
+@@ -298,7 +298,12 @@ typedef int ssl_algo_t;
+ #define SSL_TMP_KEY_RSA_1024 (1)
+ #define SSL_TMP_KEY_DH_512   (2)
+ #define SSL_TMP_KEY_DH_1024  (3)
++#ifndef OPENSSL_NO_EC
++#define SSL_TMP_KEY_EC_256   (4)
++#define SSL_TMP_KEY_MAX      (5)
++#else
+ #define SSL_TMP_KEY_MAX      (4)
++#endif
+ 
+ /**
+  * Define the SSL options
+commit e2767fc2deb44bba6ef1a67fb2aaee9de240ed94
+Author: Stefan Fritsch <sf@apache.org>
+Date:   Thu Mar 29 19:24:04 2012 +0000
+
+    Fix treatment of regex backreferences.
+    
+    r904765 only made half of the necessary changes to remove the use
+    of '&' as an alias for '$0' and allow to escape any character with a
+    backslash.
+    
+    
+    git-svn-id: https://svn.apache.org/repos/asf/httpd/httpd/trunk@1307067 13f79535-47bb-0310-9956-ffa450edef68
+
+diff --git a/server/util.c b/server/util.c
+index 3c38fa9..177f378 100644
+--- a/server/util.c
++++ b/server/util.c
+@@ -437,15 +437,13 @@ static apr_status_t regsub_core(apr_pool_t *p, char **result,
+     src = input;
+ 
+     while ((c = *src++) != '\0') {
+-        if (c == '&')
+-            no = 0;
+-        else if (c == '$' && apr_isdigit(*src))
++        if (c == '$' && apr_isdigit(*src))
+             no = *src++ - '0';
+         else
+             no = AP_MAX_REG_MATCH;
+ 
+         if (no >= AP_MAX_REG_MATCH) {  /* Ordinary character. */
+-            if (c == '\\' && (*src == '$' || *src == '&'))
++            if (c == '\\' && *src)
+                 c = *src++;
+             *dst++ = c;
+         }

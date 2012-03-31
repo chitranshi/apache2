@@ -6,6 +6,8 @@ no_LD_LIBRARY_PATH.patch
 suexec-CVE-2007-1742.patch
 customize_apxs.patch
 build_suexec-custom.patch
+pull_branch_2.4.x.patch
+fixes_from_upstream_trunk.patch
 # The patch below must not be applied by quilt at extraction time.  It depends
 # on some script-fu to be executed before. Have a look
 # to debian/rules' prepare-custom-suexec target.

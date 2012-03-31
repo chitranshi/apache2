@@ -256,6 +256,7 @@ apache2_invoke()
 	local invoke_rcd=0
 	local check_switch=""
 	local invoke_string=""
+	local rcd_action=""
 
 	[ -x "/usr/sbin/a2$CMD" ] || return 1
 	[ -x "/usr/sbin/a2query" ] || return 1
@@ -269,14 +270,17 @@ apache2_invoke()
 		*conf)
 			check_switch="-c"
 			invoke_string="configuration"
+			rcd_action="reload"
 			;;
 		*mod)
 			check_switch="-m"
 			invoke_string="module"
+			rcd_action="restart"
 			;;
 		*site)
 			check_switch="-s"
 			invoke_string="site"
+			rcd_action="reload"
 			;;
 		*)
 			;;
@@ -296,9 +300,9 @@ apache2_invoke()
 				invoke_rcd=1
 				if [ "$APACHE2_MAINTSCRIPT_NAME" = 'postrm' ] && [ "$APACHE2_MAINTSCRIPT_METHOD" = "purge" ] ; then
 					#XXX: Replace me by the "forget-state-switch" call
-					a2$CMD -q "$CONF" > /dev/null 2>&1 || return 1
+					a2$CMD -f -q "$CONF" || return 1
 				else
-					a2$CMD -q "$CONF" > /dev/null 2>&1 || return 1
+					a2$CMD -f -q "$CONF" || return 1
 				fi
 				apache2_msg "info" "apache2_invoke: Disable $invoke_string $CONF"
 			else
@@ -311,7 +315,7 @@ apache2_invoke()
 	esac
 
 	if [ $invoke_rcd -eq 1 ] ; then
-		apache2_reload
+		apache2_reload $rcd_action
 	fi
 
 }
@@ -322,7 +326,7 @@ apache2_invoke()
 #	actually reload the web server if the current configuration fails to
 #	parse.
 # Parameters:
-#	This function does not take any arguments
+#	action - optional, can be 'reload' (default) or 'restart'
 # Returns:
 #	0 if the changes could be activated
 #	1 otherwise
@@ -332,10 +336,22 @@ apache2_reload()
 	if ! apache2_needs_action ; then
 		return 0
 	fi
+	local action
+	case "${1:-}" in
+	""|reload)
+		action=reload
+		;;
+	restart)
+		action=restart
+		;;
+	*)
+		return 1
+		;;
+	esac
 
 	if apache2ctl configtest 2>/dev/null; then
-		invoke-rc.d apache2 force-reload || true
+		invoke-rc.d apache2 $action || true
 	else
-		apache2_msg "err" "apache2_reload: Your configuration is broken. Not restarting Apache 2"
+		apache2_msg "err" "apache2_reload: Your configuration is broken. Not ${action}ing Apache 2"
 	fi
 }

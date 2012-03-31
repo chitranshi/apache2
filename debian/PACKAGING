@@ -175,23 +175,25 @@ rules you could do something like:
 	  </IfModule>
 	</Directory>
 
+(Note that some common uses of mod_rewrite for web applications can be replaced
+by the relatively new FallbackResource directive.)
 
 On the other hand, there are use cases where a configuration really needs a
 certain module to be enabled. This is tricky to achieve for web applications as
-dependency chains could yield to complex dependency chains which could break
-unrelated web applications installed along your package. Thus, we do not resolve
-module dependencies for web applications automatically, but they can be
-expressed. Moreover, modules can be arbitrarly enabled and disabled, thus a web
+dependences could lead to complex dependency chains which could break unrelated
+web applications installed along your package. Thus, we do not resolve module
+dependencies for web applications automatically, but they can be expressed, and
+a2enconf will warn the site administrator about modules which need to enabled.
+Moreover, modules can be arbitrarly enabled and disabled, thus a web
 application must make sure not to break the web server start-up if a required
 module is not available.
 
-The strategy for modules is to express dependencies in the same way as modules
-do support them (see the corresponding module ".load" file section). They are
-not resolved automatically, but a2enconf will warn the site administrator about
-modules which need to enabled. Within your package.conf file you still need to
-protect non-default directives by <IfModule> clauses as there is no guarantee,
-they are actually available at runtime. It is acceptable if your configuration
-file turns to a no-op then, as long as it does not break the server start-up.
+The syntax for config snippets to express dependencies is identical to the
+syntax in modules' ".load" files.  Within your package.conf file you still need
+to protect non-default directives by <IfModule> clauses as there is no
+guarantee, that the modules are actually enabled. It is acceptable if your
+configuration file turns to a no-op then, as long as it does not break the
+server start-up.
 
 For both types of configuration, configurations and sites dh_apache2 can be used
 to assist packagers.
@@ -250,19 +252,19 @@ Modules:
 	Modules should unconditionally call apache2_invoke (unless a maintainer
 	or debconf script verified not to install any configuration at all, e.g.
 	for scripts supporting several web servers) in their "postinst configure"
-	sections. It will obey site local policies in future. the maintainer helper
-	will make sure that during upgrade of a module package, disabled modules
-	are not enabled again.
+	sections. It will obey site local policies in future and will make sure
+	that during upgrade of a module package, disabled modules are not enabled
+	again.
 	Modules need to be disabled on removal (and purge anyway), otherwise
 	their configuration will be broken (as LoadModule would fail because of
 	the missing shared object file). Thus, modules need to call
 	apache2_invoke dismod on both, removal and purge. It's apache2_invoke's
 	job to deal with upgrades and it will remember modules it removed during
-	removal and will reenable it during reinstall.
+	removal and will reenable them during re-install.
 
 Web Applications:
 	Web Application derive the same behavior as modules if the web
-	application can be run with a feasible out-of-box configuration, don't
+	application can be run with a sensible out-of-box configuration, don't
 	enable it otherwise. Likewise, web application should also be disabled
 	on removal (and on purge anyway), because important files may be missing
 	(and that's the point of package removal, anyway).
@@ -276,15 +278,16 @@ packagers can use a2query to find out whether it is necessary and eventually
 switch it by using the corresponding helper function provided in
 apache2-maintscript-helper. Do not try to switch the MPM yourself - the helper
 function takes special care not to leave the site back in a state without enabled
-MPM which is a fatal error.
+MPM, which is a fatal error.
 
 
 The helper call may fail. Your maintainer script must cope with this
 possibility. It is not recommended to make your maintainer script fail if the
-MPM could not be changed. Instead emit a warning - if you are using debconf
-anyway you may want to consider using that - but continue operation. However,
-make sure you only invoke the module in question if the MPM could be changed.
-Below you find an example snippet:
+MPM could not be changed. Instead emit a warning. You can use the apache2_msg
+function from apache2-maintscript-helper which sill also log to syslog. If you
+are using debconf anyway you may want to consider using that - but continue
+operation. However, make sure you only enable the module in question if the MPM
+was changed successfully.  Below you find an example snippet:
 
 
 	if [ -e /usr/share/apache2/apache2-maintscript-helper ] ; then
@@ -292,8 +295,11 @@ Below you find an example snippet:
 
 		# mod_foo requires the prefork MPM
 		if [ $(a2query -M) != 'prefork' ] ; then
-			apache2_switch_mpm prefork || echo "Switching MPMs failed"
-			apache2_invoke enmod foo
+			if apache2_switch_mpm prefork ; then
+				apache2_invoke enmod foo
+			else
+				apache2_msg err "Could not switch to prefork, not enabling mod_foo"
+			fi
 		else
 			apache2_invoke enmod foo
 		fi

@@ -10,21 +10,25 @@ apache2 (2.4.1-3) experimental; urgency=low
     discussions with packagers. Thus, invokation of apache2-maintscript-helper
     in maintainer scripts are covered now.
   * Changes in dh_apache2:
-    + Invoke the maintscript helper postrm action for simple package removals, too.
-    + Fix a bug which accidentally called "en{mod,site,conf}" instead of "di{mod,site,conf}"
+    + Invoke the maintscript helper postrm action for simple package removals,
+      too.
+    + Fix a bug which accidentally called "en{mod,site,conf}" instead of
+      "di{mod,site,conf}"
     + Set the default conditional back to "true", now the maintainer script is
       expected to cope itself with upgrades correctly
   * Changes in apache2_maintscript_helper
     + Provide apache2_action_needed, apache2_msg
     + Parse maintainer script arguments to find out which script called us
-    + Support APACHE2_MAINTSCRIPT_HELPER_QUIET which, when set, omits any visible output
+    + Support APACHE2_MAINTSCRIPT_HELPER_QUIET which, when set, omits any
+      visible output
     + Break APIs: apache2_invoke accepts a single configuration file argument
       only now. However, other than dh_apache2 no users of this feature were
       known.
   * Build the apache2.2-bin transitional package again, without it updates from
     Squeeze are broken from some use cases
-  * Remove 2.2's postrm script only if we're actually upgrading. This previously
-    didn't have bad side-effects, but caused a disturbing warning.
+  * Remove 2.2's postrm script only if we're actually upgrading.
+    This previously didn't have bad side-effects, but caused a disturbing
+    warning.
 
   [ Stefan Fritsch ]
   * Import lots of bug fixes from upstream svn: All code changes from branch

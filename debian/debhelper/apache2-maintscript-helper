@@ -31,8 +31,7 @@ else
 		return 1
 	fi
 
-	APACHE2_MAINTSCRIPT_NAME="$0"
-	APACHE2_MAINTSCRIPT_NAME=$(echo "$APACHE2_MAINTSCRIPT_NAME" | sed -re 's#^.*?\.(\w+)#\1#'  )
+	APACHE2_MAINTSCRIPT_NAME="${0##*.}"
 	case "$APACHE2_MAINTSCRIPT_NAME" in
 		preinst|prerm|postrm|postinst)
 			# yay - recognized script
@@ -43,8 +42,8 @@ else
 		;;
 	esac
 
-	APACHE2_MAINTSCRIPT_PACKAGE="$0"
-	APACHE2_MAINTSCRIPT_PACKAGE=$(echo "$APACHE2_MAINTSCRIPT_PACKAGE" | sed -re 's#^.+/(.*)\.\w+$#\1#'  )
+	APACHE2_MAINTSCRIPT_PACKAGE="${0##*/}"
+	APACHE2_MAINTSCRIPT_PACKAGE="${APACHE2_MAINTSCRIPT_PACKAGE%.*}"
 
 	APACHE2_MAINTSCRIPT_METHOD="$1"
 	APACHE2_MAINTSCRIPT_ARGUMENT="$2"
@@ -202,7 +201,7 @@ apache2_switch_mpm()
 	[ -x /usr/sbin/a2enmod ] || return 1
 
 	local MPM="$1"
-	MPM=$(echo "$MPM" | sed -e 's/^mpm_//')
+	MPM="${MPM#mpm_}"
 
 
 	if ! apache2_needs_action ; then

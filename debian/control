@@ -104,6 +104,7 @@ Description: Transitional package for apache2-bin
 
 Package: apache2-utils
 Architecture: any
+Multi-Arch: foreign
 Depends: ${misc:Depends}, ${shlibs:Depends}, ${perl:Depends}
 Description: Apache HTTP Server (utility programs for web servers)
  Provides some add-on programs useful for any web server.  These include:

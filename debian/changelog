@@ -34,6 +34,7 @@ apache2 (2.4.1-3) experimental; urgency=low
   * Import lots of bug fixes from upstream svn: All code changes from branch
     2.4.x up to r1307835, plus r1294306 and r1307067 from trunk.
   * Remove /usr/share/doc alias from default virtual hosts' configs.
+  * Add 'Multi-Arch: foreign' to apache2-utils
 
  -- Arno Töll <debian@toell.net>  Wed, 28 Mar 2012 18:07:18 +0200
 

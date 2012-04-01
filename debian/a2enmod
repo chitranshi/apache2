@@ -156,32 +156,38 @@ sub doit {
     # handle module dependencies
     if ( $obj eq 'module' ) {
         if ( $act eq 'enable' ) {
-            my $depends = qx{grep "# Depends:" "$availdir/$acton.load"|cut -f2 -d:};
-            $depends =~ s,^[\s\n]+,,;
-            $depends =~ s,[\s\n]+$,,;
-            do_deps( $acton, split( /[\n\s]+/, $depends ) ) or return 0;
+            my @depends = get_deps("$availdir/$acton.load");
+            do_deps( $acton, @depends ) or return 0;
 
-            my $conflicts = qx{grep "# Conflicts:" "$availdir/$acton.load"|cut -f2 -d:};
-            $conflicts =~ s,^[\s\n]+,,;
-            $conflicts =~ s,[\s\n]+$,,;
-            check_conflicts( $acton, split( /[\n\s]+/, $conflicts ) ) or return 0;
+            my @conflicts = get_deps("$availdir/$acton.load", "Conflicts");
+            check_conflicts( $acton, @conflicts ) or return 0;
         }
         else {
-            my @depends = qx{egrep "# Depends:.*${acton}( |\$)" $enabldir/*.load};
-            @depends = grep {s{^.*?/([^/]*?)\.load:.*}{$1}s} @depends;
-            if ( scalar @depends ) {
+            my @depending;
+            foreach my $d (glob("$enabldir/*.load")) {
+                my @deps = get_deps($d);
+                if (is_in($acton, @deps)) {
+                    $d =~ m,/([^/]+).load$,;
+                    push @depending, $1;
+                }
+            }
+            if ( scalar @depending ) {
                 if ($force) {
-                    do_deps( $acton, @depends ) or return 0;
+                    do_deps( $acton, @depending ) or return 0;
                 }
                 else {
                     error(
                         "The following modules depend on $acton ",
-                        "and need to be disabled first: @depends\n"
+                        "and need to be disabled first: @depending\n"
                     );
                     return 0;
                 }
             }
         }
+    }
+    elsif ( $act eq 'enable' ) {
+            my @depends = get_deps("$availdir/$acton$sffx");
+            warn_deps( $acton, @depends ) or return 0;
     }
 
     if ( $act eq 'enable' ) {
@@ -256,12 +262,47 @@ sub doit {
     return 1;
 }
 
+sub get_deps {
+    my $file = shift;
+    my $type = shift || "Depends";
+
+    my $fd;
+    if (!open($fd, '<', $file)) {
+        error("Can't open $file: $!");
+        return;
+    }
+    my $line;
+    while (defined ($line = <$fd>)) {
+        chomp $line;
+        if ($line =~ /^# $type:\s+(.*?)\s*$/) {
+            my $deps = $1;
+            return split( /[\n\s]+/, $deps )
+        }
+        # only check until the first non-empty non-comment line
+        last if ($line !~ /^\s*(?:#.*)?$/);
+    }
+    return;
+}
+
 sub do_deps {
     my $acton = shift;
     foreach my $d (@_) {
         info("Considering dependency $d for $acton:\n");
         if ( !doit($d) ) {
             error("Could not $act dependency $d for $acton, aborting\n");
+            return 0;
+        }
+    }
+    return 1;
+}
+
+sub warn_deps {
+    my $acton = shift;
+    my $modsenabldir = $ENV{APACHE_MODS_ENABLED} || "$confdir/mods-enabled";
+    foreach my $d (@_) {
+        info("Checking dependency $d for $acton:\n");
+        if ( ! -e "$modsenabldir/$d.load" ) {
+            warning("Module $d is not enabled, but $acton depends on it, aborting\n");
             return 0;
         }
     }
@@ -373,6 +414,18 @@ sub info {
 
 sub error {
     print STDERR 'ERROR: ', @_;
+}
+
+sub warning {
+    print STDERR 'WARNING: ', @_;
+}
+
+sub is_in {
+    my $needle = shift;
+    foreach my $e (@_) {
+        return 1 if $needle eq $e;
+    }
+    return 0;
 }
 
 sub read_env_file {

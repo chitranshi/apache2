@@ -992,3 +992,347 @@ index 3f7d847..18c4aea 100644
      p = ap_strchr_c(strs->curpos, '\n');
      if (p)
          ++p;
+diff --git a/include/ap_config.h b/include/ap_config.h
+index 7c6a795..944b16a 100644
+--- a/include/ap_config.h
++++ b/include/ap_config.h
+@@ -148,7 +148,7 @@
+ #define AP_NONBLOCK_WHEN_MULTI_LISTEN 1
+ #endif
+ 
+-#if AP_ENABLE_DTRACE && HAVE_SYS_SDT_H
++#if defined(AP_ENABLE_DTRACE) && HAVE_SYS_SDT_H
+ #include <sys/sdt.h>
+ #else
+ #undef _DTRACE_VERSION
+@@ -165,11 +165,14 @@
+ #define AP_HAVE_RELIABLE_PIPED_LOGS TRUE
+ #endif
+ 
++#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L
++#define AP_HAVE_C99
++#endif
++
+ /* Presume that the compiler supports C99-style designated
+  * initializers if using GCC (but not G++), or for any other compiler
+  * which claims C99 support. */
+-#if (defined(__GNUC__) && !defined(__cplusplus))                \
+-     || (defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L)
++#if (defined(__GNUC__) && !defined(__cplusplus)) || defined(AP_HAVE_C99)
+ #define AP_HAVE_DESIGNATED_INITIALIZER
+ #endif
+ 
+diff --git a/include/ap_mmn.h b/include/ap_mmn.h
+index 31bfbc4..3487067 100644
+--- a/include/ap_mmn.h
++++ b/include/ap_mmn.h
+@@ -390,6 +390,9 @@
+  *                         move core_net rec definition to http_core.h;
+  *                         add insert_network_bucket hook, AP_DECLINED
+  * 20120211.0 (2.4.1-dev)  Change re_nsub in ap_regex_t from apr_size_t to int.
++ * 20120211.1 (2.4.2-dev)  Add AP_HAVE_C99
++ * 20120211.2 (2.4.2-dev)  Add ap_runtime_dir_relative
++ * 20120211.3 (2.4.2-dev)  Add forcerecovery to proxy_balancer_shared struct
+  */
+ 
+ #define MODULE_MAGIC_COOKIE 0x41503234UL /* "AP24" */
+@@ -397,7 +400,7 @@
+ #ifndef MODULE_MAGIC_NUMBER_MAJOR
+ #define MODULE_MAGIC_NUMBER_MAJOR 20120211
+ #endif
+-#define MODULE_MAGIC_NUMBER_MINOR 0                   /* 0...n */
++#define MODULE_MAGIC_NUMBER_MINOR 3                   /* 0...n */
+ 
+ /**
+  * Determine if the server's current MODULE_MAGIC_NUMBER is at least a
+diff --git a/include/ap_mpm.h b/include/ap_mpm.h
+index b061c0a..71f8f47 100644
+--- a/include/ap_mpm.h
++++ b/include/ap_mpm.h
+@@ -218,7 +218,7 @@ extern void moncontrol(int);
+ #define AP_MONCONTROL(x)
+ #endif
+ 
+-#if AP_ENABLE_EXCEPTION_HOOK
++#ifdef AP_ENABLE_EXCEPTION_HOOK
+ typedef struct ap_exception_info_t {
+     int sig;
+     pid_t pid;
+diff --git a/include/http_config.h b/include/http_config.h
+index 951d643..617ab2a 100644
+--- a/include/http_config.h
++++ b/include/http_config.h
+@@ -706,6 +706,14 @@ AP_DECLARE_NONSTD(const char *) ap_set_deprecated(cmd_parms *cmd,
+  */
+ AP_DECLARE(char *) ap_server_root_relative(apr_pool_t *p, const char *fname);
+ 
++/**
++ * Compute the name of a run-time file (e.g., shared memory "file") relative
++ * to the appropriate run-time directory.  Absolute paths are returned as-is.
++ * The run-time directory is configured via the DefaultRuntimeDir directive or
++ * at build time.
++ */
++AP_DECLARE(char *) ap_runtime_dir_relative(apr_pool_t *p, const char *fname);
++
+ /* Finally, the hook for dynamically loading modules in... */
+ 
+ /**
+diff --git a/include/http_log.h b/include/http_log.h
+index 66ed59c..922500f 100644
+--- a/include/http_log.h
++++ b/include/http_log.h
+@@ -358,7 +358,7 @@ AP_DECLARE(void) ap_log_error(const char *file, int line, int module_index,
+                               int level, apr_status_t status,
+                               const server_rec *s, const char *fmt, ...);
+ #else
+-#if __STDC_VERSION__ >= 199901L
++#ifdef AP_HAVE_C99
+ /* need additional step to expand APLOG_MARK first */
+ #define ap_log_error(...) ap_log_error__(__VA_ARGS__)
+ /* need server_rec *sr = ... for the case if s is verbatim NULL */
+@@ -401,7 +401,7 @@ AP_DECLARE(void) ap_log_perror(const char *file, int line, int module_index,
+                                int level, apr_status_t status, apr_pool_t *p,
+                                const char *fmt, ...);
+ #else
+-#if __STDC_VERSION__ >= 199901L && defined(APLOG_MAX_LOGLEVEL)
++#if defined(AP_HAVE_C99) && defined(APLOG_MAX_LOGLEVEL)
+ /* need additional step to expand APLOG_MARK first */
+ #define ap_log_perror(...) ap_log_perror__(__VA_ARGS__)
+ #define ap_log_perror__(file, line, mi, level, status, p, ...)            \
+@@ -443,7 +443,7 @@ AP_DECLARE(void) ap_log_rerror(const char *file, int line, int module_index,
+                                int level, apr_status_t status,
+                                const request_rec *r, const char *fmt, ...);
+ #else
+-#if __STDC_VERSION__ >= 199901L
++#ifdef AP_HAVE_C99
+ /* need additional step to expand APLOG_MARK first */
+ #define ap_log_rerror(...) ap_log_rerror__(__VA_ARGS__)
+ #define ap_log_rerror__(file, line, mi, level, status, r, ...)              \
+@@ -487,7 +487,7 @@ AP_DECLARE(void) ap_log_cerror(const char *file, int line, int module_index,
+                                int level, apr_status_t status,
+                                const conn_rec *c, const char *fmt, ...);
+ #else
+-#if __STDC_VERSION__ >= 199901L
++#ifdef AP_HAVE_C99
+ /* need additional step to expand APLOG_MARK first */
+ #define ap_log_cerror(...) ap_log_cerror__(__VA_ARGS__)
+ #define ap_log_cerror__(file, line, mi, level, status, c, ...)              \
+@@ -534,7 +534,7 @@ AP_DECLARE(void) ap_log_cserror(const char *file, int line, int module_index,
+                                 const conn_rec *c, const server_rec *s,
+                                 const char *fmt, ...);
+ #else
+-#if __STDC_VERSION__ >= 199901L
++#ifdef AP_HAVE_C99
+ /* need additional step to expand APLOG_MARK first */
+ #define ap_log_cserror(...) ap_log_cserror__(__VA_ARGS__)
+ #define ap_log_cserror__(file, line, mi, level, status, c, s, ...)  \
+diff --git a/include/http_main.h b/include/http_main.h
+index 22192db..fa1ce85 100644
+--- a/include/http_main.h
++++ b/include/http_main.h
+@@ -43,6 +43,11 @@ extern "C" {
+ AP_DECLARE_DATA extern const char *ap_server_argv0;
+ /** The global server's ServerRoot */
+ AP_DECLARE_DATA extern const char *ap_server_root;
++/** The global server's DefaultRuntimeDir
++ * This is not usable directly in the general case; use
++ * ap_runtime_dir_relative() instead.
++ */
++AP_DECLARE_DATA extern const char *ap_runtime_dir;
+ /** The global server's server_rec */
+ AP_DECLARE_DATA extern server_rec *ap_server_conf;
+ /** global pool, for access prior to creation of server_rec */
+diff --git a/include/mpm_common.h b/include/mpm_common.h
+index df33d79..99b1945 100644
+--- a/include/mpm_common.h
++++ b/include/mpm_common.h
+@@ -89,6 +89,7 @@ extern "C" {
+ typedef void ap_reclaim_callback_fn_t(int childnum, pid_t pid,
+                                       ap_generation_t gen);
+ 
++#ifndef NETWARE
+ /**
+  * Make sure all child processes that have been spawned by the parent process
+  * have died.  This includes process registered as "other_children".
+@@ -102,8 +103,8 @@ typedef void ap_reclaim_callback_fn_t(int childnum, pid_t pid,
+  * in the scoreboard as well as those currently registered via
+  * ap_register_extra_mpm_process().
+  */
+-void ap_reclaim_child_processes(int terminate,
+-                                ap_reclaim_callback_fn_t *mpm_callback);
++AP_DECLARE(void) ap_reclaim_child_processes(int terminate,
++                                            ap_reclaim_callback_fn_t *mpm_callback);
+ 
+ /**
+  * Catch any child processes that have been spawned by the parent process
+@@ -115,7 +116,7 @@ void ap_reclaim_child_processes(int terminate,
+  * in the scoreboard as well as those currently registered via
+  * ap_register_extra_mpm_process().
+  */
+-void ap_relieve_child_processes(ap_reclaim_callback_fn_t *mpm_callback);
++AP_DECLARE(void) ap_relieve_child_processes(ap_reclaim_callback_fn_t *mpm_callback);
+ 
+ /**
+  * Tell ap_reclaim_child_processes() and ap_relieve_child_processes() about
+@@ -128,7 +129,7 @@ void ap_relieve_child_processes(ap_reclaim_callback_fn_t *mpm_callback);
+  * ap_reclaim_child_processes(), remove it from the list of such processes
+  * by calling ap_unregister_extra_mpm_process().
+  */
+-void ap_register_extra_mpm_process(pid_t pid, ap_generation_t gen);
++AP_DECLARE(void) ap_register_extra_mpm_process(pid_t pid, ap_generation_t gen);
+ 
+ /**
+  * Unregister an MPM child process which was previously registered by a
+@@ -138,12 +139,7 @@ void ap_register_extra_mpm_process(pid_t pid, ap_generation_t gen);
+  * @param old_gen Set to the server generation of the process, if found.
+  * @return 1 if the process was found and removed, 0 otherwise
+  */
+-int ap_unregister_extra_mpm_process(pid_t pid, ap_generation_t *old_gen);
+-
+-/**
+- * Pool cleanup for end-generation hook implementation
+- */
+-apr_status_t ap_mpm_end_gen_helper(void *unused);
++AP_DECLARE(int) ap_unregister_extra_mpm_process(pid_t pid, ap_generation_t *old_gen);
+ 
+ /**
+  * Safely signal an MPM child process, if the process is in the
+@@ -154,7 +150,27 @@ apr_status_t ap_mpm_end_gen_helper(void *unused);
+  * APR_EINVAL is returned if passed either an invalid (< 1) pid, or if
+  * the pid is not in the current process group
+  */
+-apr_status_t ap_mpm_safe_kill(pid_t pid, int sig);
++AP_DECLARE(apr_status_t) ap_mpm_safe_kill(pid_t pid, int sig);
++
++/**
++ * Log why a child died to the error log, if the child died without the
++ * parent signalling it.
++ * @param pid The child that has died
++ * @param why The return code of the child process
++ * @param status The status returned from ap_wait_or_timeout
++ * @return 0 on success, APEXIT_CHILDFATAL if MPM should terminate
++ */
++AP_DECLARE(int) ap_process_child_status(apr_proc_t *pid, apr_exit_why_e why, int status);
++
++AP_DECLARE(apr_status_t) ap_fatal_signal_setup(server_rec *s, apr_pool_t *in_pconf);
++AP_DECLARE(apr_status_t) ap_fatal_signal_child_setup(server_rec *s);
++#endif /* !NETWARE */
++
++/**
++ * Pool cleanup for end-generation hook implementation
++ * (core httpd function)
++ */
++apr_status_t ap_mpm_end_gen_helper(void *unused);
+ 
+ /**
+  * Run the monitor hook (once every ten calls), determine if any child
+@@ -166,18 +182,9 @@ apr_status_t ap_mpm_safe_kill(pid_t pid, int sig);
+  * @param p The pool to allocate out of
+  * @param s The server_rec to pass
+  */
+-void ap_wait_or_timeout(apr_exit_why_e *status, int *exitcode, apr_proc_t *ret,
+-                        apr_pool_t *p, server_rec *s);
+-
+-/**
+- * Log why a child died to the error log, if the child died without the
+- * parent signalling it.
+- * @param pid The child that has died
+- * @param why The return code of the child process
+- * @param status The status returned from ap_wait_or_timeout
+- * @return 0 on success, APEXIT_CHILDFATAL if MPM should terminate
+- */
+-int ap_process_child_status(apr_proc_t *pid, apr_exit_why_e why, int status);
++AP_DECLARE(void) ap_wait_or_timeout(apr_exit_why_e *status, int *exitcode,
++                                    apr_proc_t *ret, apr_pool_t *p, 
++                                    server_rec *s);
+ 
+ #if defined(TCP_NODELAY)
+ /**
+@@ -289,14 +296,14 @@ AP_DECLARE(const char *) ap_check_mpm(void);
+  * The maximum number of requests each child thread or
+  * process handles before dying off
+  */
+-extern int ap_max_requests_per_child;
++AP_DECLARE_DATA extern int ap_max_requests_per_child;
+ const char *ap_mpm_set_max_requests(cmd_parms *cmd, void *dummy,
+                                     const char *arg);
+ 
+ /**
+  * The filename used to store the process id.
+  */
+-extern const char *ap_pid_fname;
++AP_DECLARE_DATA extern const char *ap_pid_fname;
+ const char *ap_mpm_set_pidfile(cmd_parms *cmd, void *dummy,
+                                const char *arg);
+ void ap_mpm_dump_pidfile(apr_pool_t *p, apr_file_t *out);
+@@ -304,16 +311,16 @@ void ap_mpm_dump_pidfile(apr_pool_t *p, apr_file_t *out);
+ /*
+  * The directory that the server changes directory to dump core.
+  */
+-extern char ap_coredump_dir[MAX_STRING_LEN];
+-extern int ap_coredumpdir_configured;
++AP_DECLARE_DATA extern char ap_coredump_dir[MAX_STRING_LEN];
++AP_DECLARE_DATA extern int ap_coredumpdir_configured;
+ const char *ap_mpm_set_coredumpdir(cmd_parms *cmd, void *dummy,
+                                    const char *arg);
+ 
+ /**
+  * Set the timeout period for a graceful shutdown.
+  */
+-extern int ap_graceful_shutdown_timeout;
+-const char *ap_mpm_set_graceful_shutdown(cmd_parms *cmd, void *dummy,
++AP_DECLARE_DATA extern int ap_graceful_shutdown_timeout;
++AP_DECLARE(const char *)ap_mpm_set_graceful_shutdown(cmd_parms *cmd, void *dummy,
+                                          const char *arg);
+ #define AP_GRACEFUL_SHUTDOWN_TIMEOUT_COMMAND \
+ AP_INIT_TAKE1("GracefulShutdownTimeout", ap_mpm_set_graceful_shutdown, NULL, \
+@@ -324,17 +331,14 @@ AP_INIT_TAKE1("GracefulShutdownTimeout", ap_mpm_set_graceful_shutdown, NULL, \
+ int ap_signal_server(int *, apr_pool_t *);
+ void ap_mpm_rewrite_args(process_rec *);
+ 
+-extern AP_DECLARE_DATA apr_uint32_t ap_max_mem_free;
++AP_DECLARE_DATA extern apr_uint32_t ap_max_mem_free;
+ extern const char *ap_mpm_set_max_mem_free(cmd_parms *cmd, void *dummy,
+                                            const char *arg);
+ 
+-extern apr_size_t ap_thread_stacksize;
++AP_DECLARE_DATA extern apr_size_t ap_thread_stacksize;
+ extern const char *ap_mpm_set_thread_stacksize(cmd_parms *cmd, void *dummy,
+                                                const char *arg);
+ 
+-extern apr_status_t ap_fatal_signal_setup(server_rec *s, apr_pool_t *pconf);
+-extern apr_status_t ap_fatal_signal_child_setup(server_rec *s);
+-
+ /* core's implementation of child_status hook */
+ extern void ap_core_child_status(server_rec *s, pid_t pid, ap_generation_t gen,
+                                  int slot, mpm_child_status status);
+diff --git a/include/scoreboard.h b/include/scoreboard.h
+index 3145005..2fd2960 100644
+--- a/include/scoreboard.h
++++ b/include/scoreboard.h
+@@ -156,14 +156,21 @@ typedef struct {
+ 
+ typedef struct ap_sb_handle_t ap_sb_handle_t;
+ 
++/*
++ * Creation and deletion (internal)
++ */
++int ap_create_scoreboard(apr_pool_t *p, ap_scoreboard_e t);
++apr_status_t ap_cleanup_scoreboard(void *d);
++
++/*
++ * APIs for MPMs and other modules
++ */
+ AP_DECLARE(int) ap_exists_scoreboard_image(void);
+ AP_DECLARE(void) ap_increment_counts(ap_sb_handle_t *sbh, request_rec *r);
+ 
+-int ap_create_scoreboard(apr_pool_t *p, ap_scoreboard_e t);
+-apr_status_t ap_reopen_scoreboard(apr_pool_t *p, apr_shm_t **shm, int detached);
+-void ap_init_scoreboard(void *shared_score);
++AP_DECLARE(apr_status_t) ap_reopen_scoreboard(apr_pool_t *p, apr_shm_t **shm, int detached);
++AP_DECLARE(void) ap_init_scoreboard(void *shared_score);
+ AP_DECLARE(int) ap_calc_scoreboard_size(void);
+-apr_status_t ap_cleanup_scoreboard(void *d);
+ 
+ AP_DECLARE(void) ap_create_sb_handle(ap_sb_handle_t **new_sbh, apr_pool_t *p,
+                                      int child_num, int thread_num);

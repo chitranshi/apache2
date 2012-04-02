@@ -60,8 +60,8 @@ Additionally maintainers can declare module dependencies and conflicts in a magi
 line in '.load' files which need to be resolved to load a module at the
 installation site. This is useful if a module depends that other modules to be
 loaded, or to conflict with other modules if they can't be loaded at the same
-time. a2enmod and a2dismod will parse "# Depends: module[, module]" and "#
-Conflicts: module[, module]" magic comments, for example to load mod_foo:
+time. a2enmod and a2dismod will parse "# Depends: module [module [...]]" and "#
+Conflicts: module [module [...]]" magic comments, for example to load mod_foo:
 
 foo.load:
 

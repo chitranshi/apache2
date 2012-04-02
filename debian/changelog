@@ -4,8 +4,11 @@ apache2 (2.4.1-4) experimental; urgency=low
   * Drop update-alternative call in postrm. Our prerm script catches them
     already anyway.
   * Update my mail address.
+  * Fix "dh_apache2 does not set "x" bits on /usr/lib/apache2/modules/"
+    Set directory permissions to 755 by default (Closes: #666875). Thanks Axel
+    Beckert for the hint.
 
- -- Arno Töll <arno@debian.org>  Sun, 01 Apr 2012 22:06:48 +0200
+ -- Arno Töll <arno@debian.org>  Mon, 02 Apr 2012 10:49:09 +0200
 
 apache2 (2.4.1-3) experimental; urgency=low
 

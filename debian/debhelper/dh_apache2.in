@@ -342,9 +342,9 @@ foreach my $package (getpackages())
 					if (! -d $modinstalldir)
 					{
 						complex_doit("mkdir","-p", $modinstalldir);
+						complex_doit("chmod","755","$modinstalldir");
 					}
 					complex_doit("cp", $source, $modinstalldir);
-					complex_doit("chmod","644","$modinstalldir");
 					next;
 				}
 
@@ -377,6 +377,7 @@ foreach my $package (getpackages())
 			if (! -d $installdir)
 			{
 				complex_doit("mkdir","-p",$installdir);
+				complex_doit("chmod","755","$installdir");
 			}
 			complex_doit("cp",$source,$installdir);
 			complex_doit("chmod","644","$installdir/$basesource");

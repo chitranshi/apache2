@@ -118,7 +118,7 @@ override_dh_auto_clean: unapply-custom-suexec
 	rm -rf $(INSTALL_DIR)
 	rm -f debian/tmp
 
-build-%:
+mpm-build-%:
 	mkdir "$(BUILD_DIR)/$*"
 	cp -a `find . -maxdepth 1 -mindepth 1 -not -name debian` $(BUILD_DIR)/$*
 	set -ex	;										\
@@ -148,7 +148,7 @@ build-%:
 	install -m 755 $(BUILD_DIR)/$*/apache2 debian/apache2.2-bin/usr/lib/apache2/mpm-$*/apache2
 
 
-install-dev: build-worker build-prefork
+install-dev: mpm-build-worker mpm-build-prefork
 	set -ex ; \
 	for i in worker prefork; do \
 		if [ "$$i" = "prefork" ]; then \
@@ -197,7 +197,7 @@ override_dh_auto_configure: prepare-custom-suexec $(patsubst %, mpm-%-maintainer
 override_dh_auto_build override_dh_auto_install:
 
 override_dh_install-arch:
-	$(MAKE) $(BUILDMAKEFLAGS) -f $(CURDIR)/debian/rules $(patsubst %, build-%, $(MPMS)) install-dev
+	$(MAKE) $(BUILDMAKEFLAGS) -f $(CURDIR)/debian/rules $(patsubst %, mpm-build-%, $(MPMS)) install-dev
 	for mpm in $(filter-out worker, $(MPMS)) ; do \
 		if ! diff -u $(BUILD_DIR)/$$mpm/mods.list $(BUILD_DIR)/worker/mods.list ; then \
 			echo Different modules built into httpd binaries, will not proceed ;\
@@ -298,4 +298,4 @@ override_dh_installlogrotate:
 override_dh_clean: $(patsubst %, undo-mpm-%-maintainer-scripts, $(MPMS))
 	dh_clean
 
-.PHONY: configure-% build-%-tree prepare-custom-suexec unapply-custom-suexec
+.PHONY: configure-% mpm-build-% prepare-custom-suexec unapply-custom-suexec

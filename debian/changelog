@@ -1,3 +1,14 @@
+apache2 (2.2.22-3) unstable; urgency=low
+
+  * Fix "FTBFS: mkdir: cannot create directory `debian/build-tree/arch':
+    No such file or directory". Do not use internal rules targets which clash
+    with build target names ... (Closes: #667069)
+  * Drop apache2-dev virtual package. This had virtually no users but breaks our
+    experimental package in some cases (e.g. #666793)
+  * Push Standards version - no further changes
+
+ -- Arno Töll <arno@debian.org>  Wed, 04 Apr 2012 00:05:28 +0200
+
 apache2 (2.2.22-2) unstable; urgency=low
 
   [ Arno Töll ]

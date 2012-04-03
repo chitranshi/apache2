@@ -5,7 +5,7 @@ Maintainer: Debian Apache Maintainers <debian-apache@lists.debian.org>
 Uploaders: Stefan Fritsch <sf@debian.org>, Steinar H. Gunderson <sesse@debian.org>, Arno Töll <debian@toell.net>
 Build-Depends: debhelper (>= 8.9.7~), lsb-release, libaprutil1-dev (>= 1.3.4), libapr1-dev, openssl, libpcre3-dev, mawk, zlib1g-dev, libssl-dev (>= 0.9.8m), sharutils, libcap-dev [linux-any], autoconf
 Build-Conflicts: autoconf2.13
-Standards-Version: 3.9.2
+Standards-Version: 3.9.3
 Vcs-Browser: http://anonscm.debian.org/gitweb/?p=pkg-apache/apache2.git
 Vcs-Git: git://git.debian.org/git/pkg-apache/apache2.git
 Homepage: http://httpd.apache.org/
@@ -185,7 +185,6 @@ Package: apache2-threaded-dev
 Architecture: any
 Depends: ${misc:Depends}, apache2.2-common (= ${binary:Version}), openssl, libaprutil1-dev
 Conflicts: apache2-prefork-dev
-Provides: apache2-dev
 Priority: extra
 Description: Apache development headers - threaded MPM
  This package provides the development headers and apxs2 binary for

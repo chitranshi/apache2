@@ -26,16 +26,21 @@ apache2 (2.4.1-1) experimental; urgency=low
   supported anymore and works just like {sites,mods}-{available,enabled} by
   using the "a2enconf" tool. The upgrade tries to migrate known configuration
   files from /etc/apache2/conf.d/ to /etc/apache2/conf-available/ - please
-  review this changes. In addition, the default site was renamed to
-  000-default to avoid naming confusions. The rename of the config files to
-  *.conf makes the special handling inside apache2 to ignore *.dpkg-* backup
-  files obsolete. This special handling has been removed.
+  review this changes.
+  Note this means all existing sites are ignored until they get a ".conf" suffix
+  and are being re-enabled by the use of a2ensite. The script in [3] can
+  automate that for simple cases. This change also includes Debian default
+  sites, hence the default site was renamed to 000-default to avoid naming
+  confusions. The rename of the config files to *.conf makes the special
+  handling inside apache2 to ignore *.dpkg-* backup files obsolete. This special
+  handling has been removed.
 
   Packagers are advised to review their packages whether they comply with this
   new version. Please see [2] for detailed documentation and instructions
 
   [1] http://httpd.apache.org/docs/2.4/howto/auth.html
   [2] </usr/share/doc/apache2/PACKAGING>
+  [3] </usr/share/doc/apache2/migrate-sites.pl>
 
  -- Arno Töll <debian@toell.net>  Fri, 02 Mar 2012 17:38:23 +0100
 

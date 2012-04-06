@@ -44,7 +44,9 @@ A module package providing an Apache module must obey our policies to make sure
 it can be upgraded without breakage at the installation site. To achieve this, a
 package must build-depend on apache2-dev. This package provides the 'apxs'
 compile helper which makes sure the module is compatible with the Apache 2 web
-server and required include header.
+server and required include header. If an updated package is not buildable
+with Apache 2.2 anymore, the apache2-dev build-dependency should be versioned
+">> 2.4~", because older versions of apache2-threaded-dev provide apache2-dev.
 
 The resulting binary package should be called libapache2-mod-<modulename> and
 MUST NOT depend on apache2 or apache2-bin. Instead a module package must depend

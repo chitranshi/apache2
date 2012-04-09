@@ -48,7 +48,8 @@ case "$1" in
 
 	for d in var/cache/apache2 \
 		 var/cache/apache2/mod_cache_disk \
-		 var/log/apache2 ; do
+		 var/log/apache2 \
+		 var/lib/apache2 ; do
 		[ -d $d ] && rm -rf $d
 	done
 

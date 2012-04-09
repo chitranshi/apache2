@@ -173,7 +173,7 @@ apache2_has_module()
 {
 	[ -x /usr/sbin/a2query ] || return 1
 	local MODULE="$1"
-	if a2query -m $MODULE > /dev/null ; then
+	if a2query -m "^$MODULE\$" > /dev/null ; then
 		return 0
 	fi
 
@@ -217,14 +217,14 @@ apache2_switch_mpm()
 	local CUR_MPM=$(a2query -M) || return 1
 
 	if [ $CUR_MPM != $MPM ] ; then
-		a2dismod -q "mpm_$CUR_MPM";
-		a2enmod -q "mpm_$MPM";
+		a2dismod -m -q "mpm_$CUR_MPM";
+		a2enmod -m -q "mpm_$MPM";
 		apache2_msg "info" "apache2_switch_mpm Switch to $MPM"
 	fi
 
 	if ! apache2_has_module "mpm_$MPM" ; then
 		# rollback
-		a2enmod -q "mpm_$CUR_MPM"
+		a2enmod -m -q "mpm_$CUR_MPM"
 		apache2_msg "warning" "apache2_switch_mpm Switch to $MPM failed. Rolling back to $CUR_MPM"
 		return 1
 	fi
@@ -288,11 +288,11 @@ apache2_invoke()
 
 	case "$CMD" in
 		enconf|enmod|ensite)
-			if a2query $check_switch $CONF > /dev/null 2>&1 ; then
+			if a2query $check_switch "^$CONF\$" > /dev/null 2>&1 ; then
 				continue
 			fi
 			invoke_rcd=1
-			a2$CMD -q "$CONF" > /dev/null 2>&1 || return 1
+			a2$CMD -m -q "$CONF" > /dev/null 2>&1 || return 1
 			apache2_msg "info" "apache2_invoke: Enable $invoke_string $CONF"
 			;;
 		disconf|dismod|dissite)
@@ -302,7 +302,7 @@ apache2_invoke()
 					#XXX: Replace me by the "forget-state-switch" call
 					a2$CMD -f -q "$CONF" || return 1
 				else
-					a2$CMD -f -q "$CONF" || return 1
+					a2$CMD -m -f -q "$CONF" || return 1
 				fi
 				apache2_msg "info" "apache2_invoke: Disable $invoke_string $CONF"
 			else

@@ -185,12 +185,14 @@ enable_default_mpm()
 			;;
 		esac
 
+		# No -m here, we pretend the user picked the MPM as this choice comes
+		# from a 2.2 package relation
 		a2enmod -q $mpm
 		return 0
 	fi
 
 	if is_fresh_install $@ ; then
-		a2enmod -q $mpm
+		a2enmod -m -q $mpm
 	fi
 
 }
@@ -203,11 +205,11 @@ enable_default_modules()
 				env mime negotiation setenvif \
 				filter deflate \
 				status ; do
-			a2enmod -q $module
+			a2enmod -m -q $module
 		done
 	elif we_are_upgrading_from_squeeze $@; then
 		for module in filter access_compat ; do
-			a2enmod -q $module
+			a2enmod -m -q $module
 		done
 	fi
 }
@@ -216,7 +218,7 @@ enable_default_conf()
 {
 	if is_fresh_install $@ || we_are_upgrading_from_squeeze $@ ; then
 		for conf in charset localized-error-pages other-vhosts-access-log security ; do
-			a2enconf -q $conf
+			a2enconf -m -q $conf
 		done
 	fi
 }
@@ -284,10 +286,12 @@ refresh_modules()
 
 			if [ ! -e "/etc/apache2/mods-enabled/$target" ] ; then
 				echo "disable obsolete module $module"
-				a2dismod -q "$module"
+				a2dismod -m -q "$module"
 
 				if [ "$module" = "disk_cache" ] ; then
 					echo "Enable cache_disk as disk_cache was enabled in Apache 2.2"
+					# ditto, we pretend it was the user's
+					# choice not to use -m here
 					a2enmod -q cache_disk
 				fi
 			fi
@@ -297,7 +301,7 @@ refresh_modules()
 			# Example: the deflate module when upgraded from
 			# Squeeze
 			if [ -e "/etc/apache2/mods-enabled/$target" ] ; then
-				a2enmod -q "$module"
+				a2enmod -m -q "$module"
 			fi
 		done
 	fi

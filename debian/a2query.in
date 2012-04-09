@@ -53,13 +53,12 @@ our $API = "__API__";
 our $MODULE_DIR = "__MODULE_DIR__";
 our $SERVER_VERSION = "__SERVER_VERSION__";
 our $MODULE_DIR = "/usr/lib/apache2/modules/";
-our %STATE_DIRS = ();
-$STATE_DIRS{'apache2'} = "/var/lib/apache2";
-$STATE_DIRS{'module'} = "$STATE_DIRS{'apache2'}/modules";
-$STATE_DIRS{'site'} = "$STATE_DIRS{'apache2'}/sites";
-$STATE_DIRS{'conf'} = "$STATE_DIRS{'apache2'}/conf";
+our $STATE_DIR = "/var/lib/apache2";
+our @STATES = ("maint", "admin");
+
 our $MPM = "invalid";
 our $CONFIG_DIR = "/etc/apache2";
+
 # time to introduce more _exit_ values
 our $E_OK = '0';
 our $E_FOUND = '0';
@@ -67,6 +66,7 @@ our $E_ONBYMAINT = '1';
 our $E_NOTFOUND = '32';
 our $E_OFFBYMAINT = '33';
 our @RETVALS = ( $E_OK, $E_FOUND, $E_ONBYMAINT, $E_NOTFOUND, $E_OFFBYMAINT );
+
 our @MODULES = ();
 our @CONFS = ();
 our @SITES =();
@@ -237,11 +237,13 @@ sub switch_history
 	my $which = shift;
 	my $what = shift;
 	my $name = shift;
-	# TODO: get rid of the magic string
-	my $state_token = "$STATE_DIRS{$which}/$what" . "_by_maint/" . $name;
-	if (-e $state_token)
+	foreach my $state (@STATES)
 	{
-		return 1;
+		my $state_token = "$STATE_DIR/$which/$what" . "_by_$state/" . $name;
+		if (-e $state_token)
+		{
+			return $state;
+		}
 	}
 	return 0;
 }
@@ -254,7 +256,7 @@ my $help = 1;
 getopt('m:s:c:havMd', \%opts);
 
 
-push @HELP, ["m [MODULE]", "checks whether the module MODULE is enabled, lists all modules if no argument was given"];
+push @HELP, ["m [MODULE]", "checks whether the module MODULE is enabled, lists all enabled modules if no argument was given"];
 if (exists $opts{'m'})
 {
 	--$help;
@@ -265,18 +267,20 @@ if (exists $opts{'m'})
 	}
 	foreach my $module (grep { $_ =~ m/$opts{'m'}/ } @MODULES)
 	{
-		print("$module\n");
+		my $state = switch_history("module", "enabled", $module);
+		if (!$state)
+		{
+			$state = "unknown";
+		}
+		print("$module (by $state)\n");
 		$matches++;
 	}
 	if (!$matches)
 	{
 		my $reason = "No module matches $opts{'m'}";
 		my $retval = $E_NOTFOUND;
-		if (switch_history("module", "disabled", $opts{'m'}))
-		{
-			$reason .= " (disabled by maint)";
-			$retval = $E_OFFBYMAINT;
-		}
+		#Figure out something for disabled modules
+		#$retval = $E_OFFBYMAINT;
 		fail($reason, $retval);
 	}
 }
@@ -293,18 +297,21 @@ if (exists $opts{'s'})
 	}
 	foreach my $site (grep { $_ =~ m/$opts{'s'}/ } @SITES)
 	{
-		print("$site\n");
+		$site =~ s/\.conf$//;
+		my $state = switch_history("site", "enabled", $site);
+		if (!$state)
+		{
+			$state = "unknown";
+		}
+		print("$site (by $state)\n");
 		$matches++;
 	}
 	if (!$matches)
 	{
 		my $reason = "No site matches $opts{'s'}";
 		my $retval = $E_NOTFOUND;
-		if (switch_history("site", "disabled", $opts{'s'}))
-		{
-			$reason .= " (disabled by maint)";
-			$retval = $E_OFFBYMAINT;
-		}
+		#ditto
+		#$retval = $E_OFFBYMAINT;
 		fail($reason, $retval);
 	}
 }
@@ -322,18 +329,21 @@ if (exists $opts{'c'})
 	}
 	foreach my $conf (grep { $_ =~ m/$opts{'c'}/ } @CONFS)
 	{
-		print("$conf\n");
+		$conf =~ s/\.conf$//;
+		my $state = switch_history("conf", "enabled", $conf);
+		if (!$state)
+		{
+			$state = "unknown";
+		}
+		print("$conf (by $state)\n");
 		$matches++;
 	}
 	if (!$matches)
 	{
 		my $reason = "No conf matches $opts{'c'}";
 		my $retval = $E_NOTFOUND;
-		if (switch_history("conf", "disabled", $opts{'c'}))
-		{
-			$reason .= " (disabled by maint)";
-			$retval = $E_OFFBYMAINT;
-		}
+		#ditto
+		#$retval = $E_OFFBYMAINT;
 		fail($reason, $retval);
 	}
 }

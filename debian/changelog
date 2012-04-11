@@ -13,8 +13,12 @@ apache2 (2.4.1-5) experimental; urgency=low
     particular piece of configuration. That way in can be told under which
     circumstances for example modules should be re-enabled. Thanks to Filip M.
     Nowak who was providing a patch where my changes are built upon.
+  * Fix apxs to import LDFLAGS from config_vars.mk. Moreover, make it possible
+    to override LDFLAGS at compile time by defining LDLAGS in the environment,
+    just like it is possible for CFLAGS. This also means, config_vars.mk now
+    exports hardening build flags by default
 
- -- Arno Töll <arno@debian.org>  Mon, 09 Apr 2012 17:41:05 +0200
+ -- Arno Töll <arno@debian.org>  Thu, 12 Apr 2012 02:55:09 +0200
 
 apache2 (2.4.1-3) experimental; urgency=low
 

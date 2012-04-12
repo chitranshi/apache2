@@ -22,22 +22,7 @@ clean-config-vars:
 	# Clean up config_vars.mk
 	# FIXME: Maybe someone could document here why we actually need to
 	# cleanup some stuff here
-	set -x ; ( cd debian/tmp/usr/share/apache2/build/ ; \
-	grep -v -E '(^|_)(LD|CPP|C)FLAGS' config_vars.mk > tmp_config_vars.mk ; \
-	printf "CPPFLAGS = %s %s\n" \
-		"`grep -E '(^|_)(CPPFLAGS|INCLUDES)' config_vars.mk | cut -d= -f 2- | tr ' ' '\n' | grep -E '^-([DI]|pthread)' | grep -v "PLATFORM" | sort | uniq | tr '\n' ' '`" \
-		"`echo '$(AP2_CPPFLAGS)' | cut -d= -f 2- | tr ' ' '\n' | grep -E '^-([DI]|pthread)' | grep -v "PLATFORM" | sort | uniq | tr '\n' ' '`" >> tmp_config_vars.mk ; \
-	printf "CFLAGS = %s %s\n" "`grep -E '(^|_)(CPPFLAGS|CFLAGS|INCLUDES)' config_vars.mk | cut -d= -f 2- | tr ' ' '\n' | grep -E '^-(D|I/|pthread)' | grep -v "PLATFORM" | sort | uniq | tr '\n' ' '`" \
-		"`echo '$(AP2_CFLAGS)' | cut -d= -f 2- | tr ' ' '\n' | grep -E '^-([DI]|pthread)' | grep -v "PLATFORM" | sort | uniq | tr '\n' ' '`" >> tmp_config_vars.mk ; \
-	ldflags="`grep -E '(^|_)(LDFLAGS)' config_vars.mk | cut -d= -f 2-` `echo '$(AP2_LDFLAGS)' | cut -d= -f 2-`" ; \
-	printf "LDFLAGS = %s\n" "`echo $$ldflags | tr ' ' '\n' | sort | uniq | tr '\n' ' '`" >> tmp_config_vars.mk ; \
-	printf "SH_LDFLAGS = \n" >> tmp_config_vars.mk ; \
-	printf "LT_LDFLAGS = \n" >> tmp_config_vars.mk ; \
-	printf "NOTEST_CPPFLAGS = \n" >> tmp_config_vars.mk ; \
-	printf "NOTEST_LDFLAGS = \n" >> tmp_config_vars.mk ; \
-	printf "EXTRA_CPPFLAGS = \n" >> tmp_config_vars.mk ; \
-	printf "EXTRA_CFLAGS = \n" >> tmp_config_vars.mk ; \
-	mv tmp_config_vars.mk config_vars.mk ) ;
+	perl ./debian/clean_config_vars '$(AP2_CFLAGS)' '$(AP2_CPPFLAGS)' '$(AP2_LDFLAGS)'
 
 %: %.in
 	sed 's#__SERVER_VERSION__#$(SERVER_VERSION)#; s#__MODULE_DIR__#$(MODULE_DIR)#; s#__API__#$(API)#;' $< > $@

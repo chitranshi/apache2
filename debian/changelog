@@ -12,6 +12,8 @@ apache2 (2.2.22-6) UNRELEASED; urgency=low
     messages.
   * Add section to security.conf that shows how to forbid access to VCS
     directories. Closes: #548213
+  * Update ssl default cipher config, add alternative speed optimized config.
+    Closes: #649020
 
  -- Stefan Fritsch <sf@debian.org>  Mon, 28 May 2012 20:02:19 +0200
 

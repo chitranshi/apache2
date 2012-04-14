@@ -26,7 +26,10 @@ apache2 (2.4.1-4) experimental; urgency=low
   * Update ssl default cipher config, add alternative speed optimized config.
     Closes: #649020
   * Move the configuration of /usr/lib/cgi-bin into a separate config file.
+    Closes: #589638
   * Comment out per-vhost loglevel.
+  * Add section to security.conf that shows how to forbid access to VCS
+    directories. Closes: #548213
 
  -- Stefan Fritsch <sf@debian.org>  Sat, 14 Apr 2012 21:07:50 +0200
 

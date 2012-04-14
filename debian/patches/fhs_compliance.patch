@@ -57,3 +57,16 @@ Index: apache2/include/ap_config_layout.h.in
 +#define DEFAULT_PIDLOG "/var/run/apache2.pid"
  
  #endif /* AP_CONFIG_LAYOUT_H */
+Index: apache2/include/httpd.h
+===================================================================
+--- apache2.orig/include/httpd.h
++++ apache2/include/httpd.h
+@@ -109,7 +109,7 @@
+ #define DOCUMENT_LOCATION  HTTPD_ROOT "/docs"
+ #else
+ /* Set default for non OS/2 file system */
+-#define DOCUMENT_LOCATION  HTTPD_ROOT "/htdocs"
++#define DOCUMENT_LOCATION  "/var/www"
+ #endif
+ #endif /* DOCUMENT_LOCATION */
+ 

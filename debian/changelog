@@ -1,6 +1,7 @@
 apache2 (2.4.1-4) experimental; urgency=low
 
   [ Arno Töll ]
+
   * NOT RELEASED YET
   * Drop update-alternative call in postrm. Our prerm script catches them
     already anyway.
@@ -20,6 +21,7 @@ apache2 (2.4.1-4) experimental; urgency=low
     exports hardening build flags by default
 
   [ Stefan Fritsch ]
+
   * Change default config to deny access to / in the file system and only
     allow access to /var/www, /usr/share, and /usr/lib/cgi-bin. Closes: #341022
   * Disable MultiViews in the default config.
@@ -30,8 +32,10 @@ apache2 (2.4.1-4) experimental; urgency=low
   * Comment out per-vhost loglevel.
   * Add section to security.conf that shows how to forbid access to VCS
     directories. Closes: #548213
+  * Change the compiled in default of DocumentRoot to /var/www by updating
+    fhs_compliance.patch
 
- -- Stefan Fritsch <sf@debian.org>  Sat, 14 Apr 2012 21:07:50 +0200
+ -- Arno Töll <arno@debian.org>  Sat, 14 Apr 2012 23:47:31 +0200
 
 apache2 (2.4.1-3) experimental; urgency=low
 

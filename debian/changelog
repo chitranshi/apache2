@@ -1,5 +1,6 @@
 apache2 (2.4.1-5) experimental; urgency=low
 
+  [ Arno Töll ]
   * NOT RELEASED YET
   * Drop update-alternative call in postrm. Our prerm script catches them
     already anyway.
@@ -18,7 +19,12 @@ apache2 (2.4.1-5) experimental; urgency=low
     just like it is possible for CFLAGS. This also means, config_vars.mk now
     exports hardening build flags by default
 
- -- Arno Töll <arno@debian.org>  Thu, 12 Apr 2012 02:55:09 +0200
+  [ Stefan Fritsch ]
+  * Change default config to deny access to / in the file system and only
+    allow access to /var/www, /usr/share, and /usr/lib/cgi-bin. Closes: #341022
+  * Disable MultiViews in the default config.
+
+ -- Stefan Fritsch <sf@debian.org>  Sat, 14 Apr 2012 20:59:59 +0200
 
 apache2 (2.4.1-3) experimental; urgency=low
 

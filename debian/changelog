@@ -1,4 +1,4 @@
-apache2 (2.4.1-5) experimental; urgency=low
+apache2 (2.4.1-4) experimental; urgency=low
 
   [ Arno Töll ]
   * NOT RELEASED YET
@@ -25,6 +25,8 @@ apache2 (2.4.1-5) experimental; urgency=low
   * Disable MultiViews in the default config.
   * Update ssl default cipher config, add alternative speed optimized config.
     Closes: #649020
+  * Move the configuration of /usr/lib/cgi-bin into a separate config file.
+  * Comment out per-vhost loglevel.
 
  -- Stefan Fritsch <sf@debian.org>  Sat, 14 Apr 2012 21:07:50 +0200
 

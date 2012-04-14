@@ -221,6 +221,10 @@ enable_default_conf()
 			a2enconf -m -q $conf
 		done
 	fi
+	# This catches upgrades and new installs
+	if ! dpkg --compare-versions "$2" ge 2.4.1-4 ; then
+		a2enconf -m -q usr-lib-cgi-bin
+	fi
 }
 
 install_default_site()

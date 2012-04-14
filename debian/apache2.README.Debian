@@ -147,6 +147,23 @@ sites-enabled/
 The Include directives ignore files with names that do not end with a
 .conf suffix. This behavior changed to previous releases!
 
+In some cases you may want to enable a specific piece of configuration
+(think of files shipped in conf-available/) for a particular virtual
+host only and not globally as our default is. In such cases you can
+disable the configuration at a global scope for example by doing
+
+	a2disconf some-configuration
+
+Then it can be included it in a particular virtual host within a file in
+sites-enabled/. You may want to add
+
+	Include conf-available/some-configuration.conf
+
+in that site configuration. However, be careful as this may not work for
+some configurations, depending on the context and implications of some
+directives.
+
+
 Other files
 -----------
 

@@ -62,6 +62,10 @@ Files: debian/a2enmod
 Copyright: 2008 Stefan Fritsch
 License: Apache 2.0
 
+Files: debian/patches/itk/*
+Copyright: 2005-2012 Steinar H. Gunderson, 2008 Knut Auvor Grythe
+License: Apache 2.0
+
 License: Apache 2.0
  Licensed to the Apache Software Foundation (ASF) under one or more
  contributor license agreements.  See the NOTICE file distributed with

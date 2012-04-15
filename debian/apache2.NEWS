@@ -14,8 +14,8 @@ apache2 (2.4.1-1) experimental; urgency=low
   provide backward compatibility.
 
   Furthermore, MPMs are simple modules now. Thus, the MPM can be changed anytime
-  by (un-)loading a specific module. Note the ITK MPM is not available anymore.
-  Be careful when upgrading. An example of changing the MPM is given below
+  by (un-)loading a specific module. Be careful when upgrading. An example of
+  changing the MPM is given below
 
   a2dismod mpm_worker
   a2enmod mpm_prefork

@@ -173,9 +173,7 @@ enable_default_mpm()
 			;;
 
 			apache2-mpm-itk)
-				# Houston, we got a problem
-				# XXX: Maybe display a big warning?
-				mpm="mpm_prefork"
+				mpm="mpm_itk"
 			;;
 
 			*)

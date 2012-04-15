@@ -35,6 +35,7 @@ apache2 (2.4.1-4) experimental; urgency=low
     directories. Closes: #548213
   * Change the compiled in default of DocumentRoot to /var/www by updating
     fhs_compliance.patch
+  * Re-add mpm_itk (version 2.4.1-pre01). This is still very experimental!
 
  -- Arno Töll <arno@debian.org>  Sun, 15 Apr 2012 03:14:33 +0200
 

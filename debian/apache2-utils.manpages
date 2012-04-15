@@ -1,5 +1,6 @@
 debian/tmp/usr/share/man/man1/logresolve.1
 debian/tmp/usr/share/man/man8/htcacheclean.8
+debian/tmp/usr/share/man/man8/fcgistarter.8
 debian/tmp/usr/share/man/man8/rotatelogs.8
 debian/tmp/usr/share/man/man1/ab.1
 debian/tmp/usr/share/man/man1/htdigest.1

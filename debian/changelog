@@ -1,7 +1,8 @@
-apache2 (2.4.1-4) experimental; urgency=low
+apache2 (2.4.2-1) experimental; urgency=low
+
+  * New upstream release
 
   [ Arno Töll ]
-
   * Drop update-alternative call in postrm. Our prerm script catches them
     already anyway.
   * Update my mail address.
@@ -22,7 +23,6 @@ apache2 (2.4.1-4) experimental; urgency=low
 
 
   [ Stefan Fritsch ]
-
   * Change default config to deny access to / in the file system and only
     allow access to /var/www, /usr/share, and /usr/lib/cgi-bin. Closes: #341022
   * Disable MultiViews in the default config.

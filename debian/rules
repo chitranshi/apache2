@@ -40,6 +40,20 @@ unpatch:
 		rm patch.stamp ;\
 	fi
 
+prebuild-checks:
+	ERRS="" ;\
+	for a in $$(find debian/config-dir/ -type f) ; do \
+		t="$$a.$$$$" ;\
+		unexpand < "$$a" > "$$t" ;\
+		cmp -s "$$a" "$$t" || ERRS="$$ERRS $$a" ;\
+		rm "$$t" ;\
+	done ;\
+	if [ -n "$$ERRS" ] ; then \
+		echo 'ERROR: The following files contain spaces instead of tabs. Run through unexpand!' ;\
+		ls -1 $$ERRS ;\
+		false ;\
+	fi
+
 clean-config-vars:
 	# Clean up config_vars.mk
 	# FIXME: Maybe someone could document here why we actually need to
@@ -68,7 +82,7 @@ generate-maintainer-scripts:
 %:
 	dh $@ --parallel --with autotools_dev
 
-override_dh_auto_configure: patch generate-maintainer-scripts
+override_dh_auto_configure: patch generate-maintainer-scripts prebuild-checks
 	./configure --enable-layout=Debian --enable-so --with-program-name=apache2 \
 		--enable-suexec --with-suexec-caller=www-data \
 		--with-suexec-bin=/usr/lib/apache2/suexec --with-suexec-docroot=/var/www \
@@ -139,4 +153,4 @@ override_dh_auto_install:
 override_dh_clean: unpatch
 	dh_clean
 
-.PHONY: patch unpatch generate-maintainer-scripts clean-config-vars prepare-scripts
+.PHONY: patch unpatch generate-maintainer-scripts clean-config-vars prepare-scripts prebuild-checks

@@ -126,7 +126,8 @@ override_dh_installdocs-indep:
 
 override_dh_installdocs-arch:
 	dh_installdocs --link-doc=apache2 -papache2 -papache2-dev -papache2-dbg \
-		-papache2-mpm-worker -papache2-mpm-prefork -papache2-mpm-event
+		-papache2-mpm-worker -papache2-mpm-prefork -papache2-mpm-event \
+		-papache2-mpm-itk
 	dh_installdocs --link-doc=apache2-suexec-pristine -papache2-suexec
 	dh_installdocs -a
 
@@ -136,7 +137,8 @@ override_dh_installchangelogs:
 	# dh_installdocs this means that changelogs are installed in a few
 	# packages only.
 	dh_installchangelogs -Napache2-suexec -Napache2-mpm-worker \
-		-Napache2-mpm-prefork -Napache2-mpm-event -Napache2-data
+		-Napache2-mpm-prefork -Napache2-mpm-event -Napache2-mpm-itk \
+		-Napache2-data
 
 override_dh_installman:
 	mv debian/tmp/usr/share/man/man8/suexec.8 debian/tmp/usr/share/man/man8/suexec-pristine.8

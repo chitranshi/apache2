@@ -2,6 +2,8 @@
 #
 # a2enmod by Stefan Fritsch <sf@debian.org>
 # Licensed under Apache License 2.0
+#
+# The coding style is "perltidy -pbp"
 
 #XXX: Implement a "fire & forget" switch
 #dump state database, probably better suited in a2query though
@@ -19,8 +21,8 @@ my $maintmode;
 
 Getopt::Long::Configure('bundling');
 GetOptions(
-    'quiet|q' => \$quiet,
-    'force|f' => \$force,
+    'quiet|q'     => \$quiet,
+    'force|f'     => \$force,
     'maintmode|m' => \$maintmode
 ) or exit 2;
 
@@ -37,7 +39,7 @@ my $env_file = $ENV{APACHE_ENVVARS}
     ? "$ENV{APACHE_CONFDIR}/envvars"
     : "/etc/apache2$dir_suffix/envvars"
     );
-$ENV{LANG}='C';
+$ENV{LANG} = 'C';
 read_env_file($env_file);
 
 $act .= 'able';
@@ -61,10 +63,11 @@ else {
 }
 $name = ucfirst($obj);
 
-my $confdir  = $ENV{APACHE_CONFDIR}                  || "/etc/apache2$dir_suffix";
-my $availdir = $ENV{ uc("APACHE_${dir}_AVAILABLE") } || "$confdir/$dir-available";
-my $enabldir = $ENV{ uc("APACHE_${dir}_ENABLED") }   || "$confdir/$dir-enabled";
-my $statedir = $ENV{ uc("APACHE_STATE_DIRECTORY") }  || "/var/lib/apache2";
+my $confdir = $ENV{APACHE_CONFDIR} || "/etc/apache2$dir_suffix";
+my $availdir = $ENV{ uc("APACHE_${dir}_AVAILABLE") }
+    || "$confdir/$dir-available";
+my $enabldir = $ENV{ uc("APACHE_${dir}_ENABLED") } || "$confdir/$dir-enabled";
+my $statedir = $ENV{ uc("APACHE_STATE_DIRECTORY") } || "/var/lib/apache2";
 
 $statedir .= "/$obj";
 
@@ -100,8 +103,9 @@ foreach my $acton (@objs) {
     doit($acton) or $rc = 1;
 }
 
-info("To activate the new configuration, you need to run:\n  service apache2 $reload\n")
-    if $request_reload;
+info(
+    "To activate the new configuration, you need to run:\n  service apache2 $reload\n"
+) if $request_reload;
 
 exit($rc);
 
@@ -125,7 +129,8 @@ sub doit {
     my ( $conftgt, $conflink );
     if ( $obj eq 'module' ) {
         if ( $acton eq 'cgi' && threaded() ) {
-            print "Your MPM seems to be threaded. Selecting cgid instead of cgi.\n";
+            print
+                "Your MPM seems to be threaded. Selecting cgid instead of cgi.\n";
             $acton = 'cgid';
         }
 
@@ -140,22 +145,22 @@ sub doit {
 
     if ( !-e $tgt ) {
         if ( -l $link && !-e $link ) {
-                if ( $act eq 'disable' ) {
-                        info("removing dangling symlink $link\n");
-                        unlink($link);
+            if ( $act eq 'disable' ) {
+                info("removing dangling symlink $link\n");
+                unlink($link);
 
-                        # force a .conf path. It may exist as dangling link, too
-                        $conflink = "$enabldir/$acton.conf";
+                # force a .conf path. It may exist as dangling link, too
+                $conflink = "$enabldir/$acton.conf";
 
-                        if (-l $conflink && !-e $conflink) {
-                                info("removing dangling symlink $conflink\n");
-                                unlink($conflink)
-                        }
-                        return 1;
+                if ( -l $conflink && !-e $conflink ) {
+                    info("removing dangling symlink $conflink\n");
+                    unlink($conflink);
                 }
-                else {
-                        error("$link is a dangling symlink!\n");
-                }
+                return 1;
+            }
+            else {
+                error("$link is a dangling symlink!\n");
+            }
         }
 
         error("$name $acton does not exist!\n");
@@ -168,14 +173,14 @@ sub doit {
             my @depends = get_deps("$availdir/$acton.load");
             do_deps( $acton, @depends ) or return 0;
 
-            my @conflicts = get_deps("$availdir/$acton.load", "Conflicts");
+            my @conflicts = get_deps( "$availdir/$acton.load", "Conflicts" );
             check_conflicts( $acton, @conflicts ) or return 0;
         }
         else {
             my @depending;
-            foreach my $d (glob("$enabldir/*.load")) {
+            foreach my $d ( glob("$enabldir/*.load") ) {
                 my @deps = get_deps($d);
-                if (is_in($acton, @deps)) {
+                if ( is_in( $acton, @deps ) ) {
                     $d =~ m,/([^/]+).load$,;
                     push @depending, $1;
                 }
@@ -195,35 +200,37 @@ sub doit {
         }
     }
     elsif ( $act eq 'enable' ) {
-            my @depends = get_deps("$availdir/$acton$sffx");
-            warn_deps( $acton, @depends ) or return 0;
+        my @depends = get_deps("$availdir/$acton$sffx");
+        warn_deps( $acton, @depends ) or return 0;
     }
 
-        if ( $act eq 'enable' ) {
-                my $check = check_link( $tgt, $link );
-                if ( $check eq 'ok' ) {
-                        if ($conflink) {
+    if ( $act eq 'enable' ) {
+        my $check = check_link( $tgt, $link );
+        if ( $check eq 'ok' ) {
+            if ($conflink) {
 
-                                # handle .conf file
-                                my $confcheck = check_link( $conftgt, $conflink );
-                                if ( $confcheck eq 'ok' ) {
-                                        info("$name $acton already enabled\n");
-                                        return 1;
-                                }
-                                        elsif ( $confcheck eq 'missing' ) {
-                                        print "Enabling config file $acton.conf.\n";
-                                        add_link( $conftgt, $conflink ) or return 0;
-                                }
-                                else {
-                                        error("Config file $acton.conf not properly enabled: $confcheck\n");
-                                        return 0;
-                                }
-                        }
-                        else {
-                                info("$name $acton already enabled\n");
-                                return 1;
-                        }
+                # handle .conf file
+                my $confcheck = check_link( $conftgt, $conflink );
+                if ( $confcheck eq 'ok' ) {
+                    info("$name $acton already enabled\n");
+                    return 1;
                 }
+                elsif ( $confcheck eq 'missing' ) {
+                    print "Enabling config file $acton.conf.\n";
+                    add_link( $conftgt, $conflink ) or return 0;
+                }
+                else {
+                    error(
+                        "Config file $acton.conf not properly enabled: $confcheck\n"
+                    );
+                    return 0;
+                }
+            }
+            else {
+                info("$name $acton already enabled\n");
+                return 1;
+            }
+        }
         elsif ( $check eq 'missing' ) {
             if ($conflink) {
 
@@ -233,17 +240,21 @@ sub doit {
                     add_link( $conftgt, $conflink ) or return 0;
                 }
                 elsif ( $confcheck ne 'ok' ) {
-                    error("Config file $acton.conf not properly enabled: $confcheck\n");
+                    error(
+                        "Config file $acton.conf not properly enabled: $confcheck\n"
+                    );
                     return 0;
                 }
             }
 
             print "Enabling $obj $acton.\n";
             if ( $acton eq 'ssl' ) {
-                info("See /usr/share/doc/apache2/README.Debian.gz on " .
-                     "how to configure SSL and create self-signed certificates.\n");
+                info(     "See /usr/share/doc/apache2/README.Debian.gz on "
+                        . "how to configure SSL and create self-signed certificates.\n"
+                );
             }
-                return add_link( $tgt, $link ) && switch_marker($obj, $act, $acton);
+            return add_link( $tgt, $link )
+                && switch_marker( $obj, $act, $acton );
         }
         else {
             error("$name $acton not properly enabled: $check\n");
@@ -252,12 +263,12 @@ sub doit {
     }
     else {
         if ( -e $link || -l $link ) {
-                remove_link($link);
+            remove_link($link);
             if ( $conflink && -e $conflink ) {
                 remove_link($conflink);
-            } 
-                switch_marker($obj, $act, $acton);
-                print "$name $acton disabled.\n";
+            }
+            switch_marker( $obj, $act, $acton );
+            print "$name $acton disabled.\n";
         }
         elsif ( $conflink && -e $conflink ) {
             print "Disabling stale config file $acton.conf.\n";
@@ -277,19 +288,20 @@ sub get_deps {
     my $type = shift || "Depends";
 
     my $fd;
-    if (!open($fd, '<', $file)) {
+    if ( !open( $fd, '<', $file ) ) {
         error("Can't open $file: $!");
         return;
     }
     my $line;
-    while (defined ($line = <$fd>)) {
+    while ( defined( $line = <$fd> ) ) {
         chomp $line;
-        if ($line =~ /^# $type:\s+(.*?)\s*$/) {
+        if ( $line =~ /^# $type:\s+(.*?)\s*$/ ) {
             my $deps = $1;
-            return split( /[\n\s]+/, $deps )
+            return split( /[\n\s]+/, $deps );
         }
+
         # only check until the first non-empty non-comment line
-        last if ($line !~ /^\s*(?:#.*)?$/);
+        last if ( $line !~ /^\s*(?:#.*)?$/ );
     }
     return;
 }
@@ -311,8 +323,10 @@ sub warn_deps {
     my $modsenabldir = $ENV{APACHE_MODS_ENABLED} || "$confdir/mods-enabled";
     foreach my $d (@_) {
         info("Checking dependency $d for $acton:\n");
-        if ( ! -e "$modsenabldir/$d.load" ) {
-            warning("Module $d is not enabled, but $acton depends on it, aborting\n");
+        if ( !-e "$modsenabldir/$d.load" ) {
+            warning(
+                "Module $d is not enabled, but $acton depends on it, aborting\n"
+            );
             return 0;
         }
     }
@@ -320,7 +334,7 @@ sub warn_deps {
 }
 
 sub check_conflicts {
-    my $acton = shift;
+    my $acton    = shift;
     my $haderror = 0;
     foreach my $d (@_) {
         info("Considering conflict $d for $acton:\n");
@@ -330,7 +344,10 @@ sub check_conflicts {
 
         my $confcheck = check_link( $tgt, $link );
         if ( $confcheck eq 'ok' ) {
-            error("Module $d is enabled - cannot proceed due to conflicts. It needs to be disabled first!\n");
+            error(
+                "Module $d is enabled - cannot proceed due to conflicts. It needs to be disabled first!\n"
+            );
+
             # Don't return immediately, there could be several conflicts
             $haderror++;
         }
@@ -392,17 +409,23 @@ sub remove_link {
 
 sub threaded {
     my $result = "";
-    $result = qx{/usr/sbin/apache2ctl -V | grep 'threaded'} if -x '/usr/sbin/apache2ctl';
-    if ($? != 0) {
+    $result = qx{/usr/sbin/apache2ctl -V | grep 'threaded'}
+        if -x '/usr/sbin/apache2ctl';
+    if ( $? != 0 ) {
+
         # config doesn't work
-        if ( -e "$enabldir/mpm_prefork.load" || -e "$enabldir/mpm_itk.load" ) {
+        if ( -e "$enabldir/mpm_prefork.load" || -e "$enabldir/mpm_itk.load" )
+        {
             return 0;
         }
-        elsif ( -e "$enabldir/mpm_worker.load" || -e "$enabldir/mpm_event.load" ) {
+        elsif (-e "$enabldir/mpm_worker.load"
+            || -e "$enabldir/mpm_event.load" )
+        {
             return 1;
         }
         else {
             error("Can't determine enabled MPM");
+
             # do what user requested
             return 0;
         }
@@ -455,32 +478,36 @@ sub read_env_file {
 }
 
 sub switch_marker {
-        die('usage: switch_marker([module|site|conf], [enable|disable], $name)') if @_ != 3;
-        my $which = shift;
-        my $what = shift;
-        my $name = shift;
+    die('usage: switch_marker([module|site|conf], [enable|disable], $name)')
+        if @_ != 3;
+    my $which = shift;
+    my $what  = shift;
+    my $name  = shift;
 
-	my $mode = "admin";
-	$mode = "maint" if $maintmode;
+    my $mode = "admin";
+    $mode = "maint" if $maintmode;
 
-        #print("switch_marker $which $what $name\n");
-        # TODO: get rid of the magic string(s)
-        my $state_marker_dir = "$statedir/$what" . "d" . "_by_$mode";
-        my $state_marker = "$state_marker_dir/$name";
-        if ( !-d $state_marker_dir ) {
-                File::Path::mkpath("$state_marker_dir") || error("Failed to create marker directory: '$state_marker_dir'\n");
+    #print("switch_marker $which $what $name\n");
+    # TODO: get rid of the magic string(s)
+    my $state_marker_dir = "$statedir/$what" . "d" . "_by_$mode";
+    my $state_marker     = "$state_marker_dir/$name";
+    if ( !-d $state_marker_dir ) {
+        File::Path::mkpath("$state_marker_dir")
+            || error(
+            "Failed to create marker directory: '$state_marker_dir'\n");
+    }
+
+    # XXX: swap find with perl alternative
+    my @markers = qx{find "$statedir" -type f -a -name "$name"};
+    chomp(@markers);
+    foreach (@markers) {
+        unless ( unlink $_ ) {
+            error("Failed to remove old marker '$_'!\n") && return 0;
         }
-        # XXX: swap find with perl alternative
-        my @markers = qx{find "$statedir" -type f -a -name "$name"};
-        chomp(@markers);
-        foreach (@markers) {
-                unless(unlink $_) {
-                       error("Failed to remove old marker '$_'!\n") && return 0;
-		}
-        }
-        qx{touch "$state_marker"};
-        if ($? != 0) {
-                error("Failed to create marker '$state_marker'!\n") && return 0;
-        }
-        return 1;
+    }
+    qx{touch "$state_marker"};
+    if ( $? != 0 ) {
+        error("Failed to create marker '$state_marker'!\n") && return 0;
+    }
+    return 1;
 }

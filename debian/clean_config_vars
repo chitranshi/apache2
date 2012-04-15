@@ -20,8 +20,7 @@ sub clean_and_deduplicate
 	{
 		#print("FLAG: $flag\n");
 		$return_flags .= "$flag " unless
-			$flag =~ m/PLATFORM/ or
-			$flag =~ m/pthread/;
+			$flag =~ m/PLATFORM/;
 	}
 	return $return_flags;
 }

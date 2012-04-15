@@ -1,4 +1,4 @@
-apache2 (2.2.22-4) UNRELEASED; urgency=high
+apache2 (2.2.22-4) unstable; urgency=high
 
   * CVE-2012-0216: Remove "Alias /doc /usr/share/doc" from the default virtual
     hosts' config files.
@@ -10,7 +10,7 @@ apache2 (2.2.22-4) UNRELEASED; urgency=high
     Depending on the installed packages, this could lead to issues like cross
     site scripting, code execution, or leakage of sensitive data.
 
- -- Stefan Fritsch <sf@debian.org>  Sun, 01 Apr 2012 00:20:48 +0200
+ -- Stefan Fritsch <sf@debian.org>  Sun, 15 Apr 2012 23:41:43 +0200
 
 apache2 (2.2.22-3) unstable; urgency=low
 

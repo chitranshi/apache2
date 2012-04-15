@@ -19,7 +19,7 @@ set -e
 #
 
 # XXX remove
-echo apache2.postinst $@ running
+# echo apache2.postinst $@ running
 
 OBSOLETE_CONFFILES="/etc/apache2/mods-available/authz_default.load
 /etc/apache2/mods-available/authn_default.load
@@ -221,9 +221,10 @@ enable_default_conf()
 			a2enconf -m -q $conf
 		done
 	fi
-	# This catches upgrades and new installs
-	if ! dpkg --compare-versions "$2" ge 2.4.1-4 ; then
-		a2enconf -m -q usr-lib-cgi-bin
+	# This line must catch upgrades, upgrades from Squeeze und fresh
+	# installs
+	if dpkg --compare-versions "$2" "le" "2.4.1-4" ; then
+		a2enconf -m -q serve-cgi-bin
 	fi
 }
 

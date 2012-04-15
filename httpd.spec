@@ -4,9 +4,9 @@
 
 Summary: Apache HTTP Server
 Name: httpd
-Version: 2.4.1
+Version: 2.4.2
 Release: 1
-Epoch: 020400100%{release}
+Epoch: 020400200%{release}
 URL: http://httpd.apache.org/
 Vendor: Apache Software Foundation
 Source0: http://www.apache.org/dist/httpd/httpd-%{version}.tar.bz2

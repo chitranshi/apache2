@@ -55,7 +55,7 @@ erreurs de permission en rapport avec SSLMutex ?</a></h3>
     parents (ici <code>/opt</code>, <code>/opt/apache</code> et
     <code>/opt/apache/logs</code>) ont le bit x positionné au moins pour
     l'UID sous lequel les processus enfants d'Apache s'exécutent (voir la
-    directive <code class="directive"><a href="../mod/mpm_common.html#user">User</a></code>).</p>
+    directive <code class="directive"><a href="../mod/mod_unixd.html#user">User</a></code>).</p>
 
 
 <h3><a name="entropy" id="entropy">Pourquoi mod_ssl s'arrête-t-il avec l'erreur
@@ -213,8 +213,6 @@ de ma clé privée ?</a></li>
 mot de passe ?</a></li>
 <li><a href="#verify">Comment vérifier si une clé privée correspond bien
 à son certificat ?</a></li>
-<li><a href="#badcert">Pour quelle raison une connexion échoue-t-elle avec
-l'erreur "alert bad certificate" ?</a></li>
 <li><a href="#pemder">Comment convertir un certificat du format PEM
 au format DER ?</a></li>
 <li><a href="#gid">Pourquoi les navigateurs se plaignent-ils de ne pas pouvoir
@@ -651,6 +649,11 @@ terminée, or, la phase de négociation SSL a besoin du nom d'hôte contenu
 dans l'en-tête de la requête. Voir la question suivante pour
 contourner ce problème.</p>
 
+    <p>Notez que si votre certificat comporte un nom de serveur avec
+    caractères génériques, ou des noms de serveurs multiples dans le
+    champ subjectAltName, vous pouvez utiliser SSL avec les serveurs
+    virtuels à base de noms sans avoir à contourner ce problème.</p>
+
 
 <h3><a name="vhosts2" id="vhosts2">Est-il possible d'utiliser
 l'hébergement virtuel basé sur le nom d'hôte
@@ -670,6 +673,11 @@ pour différencier plusieurs hôtes virtuels ?</a></h3>
     Indication du Nom de Serveur (Server Name Indication - SNI) que
     seules les révisions les plus récentes de la
     spécification SSL supportent.</p>
+
+    <p>Notez que si votre certificat comporte un nom de serveur avec
+    caractères génériques, ou des noms de serveurs multiples dans le
+    champ subjectAltName, vous pouvez utiliser SSL avec les serveurs
+    virtuels à base de noms sans avoir à contourner ce problème.</p>    
 
     <p>La raison en est que le protocole SSL constitue une couche séparée qui
     encapsule le protocole HTTP. Aini, la session SSL nécessite une

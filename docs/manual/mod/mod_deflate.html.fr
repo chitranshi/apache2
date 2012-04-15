@@ -170,7 +170,7 @@ client</td></tr>
       </div>
       <div class="note"><h3>Note</h3>
         La variable d'environnement <code>force-gzip</code>, définie à
-	l'aide de la directive <code class="directive"><a href="../mod/core.html#setenv">SetEnv</a></code>, permet d'ignorer la
+	l'aide de la directive <code class="directive"><a href="../mod/mod_env.html#setenv">SetEnv</a></code>, permet d'ignorer la
 	configuration de votre navigateur quant aux codages acceptés, et
 	d'envoyer sans condition une sortie comprimée.
       </div>

@@ -292,7 +292,7 @@ to hold without calling <code>free()</code></td></tr>
     <p>The <code class="directive">MaxMemFree</code> directive sets the
     maximum number of free Kbytes that every allocator is allowed
     to hold without calling <code>free()</code>. In threaded MPMs, every
-    thread has its own allocator. When not set, or when set
+    thread has its own allocator. When set
     to zero, the threshold will be set to unlimited.</p>
 
 </div>
@@ -329,7 +329,7 @@ simultaneously</td></tr>
     you must also raise <code class="directive"><a href="#serverlimit">ServerLimit</a></code>.</p>
 
     <p><code class="directive">MaxRequestWorkers</code> was called
-    <code class="directive">MaxClients</code> before version 2.3.13. The old name ist still
+    <code class="directive">MaxClients</code> before version 2.3.13. The old name is still
     supported.</p>
 
 </div>

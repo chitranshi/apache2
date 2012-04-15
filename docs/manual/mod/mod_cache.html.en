@@ -34,7 +34,7 @@
 
     <div class="warning">This module should be used with care, as when the
     <code class="directive"><a href="#cachequickhandler">CacheQuickHandler</a></code> directive is
-    in its default value of <strong>on</strong>, the <code class="directive"><a href="../mod/mod_authz_host.html#allow">Allow</a></code> and <code class="directive"><a href="../mod/mod_authz_host.html#deny">Deny</a></code> directives will be circumvented.
+    in its default value of <strong>on</strong>, the <code class="directive"><a href="../mod/mod_access_compat.html#allow">Allow</a></code> and <code class="directive"><a href="../mod/mod_access_compat.html#deny">Deny</a></code> directives will be circumvented.
     You should not enable quick handler caching for any content to which you
     wish to limit access by client host name, address or environment
     variable.</div>
@@ -1011,8 +1011,8 @@ LastModified date.</td></tr>
 </table>
     <p>Ordinarily, requests or responses with Cache-Control: no-store header
        values will not be stored in the cache.  The
-       <code class="directive">CacheStoreNoCache</code> directive allows this
-       behavior to be overridden.  <code class="directive">CacheStoreNoCache</code> On
+       <code class="directive">CacheStoreNoStore</code> directive allows this
+       behavior to be overridden.  <code class="directive">CacheStoreNoStore</code> On
        tells the server to attempt to cache the resource even if it contains
        no-store header values.  Resources requiring authorization will
        <em>never</em> be cached.</p>

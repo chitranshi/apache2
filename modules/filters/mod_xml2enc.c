@@ -392,13 +392,14 @@ static apr_status_t xml2enc_ffunc(ap_filter_t* f, apr_bucket_brigade* bb)
     while (b = APR_BRIGADE_FIRST(bb), b != APR_BRIGADE_SENTINEL(bb)) {
         ctx->bytes = 0;
         if (APR_BUCKET_IS_METADATA(b)) {
+            APR_BUCKET_REMOVE(b);
             if (APR_BUCKET_IS_EOS(b)) {
                 /* send remaining data */
+                APR_BRIGADE_INSERT_TAIL(ctx->bbnext, b);
                 return ap_fflush(f->next, ctx->bbnext);
             } else if (APR_BUCKET_IS_FLUSH(b)) {
                 ap_fflush(f->next, ctx->bbnext);
             }
-            APR_BUCKET_REMOVE(b);
             apr_bucket_destroy(b);
         }
         else {        /* data bucket */
@@ -614,7 +615,8 @@ static void* xml2enc_merge(apr_pool_t* pool, void* BASE, void* ADD)
     ret->skipto = add->skipto ? add->skipto : base->skipto;
     return ret;
 }
-module AP_MODULE_DECLARE_DATA xml2enc_module = {
+
+AP_DECLARE_MODULE(xml2enc) = {
     STANDARD20_MODULE_STUFF,
     xml2enc_config,
     xml2enc_merge,
@@ -623,6 +625,7 @@ module AP_MODULE_DECLARE_DATA xml2enc_module = {
     xml2enc_cmds,
     xml2enc_hooks
 };
+
 APR_IMPLEMENT_OPTIONAL_HOOK_RUN_ALL(xml2enc, XML2ENC, int, preprocess,
                       (ap_filter_t *f, char** bufp, apr_size_t* bytesp),
                       (f, bufp, bytesp), OK, DECLINED)

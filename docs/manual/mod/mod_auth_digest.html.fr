@@ -58,7 +58,6 @@ condensés</a></li>
 <li><code class="directive"><a href="../mod/mod_authn_core.html#authname">AuthName</a></code></li>
 <li><code class="directive"><a href="../mod/mod_authn_core.html#authtype">AuthType</a></code></li>
 <li><code class="directive"><a href="../mod/mod_authz_core.html#require">Require</a></code></li>
-<li><code class="directive"><a href="../mod/mod_authz_core.html#match">Match</a></code></li>
 <li><a href="../howto/auth.html">Mode d'emploi de
 l'authentification</a></li>
 </ul></div>

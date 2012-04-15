@@ -647,7 +647,7 @@ directement</td></tr>
     </dl>
 
     <p>Comme cas extrêmes, un <em>Sous-réseau</em> avec un masque de
-    sous-réseau de 32 bits significatifs est équivalent à une <var><a href="#ipadr">adresse IP</a></var>, alors qu'un <em>Sous-réseau</em> avec un masque de
+    sous-réseau de 32 bits significatifs est équivalent à une <var><a href="#ipaddr">adresse IP</a></var>, alors qu'un <em>Sous-réseau</em> avec un masque de
     sous-réseau de 0 bit significatif (c'est à dire 0.0.0.0/0) est
     identique à la constante <var>_Default_</var>, et peut correspondre
     à toute adresse IP.</p></dd>
@@ -989,7 +989,7 @@ modifié dans 2.2.7/2.3</td></tr>
 <tr><th><a href="directive-dict.html#Description">Description:</a></th><td>Référencer des serveurs distants depuis
 l'espace d'URLs du serveur local</td></tr>
 <tr><th><a href="directive-dict.html#Syntax">Syntaxe:</a></th><td><code>ProxyPass [<var>chemin</var>] !|<var>url</var> [<var>clé=valeur</var>
-  <var>[clé=valeur</var> ...]] [nocanon] [interpolate]</code></td></tr>
+  <var>[clé=valeur</var> ...]] [nocanon] [interpolate] [noquery]</code></td></tr>
 <tr><th><a href="directive-dict.html#Context">Contexte:</a></th><td>configuration du serveur, serveur virtuel, répertoire</td></tr>
 <tr><th><a href="directive-dict.html#Status">Statut:</a></th><td>Extension</td></tr>
 <tr><th><a href="directive-dict.html#Module">Module:</a></th><td>mod_proxy</td></tr>
@@ -1022,9 +1022,10 @@ l'espace d'URLs du serveur local</td></tr>
     <code>http://example.com/miroir/foo/bar</code> en une requête
     mandatée pour <code>http://backend.example.com/bar</code>.</p>
 
-    <p>La syntaxe alternative suivante est valide, bien qu'elle induise
-    une dégradation des performances lorsqu'elle est présente en grand
-    nombre :</p>
+    <p>La syntaxe alternative suivante est valide, bien qu'elle puisse
+    induire une dégradation des performances lorsqu'elle est
+    présente en très grand nombre. Elle possède l'avantage de
+    permettre un contrôle dynamique via l'interface <a href="mod_proxy_balancer.html#balancer_manager">Balancer Manager</a> :</p>
 
     <div class="example"><p><code>
         ProxyPass /miroir/foo/ http://backend.example.com/
@@ -1460,6 +1461,12 @@ l'espace d'URLs du serveur local</td></tr>
     l'interpolation se produit ; vous devrez alors encore avoir avoir
     recours à <code class="module"><a href="../mod/mod_rewrite.html">mod_rewrite</a></code> pour des règles
     complexes.</p>
+
+    <p>Par défaut, mod_proxy inclut la chaîne de paramètres lors de la
+    génération de la variable d'environnement
+    <var>SCRIPT_FILENAME</var>. Le mot-clé optionnel <var>noquery</var>
+    (disponible à partir de la version 2.4.1) permet d'exclure cette
+    chaîne.</p>
 
     <p>Lorsque la directive ProxyPass est utilisée à l'intérieur d'une
     section <code class="directive"><a href="../mod/core.html#location">&lt;Location&gt;</a></code>, le premier argument est omis et le répertoire

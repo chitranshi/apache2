@@ -387,6 +387,14 @@ static const char *set_balancer_param(proxy_server_conf *conf,
             return "growth must be between 1 and 100";
         balancer->growth = ival;
     }
+    else if (!strcasecmp(key, "forcerecovery")) {
+        if (!strcasecmp(val, "on"))
+            balancer->s->forcerecovery = 1;
+        else if (!strcasecmp(val, "off"))
+            balancer->s->forcerecovery = 0;
+        else
+            return "forcerecovery must be On|Off";
+    }
     else {
         return "unknown Balancer parameter";
     }
@@ -2466,6 +2474,7 @@ static void child_init(apr_pool_t *p, server_rec *s)
             /* Disable address cache for generic reverse worker */
             reverse->s->is_address_reusable = 0;
         }
+        conf->reverse = reverse;
         s = s->next;
     }
 }

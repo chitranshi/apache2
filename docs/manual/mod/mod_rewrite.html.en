@@ -32,7 +32,7 @@ URLs on the fly</td></tr>
 <h3>Summary</h3>
 
 	<p>The <code class="module"><a href="../mod/mod_rewrite.html">mod_rewrite</a></code> module uses a rule-based rewriting
-      engine, based on a regular-expression parser, to rewrite requested URLs on
+      engine, based on a PCRE regular-expression parser, to rewrite requested URLs on
       the fly. By default, <code class="module"><a href="../mod/mod_rewrite.html">mod_rewrite</a></code> maps a URL to a filesystem
       path. However, it can also be used to redirect one URL to another URL, or
       to invoke an internal proxy fetch.</p>
@@ -350,7 +350,7 @@ RewriteRule ^index\.html$  newsite.html
       </ul>
 
       <p>If the <em>TestString</em> has the special value <code>expr</code>, the
-      <em>CondPattern</em> will be treated as a
+      <em>CondPattern</em> will be treated as an
       <a href="../expr.html">ap_expr</a>.</p>
 
       <p>Other things you should be aware of:</p>
@@ -608,7 +608,7 @@ RewriteRule ^index\.html$  newsite.html
 
 	<li>
            <p>If the <em>TestString</em> has the special value <code>expr</code>, the
-           <em>CondPattern</em> will be treated as a
+           <em>CondPattern</em> will be treated as an
            <a href="../expr.html">ap_expr</a>.</p>
 
            <p>
@@ -1181,8 +1181,8 @@ cannot use <code>$N</code> in the substitution string!
     </tr>
     <tr>
         <td>qsappend|QSA</td>
-        <td>Appends any query string created in the rewrite target to
-        any query string that was in the original request URL. <em><a href="../rewrite/flags.html#flag_qsa">details ...</a></em></td>
+        <td>Appends any query string from the original request URL to 
+        any query string created in the rewrite target.<em><a href="../rewrite/flags.html#flag_qsa">details ...</a></em></td>
     </tr>
     <tr>
         <td>qsdiscard|QSD</td>

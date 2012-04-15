@@ -4127,7 +4127,7 @@ fi
 
 if test "x$with_included_apr" = "xyes"; then
   apr_found=reconfig
-  if test ! -d srclib/apr; then
+  if test ! -d srclib/apr && test ! -d $srcdir/srclib/apr; then
     as_fn_error $? "Bundled APR requested but not found at ./srclib/. Download and unpack the corresponding apr and apr-util packages to ./srclib/." "$LINENO" 5
   fi
 else
@@ -4501,8 +4501,8 @@ if test "x${apr_major_version}" = "x2"; then
   apu_found=obsolete
 elif test "x$with_included_apr" = "xyes"; then
   apu_found=reconfig
-  if test ! -d srclib/apr-util; then
-    as_fn_error $? "Bundled APR-Util requested but not found at srclib/apr-util. Download and unpack the corresponding httpd-${HTTPD_VERSION}-deps package over this one." "$LINENO" 5
+  if test ! -d srclib/apr-util && test ! -d $srcdir/srclib/apr-util; then
+    as_fn_error $? "Bundled APR-Util requested but not found at ./srclib/. Download and unpack the corresponding apr and apr-util packages to ./srclib/." "$LINENO" 5
   fi
 else
 
@@ -31311,14 +31311,15 @@ fi
 echo $ac_n "${nl}Restore user-defined environment settings...${nl}"
 
 
-if test "x$apr_ste_save_CPPFLAGS" = "x"; then
+set X $apr_ste_save_CPPFLAGS
+if test ${#} -eq 1; then
   EXTRA_CPPFLAGS="$CPPFLAGS"
   CPPFLAGS=
 else
   if test "x$apr_ste_save_CPPFLAGS" = "x$CPPFLAGS"; then
     EXTRA_CPPFLAGS=
   else
-    EXTRA_CPPFLAGS=`echo $CPPFLAGS | sed -e "s%${apr_ste_save_CPPFLAGS}%%"`
+    EXTRA_CPPFLAGS=`echo "$CPPFLAGS" | sed -e "s%${apr_ste_save_CPPFLAGS}%%"`
     CPPFLAGS="$apr_ste_save_CPPFLAGS"
   fi
 fi
@@ -31329,14 +31330,15 @@ fi
 
 
 
-if test "x$apr_ste_save_CFLAGS" = "x"; then
+set X $apr_ste_save_CFLAGS
+if test ${#} -eq 1; then
   EXTRA_CFLAGS="$CFLAGS"
   CFLAGS=
 else
   if test "x$apr_ste_save_CFLAGS" = "x$CFLAGS"; then
     EXTRA_CFLAGS=
   else
-    EXTRA_CFLAGS=`echo $CFLAGS | sed -e "s%${apr_ste_save_CFLAGS}%%"`
+    EXTRA_CFLAGS=`echo "$CFLAGS" | sed -e "s%${apr_ste_save_CFLAGS}%%"`
     CFLAGS="$apr_ste_save_CFLAGS"
   fi
 fi
@@ -31347,14 +31349,15 @@ fi
 
 
 
-if test "x$apr_ste_save_CXXFLAGS" = "x"; then
+set X $apr_ste_save_CXXFLAGS
+if test ${#} -eq 1; then
   EXTRA_CXXFLAGS="$CXXFLAGS"
   CXXFLAGS=
 else
   if test "x$apr_ste_save_CXXFLAGS" = "x$CXXFLAGS"; then
     EXTRA_CXXFLAGS=
   else
-    EXTRA_CXXFLAGS=`echo $CXXFLAGS | sed -e "s%${apr_ste_save_CXXFLAGS}%%"`
+    EXTRA_CXXFLAGS=`echo "$CXXFLAGS" | sed -e "s%${apr_ste_save_CXXFLAGS}%%"`
     CXXFLAGS="$apr_ste_save_CXXFLAGS"
   fi
 fi
@@ -31365,14 +31368,15 @@ fi
 
 
 
-if test "x$apr_ste_save_LDFLAGS" = "x"; then
+set X $apr_ste_save_LDFLAGS
+if test ${#} -eq 1; then
   EXTRA_LDFLAGS="$LDFLAGS"
   LDFLAGS=
 else
   if test "x$apr_ste_save_LDFLAGS" = "x$LDFLAGS"; then
     EXTRA_LDFLAGS=
   else
-    EXTRA_LDFLAGS=`echo $LDFLAGS | sed -e "s%${apr_ste_save_LDFLAGS}%%"`
+    EXTRA_LDFLAGS=`echo "$LDFLAGS" | sed -e "s%${apr_ste_save_LDFLAGS}%%"`
     LDFLAGS="$apr_ste_save_LDFLAGS"
   fi
 fi
@@ -31383,14 +31387,15 @@ fi
 
 
 
-if test "x$apr_ste_save_LIBS" = "x"; then
+set X $apr_ste_save_LIBS
+if test ${#} -eq 1; then
   EXTRA_LIBS="$LIBS"
   LIBS=
 else
   if test "x$apr_ste_save_LIBS" = "x$LIBS"; then
     EXTRA_LIBS=
   else
-    EXTRA_LIBS=`echo $LIBS | sed -e "s%${apr_ste_save_LIBS}%%"`
+    EXTRA_LIBS=`echo "$LIBS" | sed -e "s%${apr_ste_save_LIBS}%%"`
     LIBS="$apr_ste_save_LIBS"
   fi
 fi
@@ -31401,14 +31406,15 @@ fi
 
 
 
-if test "x$apr_ste_save_INCLUDES" = "x"; then
+set X $apr_ste_save_INCLUDES
+if test ${#} -eq 1; then
   EXTRA_INCLUDES="$INCLUDES"
   INCLUDES=
 else
   if test "x$apr_ste_save_INCLUDES" = "x$INCLUDES"; then
     EXTRA_INCLUDES=
   else
-    EXTRA_INCLUDES=`echo $INCLUDES | sed -e "s%${apr_ste_save_INCLUDES}%%"`
+    EXTRA_INCLUDES=`echo "$INCLUDES" | sed -e "s%${apr_ste_save_INCLUDES}%%"`
     INCLUDES="$apr_ste_save_INCLUDES"
   fi
 fi

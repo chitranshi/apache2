@@ -19,8 +19,6 @@
 # and certificates as to facilitate testing of TLS server name 
 # indication support (RFC 4366) or SNI.
 #
-# $Id: make_sni.sh 883540 2009-11-23 23:17:51Z trawick $
-#
 #
 OPENSSL=${OPENSSL:-openssl}
 DOMAIN=${DOMAIN:-my-sni-test.org}

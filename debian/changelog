@@ -1,3 +1,17 @@
+apache2 (2.2.22-4) UNRELEASED; urgency=high
+
+  * CVE-2012-0216: Remove "Alias /doc /usr/share/doc" from the default virtual
+    hosts' config files.
+    If scripting modules like mod_php or mod_rivet are enabled on systems
+    where either 1) some frontend server forwards connections to an apache2
+    backend server on the localhost address, or 2) the machine running
+    apache2 is also used for web browsing, this could allow a remote
+    attacker to execute example scripts stored under /usr/share/doc.
+    Depending on the installed packages, this could lead to issues like cross
+    site scripting, code execution, or leakage of sensitive data.
+
+ -- Stefan Fritsch <sf@debian.org>  Sun, 01 Apr 2012 00:20:48 +0200
+
 apache2 (2.2.22-3) unstable; urgency=low
 
   * Fix "FTBFS: mkdir: cannot create directory `debian/build-tree/arch':

@@ -54,7 +54,7 @@ generate temporary 512 bit RSA private key" when I start Apache?</a></li>
     Make sure that all parent directories (here <code>/opt</code>,
     <code>/opt/apache</code> and <code>/opt/apache/logs</code>) have the x-bit
     set for, at minimum, the UID under which Apache's children are running (see
-    the <code class="directive"><a href="../mod/mpm_common.html#user">User</a></code> directive).</p>
+    the <code class="directive"><a href="../mod/mod_unixd.html#user">User</a></code> directive).</p>
 
 
 <h3><a name="entropy" id="entropy">Why does mod_ssl stop with the error
@@ -202,8 +202,6 @@ key file?</a></li>
 dialog at Apache startup time?</a></li>
 <li><a href="#verify">How do I verify that a private key matches its
 Certificate?</a></li>
-<li><a href="#badcert">Why do connections fail with an "alert bad
-certificate" error?</a></li>
 <li><a href="#pemder">How can I convert a certificate from PEM to DER
 format?</a></li>
 <li><a href="#gid">Why do browsers complain that they cannot
@@ -606,6 +604,11 @@ error when connecting to my newly installed server?</a></h3>
     complete the SSL handshake phase. See the next question for how to
     circumvent this issue.</p>
 
+    <p>Note that if you have a wildcard SSL certificate, or a
+    certificate that has multple hostnames on it using subjectAltName
+    fields, you can use SSL on name-based virtual hosts without further
+    workarounds.</p>
+
 
 <h3><a name="vhosts2" id="vhosts2">Is it possible to use Name-Based
 Virtual Hosting to identify different SSL virtual hosts?</a></h3>
@@ -619,6 +622,11 @@ Virtual Hosting to identify different SSL virtual hosts?</a></h3>
     built with 0.9.8j or later OpenSSL.  This is because it requires a
     feature that only the most recent revisions of the SSL
     specification added, called Server Name Indication (SNI).</p>
+
+    <p>Note that if you have a wildcard SSL certificate, or a
+    certificate that has multple hostnames on it using subjectAltName
+    fields, you can use SSL on name-based virtual hosts without further
+    workarounds.</p>
 
     <p>The reason is that the SSL protocol is a separate layer which
     encapsulates the HTTP protocol. So the SSL session is a separate

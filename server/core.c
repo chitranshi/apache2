@@ -247,7 +247,7 @@ static void *merge_core_dir_configs(apr_pool_t *a, void *basev, void *newv)
         conf->override_opts = new->override_opts;
     }
 
-    if (conf->override_list == NULL) {
+    if (new->override_list != NULL) {
         conf->override_list = new->override_list;
     }
 
@@ -274,7 +274,7 @@ static void *merge_core_dir_configs(apr_pool_t *a, void *basev, void *newv)
         conf->hostname_lookups = new->hostname_lookups;
     }
 
-    if (new->content_md5 == AP_CONTENT_MD5_UNSET) {
+    if (new->content_md5 != AP_CONTENT_MD5_UNSET) {
         conf->content_md5 = new->content_md5;
     }
 
@@ -314,8 +314,6 @@ static void *merge_core_dir_configs(apr_pool_t *a, void *basev, void *newv)
 
     if (new->limit_xml_body != AP_LIMIT_UNSET)
         conf->limit_xml_body = new->limit_xml_body;
-    else
-        conf->limit_xml_body = base->limit_xml_body;
 
     if (!conf->sec_file) {
         conf->sec_file = new->sec_file;
@@ -1661,28 +1659,45 @@ static const char *set_override_list(cmd_parms *cmd, void *d_, int argc, char *c
     /* Throw a warning if we're in <Location> or <Files> */
     if (ap_check_cmd_context(cmd, NOT_IN_LOCATION | NOT_IN_FILES)) {
         ap_log_error(APLOG_MARK, APLOG_WARNING, 0, cmd->server, APLOGNO(00115)
-                     "Useless use of AllowOverrideList in line %d of %s.",
-                     cmd->directive->line_num, cmd->directive->filename);
+                     "Useless use of AllowOverrideList at %s:%d",
+                     cmd->directive->filename, cmd->directive->line_num);
     }
     if ((err = ap_check_cmd_context(cmd, NOT_IN_HTACCESS)) != NULL)
         return err;
 
-    d->override_list = apr_table_make(cmd->pool, 1);
+    d->override_list = apr_table_make(cmd->pool, argc);
 
     for (i=0;i<argc;i++){
         if (!strcasecmp(argv[i], "None")) {
+            if (argc != 1) {
+                return "'None' not allowed with other directives in "
+                       "AllowOverrideList";
+            }
             return NULL;
         }
         else {
             const command_rec *result = NULL;
             module *mod = ap_top_module;
             result = ap_find_command_in_modules(argv[i], &mod);
-            if (result)
+            if (result == NULL) {
+                ap_log_error(APLOG_MARK, APLOG_WARNING, 0, cmd->server,
+                             APLOGNO(00116) "Discarding unrecognized "
+                             "directive `%s' in AllowOverrideList at %s:%d",
+                             argv[i], cmd->directive->filename,
+                             cmd->directive->line_num);
+                continue;
+            }
+            else if ((result->req_override & (OR_ALL|ACCESS_CONF)) == 0) {
+                ap_log_error(APLOG_MARK, APLOG_WARNING, 0, cmd->server,
+                             APLOGNO(02304) "Discarding directive `%s' not "
+                             "allowed in AllowOverrideList at %s:%d",
+                             argv[i], cmd->directive->filename,
+                             cmd->directive->line_num);
+                continue;
+            }
+            else {
                 apr_table_set(d->override_list, argv[i], "1");
-            else
-                ap_log_error(APLOG_MARK, APLOG_WARNING, 0, cmd->server, APLOGNO(00116)
-                             "Discarding unrecognized directive `%s' in AllowOverrideList.",
-                             argv[i]);
+            }
         }
     }
 
@@ -2770,6 +2785,24 @@ static const char *set_server_root(cmd_parms *cmd, void *dummy,
                             APR_FILEPATH_TRUENAME, cmd->pool) != APR_SUCCESS)
         || !ap_is_directory(cmd->temp_pool, ap_server_root)) {
         return "ServerRoot must be a valid directory";
+    }
+
+    return NULL;
+}
+
+static const char *set_runtime_dir(cmd_parms *cmd, void *dummy, const char *arg)
+{
+    const char *err = ap_check_cmd_context(cmd, GLOBAL_ONLY);
+
+    if (err != NULL) {
+        return err;
+    }
+
+    if ((apr_filepath_merge((char**)&ap_runtime_dir, NULL,
+                            ap_server_root_relative(cmd->pool, arg),
+                            APR_FILEPATH_TRUENAME, cmd->pool) != APR_SUCCESS)
+        || !ap_is_directory(cmd->temp_pool, ap_runtime_dir)) {
+        return "DefaultRuntimeDir must be a valid directory, absolute or relative to ServerRoot";
     }
 
     return NULL;
@@ -3928,6 +3961,8 @@ AP_INIT_TAKE1("ServerSignature", set_signature_flag, NULL, OR_ALL,
   "En-/disable server signature (on|off|email)"),
 AP_INIT_TAKE1("ServerRoot", set_server_root, NULL, RSRC_CONF | EXEC_ON_READ,
   "Common directory of server-related files (logs, confs, etc.)"),
+AP_INIT_TAKE1("DefaultRuntimeDir", set_runtime_dir, NULL, RSRC_CONF | EXEC_ON_READ,
+  "Common directory for run-time files (shared memory, locks, etc.)"),
 AP_INIT_TAKE1("ErrorLog", set_server_string_slot,
   (void *)APR_OFFSETOF(server_rec, error_fname), RSRC_CONF,
   "The filename of the error log"),
@@ -4059,7 +4094,7 @@ AP_INIT_TAKE1("MaxConnectionsPerChild", ap_mpm_set_max_requests, NULL, RSRC_CONF
 AP_INIT_TAKE1("CoreDumpDirectory", ap_mpm_set_coredumpdir, NULL, RSRC_CONF,
               "The location of the directory Apache changes to before dumping core"),
 AP_INIT_TAKE1("MaxMemFree", ap_mpm_set_max_mem_free, NULL, RSRC_CONF,
-              "Maximum number of 1k blocks a particular childs allocator may hold."),
+              "Maximum number of 1k blocks a particular child's allocator may hold."),
 AP_INIT_TAKE1("ThreadStackSize", ap_mpm_set_thread_stacksize, NULL, RSRC_CONF,
               "Size in bytes of stack used by threads handling client connections"),
 #if AP_ENABLE_EXCEPTION_HOOK

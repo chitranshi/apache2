@@ -25,11 +25,10 @@
 <a href="../en/mod/core.html" hreflang="en" rel="alternate" title="English">&nbsp;en&nbsp;</a> |
 <a href="../es/mod/core.html" hreflang="es" rel="alternate" title="Español">&nbsp;es&nbsp;</a> |
 <a href="../fr/mod/core.html" title="Français">&nbsp;fr&nbsp;</a> |
+<a href="../hold/mod/core.html" hreflang="hold" rel="alternate" title="">&nbsp;hold&nbsp;</a> |
 <a href="../ja/mod/core.html" hreflang="ja" rel="alternate" title="Japanese">&nbsp;ja&nbsp;</a> |
 <a href="../tr/mod/core.html" hreflang="tr" rel="alternate" title="Türkçe">&nbsp;tr&nbsp;</a></p>
 </div>
-<div class="outofdate">Cette traduction peut être périmée. Vérifiez la version
-            anglaise pour les changements récents.</div>
 <table class="module"><tr><th><a href="module-dict.html#Description">Description:</a></th><td>Fonctionnalités de base du serveur HTTP Apache toujours
 disponibles</td></tr>
 <tr><th><a href="module-dict.html#Status">Statut:</a></th><td>Core</td></tr></table>
@@ -45,6 +44,7 @@ disponibles</td></tr>
 <li><img alt="" src="../images/down.gif" /> <a href="#allowoverridelist">AllowOverrideList</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#cgimapextension">CGIMapExtension</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#contentdigest">ContentDigest</a></li>
+<li><img alt="" src="../images/down.gif" /> <a href="#defaultruntimedir">DefaultRuntimeDir</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#defaulttype">DefaultType</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#define">Define</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#directory">&lt;Directory&gt;</a></li>
@@ -461,7 +461,7 @@ All pour les versions antérieures</code></td></tr>
 
       <dd>
 
-      Permet l'utilisation des directives d'autorisation (<code class="directive"><a href="../mod/mod_authn_dbm.html#authdbmgroupfile">AuthDBMGroupFile</a></code>,
+      Permet l'utilisation des directives d'autorisation (<code class="directive"><a href="../mod/mod_authz_dbm.html#authdbmgroupfile">AuthDBMGroupFile</a></code>,
       <code class="directive"><a href="../mod/mod_authn_dbm.html#authdbmuserfile">AuthDBMUserFile</a></code>,
       <code class="directive"><a href="../mod/mod_authz_groupfile.html#authgroupfile">AuthGroupFile</a></code>,
       <code class="directive"><a href="../mod/mod_authn_core.html#authname">AuthName</a></code>,
@@ -487,14 +487,43 @@ All pour les versions antérieures</code></td></tr>
       des répertoires (<code class="directive"><a href="../mod/mod_autoindex.html#adddescription">AddDescription</a></code>,
       <code class="directive"><a href="../mod/mod_autoindex.html#addicon">AddIcon</a></code>, <code class="directive"><a href="../mod/mod_autoindex.html#addiconbyencoding">AddIconByEncoding</a></code>,
       <code class="directive"><a href="../mod/mod_autoindex.html#addiconbytype">AddIconByType</a></code>,
-      <code class="directive"><a href="../mod/mod_autoindex.html#defaulticon">DefaultIcon</a></code>, <code class="directive"><a href="../mod/mod_dir.html#directoryindex">DirectoryIndex</a></code>, <code class="directive"><a href="../mod/mod_autoindex.html#fancyindexing">FancyIndexing</a></code>, <code class="directive"><a href="../mod/mod_autoindex.html#headername">HeaderName</a></code>, <code class="directive"><a href="../mod/mod_autoindex.html#indexignore">IndexIgnore</a></code>, <code class="directive"><a href="../mod/mod_autoindex.html#indexoptions">IndexOptions</a></code>, <code class="directive"><a href="../mod/mod_autoindex.html#readmename">ReadmeName</a></code>,
+      <code class="directive"><a href="../mod/mod_autoindex.html#defaulticon">DefaultIcon</a></code>, <code class="directive"><a href="../mod/mod_dir.html#directoryindex">DirectoryIndex</a></code>, <a href="mod_autoindex.html#indexoptions.fancyindexing"><code>FancyIndexing</code></a>,
+      <code class="directive"><a href="../mod/mod_autoindex.html#headername">HeaderName</a></code>, <code class="directive"><a href="../mod/mod_autoindex.html#indexignore">IndexIgnore</a></code>, <code class="directive"><a href="../mod/mod_autoindex.html#indexoptions">IndexOptions</a></code>, <code class="directive"><a href="../mod/mod_autoindex.html#readmename">ReadmeName</a></code>,
       <em>etc...</em>).</dd>
 
       <dt>Limit</dt>
 
       <dd>
       Permet l'utilisation des directives contrôlant l'accès au serveur
-      (<code class="directive"><a href="../mod/mod_authz_host.html#allow">Allow</a></code>, <code class="directive"><a href="../mod/mod_authz_host.html#deny">Deny</a></code> et <code class="directive"><a href="../mod/mod_authz_host.html#order">Order</a></code>).</dd>
+      (<code class="directive"><a href="../mod/mod_access_compat.html#allow">Allow</a></code>, <code class="directive"><a href="../mod/mod_access_compat.html#deny">Deny</a></code> et <code class="directive"><a href="../mod/mod_access_compat.html#order">Order</a></code>).</dd>
+
+      <dt>Nonfatal=[Override|Unknown|All]</dt>
+
+      <dd>
+      Permet d'utiliser l'option AllowOverride pour rendre les erreurs
+      de syntaxe non fatales dans les fichiers .htaccess : au lieu de
+      causer une Internal Server Error, les directives non autorisées ou
+      non reconnues seront ignorées et un avertissement enregistré dans
+      le journal :
+      <ul>
+          <li><strong>Nonfatal=Override</strong> rend les directives
+	  interdite par AllowOverride non fatales.</li>
+          <li><strong>Nonfatal=Unknown</strong> rend les directives
+	  inconnues non fatales. Sont concernées les erreurs de frappe
+	  et les directives implémentées par un module non chargé.</li>
+          <li><strong>Nonfatal=All</strong> rend toutes les directives
+	  précédentes non fatales.</li>
+      </ul>
+      <p>Notez qu'une erreur de syntaxe dans une directive valide
+      causera toujours une internal server error.</p>
+      <div class="warning"><h3>Sécurité</h3>
+          Les erreurs non fatales peuvent être à l'origine de problèmes
+	  de sécurité pour les utilisateurs de fichiers .htaccess. Par
+	  exemple, si AllowOverride interdit AuthConfig, toute
+	  configuration utilisateur destinée à restreindre l'accès à un
+	  site ne sera pas prise en compte.
+      </div>
+      </dd>
 
       <dt>Options[=<var>Option</var>,...]</dt>
 
@@ -665,6 +694,46 @@ dans la réponse HTTP</td></tr>
     scripts CGI, et les réponses à des requêtes partielles (byte range)
     ne comportent pas cet en-tête.</p>
 
+</div>
+<div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
+<div class="directive-section"><h2><a name="DefaultRuntimeDir" id="DefaultRuntimeDir">DefaultRuntimeDir</a> <a name="defaultruntimedir" id="defaultruntimedir">Directive</a></h2>
+<table class="directive">
+<tr><th><a href="directive-dict.html#Description">Description:</a></th><td>Répertoire de base des fichiers créés par le serveur au
+cours de son exécution</td></tr>
+<tr><th><a href="directive-dict.html#Syntax">Syntaxe:</a></th><td><code>DefaultRuntimeDir <var>chemin</var></code></td></tr>
+<tr><th><a href="directive-dict.html#Default">Défaut:</a></th><td><code>DefaultRuntimeDir DEFAULT_REL_RUNTIMEDIR (logs/)</code></td></tr>
+<tr><th><a href="directive-dict.html#Context">Contexte:</a></th><td>configuration du serveur</td></tr>
+<tr><th><a href="directive-dict.html#Status">Statut:</a></th><td>Core</td></tr>
+<tr><th><a href="directive-dict.html#Module">Module:</a></th><td>core</td></tr>
+</table>
+    <p>La directive <code class="directive">DefaultRuntimeDir</code> permet de
+    définir le répertoire dans lequel le serveur va créer différents
+    fichiers au cours de son exécution (mémoire partagée, verrous,
+    etc...). Si on spécifie un chemin relatif, ce chemin sera relatif au
+    chemin défini par la directive <code class="directive">ServerRoot</code>.</p>
+
+    <div class="example"><h3>Exemple</h3><p><code>
+      DefaultRuntimeDir scratch/
+    </code></p></div>
+
+    <p>Il est possible de modifier la valeur par défaut de la directive
+    <code class="directive">DefaultRuntimeDir</code> en redéfinissant la valeur
+    de la variable <code>DEFAULT_REL_RUNTIMEDIR</code> à la compilation.</p>
+
+   <p>Note: la directive <code class="directive">ServerRoot</code> doit être
+   déjà définie pour utiliser cette directive, car dans le cas
+   contraire, c'est la valeur par défaut de
+   <code class="directive">ServerRoot</code> qui sera utilisée pour construire
+   la répertoire de base.</p>
+
+
+<h3>Voir aussi</h3>
+<ul>
+<li><a href="../misc/security_tips.html#serverroot">Conseil en
+matière de sécurité</a> pour plus d'information à propos des permissions
+à définir sur le répertoire d'installation
+<code class="directive">ServerRoot</code> du serveur.</li>
+</ul>
 </div>
 <div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
 <div class="directive-section"><h2><a name="DefaultType" id="DefaultType">DefaultType</a> <a name="defaulttype" id="defaulttype">Directive</a></h2>
@@ -3989,6 +4058,12 @@ serveurs virtuels à base de nom</td></tr>
       # ...<br />
       &lt;/VirtualHost&gt;
     </code></p></div>
+    <p>La recherche du serveur virtuel à base de nom correspondant au
+    plus près à la requête s'effectue selon l'ordre d'apparition des
+    directives <code class="directive"><a href="#virtualhost">&lt;virtualhost&gt;</a></code> dans le fichier de
+    configuration. Le premier serveur virtuel dont le <code class="directive"><a href="#servername">ServerName</a></code> ou le <code class="directive"><a href="#serveralias">ServerAlias</a></code> correspond est choisi, sans
+    priorité particulière si le nom contient des caractères génériques
+    (que ce soit pour ServerName ou ServerAlias).</p>
 
 <h3>Voir aussi</h3>
 <ul>
@@ -4453,6 +4528,13 @@ supérieures du serveur HTTP Apache</td></tr>
     réponse. Dans le cas d'un serveur mandataire, la taille du corps de
     requête n'est pas limitée à 64k.</p>
 
+    <div class="note"><h3>Note</h3>
+    <p>Bien que certains prétendent le contraire, <code>TRACE</code> ne
+    constitue pas une vulnérabilité en matière de sécurité, et il n'y a
+    aucune raison suffisante pour le désactiver, ce qui rendrait
+    votre serveur non conforme.</p>
+    </div>
+
 </div>
 <div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
 <div class="directive-section"><h2><a name="UnDefine" id="UnDefine">UnDefine</a> <a name="undefine" id="undefine">Directive</a></h2>
@@ -4733,6 +4815,7 @@ entre elles à la réception d'une requête</li>
 <a href="../en/mod/core.html" hreflang="en" rel="alternate" title="English">&nbsp;en&nbsp;</a> |
 <a href="../es/mod/core.html" hreflang="es" rel="alternate" title="Español">&nbsp;es&nbsp;</a> |
 <a href="../fr/mod/core.html" title="Français">&nbsp;fr&nbsp;</a> |
+<a href="../hold/mod/core.html" hreflang="hold" rel="alternate" title="">&nbsp;hold&nbsp;</a> |
 <a href="../ja/mod/core.html" hreflang="ja" rel="alternate" title="Japanese">&nbsp;ja&nbsp;</a> |
 <a href="../tr/mod/core.html" hreflang="tr" rel="alternate" title="Türkçe">&nbsp;tr&nbsp;</a></p>
 </div><div id="footer">

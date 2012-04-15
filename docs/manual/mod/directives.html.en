@@ -211,6 +211,7 @@
 <li><a href="mod_dbd.html#dbdriver">DBDriver</a></li>
 <li><a href="mod_autoindex.html#defaulticon">DefaultIcon</a></li>
 <li><a href="mod_mime.html#defaultlanguage">DefaultLanguage</a></li>
+<li><a href="core.html#defaultruntimedir">DefaultRuntimeDir</a></li>
 <li><a href="core.html#defaulttype">DefaultType</a></li>
 <li><a href="core.html#define">Define</a></li>
 <li><a href="mod_deflate.html#deflatebuffersize">DeflateBufferSize</a></li>
@@ -304,6 +305,8 @@
 <li><a href="mod_ldap.html#ldapopcachettl">LDAPOpCacheTTL</a></li>
 <li><a href="mod_ldap.html#ldapreferralhoplimit">LDAPReferralHopLimit</a></li>
 <li><a href="mod_ldap.html#ldapreferrals">LDAPReferrals</a></li>
+<li><a href="mod_ldap.html#ldapretries">LDAPRetries</a></li>
+<li><a href="mod_ldap.html#ldapretrydelay">LDAPRetryDelay</a></li>
 <li><a href="mod_ldap.html#ldapsharedcachefile">LDAPSharedCacheFile</a></li>
 <li><a href="mod_ldap.html#ldapsharedcachesize">LDAPSharedCacheSize</a></li>
 <li><a href="mod_ldap.html#ldaptimeout">LDAPTimeout</a></li>

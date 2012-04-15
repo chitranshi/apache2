@@ -423,7 +423,7 @@ static void force_recovery(proxy_balancer *balancer, server_rec *s)
             }
         }
     }
-    if (!ok) {
+    if (!ok && balancer->s->forcerecovery) {
         /* If all workers are in error state force the recovery.
          */
         worker = (proxy_worker **)balancer->workers->elts;
@@ -624,8 +624,9 @@ static int proxy_balancer_post_request(proxy_worker *worker,
             int val = ((int *)balancer->errstatuses->elts)[i];
             if (r->status == val) {
                 ap_log_rerror(APLOG_MARK, APLOG_ERR, rv, r, APLOGNO(01174)
-                              "%s:  Forcing recovery for worker (%s), "
-                              "failonstatus %d",
+                              "%s: Forcing worker (%s) into error state " 
+                              "due to status code %d matching 'failonstatus' "
+                              "balancer parameter",
                               balancer->s->name, worker->s->name, val);
                 worker->s->status |= PROXY_WORKER_IN_ERROR;
                 worker->s->error_time = apr_time_now();

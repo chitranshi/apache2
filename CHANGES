@@ -1,4 +1,90 @@
                                                          -*- coding: utf-8 -*-
+
+Changes with Apache 2.4.2
+
+  *) SECURITY: CVE-2012-0883 (cve.mitre.org)
+     envvars: Fix insecure handling of LD_LIBRARY_PATH that could lead to the
+     current working directory to be searched for DSOs. [Stefan Fritsch]
+
+  *) mod_slotmem_shm: Honor DefaultRuntimeDir [Jim Jagielski]
+
+  *) mod_ssl: Fix crash with threaded MPMs due to race condition when
+     initializing EC temporary keys. [Stefan Fritsch]
+
+  *) mod_proxy: Add the forcerecovery balancer parameter that determines if
+     recovery for balancer workers is enforced. [Ruediger Pluem]
+
+  *) Fix MPM DSO load failure on AIX.  [Jeff Trawick]
+
+  *) mod_proxy: Correctly set up reverse proxy worker. PR 52935.
+     [Petter Berntsen <petterb gmail.com>]
+
+  *) mod_sed: Don't define PATH_MAX to a potentially undefined value, causing
+     compile problems on GNU hurd. [Stefan Fritsch]
+
+  *) core: Add ap_runtime_dir_relative() and DefaultRuntimeDir.
+     [Jeff Trawick]
+
+  *) core: Fix breakage of Listen directives with MPMs that use a
+     per-directory config. PR 52904. [Stefan Fritsch]
+
+  *) core: Disallow directives in AllowOverrideList which are only allowed
+     in VirtualHost or server context. These are usually not prepared to be
+     called in .htaccess files. [Stefan Fritsch]
+
+  *) core: In AllowOverrideList, do not allow 'None' together with other
+     directives. PR 52823. [Stefan Fritsch]
+
+  *) mod_slotmem_shm: Support DEFAULT_REL_RUNTIMEDIR for file-based shm.
+     [Jim Jagielski]
+
+  *) core: Fix merging of AllowOverrideList and ContentDigest.
+     [Stefan Fritsch]
+
+  *) mod_request: Fix validation of the KeptBodySize argument so it
+     doesn't always throw a configuration error. PR 52981 [Eric Covener]
+
+  *) core: Add filesystem paths to access denied / access failed messages
+     AH00035 and AH00036. [Eric Covener]
+
+  *) mod_dumpio: Properly handle errors from subsequent input filters.
+     PR 52914. [Stefan Fritsch]
+
+  *) Unix MPMs: Fix small memory leak in parent process if connect()
+     failed when waking up children.  [Joe Orton]
+
+  *) "DirectoryIndex disabled" now undoes DirectoryIndex settings in
+     the current configuration section, not just previous config sections.
+     PR 52845. [Eric Covener]
+
+  *) mod_xml2enc: Fix broken handling of EOS buckets which could lead to
+     response headers not being sent. PR 52766. [Stefan Fritsch]
+
+  *) mod_ssl: Properly free the GENERAL_NAMEs. PR 32652. [Kaspar Brand]
+
+  *) core: Check during config test that directories for the access
+     logs actually exist. PR 29941. [Stefan Fritsch]
+
+  *) mod_xml2enc, mod_proxy_html: Enable per-module loglevels.
+     [Stefan Fritsch]
+
+  *) mod_filter: Fix segfault with AddOutputFilterByType. PR 52755.
+     [Stefan Fritsch]
+
+  *) mod_session: Sessions are encoded as application/x-www-form-urlencoded
+     strings, however we do not handle the encoding of spaces properly.
+     Fixed. [Graham Leggett]
+
+  *) Configuration: Example in comment should use a path consistent
+     with the default configuration. PR 52715.
+     [Rich Bowen, Jens Schleusener, Rainer Jung]
+
+  *) Configuration: Switch documentation links from trunk to 2.4.
+     [Rainer Jung]
+
+  *) configure: Fix out of tree build using apr and apr-util in srclib.
+     [Rainer Jung]
+
 Changes with Apache 2.4.1
 
   *) SECURITY: CVE-2012-0053 (cve.mitre.org)

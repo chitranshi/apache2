@@ -37,7 +37,7 @@ apache2 (2.4.2-1) experimental; urgency=low
     fhs_compliance.patch
   * Re-add mpm_itk (version 2.4.1-pre01). This is still very experimental!
 
- -- Arno Töll <arno@debian.org>  Sun, 15 Apr 2012 03:14:33 +0200
+ -- Stefan Fritsch <sf@debian.org>  Sun, 15 Apr 2012 20:50:28 +0200
 
 apache2 (2.4.1-3) experimental; urgency=low
 

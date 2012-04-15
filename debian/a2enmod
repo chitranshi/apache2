@@ -170,6 +170,11 @@ sub doit {
     # handle module dependencies
     if ( $obj eq 'module' ) {
         if ( $act eq 'enable' ) {
+            if ( $acton eq 'mpm_itk' ) {
+                warning(  "MPM_ITK is a third party module that is not part "
+                        . "of the official Apache HTTPD. It has seen less "
+                        . "testing than the official MPM modules." );
+            }
             my @depends = get_deps("$availdir/$acton.load");
             do_deps( $acton, @depends ) or return 0;
 

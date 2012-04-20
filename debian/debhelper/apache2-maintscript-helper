@@ -355,3 +355,5 @@ apache2_reload()
 		apache2_msg "err" "apache2_reload: Your configuration is broken. Not ${action}ing Apache 2"
 	fi
 }
+
+# vim: syntax=sh sw=8 sts=8 sr noet

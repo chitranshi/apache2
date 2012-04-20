@@ -1,9 +1,15 @@
 apache2 (2.4.2-2) experimental; urgency=low
 
   * UNRELEASED
+
+  [ Stefan Fritsc ]
   * Don't ship the changelogs in the apache2-mpm-itk transitional package.
 
- -- Stefan Fritsch <sf@debian.org>  Sun, 15 Apr 2012 21:06:08 +0200
+  [ Arno Töll ]
+  * Add mode lines to various configuration files and scripts. Reformat
+    configuration files for consitency.
+
+ -- Arno Töll <arno@debian.org>  Fri, 20 Apr 2012 20:10:11 +0200
 
 apache2 (2.4.2-1) experimental; urgency=low
 

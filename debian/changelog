@@ -3,6 +3,9 @@ apache2 (2.4.2-2) experimental; urgency=low
   * UNRELEASED
 
   [ Stefan Fritsc ]
+  * Explicitly enable mod_authz_core on upgrades. It can happen that it is
+    not pulled in by any of the enabled modules, but we need it in any case
+    for apache2.conf. Closes: #669876
   * Don't ship the changelogs in the apache2-mpm-itk transitional package.
 
   [ Arno Töll ]

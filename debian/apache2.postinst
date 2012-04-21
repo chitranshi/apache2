@@ -206,7 +206,7 @@ enable_default_modules()
 			a2enmod -m -q $module
 		done
 	elif we_are_upgrading_from_squeeze $@; then
-		for module in filter access_compat ; do
+		for module in authz_core filter access_compat ; do
 			a2enmod -m -q $module
 		done
 	fi

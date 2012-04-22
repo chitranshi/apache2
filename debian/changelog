@@ -13,10 +13,10 @@ apache2 (2.4.2-2) experimental; urgency=low
     configuration files for consitency.
   * Fix "Fix typographic errors in configuration file comments": Thanks to Oxan
     van Leeuwen for providing a patch (Closes: #669269)
+  * Formulate several clarifications in PACKAGING, start versioning this document
+    and add normative read hints. Moreover, document the -m switch for a2enmod.
 
-
-
- -- Arno Töll <arno@debian.org>  Fri, 20 Apr 2012 20:10:11 +0200
+ -- Arno Töll <arno@debian.org>  Sun, 22 Apr 2012 17:00:25 +0200
 
 apache2 (2.4.2-1) experimental; urgency=low
 

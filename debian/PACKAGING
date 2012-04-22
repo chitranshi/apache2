@@ -1,3 +1,9 @@
+Apache 2 Packaging Guidelines
+=============================
+
+This document describes handling and behavior of reverse dependencies which
+would like to interact with the Apache 2 HTTP server
+
 Contents
 ========
 
@@ -24,8 +30,8 @@ Contents
                 6.1 Changes
 
 
-1. Overview
-===========
+1 Overview
+==========
 
 The Apache 2 web server package in Debian supports two types of reverse
 dependencies: modules and web applications. They need to be treated differently
@@ -44,8 +50,8 @@ document.
 
 [1] http://www.debian.org/doc/debian-policy/ch-scope.html#s1.1
 
-2. Packaging Modules
-====================
+2 Packaging Modules
+===================
 
 Modules are packages which are installing third party extensions to the Apache 2
 web server which can be loaded at runtim to extend the functionality of the core
@@ -145,8 +151,8 @@ respective reference documentations below.
 If maintainer scripts use a2enmod/a2dismod manually, they must invoke them with
 the "-m" (maintainer mode) switch.
 
-3. Packaging Sites and Configurations for Web Applications
-==========================================================
+3 Packaging Sites and Configurations for Web Applications
+=========================================================
 
 Web applications are different from modules in that they do not have a hard
 dependency on the web server. Typically they require a running web server,
@@ -262,8 +268,8 @@ apache2-maintscript-helper. Do not enable or disable modules in web
 application maintainer scripts, instead protect your configuration by <IfModule>
 clauses if you require non-standard modules.
 
-4. Maintainer Scripts
-=====================
+4 Maintainer Scripts
+====================
 
 While it was already discussed briefly in previous sections, here follow some
 clarifications regarding the invokation of wrapper scripts in maintainer scripts
@@ -345,7 +351,7 @@ was changed successfully.  Below you find an example snippet:
 ========
 
 This is an overview of tools supplied with the Apache2 package which can assist to
-build web application and module packages. 
+build web application and module packages.
 
 5.1 apache2-maintscript-helper
 ------------------------------
@@ -423,8 +429,8 @@ site and make actions dependent on the result like this:
 Refer to the a2query(1) man page for the full documentation. Please note, the
 apache2-maintscript-helper can be used to inteface with this task as well.
 
-6. Version
-==========
+6 Version
+=========
 
 Document version: 1.0
 

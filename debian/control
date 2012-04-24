@@ -178,8 +178,8 @@ Description: Apache HTTP Server (on-site documentation)
  result has long been the number one web server on the Internet.
  .
  This package provides the documentation for the Apache 2 HTTP server. The
- documentation is shipped in HTML format an can be accessed from a local running
- Apache HTTP server instance or by browsing the file system directly.
+ documentation is shipped in HTML format and can be accessed from a local
+ running Apache HTTP server instance or by browsing the file system directly.
 
 Package: apache2-dev
 Architecture: any

@@ -1,42 +1,43 @@
 apache2 (2.4.1-1) experimental; urgency=low
 
   This package introduces a new major release of the Apache HTTP server. It is
-  likely the site configuration needs changes to work with this release. Notable
-  changes which need special care are:
+  likely the site configuration needs changes to work with this release.
+  Notable changes which need special care are:
 
   The module interface (ABI) has changed. If you have any locally compiled
   modules, you have to re-compile them for apache2 2.4.
 
-  The authorization and authentication system changed. Existing configurations
-  using deprecated Order/Allow/Deny directives should be upgraded to the new
-  system. Please review upstream's "Authentication, Authorization and Access
-  Control Howto" [1]. However, "mod_access_compat" is loaded by default to
-  provide backward compatibility.
+  The authorization and authentication system has changed. Existing
+  configurations using deprecated Order/Allow/Deny directives should be
+  upgraded to the new system. Please review upstream's "Authentication,
+  Authorization and Access Control Howto" [1]. However, "mod_access_compat" is
+  loaded by default to provide backward compatibility.
 
-  Furthermore, MPMs are simple modules now. Thus, the MPM can be changed anytime
-  by (un-)loading a specific module. Be careful when upgrading. An example of
-  changing the MPM is given below
+  Furthermore, MPMs are simple modules now. Thus, the MPM can be changed
+  at any time by (un-)loading a specific module. Be careful when upgrading. An
+  example of changing the MPM is given below:
 
   a2dismod mpm_worker
   a2enmod mpm_prefork
 
-  Moreover, the configuration mechanism in Debian changed. All configurations
-  in sites-enabled and conf-enabled need a ".conf" suffix now. The latter was
-  transitioned from the deprecated /etc/apache2/conf.d/ directory which is not
-  supported anymore and works just like {sites,mods}-{available,enabled} by
-  using the "a2enconf" tool. The upgrade tries to migrate known configuration
+  Moreover, the configuration mechanism in Debian has changed. All
+  configurations in sites-enabled and conf-enabled need a ".conf" suffix now.
+  The latter replaces the deprecated /etc/apache2/conf.d/ directory (which is
+  not supported any more) and works just like {sites,mods}-{available,enabled}
+  via the "a2enconf" tool. The upgrade tries to migrate known configuration
   files from /etc/apache2/conf.d/ to /etc/apache2/conf-available/ - please
-  review this changes.
-  Note this means all existing sites are ignored until they get a ".conf" suffix
-  and are being re-enabled by the use of a2ensite. The script in [3] can
-  automate that for simple cases. This change also includes Debian default
-  sites, hence the default site was renamed to 000-default to avoid naming
-  confusions. The rename of the config files to *.conf makes the special
-  handling inside apache2 to ignore *.dpkg-* backup files obsolete. This special
-  handling has been removed.
+  review these changes.
 
-  Packagers are advised to review their packages whether they comply with this
-  new version. Please see [2] for detailed documentation and instructions
+  Note this means all existing sites are ignored until they get a ".conf"
+  suffix and are re-enabled by the use of a2ensite. The script in [3] can
+  automate that for simple cases. This change also includes Debian default
+  sites, so the default site has been renamed to 000-default to avoid naming
+  confusions. The rename of the config files to *.conf makes the special
+  handling inside apache2 to ignore *.dpkg-* backup files obsolete. This
+  special handling has been removed.
+
+  Packagers are advised to review whether their packages comply with this
+  new version. Please see [2] for detailed documentation and instructions.
 
   [1] http://httpd.apache.org/docs/2.4/howto/auth.html
   [2] </usr/share/doc/apache2/PACKAGING>

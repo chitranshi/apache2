@@ -2,7 +2,7 @@ apache2 (2.4.2-2) experimental; urgency=low
 
   * UNRELEASED
 
-  [ Stefan Fritsc ]
+  [ Stefan Fritsch ]
   * Explicitly enable mod_authz_core on upgrades. It can happen that it is
     not pulled in by any of the enabled modules, but we need it in any case
     for apache2.conf. Closes: #669876
@@ -16,8 +16,11 @@ apache2 (2.4.2-2) experimental; urgency=low
   * Formulate several clarifications in PACKAGING, start versioning this document
     and add normative read hints. Moreover, document the -m switch for a2enmod.
   * Merge spelling and grammar fixes provided by Justin B Rye. Much appreciated!
+  * Change various state and run directories used by Apache from
+    /var/run/<basename> to /var/run/apache2/<basename>. This might change again
+    for Wheezy+1 to adopt /run.
 
- -- Arno Töll <arno@debian.org>  Tue, 24 Apr 2012 19:42:00 +0200
+ -- Arno Töll <arno@debian.org>  Thu, 26 Apr 2012 00:51:22 +0200
 
 apache2 (2.4.2-1) experimental; urgency=low
 

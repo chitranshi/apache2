@@ -13,6 +13,11 @@
 
 set -e
 
+if [ ! -x "/usr/sbin/apache2" ] ; then
+	exit 0
+fi
+
+
 SCRIPTNAME="${0##*/}"
 SCRIPTNAME="${SCRIPTNAME##[KS][0-9][0-9]}"
 if [ -n "$APACHE_CONFDIR" ] ; then
@@ -50,15 +55,6 @@ HTCACHECLEAN_DAEMON_INTERVAL=120
 HTCACHECLEAN_PATH=/var/cache/apache2$DIR_SUFFIX/mod_cache_disk
 HTCACHECLEAN_OPTIONS=""
 
-APACHE_HTTPD=$(. $APACHE_ENVVARS && echo $APACHE_HTTPD)
-if [ -z "$APACHE_HTTPD" ] ; then
-	APACHE_HTTPD=/usr/sbin/apache2
-fi
-if [ ! -x $APACHE_HTTPD ] ; then
-	echo "No apache MPM package installed"
-	exit 0
-fi
-
 . /lib/lsb/init-functions
 
 test -f /etc/default/rcS && . /etc/default/rcS
@@ -72,12 +68,13 @@ fi
 APACHE2CTL="$ENV /usr/sbin/apache2ctl"
 HTCACHECLEAN="$ENV /usr/sbin/htcacheclean"
 
-PIDFILE=$(. $APACHE_ENVVARS && echo $APACHE_PID_FILE)
+PIDFILE=$(. $APACHE_ENVVARS && echo ${APACHE_PID_FILE})
+RUNUSER=$(. $APACHE_ENVVARS && echo ${APACHE_RUN_USER:-www-data})
 if [ -z "$PIDFILE" ] ; then
 	echo ERROR: APACHE_PID_FILE needs to be defined in $APACHE_ENVVARS >&2
 	exit 2
 fi
-
+[ ! -d `dirname "$PIDFILE"` ] && install -d -o "$RUNUSER" `dirname "$PIDFILE"`
 
 check_htcacheclean() {
 	[ "$HTCACHECLEAN_MODE" = "daemon" ] || return 1
@@ -88,7 +85,7 @@ check_htcacheclean() {
 	[ "$HTCACHECLEAN_RUN"  = "auto" \
 	  -a -e ${MODSDIR:-$APACHE_CONFDIR/mods-enabled}/cache_disk.load ] && \
 		return 0
-	
+
 	return 1
 }
 
@@ -96,7 +93,7 @@ start_htcacheclean() {
 	if [ ! -d "$HTCACHECLEAN_PATH" ] ; then
 		echo "... directory $HTCACHECLEAN_PATH does not exist!" >&2
 		return 1
-	fi	
+	fi
 	$HTCACHECLEAN $HTCACHECLEAN_OPTIONS -d$HTCACHECLEAN_DAEMON_INTERVAL \
 			-i -p$HTCACHECLEAN_PATH -l$HTCACHECLEAN_SIZE
 }

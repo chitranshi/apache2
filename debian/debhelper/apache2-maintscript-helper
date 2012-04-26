@@ -19,7 +19,7 @@
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #XXX: Remove me later
-#set -x
+set -x
 
 if [ -n "${EXPORT_APACHE2_MAINTSCRIPT_HELPER:-}" ] ; then
 	return
@@ -235,41 +235,55 @@ apache2_switch_mpm()
 # Parameters:
 #	command - The command to invoke. Recognized commands are "enconf",
 #		"enmod", "ensite", "disconf", "dismod", "dissite"
-#	argument - A single argument (e.g. a module) which shall be
-#		enabled or disabled respectively. Do not enable module
-#		dependencies that way, instead use module dependencies as
-#		documented in </usr/share/doc/apache2/PACKAGING>.
-# Returns:
+#	arguments
+#		- A single argument (e.g. a module) which shall be
+#		  enabled or disabled respectively. Do not enable module
+#		  dependencies that way, instead use module dependencies as
+#		  documented in </usr/share/doc/apache2/PACKAGING>.
+#	rcd-action
+#		- An optional rc.d action to override the default which is to
+#		  reload the web server for sites and configurations but restart
+#		  it for modules. Recognized arguments are "restart" and "reload"
+# Returns
 #	0 if the changes could be activated
 #	1 otherwise
 # Since: 2.4.1-3
+# Changes: 2.4.2-2: Added the second, optional argument
 apache2_invoke()
 {
 	local CMD=$1
 	local CONF=$2
+	local RCD_ACTION=$3
 	local invoke_rcd=0
 	local check_switch=""
 	local invoke_string=""
-	local rcd_action=""
 
 	[ -x "/usr/sbin/a2$CMD" ] || return 1
 	[ -x "/usr/sbin/a2query" ] || return 1
+
+	case "${RCD_ACTION:-}" in
+		""|reload|restart)
+			;;
+		*)
+			return 1
+			;;
+	esac
 
 	case "$CMD" in
 		*conf)
 			check_switch="-c"
 			invoke_string="configuration"
-			rcd_action="reload"
+			rcd_action="${RCD_ACTION:-reload}"
 			;;
 		*mod)
 			check_switch="-m"
 			invoke_string="module"
-			rcd_action="restart"
+			rcd_action="${RCD_ACTION:-restart}"
 			;;
 		*site)
 			check_switch="-s"
 			invoke_string="site"
-			rcd_action="reload"
+			rcd_action="${RCD_ACTION:-reload}"
 			;;
 		*)
 			;;
@@ -296,7 +310,6 @@ apache2_invoke()
 			APACHE2_NEED_ACTION=1
 			a2$CMD -m -q "$CONF" > /dev/null 2>&1 || return 1
 			apache2_msg "info" "apache2_invoke: Enable $invoke_string $CONF"
-			break
 			;;
 		disconf|dismod|dissite)
 			if a2query $check_switch $CONF > /dev/null 2>&1 ; then
@@ -311,7 +324,6 @@ apache2_invoke()
 				apache2_msg "info" "apache2_invoke $CONF: No action required"
 				continue
 			fi
-			break
 			;;
 		*)
 			return 1

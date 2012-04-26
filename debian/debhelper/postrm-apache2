@@ -4,7 +4,7 @@ if [ "$1" = "purge" ] || [ "$1" = "remove" ] ; then
 			. /usr/share/apache2/apache2-maintscript-helper
 
 			for conf in #NAMES# ; do
-				apache2_invoke #HELPER# $conf || #ERROR_HANDLER#
+				apache2_invoke #HELPER# $conf #ACTION# || #ERROR_HANDLER#
 			done
 		fi
 	fi

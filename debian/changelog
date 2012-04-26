@@ -19,9 +19,15 @@ apache2 (2.4.2-2) experimental; urgency=low
   * Change various state and run directories used by Apache from
     /var/run/<basename> to /var/run/apache2/<basename>. This might change again
     for Wheezy+1 to adopt /run.
-  * Use more exit status codes for a2query, make its output more readable.
+  * Use more exit status codes for a2query which allows to tell apart why a
+    module was disabled, also make its output more readable.
+  * Fix several issues in apache2-maintscript-helper: Now apache2_invoke may
+    finally behave correctly and catch all cases including upgrades from
+    Squeeze. Also the rc.d action can be supplied through apache2_invoke now.
+  * Implement a -r switch for dh_apache2 which allows to force a reload of the
+    web server if required.
 
- -- Arno Töll <arno@debian.org>  Thu, 26 Apr 2012 03:22:05 +0200
+ -- Arno Töll <arno@debian.org>  Fri, 27 Apr 2012 01:52:38 +0200
 
 apache2 (2.4.2-1) experimental; urgency=low
 

@@ -171,7 +171,7 @@ stanzas only
 
 =head2 GLOBAL CONFIGURATION FILES
 
-Global configuration files (determined by hte B<conf> type) must have a I<.conf>
+Global configuration files (determined by the B<conf> type) must have a I<.conf>
 suffix and are installed to I</etc/apache2/conf-available>. Moreover, the
 configuration is activated in the maintainer script at installation time.
 
@@ -217,7 +217,7 @@ this type of configuration is found.
 
 =item B<--error-handler=>I<function>
 
-Call the named shell I<function> if running the init script fails. The
+Call the named shell I<function> if running the maintainer script fails. The
 function should be provided in the F<prerm> and F<postinst> scripts, before the
 B<#DEBHELPER#> token.
 
@@ -228,15 +228,16 @@ true value at installation time. This is useful to web applications which want
 to install Apache configuration files depending on a user input, for example if
 they interface to the user through L<debconf(1)>.
 
-Defaults to B<true> and is subject to shell expansion (see Debian bug #660794 or
-build-depend on debhelper >= 9.20120311 to avoid this problem). The expression
-should be provided in the postrm and postinst scripts before the B<#DEBHELPER#>
+Defaults to B<true> and is subject to shell expansion (see Debian bug #660794
+which was reverted in a later debhelper version again). The expression should
+be provided in the postrm and postinst scripts before the B<#DEBHELPER#>
 token.
 
 =item S<B<--restart>> S<B<-r>
 
-In maintainer scripts, do not try to reload the web server, but restart it. The
-default is to reload it. 
+In maintainer scripts, do not try to reload the web server, but restart it.
+Otherwise the default action is used, which means global configuration and
+sites make the web server to be reloaded on success, modules are restarted.
 
 =item B<-n>, B<--noscripts>
 
@@ -302,13 +303,13 @@ if (!$dh{CONDITIONAL})
 	$dh{CONDITIONAL} = 'true';
 }
 
-if (!$dh{RESTART})
+if ($dh{RESTART})
 {
-	$dh{RESTART} = 'reload';
+	$dh{RESTART} = 'restart';
 }
 else
 {
-	$dh{RESTART} = 'restart'
+	$dh{RESTART} = '';
 }
 
 foreach my $package (getpackages())

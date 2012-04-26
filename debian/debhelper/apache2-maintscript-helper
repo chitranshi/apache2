@@ -19,7 +19,7 @@
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #XXX: Remove me later
-# set -x
+#set -x
 
 if [ -n "${EXPORT_APACHE2_MAINTSCRIPT_HELPER:-}" ] ; then
 	return
@@ -50,17 +50,6 @@ else
 
 fi
 
-
-
-#### XXX: TODOS:
-
-# Moreover it needs to remember if a module/web app was disabled (or enabled) by
-# a maintainer script or by the user. Again, from our discussion:
-# The rembering could be done like:
-# touch /var/lib/apache2/modules_disabled_by_maintscript/$module
-# purge should then do
-# rm -f /var/lib/apache2/modules_disabled_by_maintscript/$module
-# in addition.
 
 
 #
@@ -101,9 +90,11 @@ apache2_msg()
 
 #
 # Function apache2_needs_action
-# 	succeeds if the package invoking the maintscript helper
-# 	needs any work. This function can be used as a conditional whether a
-# 	certain function should be executed by means of the package state
+#	succeeds if the package invoking the maintscript helper
+#	needs any work. This function can be used as a conditional whether a
+#	certain function should be executed by means of the package state.
+#	Note, calling some other functions may change the outcome of this
+#	function, depending on the action required
 #Parameters:
 #	none
 # Returns:
@@ -145,10 +136,11 @@ apache2_needs_action()
 		esac
 		;;
 	postinst)
-		if [ "$APACHE2_MAINTSCRIPT_METHOD" = "configure" ] && \
-		   [ -z "$APACHE2_MAINTSCRIPT_ARGUMENT" ]
-		then
-			return 0
+		if [ "$APACHE2_MAINTSCRIPT_METHOD" = "configure" ] ; then
+			# act on fresh installs
+			[ -z "$APACHE2_MAINTSCRIPT_ARGUMENT" ] && return 0
+			# act if someone told us
+			[ -n "$APACHE2_NEED_ACTION" ] && return 0
 		fi
 		;;
 	esac
@@ -160,8 +152,8 @@ apache2_needs_action()
 
 #
 # Function apache2_has_module
-# 	checks whether a supplied module is enabled in the current Apache server
-# 	configuration
+#	checks whether a supplied module is enabled in the current Apache server
+#	configuration
 # Parameters:
 #	module - the module name which should be checked. Can be a regular
 #		string or a Perl compatible regular expression e.g. cgi(d|)
@@ -203,12 +195,6 @@ apache2_switch_mpm()
 	MPM="${MPM#mpm_}"
 
 
-	if ! apache2_needs_action ; then
-		apache2_msg "info" "apache2_switch_mpm $MPM: No action required"
-		return 0
-	fi
-
-
 	if [ ! -e "/etc/apache2/mods-available/mpm_$MPM.load" ] ; then
 		apache2_msg "err" "apache2_switch_mpm: MPM $MPM not found"
 		return 1
@@ -220,6 +206,9 @@ apache2_switch_mpm()
 		a2dismod -m -q "mpm_$CUR_MPM";
 		a2enmod -m -q "mpm_$MPM";
 		apache2_msg "info" "apache2_switch_mpm Switch to $MPM"
+	else
+		apache2_msg "info" "apache2_switch_mpm $MPM: No action required"
+		return 0
 	fi
 
 	if ! apache2_has_module "mpm_$MPM" ; then
@@ -228,6 +217,11 @@ apache2_switch_mpm()
 		apache2_msg "warning" "apache2_switch_mpm Switch to $MPM failed. Rolling back to $CUR_MPM"
 		return 1
 	fi
+
+
+	APACHE2_NEED_ACTION=1
+	apache2_reload restart
+	return 0
 
 }
 
@@ -281,46 +275,50 @@ apache2_invoke()
 			;;
 	esac
 
-	if ! apache2_needs_action ; then
-		# this is a trapdoor. Do act in any case we have no traces of
-		# the configuration. This might be the case for upgrades from
-		# Squeeze.
-                (a2query $check_switch "$CONF" > /dev/null 2>&1)
-		if [ ! "$?" -eq 1 ] ; then
-			apache2_msg "info" "apache2_invoke $CONF: No action required"
-			return 0
-		fi
-	fi
-
 
 	case "$CMD" in
 		enconf|enmod|ensite)
-			if a2query $check_switch "$CONF" > /dev/null 2>&1 ; then
-				continue
+			(a2query $check_switch "$CONF" > /dev/null 2>&1)
+			local a2query_ret=$?
+			if [ "$a2query_ret" -eq 0 ] ; then
+				# configuration is already enabled
+				apache2_msg "info" "apache2_invoke $CONF: No action required"
+				return 0
+			elif [ "$a2query_ret" -eq 32	 ] ; then
+				# the maintainer disabled the module
+				apache2_msg "info" "apache2_invoke $CONF: no action - $invoke_string was disabled by maintainer"
+				return 0
 			fi
-			invoke_rcd=1
+
+			# coming here either means:
+			# a) we have no clue about the module (e.g. for upgrades prior to maintscript-helper
+			# b) it's a fresh install
+			APACHE2_NEED_ACTION=1
 			a2$CMD -m -q "$CONF" > /dev/null 2>&1 || return 1
 			apache2_msg "info" "apache2_invoke: Enable $invoke_string $CONF"
+			break
 			;;
 		disconf|dismod|dissite)
 			if a2query $check_switch $CONF > /dev/null 2>&1 ; then
-				invoke_rcd=1
 				if [ "$APACHE2_MAINTSCRIPT_NAME" = 'postrm' ] && [ "$APACHE2_MAINTSCRIPT_METHOD" = "purge" ] ; then
 					a2$CMD -p -f -q "$CONF" || return 1
 				else
 					a2$CMD -m -f -q "$CONF" || return 1
 				fi
+				APACHE2_NEED_ACTION=1
 				apache2_msg "info" "apache2_invoke: Disable $invoke_string $CONF"
 			else
+				apache2_msg "info" "apache2_invoke $CONF: No action required"
 				continue
 			fi
+			break
 			;;
 		*)
 			return 1
 			;;
 	esac
 
-	if [ $invoke_rcd -eq 1 ] ; then
+	if [ "$APACHE2_NEED_ACTION" -eq 1 ] ; then
 		apache2_reload $rcd_action
 	fi
 

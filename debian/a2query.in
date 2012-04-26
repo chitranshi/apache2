@@ -62,10 +62,10 @@ our $CONFIG_DIR = "/etc/apache2";
 # time to introduce more _exit_ values
 our $E_OK = '0';
 our $E_FOUND = '0';
-our $E_ONBYMAINT = '1';
-our $E_NOTFOUND = '32';
+our $E_NOTFOUND = '1';
+our $E_OFFBYADMIN = '32';
 our $E_OFFBYMAINT = '33';
-our @RETVALS = ( $E_OK, $E_FOUND, $E_ONBYMAINT, $E_NOTFOUND, $E_OFFBYMAINT );
+our @RETVALS = ( $E_OK, $E_FOUND, $E_OFFBYADMIN, $E_NOTFOUND, $E_OFFBYMAINT );
 
 our @MODULES = ();
 our @CONFS = ();
@@ -99,8 +99,9 @@ are known to be compatible with the major version returned.
 =item S<-c> [I<CONF>]
 
 Checks whether the configuration I<CONF> is enabled. If no argument was given,
-all enabled configuration files are being returned. I<CONF> is evaluated as
-L<perl>(1) compatible regular expression.
+all enabled configuration files are being returned. I<CONF> is compared by
+string comparison by ignoring a leading "mod_" prefix and possibly a '.conf' or
+'.load' suffix.
 
 =item S<-h>
 
@@ -133,7 +134,8 @@ B<a2query> returns with a zero (S<0>) exit status if the requested operation was
 effectuated successfully and with a non-zero status otherwise. In case of an
 error it leaves with error code S<32> if a requested module, site or
 configuration was not found and S<33> if a module, site or configuration was
-disabled by a maintainer script.
+disabled by a maintainer script. However, exit status S<1> is returned if the
+module was not found at all
 
 =head1 SEE ALSO
 
@@ -267,12 +269,21 @@ sub query_state
 	my $pattern = shift;
 	my $listref = shift;
 
-	my $matches = 0;
-	if (not $pattern)
+	$pattern =~ s/^mod//;
+	$pattern =~ s/\.(conf|load)//;
+	my @candidates;
+
+	if ($pattern)
 	{
-		$pattern = ".";
+		@candidates = grep { $_ eq $pattern } @{ $listref };
 	}
-	foreach my $module (grep { $_ =~ m/$pattern/ } @{ $listref })
+	else
+	{
+		@candidates = @{ $listref }
+	}
+
+	my $matches = 0;
+	foreach my $module (@candidates)
 	{
 		my $state = switch_history($type, "enabled", $module);
 		if (!$state)
@@ -293,6 +304,10 @@ sub query_state
 			if ($state eq 'maint')
 			{
 				$retval = $E_OFFBYMAINT;
+			}
+			if ($state eq 'admin')
+			{
+				$retval = $E_OFFBYADMIN;
 			}
 		}
 		fail($reason, $retval);

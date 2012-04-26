@@ -233,6 +233,11 @@ build-depend on debhelper >= 9.20120311 to avoid this problem). The expression
 should be provided in the postrm and postinst scripts before the B<#DEBHELPER#>
 token.
 
+=item S<B<--restart>> S<B<-r>
+
+In maintainer scripts, do not try to reload the web server, but restart it. The
+default is to reload it. 
+
 =item B<-n>, B<--noscripts>
 
 Do not modify F<postinst>/F<postrm>/F<prerm> maintainer scripts.
@@ -289,11 +294,21 @@ This manual and L<dh_apache2> was written by Arno Toell <debian@toell.net>.
 
 init(options => {
 	"conditional=s" => \$dh{CONDITIONAL},
+	"r|restart" => \$dh{RESTART},
 });
 
 if (!$dh{CONDITIONAL})
 {
 	$dh{CONDITIONAL} = 'true';
+}
+
+if (!$dh{RESTART})
+{
+	$dh{RESTART} = 'reload';
+}
+else
+{
+	$dh{RESTART} = 'restart'
 }
 
 foreach my $package (getpackages())
@@ -480,6 +495,7 @@ foreach my $package (getpackages())
 					NAMES  => $ref->[1],
 					ERROR_HANDLER => $PACKAGE_TYPE{handler},
 					CONDITIONAL_VARIABLE => $PACKAGE_TYPE{conditional},
+					ACTION => $dh{RESTART},
 				);
 
 				if ($script_type eq "postrm")

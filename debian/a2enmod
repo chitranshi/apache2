@@ -15,12 +15,14 @@ use Getopt::Long;
 my $quiet;
 my $force;
 my $maintmode;
+my $purge;
 
 Getopt::Long::Configure('bundling');
 GetOptions(
     'quiet|q'     => \$quiet,
     'force|f'     => \$force,
-    'maintmode|m' => \$maintmode
+    'maintmode|m' => \$maintmode,
+    'purge|p'     => \$purge
 ) or exit 2;
 
 my $basename = basename($0);
@@ -507,11 +509,13 @@ sub switch_marker {
             error("Failed to remove old marker '$_'!\n") && return 0;
         }
     }
-    qx{touch "$state_marker"};
-    if ( $? != 0 ) {
-        error("Failed to create marker '$state_marker'!\n") && return 0;
+    unless ($purge) {
+        qx{touch "$state_marker"};
+        if ( $? != 0 ) {
+            error("Failed to create marker '$state_marker'!\n") && return 0;
+        }
+        return 1;
     }
-    return 1;
 }
 
 # vim: syntax=perl sw=4 sts=4 sr et

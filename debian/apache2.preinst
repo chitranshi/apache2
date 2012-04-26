@@ -14,7 +14,7 @@ set -e
 # the debian-policy package
 
 # XXX remove
-echo apache2.preinst $@ running
+# echo apache2.preinst $@ running
 
 # XXX: Whichever file you add in one of the sections below, make sure you copy
 # the same file arrays to apache2.postinst and apache2.postrm, too!
@@ -32,7 +32,7 @@ OBSOLETE_CONFFILES="/etc/apache2/mods-available/authz_default.load
 /etc/apache2/mods-available/version.load"
 
 # conffiles which moved from one random location to another, separate source and
-# destionation by a colon
+# destination by a colon
 MOVED_CONFFILES="/etc/bash_completion.d/apache2.2-common:/etc/bash_completion.d/apache2
 /etc/apache2/sites-available/default:/etc/apache2/sites-available/000-default.conf
 /etc/apache2/sites-available/default-ssl:/etc/apache2/sites-available/default-ssl.conf

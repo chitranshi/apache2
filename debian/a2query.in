@@ -71,6 +71,7 @@ our @MODULES = ();
 our @CONFS = ();
 our @SITES =();
 our @HELP = ();
+our %verbose_state = ( 'admin' => 'site administrator', 'maint' => 'maintainer script', 'unknown' => 'unknown' );
 
 =head1 SYNOPSIS
 
@@ -125,6 +126,14 @@ the same way, as for configuration files queried by the S<-c> switch.
 returns the currently installed Apache 2 HTTP server version
 
 =back
+
+=head1 EXIT CODES
+
+B<a2query> returns with a zero (S<0>) exit status if the requested operation was
+effectuated successfully and with a non-zero status otherwise. In case of an
+error it leaves with error code S<32> if a requested module, site or
+configuration was not found and S<33> if a module, site or configuration was
+disabled by a maintainer script.
 
 =head1 SEE ALSO
 
@@ -237,6 +246,9 @@ sub switch_history
 	my $which = shift;
 	my $what = shift;
 	my $name = shift;
+
+	$name =~ s/\.conf$//;
+
 	foreach my $state (@STATES)
 	{
 		my $state_token = "$STATE_DIR/$which/$what" . "_by_$state/" . $name;
@@ -246,6 +258,45 @@ sub switch_history
 		}
 	}
 	return 0;
+}
+
+
+sub query_state
+{
+	my $type    = shift;
+	my $pattern = shift;
+	my $listref = shift;
+
+	my $matches = 0;
+	if (not $pattern)
+	{
+		$pattern = ".";
+	}
+	foreach my $module (grep { $_ =~ m/$pattern/ } @{ $listref })
+	{
+		my $state = switch_history($type, "enabled", $module);
+		if (!$state)
+		{
+			$state = "unknown";
+		}
+		print("$module (enabled by $verbose_state{$state})\n");
+		$matches++;
+	}
+	if (!$matches)
+	{
+		my $reason = "No $type matches $pattern";
+		my $retval = $E_NOTFOUND;
+		my $state = switch_history($type, "disabled", $pattern);
+		if ($state)
+		{
+			$reason .= " (disabled by $verbose_state{$state})";
+			if ($state eq 'maint')
+			{
+				$retval = $E_OFFBYMAINT;
+			}
+		}
+		fail($reason, $retval);
+	}
 }
 
 load_defaults();
@@ -260,29 +311,7 @@ push @HELP, ["m [MODULE]", "checks whether the module MODULE is enabled, lists a
 if (exists $opts{'m'})
 {
 	--$help;
-	my $matches = 0;
-	if (not $opts{'m'})
-	{
-		$opts{'m'} = ".";
-	}
-	foreach my $module (grep { $_ =~ m/$opts{'m'}/ } @MODULES)
-	{
-		my $state = switch_history("module", "enabled", $module);
-		if (!$state)
-		{
-			$state = "unknown";
-		}
-		print("$module (by $state)\n");
-		$matches++;
-	}
-	if (!$matches)
-	{
-		my $reason = "No module matches $opts{'m'}";
-		my $retval = $E_NOTFOUND;
-		#Figure out something for disabled modules
-		#$retval = $E_OFFBYMAINT;
-		fail($reason, $retval);
-	}
+	query_state('module', $opts{'m'}, \@MODULES);
 }
 
 push @HELP, ["s [SITE]", "checks whether the site SITE is enabled, lists all sites if no argument was given"];
@@ -290,30 +319,7 @@ if (exists $opts{'s'})
 {
 	--$help;
 	load_sites();
-	my $matches = 0;
-	if (not $opts{'s'})
-	{
-		$opts{'s'} = ".";
-	}
-	foreach my $site (grep { $_ =~ m/$opts{'s'}/ } @SITES)
-	{
-		$site =~ s/\.conf$//;
-		my $state = switch_history("site", "enabled", $site);
-		if (!$state)
-		{
-			$state = "unknown";
-		}
-		print("$site (by $state)\n");
-		$matches++;
-	}
-	if (!$matches)
-	{
-		my $reason = "No site matches $opts{'s'}";
-		my $retval = $E_NOTFOUND;
-		#ditto
-		#$retval = $E_OFFBYMAINT;
-		fail($reason, $retval);
-	}
+	query_state('site', $opts{'s'}, \@SITES);
 }
 
 
@@ -322,30 +328,7 @@ if (exists $opts{'c'})
 {
 	--$help;
 	load_conf();
-	my $matches = 0;
-	if (not $opts{'c'})
-	{
-		$opts{'c'} = ".";
-	}
-	foreach my $conf (grep { $_ =~ m/$opts{'c'}/ } @CONFS)
-	{
-		$conf =~ s/\.conf$//;
-		my $state = switch_history("conf", "enabled", $conf);
-		if (!$state)
-		{
-			$state = "unknown";
-		}
-		print("$conf (by $state)\n");
-		$matches++;
-	}
-	if (!$matches)
-	{
-		my $reason = "No conf matches $opts{'c'}";
-		my $retval = $E_NOTFOUND;
-		#ditto
-		#$retval = $E_OFFBYMAINT;
-		fail($reason, $retval);
-	}
+	query_state('conf', $opts{'c'}, \@CONFS);
 }
 
 
@@ -384,10 +367,18 @@ if (exists $opts{'h'} or $help == 1)
 	my $usage = "$0 ";
 	map { $usage .= "-$_->[0] " } @HELP;
 	print("Usage: $usage\n");
+	my $switch_name;
+	my $description;
+	format STDOUT =
+@<<<<<<<<<<<<	^<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+"-$switch_name",        $description,
+~~	        ^<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+			$description,
+.
 	foreach my $switch (@HELP)
 	{
-		my ($switch, $description) = ($switch->[0], $switch->[1]);
-		print("-$switch\t\t$description\n");
+		($switch_name, $description) = ($switch->[0], $switch->[1]);
+		write STDOUT;
 	}
 	exit $E_OK;
 }

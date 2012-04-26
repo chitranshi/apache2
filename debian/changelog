@@ -19,8 +19,9 @@ apache2 (2.4.2-2) experimental; urgency=low
   * Change various state and run directories used by Apache from
     /var/run/<basename> to /var/run/apache2/<basename>. This might change again
     for Wheezy+1 to adopt /run.
+  * Use more exit status codes for a2query, make its output more readable.
 
- -- Arno Töll <arno@debian.org>  Thu, 26 Apr 2012 00:51:22 +0200
+ -- Arno Töll <arno@debian.org>  Thu, 26 Apr 2012 03:22:05 +0200
 
 apache2 (2.4.2-1) experimental; urgency=low
 

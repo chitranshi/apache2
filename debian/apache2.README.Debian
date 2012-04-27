@@ -164,12 +164,6 @@ some configurations, depending on the context and implications of some
 directives.
 
 
-Other files
------------
-
-For historical reasons, the pid file is in /var/run/apache2.pid and not in
-/var/run/apache2/apache2.pid.
-
 Tools
 -----
 
@@ -223,7 +217,7 @@ package (see below). Otherwise, just adjust the SSLCertificateKeyFile and
 SSLCertificateFile directives in '/etc/apache2/sites-available/default-ssl.conf'
 to point to your SSL certificate. Then restart apache:
 
-	/etc/init.d/apache2 restart
+	service apache2 restart
 
 The SSL key file should only be readable by root; the certificate file may be
 globally readable. These files are read by the Apache parent process which runs

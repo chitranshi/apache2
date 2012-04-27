@@ -18,13 +18,57 @@
 # IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#XXX: Remove me later
-set -x
+
+
+#
+# VARIABLES
+#
+
+
+# global environment variables used by apache2-maintscript-helper:
+# * APACHE2_MAINTSCRIPT_DEBUG:
+#				set this to any non-zero value to get debug output
+# * APACHE2_MAINTSCRIPT_HELPER_QUIET:
+#				set this to any non-zero value to omit any output
+# * EXPORT_APACHE2_MAINTSCRIPT_HELPER:
+#				will be defined by apache2-maintscript-helper
+#				to avoid inclusion loops. Do not set this
+#				variable manually
+# * APACHE2_NEED_ACTION:
+#				will be defined if a function call wants to
+#				override the behavior of apache2_needs_action.
+#				Do not rely on this variable. It is considered
+#				an implementation detail.
+# * APACHE2_MAINTSCRIPT_NAME
+# * APACHE2_MAINTSCRIPT_PACKAGE
+# * APACHE2_MAINTSCRIPT_METHOD
+# * APACHE2_MAINTSCRIPT_ARGUMENT
+#				these variables contain information about the
+#				maintainer script which is calling the
+#				maintscript-helper. It contains arguments which
+#				dpkg supplies to maintainer scripts and similar
+#				information. These variables are an
+#				implementation detail and not to be changed.
+
+
+#
+# INITIALIZATION
+#
 
 if [ -n "${EXPORT_APACHE2_MAINTSCRIPT_HELPER:-}" ] ; then
 	return
 else
 	EXPORT_APACHE2_MAINTSCRIPT_HELPER=1
+
+	if [ -n "${APACHE2_MAINTSCRIPT_DEBUG:-}" ] ; then
+		set -x
+	elif [ -e /etc/apache2/envvars ] ; then
+		APACHE2_MAINTSCRIPT_DEBUG=$(. /etc/apache2/envvars && echo ${APACHE2_MAINTSCRIPT_DEBUG})
+		if [ -n "${APACHE2_MAINTSCRIPT_DEBUG:-}" ] ; then
+			set -x
+		fi
+	fi
+
 
 	if [ -z "$1" ] ; then
 		echo "You must invoke apache2-maintscript-helper with an unmodified environment when sourcing it"
@@ -49,6 +93,13 @@ else
 	APACHE2_MAINTSCRIPT_ARGUMENT="${2:-}"
 
 fi
+
+
+
+#
+# FUNCTIONS
+#
+
 
 
 

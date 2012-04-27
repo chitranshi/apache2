@@ -21,13 +21,16 @@ apache2 (2.4.2-2) experimental; urgency=low
     for Wheezy+1 to adopt /run.
   * Use more exit status codes for a2query which allows to tell apart why a
     module was disabled, also make its output more readable.
-  * Fix several issues in apache2-maintscript-helper: Now apache2_invoke may
-    finally behave correctly and catch all cases including upgrades from
-    Squeeze. Also the rc.d action can be supplied through apache2_invoke now.
+  * Changes in apache2-maintscript-helper:
+    + Finally apache2_invoke may  behave correctly and catch all cases
+      including upgrades from Squeeze.
+    + apache2_invoke: accepts a third argument to override the rc.d-action now
+    + support APACHE2_MAINTSCRIPT_DEBUG: When defined in the environment or in
+      /etc/apache2/envvars, debug output is displayed.
   * Implement a -r switch for dh_apache2 which allows to force a reload of the
     web server if required.
 
- -- Arno Töll <arno@debian.org>  Fri, 27 Apr 2012 01:52:38 +0200
+ -- Arno Töll <arno@debian.org>  Fri, 27 Apr 2012 02:22:58 +0200
 
 apache2 (2.4.2-1) experimental; urgency=low
 

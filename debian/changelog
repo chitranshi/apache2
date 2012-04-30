@@ -1,3 +1,11 @@
+apache2 (2.2.22-5) unstable; urgency=low
+
+  * Make LoadFile and LoadModule look in the standard search paths if the
+    dso file name is given as a pure filename. This helps with the multi-arch
+    transition.
+
+ -- Stefan Fritsch <sf@debian.org>  Mon, 30 Apr 2012 23:38:33 +0200
+
 apache2 (2.2.22-4) unstable; urgency=high
 
   * CVE-2012-0216: Remove "Alias /doc /usr/share/doc" from the default virtual

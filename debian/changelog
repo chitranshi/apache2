@@ -7,6 +7,8 @@ apache2 (2.4.2-2) experimental; urgency=low
     not pulled in by any of the enabled modules, but we need it in any case
     for apache2.conf. Closes: #669876
   * Don't ship the changelogs in the apache2-mpm-itk transitional package.
+  * Make dh_apache2 only accept shell function names as conditional, to avoid
+    problems with shell and sed special characters.
 
   [ Arno Töll ]
   * Add mode lines to various configuration files and scripts. Reformat

@@ -34,6 +34,28 @@ apache2 (2.4.2-2) experimental; urgency=low
 
  -- Arno Töll <arno@debian.org>  Fri, 27 Apr 2012 02:22:58 +0200
 
+apache2 (2.2.22-5) unstable; urgency=low
+
+  * Make LoadFile and LoadModule look in the standard search paths if the
+    dso file name is given as a pure filename. This helps with the multi-arch
+    transition.
+
+ -- Stefan Fritsch <sf@debian.org>  Mon, 30 Apr 2012 23:38:33 +0200
+
+apache2 (2.2.22-4) unstable; urgency=high
+
+  * CVE-2012-0216: Remove "Alias /doc /usr/share/doc" from the default virtual
+    hosts' config files.
+    If scripting modules like mod_php or mod_rivet are enabled on systems
+    where either 1) some frontend server forwards connections to an apache2
+    backend server on the localhost address, or 2) the machine running
+    apache2 is also used for web browsing, this could allow a remote
+    attacker to execute example scripts stored under /usr/share/doc.
+    Depending on the installed packages, this could lead to issues like cross
+    site scripting, code execution, or leakage of sensitive data.
+
+ -- Stefan Fritsch <sf@debian.org>  Sun, 15 Apr 2012 23:41:43 +0200
+
 apache2 (2.4.2-1) experimental; urgency=low
 
   * New upstream release

@@ -50,7 +50,7 @@ Depends: ${shlibs:Depends}, ${misc:Depends}, ${perl:Depends}
 # MODULE_MAGIC_NUMBER_MAJOR from apache2/include/ap_mmn.h
 Provides: ${apache2:API}, httpd, httpd-cgi
 Suggests: www-browser, apache2-doc, apache2-suexec-pristine | apache2-suexec-custom
-Replaces: apache2.2-bin (<< 2.3~), apache2.2-common
+Replaces: apache2.2-bin (<< 2.3~), apache2.2-common, apache2-mpm-prefork (<< 2.3~), apache2-mpm-itk (<< 2.3~), apache2-mpm-worker (<< 2.3~), apache2-mpm-event (<< 2.3~)
 Conflicts: apache2.2-bin (<< 2.3~), apache2.2-common
 Description: Apache HTTP Server (binary files and modules)
  The Apache Software Foundation's goal is to build a secure, efficient and

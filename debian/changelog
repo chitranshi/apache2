@@ -9,6 +9,7 @@ apache2 (2.4.2-2) experimental; urgency=low
   * Don't ship the changelogs in the apache2-mpm-itk transitional package.
   * Make dh_apache2 only accept shell function names as conditional, to avoid
     problems with shell and sed special characters.
+  * Add Replaces for the old mpm packages to apache2-bin. Closes: #671683
 
   [ Arno Töll ]
   * Add mode lines to various configuration files and scripts. Reformat

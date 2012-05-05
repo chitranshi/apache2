@@ -109,6 +109,15 @@ Description: Transitional package for apache2-bin
  This is a transitional package for apache2-bin, and can be safely removed
  after the installation is complete.
 
+Package: libapache2-mod-proxy-html
+Architecture: any
+Section: oldlibs
+Priority: extra
+Depends: ${misc:Depends}, apache2-bin (>= 2.3~)
+Description: Transitional package for apache2-bin
+ This is a transitional package for apache2-bin, and can be safely removed
+ after the installation is complete.
+
 Package: apache2-utils
 Architecture: any
 Multi-Arch: foreign

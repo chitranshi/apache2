@@ -10,6 +10,8 @@ apache2 (2.4.2-2) experimental; urgency=low
   * Make dh_apache2 only accept shell function names as conditional, to avoid
     problems with shell and sed special characters.
   * Add Replaces for the old mpm packages to apache2-bin. Closes: #671683
+  * Add transitional package for libapache2-mod-proxy-html. Closes: #666816
+  * Don't ship changelogs in the apache2.2-bin transitional package.
 
   [ Arno Töll ]
   * Add mode lines to various configuration files and scripts. Reformat

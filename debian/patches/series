@@ -2,10 +2,8 @@
 008_make_include_safe
 009_apache2_has_dso
 010_fhs_compliance
-031_apxs2_sucks_more
 032_suexec_is_shared
 033_dbm_read_hash_or_btree
-034_apxs2_libtool_fixtastic
 038_no_LD_LIBRARY_PATH
 045_suexec_log_cloexec
 047_fix_usage_message
@@ -17,11 +15,11 @@
 073_mod_dav_trunk_fixes
 074_link_support_progs_with_lcrypt
 075_mod_rewrite_literal_ipv6_redirect
-076_apxs2_a2enmod
 077_CacheIgnoreURLSessionIdentifiers
 079_polish_translation
 082_ab_num_requests
 083_dlopen_search_path
+084_customize_apxs.patch
 099_config_guess_sub_update
 201_build_suexec-custom
 # The patch below must not be applied by quilt at extraction time.  It depends

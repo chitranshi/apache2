@@ -22,6 +22,7 @@ apache2 (2.2.22-6) UNRELEASED; urgency=low
     configtest.
   * Don't create httpd.conf anymore and don't include it in apache2.conf. If
     it contains local modifications, move it to /etc/apache2/conf.d/httpd.conf
+  * Port some of the comments in apache2.conf from the 2.4 package.
   * Note in README.Debian that future versions of the package will have the
     include statements changed to include only *.conf.
 

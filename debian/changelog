@@ -5,6 +5,7 @@ apache2 (2.2.22-6) UNRELEASED; urgency=low
     to override LDFLAGS at compile time by defining LDLAGS in the environment,
     just like it is possible for CFLAGS. This also means, config_vars.mk now
     exports hardening build flags by default.
+  * Update doc-base metadata for the apache2-doc package.
 
   [ Stefan Fritsch ]
   * Use "dh --with autotools_dev" instead of patching config.sub/config.guess.

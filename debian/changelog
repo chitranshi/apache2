@@ -1,7 +1,5 @@
 apache2 (2.4.2-2) experimental; urgency=low
 
-  * UNRELEASED
-
   [ Stefan Fritsch ]
   * Explicitly enable mod_authz_core on upgrades. It can happen that it is
     not pulled in by any of the enabled modules, but we need it in any case
@@ -30,7 +28,7 @@ apache2 (2.4.2-2) experimental; urgency=low
   * Implement a -r switch for dh_apache2 which allows to force a reload of the
     web server if required.
 
- -- Arno Töll <arno@debian.org>  Fri, 27 Apr 2012 02:22:58 +0200
+ -- Arno Töll <arno@debian.org>  Mon, 28 May 2012 17:36:03 +0200
 
 apache2 (2.4.2-1) experimental; urgency=low
 

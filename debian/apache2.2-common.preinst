@@ -25,4 +25,6 @@ if [ -n "$2" ] && dpkg --compare-versions "$2" lt 2.2.15-4~ ; then
 	fi
 fi
 
+dpkg-maintscript-helper rm_conffile /etc/apache2/mods-available/version.load 2.2.22-6~ -- "$@"
+
 #DEBHELPER#

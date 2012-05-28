@@ -89,7 +89,9 @@ if [ -n "$2" ] && dpkg --compare-versions "$2" lt 2.2.22-6~ ; then
 			mv /etc/apache2/httpd.conf /etc/apache2/conf.d/httpd.conf
 		fi
 	fi
+	rm -f /etc/apache2/mods-enabled/version.load
 fi
+dpkg-maintscript-helper rm_conffile /etc/apache2/mods-available/version.load 2.2.22-6~ -- "$@"
 
 # The definition of other_vhost_access.log has been moved.
 # Disable the new definition if the admin has changed the old

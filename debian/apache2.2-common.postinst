@@ -76,6 +76,21 @@ if dpkg --compare-versions "$2" lt 2.2.15-1~0; then
 	a2enmod -q reqtimeout
 fi
 
+if [ -n "$2" ] && dpkg --compare-versions "$2" lt 2.2.22-6~ ; then
+	if [ -e /etc/apache2/httpd.conf ] && [ -f /etc/apache2/httpd.conf ] ; then
+		md5sum="$(md5sum /etc/apache2/httpd.conf | sed -e 's/ .*//')"
+		if [ $md5sum = "d41d8cd98f00b204e9800998ecf8427e" ] ||
+		   [ $md5sum = "a20c3e53dd07836481a5e64bc71e1a33" ]
+		then
+			echo "Remove obsolete configuration file /etc/apache2/httpd.conf"
+			rm -f /etc/apache2/httpd.conf
+		elif [ -d /etc/apache2/conf.d/ ] && [ ! -f /etc/apache2/conf.d/httpd.conf ] ; then
+			echo "Detected legacy httpd.conf - moving file to /etc/apache2/conf.d/httpd.conf"
+			mv /etc/apache2/httpd.conf /etc/apache2/conf.d/httpd.conf
+		fi
+	fi
+fi
+
 # The definition of other_vhost_access.log has been moved.
 # Disable the new definition if the admin has changed the old
 # one (as determined by preinst).
@@ -89,7 +104,6 @@ rm -f /etc/apache2/ports.conf.dpkg-apache2.2-common.old
 rm -f /etc/default/apache2.dpkg-apache2.2-common.old
 rm -f /etc/apache2/conf.d/charset.dpkg-apache2.2-common.old
 
-[ -f /etc/apache2/httpd.conf ] || touch /etc/apache2/httpd.conf
 
 #DEBHELPER#
 

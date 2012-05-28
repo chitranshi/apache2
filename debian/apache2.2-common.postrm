@@ -27,6 +27,7 @@ fi
 
 if [ "$1" = purge -a "$DONT_PURGE" != 1 ] ; then
 	rm -f 	/etc/apache2/httpd.conf \
+		/etc/apache2/conf.d/httpd.conf \
 		/var/cache/apache2/reload \
 		/var/log/apache2/access.log* \
 		/var/log/apache2/other_vhosts_access.log* \

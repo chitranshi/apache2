@@ -14,7 +14,10 @@ apache2 (2.2.22-6) UNRELEASED; urgency=low
     directories. Closes: #548213
   * Update ssl default cipher config, add alternative speed optimized config.
     Closes: #649020
-  * Add "AddCharset" for .brf files in default mod_mime config. Closes: #402567
+  * Add "AddCharset" for .brf files in default mod_mime config.
+    Closes: #402567
+  * Don't create httpd.conf anymore and don't include it in apache2.conf. If
+    it contains local modifications, move it to /etc/apache2/conf.d/httpd.conf
 
  -- Stefan Fritsch <sf@debian.org>  Mon, 28 May 2012 20:02:19 +0200
 

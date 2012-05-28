@@ -77,7 +77,9 @@ conf.d/
 
 httpd.conf
 
-	Empty file.
+	This file used to be included by apache2.conf. If it contained
+	local configuration it has been moved to conf.d/httpd.conf during
+	upgrade.
 
 magic
 

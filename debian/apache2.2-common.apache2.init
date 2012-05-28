@@ -211,18 +211,22 @@ case $1 in
                 fi
 	;;
 	reload | force-reload | graceful)
-		if ! $APACHE2CTL configtest > /dev/null 2>&1; then
-                    $APACHE2CTL configtest || true
-                    log_end_msg 1
-                    exit 1
-                fi
-                log_daemon_msg "Reloading web server config" "apache2"
-		if pidof_apache > /dev/null ; then
+                log_daemon_msg "Reloading web server config"
+                if pidof_apache > /dev/null ; then
+                    log_progress_msg "apache2"
+                    if ! $APACHE2CTL configtest > /dev/null 2>&1; then
+                        log_end_msg 1
+                        $APACHE2CTL configtest || true
+                        exit 1
+                    fi
                     if $APACHE2CTL graceful $2 ; then
                         log_end_msg 0
                     else
                         log_end_msg 1
                     fi
+                else
+                    log_progress_msg "apache2 not running"
+                    log_end_msg 0
                 fi
 	;;
 	restart)

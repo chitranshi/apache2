@@ -50,7 +50,7 @@ Depends: ${shlibs:Depends}, ${misc:Depends}, ${perl:Depends}
 # MODULE_MAGIC_NUMBER_MAJOR from apache2/include/ap_mmn.h
 Provides: ${apache2:API}, httpd, httpd-cgi
 Suggests: www-browser, apache2-doc, apache2-suexec-pristine | apache2-suexec-custom
-Replaces: apache2.2-bin (<< 2.3~), apache2.2-common
+Replaces: apache2.2-bin (<< 2.3~), apache2.2-common, apache2-mpm-prefork (<< 2.3~), apache2-mpm-itk (<< 2.3~), apache2-mpm-worker (<< 2.3~), apache2-mpm-event (<< 2.3~)
 Conflicts: apache2.2-bin (<< 2.3~), apache2.2-common
 Description: Apache HTTP Server (binary files and modules)
  The Apache Software Foundation's goal is to build a secure, efficient and
@@ -104,6 +104,15 @@ Section: oldlibs
 Priority: extra
 #XXX: Add a << version to these once there are fixed versions around
 Breaks: gnome-user-share, mod-dnssd
+Depends: ${misc:Depends}, apache2-bin (>= 2.3~)
+Description: Transitional package for apache2-bin
+ This is a transitional package for apache2-bin, and can be safely removed
+ after the installation is complete.
+
+Package: libapache2-mod-proxy-html
+Architecture: any
+Section: oldlibs
+Priority: extra
 Depends: ${misc:Depends}, apache2-bin (>= 2.3~)
 Description: Transitional package for apache2-bin
  This is a transitional package for apache2-bin, and can be safely removed
@@ -184,7 +193,7 @@ Description: Apache HTTP Server (on-site documentation)
 Package: apache2-dev
 Architecture: any
 Depends: ${misc:Depends}, apache2 (= ${binary:Version}), openssl,
- libapr1-dev, libaprutil1-dev, debhelper (>= 9.20120311~), ${perl:Depends}
+ libapr1-dev, libaprutil1-dev, debhelper (>= 9), ${perl:Depends}
 Provides: apache2-prefork-dev, apache2-threaded-dev, dh-apache2
 Replaces: apache2-prefork-dev, apache2-threaded-dev
 Conflicts: apache2-prefork-dev, apache2-threaded-dev

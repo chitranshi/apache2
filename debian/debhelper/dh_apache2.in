@@ -221,16 +221,15 @@ Call the named shell I<function> if running the maintainer script fails. The
 function should be provided in the F<prerm> and F<postinst> scripts, before the
 B<#DEBHELPER#> token.
 
-=item S<B<--conditional>>=I<expression>
+=item S<B<--conditional>>=I<function>
 
-Only execute maintainer scripts if the supplied I<expression> evaluates to a
+Only execute maintainer scripts if the named shell I<function> evaluates to a
 true value at installation time. This is useful to web applications which want
 to install Apache configuration files depending on a user input, for example if
 they interface to the user through L<debconf(1)>.
 
-Defaults to B<true> and is subject to shell expansion (see Debian bug #660794
-which was reverted in a later debhelper version again). The expression should
-be provided in the postrm and postinst scripts before the B<#DEBHELPER#>
+The defaults is to always execute the scripts. The named function should be
+provided in the F<prerm> and F<postinst> scripts, before the B<#DEBHELPER#>
 token.
 
 =item S<B<--restart>> S<B<-r>
@@ -301,6 +300,9 @@ init(options => {
 if (!$dh{CONDITIONAL})
 {
 	$dh{CONDITIONAL} = 'true';
+}
+elsif ($dh{CONDITIONAL} !~ /^\w+$/) {
+	die "The conditional function name must only contain ASCII letters, numbers, and underscores\n";
 }
 
 if ($dh{RESTART})
@@ -508,9 +510,14 @@ foreach my $package (getpackages())
 				foreach my $key (sort keys %replacements)
 				{
 					my $val = $replacements{$key};
-					# escape slashes and backslashes from sed
-					$val =~ s,([/\\]),\$1,g;
-					$sed_command .= "s/#$key#/$val/g; ";
+					# Use a control char as separator for sed, to
+					# reduce escaping issues. Everything else is
+					# passed verbatim, i.e. it must not contain any
+					# shell or sed special characters.
+					my $sep = "\x17";
+					$sed_command .= "s" . $sep . "#$key#" .
+							      $sep . $val .
+							      $sep . "g; ";
 				}
 
 				autoscript($package, "$script_type", "$script_type-apache2", $sed_command);

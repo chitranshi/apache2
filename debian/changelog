@@ -5,6 +5,11 @@ apache2 (2.4.2-2) experimental; urgency=low
     not pulled in by any of the enabled modules, but we need it in any case
     for apache2.conf. Closes: #669876
   * Don't ship the changelogs in the apache2-mpm-itk transitional package.
+  * Make dh_apache2 only accept shell function names as conditional, to avoid
+    problems with shell and sed special characters.
+  * Add Replaces for the old mpm packages to apache2-bin. Closes: #671683
+  * Add transitional package for libapache2-mod-proxy-html. Closes: #666816
+  * Don't ship changelogs in the apache2.2-bin transitional package.
 
   [ Arno Töll ]
   * Add mode lines to various configuration files and scripts. Reformat
@@ -29,6 +34,28 @@ apache2 (2.4.2-2) experimental; urgency=low
     web server if required.
 
  -- Arno Töll <arno@debian.org>  Mon, 28 May 2012 17:36:03 +0200
+
+apache2 (2.2.22-5) unstable; urgency=low
+
+  * Make LoadFile and LoadModule look in the standard search paths if the
+    dso file name is given as a pure filename. This helps with the multi-arch
+    transition.
+
+ -- Stefan Fritsch <sf@debian.org>  Mon, 30 Apr 2012 23:38:33 +0200
+
+apache2 (2.2.22-4) unstable; urgency=high
+
+  * CVE-2012-0216: Remove "Alias /doc /usr/share/doc" from the default virtual
+    hosts' config files.
+    If scripting modules like mod_php or mod_rivet are enabled on systems
+    where either 1) some frontend server forwards connections to an apache2
+    backend server on the localhost address, or 2) the machine running
+    apache2 is also used for web browsing, this could allow a remote
+    attacker to execute example scripts stored under /usr/share/doc.
+    Depending on the installed packages, this could lead to issues like cross
+    site scripting, code execution, or leakage of sensitive data.
+
+ -- Stefan Fritsch <sf@debian.org>  Sun, 15 Apr 2012 23:41:43 +0200
 
 apache2 (2.4.2-1) experimental; urgency=low
 

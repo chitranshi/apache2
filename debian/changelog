@@ -8,6 +8,8 @@ apache2 (2.2.22-6) UNRELEASED; urgency=low
 
   [ Stefan Fritsch ]
   * Use "dh --with autotools_dev" instead of patching config.sub/config.guess.
+  * Change compiled-in document root to /var/www, to avoid strange error
+    messages.
 
  -- Stefan Fritsch <sf@debian.org>  Mon, 28 May 2012 20:02:19 +0200
 

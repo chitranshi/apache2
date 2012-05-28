@@ -61,9 +61,12 @@ conf.d/
 	# Include generic snippets of statements
 	Include /etc/apache2/conf.d
 
+	Future versions of the package will narrow this down to only include
+	files that end with ".conf".
+
 	This is a good place to add additional configuration
 	directives. Packages should not use configuration
-	files that start with 'local-' or end with '.local'.
+	files that start with 'local-' or end with '.local.conf'.
 	The local administrator can use these filenames to make
 	sure that there are no conflicts with files provided by
 	packages.
@@ -77,9 +80,9 @@ conf.d/
 
 httpd.conf
 
-	This file used to be included by apache2.conf. If it contained
-	local configuration it has been moved to conf.d/httpd.conf during
-	upgrade.
+	This file used to be included by apache2.conf but is not anymore.
+	If it contained local modifications it has been moved to
+	conf.d/httpd.conf during upgrade.
 
 magic
 
@@ -133,6 +136,11 @@ The Include directive ignores files with names that
 - do not begin with a letter or number
 - contain a character that is neither letter nor number nor _-.
 - contain .dpkg
+
+In a future version of the package, this special handling will be removed.
+Instead, the relevant Include statements (especially for sites-enabled and
+conf.d) in the configuration will be modified to only include files that end
+with ".conf".
 
 Other files
 -----------

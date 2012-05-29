@@ -11,6 +11,9 @@ apache2 (2.2.22-6) UNRELEASED; urgency=low
   * Use "dh --with autotools_dev" instead of patching config.sub/config.guess.
   * Change compiled-in document root to /var/www, to avoid strange error
     messages.
+  * Fix regression causing apache2 to cache "206 partial content" responses,
+    and then serving these partial responses when replying to normal requests.
+    Closes: #671204
   * Add section to security.conf that shows how to forbid access to VCS
     directories. Closes: #548213
   * Update ssl default cipher config, add alternative speed optimized config.

@@ -1,0 +1,71 @@
+Add r1343951 from upstream branch 2.2.x
+Debian bug #671204
+
+*) mod_disk_cache, mod_mem_cache: Decline the opportunity to cache if the
+   response is a 206 Partial Content. This stops a reverse proxied partial
+   response from becoming cached, and then being served in subsequent
+   responses. [Graham Leggett]
+
+
+Index: a/modules/cache/mod_cache.c
+===================================================================
+--- a/modules/cache/mod_cache.c	(revision 1176912)
++++ a/modules/cache/mod_cache.c	(working copy)
+@@ -473,7 +473,8 @@
+          * We include 304 Not Modified here too as this is the origin server
+          * telling us to serve the cached copy.
+          */
+-        if (exps != NULL || cc_out != NULL) {
++        if ((exps != NULL || cc_out != NULL)
++            && r->status != HTTP_PARTIAL_CONTENT) {
+             /* We are also allowed to cache any response given that it has a
+              * valid Expires or Cache Control header. If we find a either of
+              * those here,  we pass request through the rest of the tests. From
+@@ -486,6 +487,9 @@
+              * include the following: an Expires header (section 14.21); a
+              * "max-age", "s-maxage",  "must-revalidate", "proxy-revalidate",
+              * "public" or "private" cache-control directive (section 14.9).
++             *
++             * But do NOT store 206 responses in any case since we
++             * don't (yet) cache partial responses.
+              */
+         }
+         else {
+Index: modules/cache/mod_mem_cache.c
+===================================================================
+--- a/modules/cache/mod_mem_cache.c	(revision 1176912)
++++ a/modules/cache/mod_mem_cache.c	(working copy)
+@@ -313,6 +313,14 @@
+     cache_object_t *obj, *tmp_obj;
+     mem_cache_object_t *mobj;
+ 
++    /* we don't support caching of range requests (yet) */
++    if (r->status == HTTP_PARTIAL_CONTENT) {
++        ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server,
++                     "disk_cache: URL %s partial content response not cached",
++                     key);
++        return DECLINED;
++    }
++
+     if (len == -1) {
+         /* Caching a streaming response. Assume the response is
+          * less than or equal to max_streaming_buffer_size. We will
+Index: modules/cache/mod_disk_cache.c
+===================================================================
+--- a/modules/cache/mod_disk_cache.c	(revision 1176912)
++++ a/modules/cache/mod_disk_cache.c	(working copy)
+@@ -330,6 +330,14 @@
+         return DECLINED;
+     }
+ 
++    /* we don't support caching of range requests (yet) */
++    if (r->status == HTTP_PARTIAL_CONTENT) {
++        ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server,
++                     "disk_cache: URL %s partial content response not cached",
++                     key);
++        return DECLINED;
++    }
++
+     /* Allocate and initialize cache_object_t and disk_cache_object_t */
+     h->cache_obj = obj = apr_pcalloc(r->pool, sizeof(*obj));
+     obj->vobj = dobj = apr_pcalloc(r->pool, sizeof(*dobj));

@@ -1,4 +1,4 @@
-apache2 (2.2.22-6) UNRELEASED; urgency=low
+apache2 (2.2.22-6) unstable; urgency=low
 
   [ Stefan Fritsch ]
   * Fix regression causing apache2 to cache "206 partial content" responses,
@@ -29,7 +29,7 @@ apache2 (2.2.22-6) UNRELEASED; urgency=low
     exports hardening build flags by default.
   * Update doc-base metadata for the apache2-doc package.
 
- -- Stefan Fritsch <sf@debian.org>  Mon, 28 May 2012 20:02:19 +0200
+ -- Stefan Fritsch <sf@debian.org>  Tue, 29 May 2012 22:05:48 +0200
 
 apache2 (2.2.22-5) unstable; urgency=low
 

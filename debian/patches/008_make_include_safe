@@ -30,7 +30,7 @@
 +    
 +    
 +    while (*c) {
-+        if (!apr_isalnum(*c) && *c!='_' && *c!='-' && *c!='.') {
++        if (!apr_isalnum(*c) && *c!='_' && *c!='-' && *c!='.' && *c!=':') {
 +            return 0;
 +        }
 +        ++c;

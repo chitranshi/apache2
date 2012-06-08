@@ -134,7 +134,7 @@ sites-enabled/
 The Include directive ignores files with names that
 
 - do not begin with a letter or number
-- contain a character that is neither letter nor number nor _-.
+- contain a character that is neither letter nor number nor _-:.
 - contain .dpkg
 
 In a future version of the package, this special handling will be removed.

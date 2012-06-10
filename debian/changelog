@@ -8,6 +8,8 @@ apache2 (2.2.22-7) UNRELEASED; urgency=low
   [ Stefan Fritsch ]
   * Allow colons in filenames when using wildcards with "Include".
     Closes: #676610
+  * Add examples for X-Content-Type-Options and X-Frame-Options to
+    conf.d/security.
 
  -- Arno Töll <arno@debian.org>  Wed, 06 Jun 2012 00:10:34 +0200
 

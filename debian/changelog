@@ -1,7 +1,6 @@
-apache2 (2.2.22-7) UNRELEASED; urgency=low
+apache2 (2.2.22-7) unstable; urgency=low
 
   [ Arno Töll ]
-  * UNRELEASED
   * Fix "ambiguous comment in /etc/apache2/apache2.conf" by clarifying
     contradicting statements. (Closes: #675184)
 
@@ -17,7 +16,7 @@ apache2 (2.2.22-7) UNRELEASED; urgency=low
     - mod_proxy_ajp: Reduce memory usage in case of many requests on one
       connection
 
- -- Arno Töll <arno@debian.org>  Wed, 06 Jun 2012 00:10:34 +0200
+ -- Stefan Fritsch <sf@debian.org>  Sun, 10 Jun 2012 12:27:02 +0200
 
 apache2 (2.2.22-6) unstable; urgency=low
 

@@ -56,7 +56,8 @@ TraceEnable Off
 # probably deny access to their directories. For example, for subversion:
 #
 #<DirectoryMatch "/\.svn">
-#	Require all denied
+#	Deny from all
+#	Satisfy all
 #</DirectoryMatch>
 
 #

@@ -11,6 +11,11 @@ apache2 (2.2.22-7) UNRELEASED; urgency=low
   * Add examples for X-Content-Type-Options and X-Frame-Options to
     conf.d/security.
   * Fix the VCS dir example in conf.d/security.
+  * Pick some bug fixes from upstram trunk:
+    - core/mod_cgi: Fix script logging in error case
+    - mod_dumpio: Fix possible loop in input filter.
+    - mod_proxy_ajp: Reduce memory usage in case of many requests on one
+      connection
 
  -- Arno Töll <arno@debian.org>  Wed, 06 Jun 2012 00:10:34 +0200
 

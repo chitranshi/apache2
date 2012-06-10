@@ -21,6 +21,7 @@
 083_dlopen_search_path
 084_customize_apxs.patch
 085_mod_cache_partial_content-2.2.x.patch
+086_upstream_trunk_bugfixes.patch
 201_build_suexec-custom
 # The patch below must not be applied by quilt at extraction time.  It depends
 # on some script-fu to be executed before. Have a look

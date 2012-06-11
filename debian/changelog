@@ -1,5 +1,7 @@
 apache2 (2.4.2-3) UNRELEASED; urgency=low
 
+  * Rewrite most parts of the init script to make it more readable and improve
+    visual feedback when fancy output is in use.
   * Add examples for X-Content-Type-Options and X-Frame-Options to
     security.conf.
 

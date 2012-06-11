@@ -80,7 +80,7 @@ apache_wait_stop() {
         local STATUS=$1
 
         PIDTMP=$(pidofproc $DAEMON -p $PIDFILE)
-        if [ -n ${PIDTMP:-} ] && kill -0 "${PIDTMP:-}" 2> /dev/null; then
+        if [ -n "${PIDTMP:-}" ] && kill -0 "${PIDTMP:-}" 2> /dev/null; then
                 local i=0
                 while kill -0 "${PIDTMP:-}" 2> /dev/null;  do
                         if [ $i = '60' ]; then

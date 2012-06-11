@@ -180,11 +180,15 @@ do_stop()
 #
 do_reload() {
         if $APACHE2CTL configtest > /dev/null 2>&1; then
+	        if ! pidofproc "$DAEMON" -p $PIDFILE > /dev/null 2>&1 ; then
+                        APACHE2_INIT_MESSAGE="Apache2 is not running"
+                        return 2
+                fi
                 $APACHE2CTL graceful > /dev/null 2>&1
                 return $?
         else
                 APACHE2_INIT_MESSAGE="The apache2$DIR_SUFFIX configtest failed. Not doing anything."
-                return 2
+                return 0
         fi
 }
 
@@ -285,7 +289,7 @@ case "$1" in
 	;;
   restart)
 	log_daemon_msg "Restarting $DESC" "$NAME"
-	do_stop
+	do_stop stop
 	case "$?" in
 	  0|1)
 		do_start

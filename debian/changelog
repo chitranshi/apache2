@@ -2,8 +2,6 @@ apache2 (2.2.22-8) UNRELEASED; urgency=low
 
   * Fix "contradictory comment in /etc/apache2/apache2.conf about the
     .load suffix" (Closes: #676975). Hopefully you are now happy, Vincent. :-)
-  * Rewrite most parts of the init script to make it more readable and improve
-    visual feedback when fancy output is in use.
 
  -- Arno Töll <arno@debian.org>  Mon, 11 Jun 2012 11:14:57 +0200
 

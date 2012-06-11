@@ -1,11 +1,14 @@
 apache2 (2.4.2-3) UNRELEASED; urgency=low
 
-  * Rewrite most parts of the init script to make it more readable and improve
-    visual feedback when fancy output is in use.
+  [ Stefan Fritsch ]
   * Add examples for X-Content-Type-Options and X-Frame-Options to
     security.conf.
 
- -- Stefan Fritsch <sf@debian.org>  Sun, 10 Jun 2012 02:11:47 +0200
+  [ Arno Töll ]
+  * Rewrite most parts of the init script to make it more readable and improve
+    visual feedback when fancy output is in use.
+
+ -- Arno Töll <arno@debian.org>  Tue, 12 Jun 2012 00:01:02 +0200
 
 apache2 (2.4.2-2) experimental; urgency=low
 

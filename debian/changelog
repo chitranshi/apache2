@@ -1,4 +1,4 @@
-apache2 (2.2.22-8) UNRELEASED; urgency=low
+apache2 (2.2.22-8) UNRELEASED; urgency=medium
 
   * CVE-2012-2687: mod_negotiation: Escape filenames in variant list to prevent
     a possible XSS for a site where untrusted users can upload files to a

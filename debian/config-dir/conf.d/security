@@ -68,6 +68,16 @@ TraceEnable Off
 #Header set X-Content-Type-Options: "nosniff"
 
 #
+# Some browsers have a built-in XSS filter that will detect some cross site
+# scripting attacks. By default, these browsers the the suspicious part of
+# the page and display the result. This behavior can create various problems
+# including new security issues. This header will tell the XSS filter to
+# completely block access to the page instead.
+# Requires mod_headers to be enabled.
+#
+#Header set X-XSS-Protection: "1; mode=block"
+
+#
 # Setting this header will prevent other sites from embedding pages from this
 # site as frames. This defends against clickjacking attacks.
 # Requires mod_headers to be enabled.

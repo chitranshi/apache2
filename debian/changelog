@@ -1,4 +1,4 @@
-apache2 (2.2.22-8) UNRELEASED; urgency=medium
+apache2 (2.2.22-8) unstable; urgency=medium
 
   [ Stefan Fritsch ]
   * CVE-2012-2687: mod_negotiation: Escape filenames in variant list to prevent
@@ -10,7 +10,7 @@ apache2 (2.2.22-8) UNRELEASED; urgency=medium
   * Fix "contradictory comment in /etc/apache2/apache2.conf about the
     .load suffix" (Closes: #676975). Hopefully you are now happy, Vincent. :-)
 
- -- Arno Töll <arno@debian.org>  Mon, 11 Jun 2012 11:14:57 +0200
+ -- Stefan Fritsch <sf@debian.org>  Sat, 23 Jun 2012 17:50:47 +0200
 
 apache2 (2.2.22-7) unstable; urgency=low
 

@@ -1,8 +1,11 @@
 apache2 (2.2.22-8) UNRELEASED; urgency=medium
 
+  [ Stefan Fritsch ]
   * CVE-2012-2687: mod_negotiation: Escape filenames in variant list to prevent
     a possible XSS for a site where untrusted users can upload files to a
     location with MultiViews enabled.
+
+  [ Arno Töll ]
   * Fix "contradictory comment in /etc/apache2/apache2.conf about the
     .load suffix" (Closes: #676975). Hopefully you are now happy, Vincent. :-)
 

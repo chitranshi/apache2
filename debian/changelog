@@ -1,8 +1,8 @@
-apache2 (2.2.22-9) UNRELEASED; urgency=low
+apache2 (2.2.22-9) unstable; urgency=low
 
   * Fix typo in conf.d/security comment. Closes: #678740
 
- -- Stefan Fritsch <sf@debian.org>  Sun, 24 Jun 2012 10:56:04 +0200
+ -- Stefan Fritsch <sf@debian.org>  Sun, 24 Jun 2012 20:10:27 +0200
 
 apache2 (2.2.22-8) unstable; urgency=medium
 

@@ -69,7 +69,7 @@ TraceEnable Off
 
 #
 # Some browsers have a built-in XSS filter that will detect some cross site
-# scripting attacks. By default, these browsers the the suspicious part of
+# scripting attacks. By default, these browsers modify the suspicious part of
 # the page and display the result. This behavior can create various problems
 # including new security issues. This header will tell the XSS filter to
 # completely block access to the page instead.

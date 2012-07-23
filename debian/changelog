@@ -1,3 +1,11 @@
+apache2 (2.2.22-10) unstable; urgency=low
+
+  * Fix "dbmmanage: please use Digest::SHA instead of Digest::SHA1" by changing
+    perl module imports to make use Digest::SHA shipped with perl 5.10 (Closes:
+    #682401)
+
+ -- Arno Töll <arno@debian.org>  Mon, 23 Jul 2012 22:25:37 +0200
+
 apache2 (2.2.22-9) unstable; urgency=low
 
   * Fix typo in conf.d/security comment. Closes: #678740

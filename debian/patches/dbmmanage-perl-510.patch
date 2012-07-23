@@ -1,0 +1,54 @@
+Description: Make use of builtin SHA1 perl routines in Perl 5.10
+Forwarded: not-needed
+Author: Arno Töll <arno@debian.org>
+Last-Update: 2012-07-23
+Bug-Debian: http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=682401
+--- a/support/dbmmanage.in
++++ b/support/dbmmanage.in
+@@ -20,6 +20,7 @@
+ #
+ # usage: dbmmanage <DBMfile> <command> <user> <password> <groups> <comment>
+ 
++require v5.10;
+ package dbmmanage;
+ #                               -ldb    -lndbm    -lgdbm    -lsdbm
+ BEGIN { @AnyDBM_File::ISA = qw(DB_File NDBM_File GDBM_File SDBM_File) }
+@@ -49,14 +50,15 @@
+ }
+ 
+ sub need_sha1_crypt {
+-    if (!eval ('require "Digest/SHA1.pm";')) {
++    if (!eval ('require "Digest/SHA.pm";')) {
+         print STDERR <<SHAERR;
+ dbmmanage SHA1 passwords require the interface or the module Digest::SHA1
+-available from CPAN:
++available from CPAN and Debian:
+ 
+-    http://www.cpan.org/modules/by-module/Digest/Digest-MD5-2.12.tar.gz
++    Debian package: libdigest-sha-perl
++    CPAN: http://search.cpan.org/~mshelor/Digest-SHA-5.71/lib/Digest/SHA.pm
+ 
+-Please install Digest::SHA1 and try again, or use a different crypt option:
++Please install Digest::SHA and try again, or use a different crypt option:
+ 
+ SHAERR
+         usage();
+@@ -67,7 +69,9 @@
+     if (!eval ('require "Crypt/PasswdMD5.pm";')) {
+         print STDERR <<MD5ERR;
+ dbmmanage MD5 passwords require the module Crypt::PasswdMD5 available from CPAN
++and Debian:
+ 
++    Debian package: libcrypt-passwdmd5-perl
+     http://www.cpan.org/modules/by-module/Crypt/Crypt-PasswdMD5-1.1.tar.gz
+ 
+ Please install Crypt::PasswdMD5 and try again, or use a different crypt option:
+@@ -209,7 +213,7 @@
+ 
+ sub cryptpw_sha1 {
+     my($pw, $salt) = @_;
+-    '{SHA}' . Digest::SHA1::sha1_base64($pw) . "=";
++    '{SHA}' . Digest::SHA::sha1_base64($pw) . "=";
+ }
+ 
+ sub cryptpw {

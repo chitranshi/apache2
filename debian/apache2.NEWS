@@ -36,6 +36,10 @@ apache2 (2.4.1-1) experimental; urgency=low
   handling inside apache2 to ignore *.dpkg-* backup files obsolete. This
   special handling has been removed.
 
+  Users of mod_authn_dbm should switch to htdbm to manage their DBM user
+  databases. The pure-perl management utility "dbmmanage" was removed as it was
+  outdated and orphaned upstream.
+
   Packagers are advised to review whether their packages comply with this
   new version. Please see [2] for detailed documentation and instructions.
 
@@ -43,7 +47,7 @@ apache2 (2.4.1-1) experimental; urgency=low
   [2] </usr/share/doc/apache2/PACKAGING>
   [3] </usr/share/doc/apache2/migrate-sites.pl>
 
- -- Arno Töll <debian@toell.net>  Fri, 02 Mar 2012 17:38:23 +0100
+ -- Arno Töll <arno@debian.org>  Fri, 23 July 2012 23:50:13 +0200
 
 apache2 (2.2.15-4) unstable; urgency=low
 

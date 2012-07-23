@@ -2,7 +2,6 @@
 /usr/sbin/fcgistarter	/usr/bin
 /usr/bin/logresolve	/usr/bin
 /usr/bin/htdbm		/usr/bin
-/usr/bin/dbmmanage	/usr/bin
 /usr/bin/htpasswd	/usr/bin
 /usr/bin/htdigest	/usr/bin
 /usr/sbin/rotatelogs	/usr/bin

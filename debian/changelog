@@ -12,8 +12,10 @@ apache2 (2.4.2-3) UNRELEASED; urgency=low
   [ Arno Töll ]
   * Rewrite most parts of the init script to make it more readable and improve
     visual feedback when fancy output is in use.
+  * Drop the dbmanage tool from apache2-utils. It is mostly unmaintained and
+    outdated. Users of mod_authn_dbm should use htdbm instead.
 
- -- Arno Töll <arno@debian.org>  Mon, 02 Jul 2012 13:44:02 +0200
+ -- Arno Töll <arno@debian.org>  Mon, 23 Jul 2012 23:47:12 +0200
 
 apache2 (2.4.2-2) experimental; urgency=low
 

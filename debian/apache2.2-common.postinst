@@ -102,6 +102,16 @@ if [ -e /etc/apache2/disable-other-vhost-access-log.dpkg-apache2.2-common ] ; th
 	rm  /etc/apache2/disable-other-vhost-access-log.dpkg-apache2.2-common
 fi
 
+
+# Should run on upgrades from Squeeze or Testing only
+if dpkg --compare-versions "$2" lt 2.2.22-10; then
+	if [ -d /var/cache/apache2/mod_disk_cache ] ; then
+		echo "Purge obsolete mod_disk_cache cache data in /var/cache/apache2/mod_cache_disk/"
+		rm -rf /var/cache/apache2/mod_disk_cache
+	fi
+fi
+
+
 rm -f /etc/apache2/ports.conf.dpkg-apache2.2-common.old
 rm -f /etc/default/apache2.dpkg-apache2.2-common.old
 rm -f /etc/apache2/conf.d/charset.dpkg-apache2.2-common.old

@@ -14,6 +14,10 @@ apache2 (2.4.2-3) UNRELEASED; urgency=low
     visual feedback when fancy output is in use.
   * Drop the dbmanage tool from apache2-utils. It is mostly unmaintained and
     outdated. Users of mod_authn_dbm should use htdbm instead.
+  * Fix "Default /etc/apache2/mods-available/disk_cache.conf is incompatible
+    with ext3" by changing the default to more moderate values. Note, some file
+    systems have a hard limit of supported subdirectories (Closes: #682840).
+    Ported from our 2.2 tree targeted for Wheezy.
 
  -- Arno Töll <arno@debian.org>  Mon, 23 Jul 2012 23:47:12 +0200
 

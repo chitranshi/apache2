@@ -106,8 +106,8 @@ fi
 # Should run on upgrades from Squeeze or Testing only
 if dpkg --compare-versions "$2" lt 2.2.22-10; then
 	if [ -d /var/cache/apache2/mod_disk_cache ] ; then
-		echo "Purge obsolete mod_disk_cache cache data in /var/cache/apache2/mod_cache_disk/"
-		rm -rf /var/cache/apache2/mod_disk_cache
+		echo "Purging old mod_disk_cache cache data in /var/cache/apache2/mod_cache_disk/"
+		rm -rf /var/cache/apache2/mod_disk_cache/*
 	fi
 fi
 

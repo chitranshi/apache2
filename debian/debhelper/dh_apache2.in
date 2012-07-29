@@ -314,7 +314,7 @@ else
 	$dh{RESTART} = '';
 }
 
-foreach my $package (getpackages())
+foreach my $package ((@{$dh{DOPACKAGES}}))
 {
 	my %PACKAGE_TYPE = (
 		has_a_module => [],

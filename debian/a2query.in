@@ -127,6 +127,11 @@ the same way, as for configuration files queried by the S<-c> switch.
 
 returns the currently installed Apache 2 HTTP server version
 
+=item S<-q>
+
+suppress any output. This is useful to invoke a2query from another script. This
+is useful if only the return code is of interest.
+
 =back
 
 =head1 EXIT CODES

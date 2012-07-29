@@ -373,7 +373,6 @@ apache2_invoke()
 				apache2_msg "info" "apache2_invoke: Disable $invoke_string $CONF"
 			else
 				apache2_msg "info" "apache2_invoke $CONF: No action required"
-				continue
 			fi
 			;;
 		*)
@@ -381,7 +380,7 @@ apache2_invoke()
 			;;
 	esac
 
-	if [ "$APACHE2_NEED_ACTION" -eq 1 ] ; then
+	if [ -n "${APACHE2_NEED_ACTION:-}" ] ; then
 		apache2_reload $rcd_action
 	fi
 

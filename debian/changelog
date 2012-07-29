@@ -21,8 +21,9 @@ apache2 (2.4.2-3) UNRELEASED; urgency=low
   * Properly check return code of a2query in the apache2_invoke library
     function. This caused reverse dependencies to fail for newly installed
     modules previously.
+  * Implement -q (quiet) option for a2query (Closes: #681541).
 
- -- Arno Töll <arno@debian.org>  Sun, 29 Jul 2012 21:57:38 +0200
+ -- Arno Töll <arno@debian.org>  Sun, 29 Jul 2012 22:44:58 +0200
 
 apache2 (2.4.2-2) experimental; urgency=low
 

@@ -58,6 +58,7 @@ our @STATES = ("maint", "admin");
 
 our $MPM = "invalid";
 our $CONFIG_DIR = "/etc/apache2";
+our $QUIET = 0;
 
 # time to introduce more _exit_ values
 our $E_OK = '0';
@@ -147,12 +148,22 @@ This manual and L<a2query> was written by Arno Toell <debian@toell.net>.
 
 =cut
 
+sub output
+{
+	print @_ unless $QUIET;
+}
+
+sub warning
+{
+	print STDERR @_ unless $QUIET;
+}
+
 sub fail
 {
 	die('usage: fail($reason, $retval)') if @_ != 2;
 	my $reason = shift;
 	my $retval = shift;
-	print STDERR "$reason\n";
+	warning "$reason\n";
 	exit $retval;
 }
 
@@ -290,7 +301,7 @@ sub query_state
 		{
 			$state = "unknown";
 		}
-		print("$module (enabled by $verbose_state{$state})\n");
+		output("$module (enabled by $verbose_state{$state})\n");
 		$matches++;
 	}
 	if (!$matches)
@@ -319,8 +330,15 @@ load_modules();
 
 my %opts;
 my $help = 1;
-getopt('m:s:c:havMd', \%opts);
+getopts('m:s:c:havMdq', \%opts);
+#foreach my $key (keys %opts) { print("$key=$opts{$key}\n");}
 
+push @HELP, ["q", "suppress any output. Useful for invokation from scripts"];
+if (exists $opts{'q'})
+{
+	--$help;
+	$QUIET=1;
+}
 
 push @HELP, ["m [MODULE]", "checks whether the module MODULE is enabled, lists all enabled modules if no argument was given"];
 if (exists $opts{'m'})
@@ -351,7 +369,7 @@ push @HELP, ["a", "returns the current Apache 2 module magic version"];
 if (exists $opts{'a'})
 {
 	--$help;
-	print("$API\n");
+	output("$API\n");
 }
 
 
@@ -359,21 +377,21 @@ push @HELP, ["v", "returns the current Apache 2 version"];
 if (exists $opts{'v'})
 {
 	--$help;
-	print("$SERVER_VERSION\n");
+	output("$SERVER_VERSION\n");
 }
 
 push @HELP, ["M", "returns the enabled Apache 2 MPM"];
 if (exists $opts{'M'})
 {
 	--$help;
-	print("$MPM\n");
+	output("$MPM\n");
 }
 
 push @HELP, ["d", "returns the Apache 2 module directory"];
 if (exists $opts{'d'})
 {
 	--$help;
-	print("$MODULE_DIR\n");
+	output("$MODULE_DIR\n");
 }
 
 push @HELP, ["h", "display this help"];

@@ -343,8 +343,8 @@ apache2_invoke()
 
 	case "$CMD" in
 		enconf|enmod|ensite)
-			(a2query $check_switch "$CONF" > /dev/null 2>&1)
-			local a2query_ret=$?
+			local a2query_ret=0
+			a2query $check_switch "$CONF" > /dev/null 2>&1 || a2query_ret=$?
 			if [ "$a2query_ret" -eq 0 ] ; then
 				# configuration is already enabled
 				apache2_msg "info" "apache2_invoke $CONF: No action required"

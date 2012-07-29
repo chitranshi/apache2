@@ -18,8 +18,11 @@ apache2 (2.4.2-3) UNRELEASED; urgency=low
     with ext3" by changing the default to more moderate values. Note, some file
     systems have a hard limit of supported subdirectories (Closes: #682840).
     Ported from our 2.2 tree targeted for Wheezy.
+  * Properly check return code of a2query in the apache2_invoke library
+    function. This caused reverse dependencies to fail for newly installed
+    modules previously.
 
- -- Arno Töll <arno@debian.org>  Mon, 23 Jul 2012 23:47:12 +0200
+ -- Arno Töll <arno@debian.org>  Sun, 29 Jul 2012 21:57:38 +0200
 
 apache2 (2.4.2-2) experimental; urgency=low
 

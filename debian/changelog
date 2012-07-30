@@ -1,4 +1,4 @@
-apache2 (2.2.22-10) UNRELEASED; urgency=low
+apache2 (2.2.22-10) unstable; urgency=low
 
   [ Arno Töll ]
   * Fix "dbmmanage: please use Digest::SHA instead of Digest::SHA1" by changing
@@ -14,7 +14,7 @@ apache2 (2.2.22-10) UNRELEASED; urgency=low
   * Add support for TLSv1.0 ans TLSv1.1 to SSLProtocol and SSLProxyProtocol
     directives. Closes: #682897
 
- -- Arno Töll <arno@debian.org>  Thu, 26 Jul 2012 17:10:35 +0200
+ -- Stefan Fritsch <sf@debian.org>  Mon, 30 Jul 2012 22:23:02 +0200
 
 apache2 (2.2.22-9) unstable; urgency=low
 

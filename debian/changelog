@@ -5,8 +5,10 @@ apache2 (2.2.22-10) UNRELEASED; urgency=low
     perl module imports to make use Digest::SHA shipped with perl 5.10 (Closes:
     #682401)
   * Fix "Default /etc/apache2/mods-available/disk_cache.conf is incompatible
-    with ext3" by changing the default to more moderate values. Note, some file
-    systems have a hard limit of supported subdirectories (Closes: #682840)
+    with ext3" by changing the default to more moderate values. Some file
+    systems have a hard limit for the number of subdirectories in a single
+    directory. This change requires the cache directory to be purged.
+    (Closes: #682840)
 
   [ Stefan Fritsch ]
   * Add support for TLSv1.0 ans TLSv1.1 to SSLProtocol and SSLProxyProtocol

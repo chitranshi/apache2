@@ -31,3 +31,4 @@
 # as you wish.
 #202_suexec-custom
 dbmmanage-perl-510.patch
+SSLProtocol-tls11-12.2.patch

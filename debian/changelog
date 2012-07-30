@@ -1,11 +1,16 @@
-apache2 (2.2.22-10) unstable; urgency=low
+apache2 (2.2.22-10) UNRELEASED; urgency=low
 
+  [ Arno Töll ]
   * Fix "dbmmanage: please use Digest::SHA instead of Digest::SHA1" by changing
     perl module imports to make use Digest::SHA shipped with perl 5.10 (Closes:
     #682401)
   * Fix "Default /etc/apache2/mods-available/disk_cache.conf is incompatible
     with ext3" by changing the default to more moderate values. Note, some file
     systems have a hard limit of supported subdirectories (Closes: #682840)
+
+  [ Stefan Fritsch ]
+  * Add support for TLSv1.0 ans TLSv1.1 to SSLProtocol and SSLProxyProtocol
+    directives. Closes: #682897
 
  -- Arno Töll <arno@debian.org>  Thu, 26 Jul 2012 17:10:35 +0200
 

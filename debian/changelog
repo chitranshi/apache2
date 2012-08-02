@@ -1,3 +1,10 @@
+apache2 (2.2.22-11) UNRELEASED; urgency=low
+
+  * Be more careful regarding link attacks when purging the cache disk
+    directory.
+
+ -- Arno Töll <arno@debian.org>  Thu, 02 Aug 2012 22:43:18 +0200
+
 apache2 (2.2.22-10) unstable; urgency=low
 
   [ Arno Töll ]

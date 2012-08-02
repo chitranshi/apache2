@@ -107,7 +107,8 @@ fi
 if dpkg --compare-versions "$2" lt 2.2.22-10; then
 	if [ -d /var/cache/apache2/mod_disk_cache ] ; then
 		echo "Purging old mod_disk_cache cache data in /var/cache/apache2/mod_cache_disk/"
-		rm -rf /var/cache/apache2/mod_disk_cache/*
+		rm -rf /var/cache/apache2/mod_disk_cache
+                install -o www-data -g www-data -d /var/cache/apache2/mod_disk_cache/
 	fi
 fi
 

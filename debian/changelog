@@ -24,8 +24,11 @@ apache2 (2.4.2-3) UNRELEASED; urgency=low
   * Implement -q (quiet) option for a2query (Closes: #681541).
   * Properly honor -p/-N options as understood by debhelper (Closes: 681542).
     Thanks Russ Allbery for the hint.
+  * Be more careful regarding link attacks when for the the cache disk
+    directory.
 
- -- Arno Töll <arno@debian.org>  Sun, 29 Jul 2012 22:51:11 +0200
+
+ -- Arno Töll <arno@debian.org>  Thu, 02 Aug 2012 23:32:36 +0200
 
 apache2 (2.4.2-2) experimental; urgency=low
 

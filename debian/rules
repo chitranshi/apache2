@@ -108,7 +108,7 @@ override_dh_fixperms-arch:
 	chmod 4754 debian/apache2-suexec-custom/usr/lib/apache2/suexec-custom
 	chgrp www-data debian/apache2-suexec-custom/usr/lib/apache2/suexec-custom
 	dh_fixperms -a -Xusr/lib/apache2/suexec-custom -Xusr/lib/apache2/suexec-pristine
-	chown -R www-data:www-data debian/apache2/var/cache/apache2
+	chown -R www-data:www-data debian/apache2/var/cache/apache2/mod_cache_disk
 	chown root:adm debian/apache2/var/log/apache2
 	chmod o-rx debian/apache2/var/log/apache2
 

@@ -154,5 +154,7 @@ override_dh_auto_install:
 
 override_dh_clean: unpatch
 	dh_clean
+override_dh_builddeb:
+	dh_builddeb -- -Zxz
 
 .PHONY: patch unpatch generate-maintainer-scripts clean-config-vars prepare-scripts prebuild-checks

@@ -26,9 +26,10 @@ apache2 (2.4.2-3) UNRELEASED; urgency=low
     Thanks Russ Allbery for the hint.
   * Be more careful regarding link attacks when for the the cache disk
     directory.
+  * Compress the data.tar in binary packages using xz to save some space on
+    installation medias (Debian only).
 
-
- -- Arno Töll <arno@debian.org>  Thu, 02 Aug 2012 23:32:36 +0200
+ -- Arno Töll <arno@debian.org>  Sat, 04 Aug 2012 00:03:48 +0200
 
 apache2 (2.4.2-2) experimental; urgency=low
 

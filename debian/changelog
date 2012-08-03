@@ -1,9 +1,12 @@
-apache2 (2.2.22-11) UNRELEASED; urgency=low
+apache2 (2.2.22-11) unstable; urgency=low
 
   * Be more careful regarding link attacks when purging the cache disk
     directory.
+  * Change file ownership of /var/cache/apache2/ to root.
+  * Compress the data.tar in binary packages using xz to save some space on
+    installation medias (Debian only).
 
- -- Arno Töll <arno@debian.org>  Thu, 02 Aug 2012 22:43:18 +0200
+ -- Arno Töll <arno@debian.org>  Fri, 03 Aug 2012 23:20:50 +0200
 
 apache2 (2.2.22-10) unstable; urgency=low
 

@@ -104,11 +104,17 @@ fi
 
 
 # Should run on upgrades from Squeeze or Testing only
-if dpkg --compare-versions "$2" lt 2.2.22-10; then
+# This code existed in parts 2.2.22-10 already but it wasn't complete.
+# Thus, users of 2.2.22-10 (only in Sid) enter here as well. That's not
+# optimal, but not a problem either.
+if [ -n "$2" ] && dpkg --compare-versions "$2" lt 2.2.22-11; then
 	if [ -d /var/cache/apache2/mod_disk_cache ] ; then
-		echo "Purging old mod_disk_cache cache data in /var/cache/apache2/mod_cache_disk/"
+		echo "Purging old mod_disk_cache cache data in /var/cache/apache2/mod_disk_cache"
+		if [ -d /var/cache/apache2/ ] && [ "$(stat -c '%U' /var/cache/apache2/)" = "www-data" ] ; then
+			 chown root:root /var/cache/apache2/
+		fi
 		rm -rf /var/cache/apache2/mod_disk_cache
-                install -o www-data -g www-data -d /var/cache/apache2/mod_disk_cache/
+		install -o www-data -g www-data -d /var/cache/apache2/mod_disk_cache/
 	fi
 fi
 

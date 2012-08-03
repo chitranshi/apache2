@@ -290,7 +290,7 @@ override_dh_builddeb:
 		sed -i '/apache2-dbg/d' debian/files; \
 		dh_builddeb -Napache2-dbg; \
 	else \
-		dh_builddeb; \
+		dh_builddeb -- -Zxz; \
 	fi
 
 override_dh_installlogrotate:

@@ -1,3 +1,13 @@
+apache2 (2.2.22-12) unstable; urgency=low
+
+  * Backport mod_ssl "Compression on|off" flag from upstream. This mitigates
+    impact of CRIME attacks. Fixes:
+    - "handling the CRIME attack" (Closes: #689936)
+    - "make it possible to disable ssl compression in apache2 mod_ssl"
+      (Closes: #674142)
+
+ -- Arno Töll <arno@debian.org>  Sat, 20 Oct 2012 01:41:57 +0200
+
 apache2 (2.2.22-11) unstable; urgency=low
 
   * Be more careful regarding link attacks when purging the cache disk

@@ -32,3 +32,4 @@
 #202_suexec-custom
 dbmmanage-perl-510.patch
 SSLProtocol-tls11-12.2.patch
+disable-ssl-compression.patch

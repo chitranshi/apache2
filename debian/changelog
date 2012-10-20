@@ -30,8 +30,10 @@ apache2 (2.4.3-1) UNRELEASED; urgency=low
     directory.
   * Compress the data.tar in binary packages using xz to save some space on
     installation medias (Debian only).
+  * Disable SSL compression by default (see: #689936 and  #674142 for
+    the rationale).
 
- -- Arno Töll <arno@debian.org>  Sat, 20 Oct 2012 02:58:36 +0200
+ -- Arno Töll <arno@debian.org>  Sat, 20 Oct 2012 14:34:51 +0200
 
 apache2 (2.4.2-2) experimental; urgency=low
 

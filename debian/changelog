@@ -1,6 +1,7 @@
 apache2 (2.4.3-1) UNRELEASED; urgency=low
 
   * New upstream release
+    + Update all patches by updating offsets, but leave hunks unchanged.
 
   [ Stefan Fritsch ]
   * Add examples for X-Content-Type-Options and X-Frame-Options to
@@ -33,7 +34,7 @@ apache2 (2.4.3-1) UNRELEASED; urgency=low
   * Disable SSL compression by default (see: #689936 and  #674142 for
     the rationale).
 
- -- Arno Töll <arno@debian.org>  Sat, 20 Oct 2012 14:34:51 +0200
+ -- Arno Töll <arno@debian.org>  Sat, 20 Oct 2012 15:41:36 +0200
 
 apache2 (2.4.2-2) experimental; urgency=low
 

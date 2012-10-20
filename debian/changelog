@@ -1,4 +1,6 @@
-apache2 (2.4.2-3) UNRELEASED; urgency=low
+apache2 (2.4.3-1) UNRELEASED; urgency=low
+
+  * New upstream release
 
   [ Stefan Fritsch ]
   * Add examples for X-Content-Type-Options and X-Frame-Options to
@@ -29,7 +31,7 @@ apache2 (2.4.2-3) UNRELEASED; urgency=low
   * Compress the data.tar in binary packages using xz to save some space on
     installation medias (Debian only).
 
- -- Arno Töll <arno@debian.org>  Sat, 04 Aug 2012 00:03:48 +0200
+ -- Arno Töll <arno@debian.org>  Sat, 20 Oct 2012 02:58:36 +0200
 
 apache2 (2.4.2-2) experimental; urgency=low
 

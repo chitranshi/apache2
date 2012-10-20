@@ -996,7 +996,7 @@ AP_DECLARE(const char *) ap_get_server_name_for_url(request_rec *r)
 
 #if APR_HAVE_IPV6
     if (ap_strchr_c(plain_server_name, ':')) { /* IPv6 literal? */
-        return apr_psprintf(r->pool, "[%s]", plain_server_name);
+        return apr_pstrcat(r->pool, "[", plain_server_name, "]", NULL);
     }
 #endif
     return plain_server_name;
@@ -1509,7 +1509,7 @@ static const char *set_error_document(cmd_parms *cmd, void *conf_,
              * a msg and a (local) path.
              */
             conf->response_code_strings[index_number] = (what == MSG) ?
-                    apr_pstrcat(cmd->pool, "\"",msg,NULL) :
+                    apr_pstrcat(cmd->pool, "\"", msg, NULL) :
                     apr_pstrdup(cmd->pool, msg);
         }
     }
@@ -1612,7 +1612,7 @@ static const char *set_override(cmd_parms *cmd, void *d_, const char *l)
             if (v)
                 set_allow_opts(cmd, &(d->override_opts), v);
             else
-                d->override_opts = OPT_SYM_LINKS;
+                d->override_opts = OPT_ALL;
         }
         else if (!strcasecmp(w, "FileInfo")) {
             d->override |= OR_FILEINFO;

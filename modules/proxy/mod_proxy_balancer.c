@@ -437,6 +437,17 @@ static void force_recovery(proxy_balancer *balancer, server_rec *s)
     }
 }
 
+static apr_status_t decrement_busy_count(void *worker_)
+{
+    proxy_worker *worker = worker_;
+    
+    if (worker->s->busy) {
+        worker->s->busy--;
+    }
+
+    return APR_SUCCESS;
+}
+
 static int proxy_balancer_pre_request(proxy_worker **worker,
                                       proxy_balancer **balancer,
                                       request_rec *r,
@@ -570,6 +581,8 @@ static int proxy_balancer_pre_request(proxy_worker **worker,
     }
 
     (*worker)->s->busy++;
+    apr_pool_cleanup_register(r->pool, *worker, decrement_busy_count,
+                              apr_pool_cleanup_null);
 
     /* Add balancer/worker info to env. */
     apr_table_setn(r->subprocess_env,
@@ -623,7 +636,7 @@ static int proxy_balancer_post_request(proxy_worker *worker,
         for (i = 0; i < balancer->errstatuses->nelts; i++) {
             int val = ((int *)balancer->errstatuses->elts)[i];
             if (r->status == val) {
-                ap_log_rerror(APLOG_MARK, APLOG_ERR, rv, r, APLOGNO(01174)
+                ap_log_rerror(APLOG_MARK, APLOG_ERR, 0, r, APLOGNO(01174)
                               "%s: Forcing worker (%s) into error state " 
                               "due to status code %d matching 'failonstatus' "
                               "balancer parameter",
@@ -642,11 +655,7 @@ static int proxy_balancer_post_request(proxy_worker *worker,
     ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r, APLOGNO(01176)
                   "proxy_balancer_post_request for (%s)", balancer->s->name);
 
-    if (worker && worker->s->busy)
-        worker->s->busy--;
-
     return OK;
-
 }
 
 static void recalc_factors(proxy_balancer *balancer)
@@ -744,7 +753,6 @@ static int balancer_post_config(apr_pool_t *pconf, apr_pool_t *plog,
             s = s->next;
             continue;
         }
-
         if (conf->balancers->nelts) {
             conf->max_balancers = conf->balancers->nelts + conf->bgrowth;
             ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, s, APLOGNO(01178) "Doing balancers create: %d, %d (%d)",

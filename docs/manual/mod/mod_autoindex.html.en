@@ -8,11 +8,14 @@
 <title>mod_autoindex - Apache HTTP Server</title>
 <link href="../style/css/manual.css" rel="stylesheet" media="all" type="text/css" title="Main stylesheet" />
 <link href="../style/css/manual-loose-100pc.css" rel="alternate stylesheet" media="all" type="text/css" title="No Sidebar - Default font size" />
-<link href="../style/css/manual-print.css" rel="stylesheet" media="print" type="text/css" />
+<link href="../style/css/manual-print.css" rel="stylesheet" media="print" type="text/css" /><link rel="stylesheet" type="text/css" href="../style/css/prettify.css" />
+<script src="../style/scripts/prettify.js" type="text/javascript">
+</script>
+
 <link href="../images/favicon.ico" rel="shortcut icon" /></head>
 <body>
 <div id="page-header">
-<p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="../faq/">FAQ</a> | <a href="../glossary.html">Glossary</a> | <a href="../sitemap.html">Sitemap</a></p>
+<p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="http://wiki.apache.org/httpd/FAQ">FAQ</a> | <a href="../glossary.html">Glossary</a> | <a href="../sitemap.html">Sitemap</a></p>
 <p class="apache">Apache HTTP Server Version 2.4</p>
 <img alt="" src="../images/feather.gif" /></div>
 <div class="up"><a href="./"><img title="&lt;-" alt="&lt;-" src="../images/left.gif" /></a></div>
@@ -68,7 +71,8 @@
     same header repeatedly toggles between ascending and descending
     order. These column header links are suppressed with the
     <code class="directive"><a href="#indexoptions">IndexOptions</a></code> directive's
-    <code><a href="#indexoptions.suppresscolumnsorting">SuppressColumnSorting</a></code> option.</p>
+    <code><a href="#indexoptions.suppresscolumnsorting">SuppressColumnSorting</a></code> 
+    option.</p>
 
     <p>Note that when the display is sorted by "Size", it's the
     <em>actual</em> size of the files that's used, not the
@@ -98,7 +102,7 @@
 <h3>Topics</h3>
 <ul id="topics">
 <li><img alt="" src="../images/down.gif" /> <a href="#query">Autoindex Request Query Arguments</a></li>
-</ul></div>
+</ul><ul class="seealso"><li><a href="#comments_section">Comments</a></li></ul></div>
 <div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
 <div class="section">
 <h2><a name="query" id="query">Autoindex Request Query Arguments</a></h2>
@@ -221,10 +225,11 @@ icon selected by filename</td></tr>
     is displayed if the client is image-incapable, has image loading
     disabled, or fails to retrieve the icon.</p>
 
-    <div class="example"><h3>Examples</h3><p><code>
-      AddAlt "PDF file" *.pdf<br />
-      AddAlt Compressed *.gz *.zip *.Z
-    </code></p></div>
+    <pre class="prettyprint lang-config">
+AddAlt "PDF file" *.pdf
+AddAlt Compressed *.gz *.zip *.Z
+    </pre>
+
 
 </div>
 <div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
@@ -247,9 +252,10 @@ selected by MIME-encoding</td></tr>
     This alternate text is displayed if the client is image-incapable,
     has image loading disabled, or fails to retrieve the icon.</p>
 
-    <div class="example"><h3>Example</h3><p><code>
+    <pre class="prettyprint lang-config">
       AddAltByEncoding gzip x-gzip
-    </code></p></div>
+    </pre>
+
 
 </div>
 <div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
@@ -272,9 +278,10 @@ icon selected by MIME content-type</td></tr>
     This alternate text is displayed if the client is image-incapable,
     has image loading disabled, or fails to retrieve the icon.</p>
 
-    <div class="example"><h3>Example</h3><p><code>
+    <pre class="prettyprint lang-config">
       AddAltByType 'plain text' text/plain
-    </code></p></div>
+    </pre>
+
 
 </div>
 <div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
@@ -293,10 +300,11 @@ icon selected by MIME content-type</td></tr>
     expression or full filename for files to describe.
     <var>String</var> is enclosed in double quotes (<code>"</code>).</p>
 
-    <div class="example"><h3>Example</h3><p><code>
-      AddDescription "The planet Mars" mars.gif <br />
-      AddDescription "My friend Marshall" friends/mars.gif
-    </code></p></div>
+    <pre class="prettyprint lang-config">
+AddDescription "The planet Mars" mars.gif
+AddDescription "My friend Marshall" friends/mars.gif
+    </pre>
+
 
     <p>The typical, default description field is 23 bytes wide. 6
     more bytes are added by the <code><a href="#indexoptions.suppressicon">IndexOptions SuppressIcon</a></code> option, 7 bytes are
@@ -360,11 +368,13 @@ icon selected by MIME content-type</td></tr>
     is unnecessary if you're using <code>IndexOptions
     HTMLTable</code>.</p>
 
-    <div class="example"><h3>Examples</h3><p><code>
-      AddIcon (IMG,/icons/image.png) .gif .jpg .png<br />
-      AddIcon /icons/dir.png ^^DIRECTORY^^<br />
-      AddIcon /icons/backup.png *~
-    </code></p></div>
+    <pre class="prettyprint lang-config">
+#Examples
+AddIcon (IMG,/icons/image.png) .gif .jpg .png
+AddIcon /icons/dir.png ^^DIRECTORY^^
+AddIcon /icons/backup.png *~
+    </pre>
+
 
     <p><code class="directive"><a href="#addiconbytype">AddIconByType</a></code>
     should be used in preference to <code class="directive">AddIcon</code>,
@@ -393,9 +403,10 @@ content-encoding</td></tr>
     <p><var>MIME-encoding</var> is a valid content-encoding, such as
     <code>x-compress</code>.</p>
 
-    <div class="example"><h3>Example</h3><p><code>
+    <pre class="prettyprint lang-config">
       AddIconByEncoding /icons/compress.png x-compress
-    </code></p></div>
+    </pre>
+
 
 </div>
 <div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
@@ -421,9 +432,10 @@ content-type</td></tr>
     <p><var>MIME-type</var> is a wildcard expression matching
     required the mime types.</p>
 
-    <div class="example"><h3>Example</h3><p><code>
+    <pre class="prettyprint lang-config">
       AddIconByType (IMG,/icons/image.png) image/*
-    </code></p></div>
+    </pre>
+
 
 </div>
 <div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
@@ -442,9 +454,10 @@ configured</td></tr>
     <var>Url-path</var> is a (%-escaped) relative URL to the icon,
     or a fully qualified remote URL.</p>
 
-    <div class="example"><h3>Example</h3><p><code>
+    <pre class="prettyprint lang-config">
       DefaultIcon /icon/unknown.png
-    </code></p></div>
+    </pre>
+
 
 </div>
 <div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
@@ -462,9 +475,10 @@ of the index listing</td></tr>
     of the file that will be inserted at the top of the index
     listing. <var>Filename</var> is the name of the file to include.</p>
 
-    <div class="example"><h3>Example</h3><p><code>
+    <pre class="prettyprint lang-config">
       HeaderName HEADER.html
-    </code></p></div>
+    </pre>
+
 
     <div class="note">
       <p>Both HeaderName and <code class="directive"><a href="#readmename">ReadmeName</a></code> now treat
@@ -472,9 +486,10 @@ of the index listing</td></tr>
       access the directory being indexed. If <var>Filename</var> begins
       with a slash, it will be taken to be relative to the <code class="directive"><a href="../mod/core.html#documentroot">DocumentRoot</a></code>.</p>
 
-      <div class="example"><h3>Example</h3><p><code>
+      <pre class="prettyprint lang-config">
         HeaderName /include/HEADER.html
-      </code></p></div>
+      </pre>
+
 
       <p><var>Filename</var> must resolve to a document with a major
       content type of <code>text/*</code> (<em>e.g.</em>,
@@ -483,9 +498,10 @@ of the index listing</td></tr>
       actual file type (as opposed to its output) is marked as
       <code>text/html</code> such as with a directive like:</p>
 
-      <div class="example"><p><code>
+      <pre class="prettyprint lang-config">
         AddType text/html .cgi
-      </code></p></div>
+      </pre>
+
 
       <p><a href="../content-negotiation.html">Content negotiation</a>
       will be performed if <code class="directive"><a href="../mod/core.html#options">Options</a></code>
@@ -521,10 +537,10 @@ of the index listing</td></tr>
     <p>The <code class="directive">IndexHeadInsert</code> directive specifies a
     string to insert in the <var>&lt;head&gt;</var> section of the HTML
     generated for the index page.</p>
-    <div class="example"><h3>Example</h3><p><code>
-      
+    <pre class="prettyprint lang-config">
       IndexHeadInsert "&lt;link rel=\"sitemap\" href=\"/sitemap.html\"&gt;"
-    </code></p></div>
+    </pre>
+
 
 </div>
 <div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
@@ -547,9 +563,10 @@ a directory</td></tr>
     files. By default, the list contains <code>.</code> (the current
     directory).</p>
 
-    <div class="example"><p><code>
+    <pre class="prettyprint lang-config">
       IndexIgnore .??* *~ *# HEADER* README* RCS CVS *,v *,t
-    </code></p></div>
+    </pre>
+
 
     <div class="note"><h3>Regular Expressions</h3>
       <p>This directive does not currently work in configuration sections
@@ -574,15 +591,16 @@ a directory</td></tr>
     any files ignored by <code class="directive">IndexIgnore</code> otherwise
     inherited from other configuration sections. </p>
 
-    <div class="example"><p><code>
-      &lt;Directory /var/www&gt;
-      IndexIgnore *.bak .??* *~ *# HEADER* README* RCS CVS *,v *,t
-      &lt;/Directory&gt;
-      &lt;Directory /var/www/backups&gt;
-      IndexIgnoreReset ON
-      IndexIgnore .??* *# HEADER* README* RCS CVS *,v *,t
-      &lt;/Directory&gt;
-    </code></p></div>
+    <pre class="prettyprint lang-config">
+&lt;Directory /var/www&gt;
+    IndexIgnore *.bak .??* *~ *# HEADER* README* RCS CVS *,v *,t
+&lt;/Directory&gt;
+&lt;Directory /var/www/backups&gt;
+    IndexIgnoreReset ON
+    IndexIgnore .??* *# HEADER* README* RCS CVS *,v *,t
+&lt;/Directory&gt;
+    </pre>
+
 
     <div class="warning"><p> Review the default configuration for a list of
     patterns that you might want to explicitly ignore after using this
@@ -630,9 +648,10 @@ indexing</td></tr>
       (It depends on whether the underlying file system
       uses Unicode filenames or not.)
 
-      <div class="example"><h3>Example:</h3><p><code>
+      <pre class="prettyprint lang-config">
         IndexOptions Charset=UTF-8
-      </code></p></div>
+      </pre>
+
       </dd>
 
       <dt><a name="indexoptions.descriptionwidth" id="indexoptions.descriptionwidth">DescriptionWidth=[<var>n</var> | *]</a></dt>
@@ -835,9 +854,10 @@ indexing</td></tr>
       specify the MIME content-type of the generated page. The default
       is <var>text/html</var>.
 
-      <div class="example"><h3>Example:</h3><p><code>
+      <pre class="prettyprint lang-config">
         IndexOptions Type=text/plain
-      </code></p></div>
+      </pre>
+
       </dd>
 
       <dt><a name="indexoptions.versionsort" id="indexoptions.versionsort">VersionSort</a>
@@ -886,20 +906,20 @@ indexing</td></tr>
      <li>Multiple <code class="directive">IndexOptions</code> directives for a
      single directory are now merged together. The result of:
 
-     <div class="example"><p><code>
-       &lt;Directory /foo&gt;
-       <span class="indent">
-         IndexOptions HTMLTable<br />
-         IndexOptions SuppressColumnsorting
-       </span>
-       &lt;/Directory&gt;
-     </code></p></div>
+     <pre class="prettyprint lang-config">
+&lt;Directory /foo&gt;
+    IndexOptions HTMLTable
+    IndexOptions SuppressColumnsorting
+&lt;/Directory&gt;
+     </pre>
+
 
      <p>will be the equivalent of</p>
 
-     <div class="example"><p><code>
+     <pre class="prettyprint lang-config">
        IndexOptions HTMLTable SuppressColumnsorting
-     </code></p></div>
+     </pre>
+
      </li>
 
      <li>The addition of the incremental syntax (<em>i.e.</em>, prefixing
@@ -913,10 +933,11 @@ indexing</td></tr>
      clears all inherited options and any incremental settings encountered
      so far. Consider the following example:</p>
 
-     <div class="example"><p><code>
-       IndexOptions +ScanHTMLTitles -IconsAreLinks FancyIndexing<br />
-       IndexOptions +SuppressSize
-     </code></p></div>
+     <pre class="prettyprint lang-config">
+IndexOptions +ScanHTMLTitles -IconsAreLinks FancyIndexing<br />
+IndexOptions +SuppressSize
+     </pre>
+
 
      <p>The net effect is equivalent to <code>IndexOptions FancyIndexing
      +SuppressSize</code>, because the unprefixed <code>FancyIndexing</code>
@@ -977,10 +998,10 @@ Name|Date|Size|Description</code></td></tr>
     <p>The <code class="directive">IndexStyleSheet</code> directive sets the name of
     the file that will be used as the CSS for the index listing.
     </p>
-    <div class="example"><h3>Example</h3><p><code>
-      
+    <pre class="prettyprint lang-config">
       IndexStyleSheet "/css/style.css"
-    </code></p></div>
+    </pre>
+
 
     <p>Using this directive in conjunction with <code>IndexOptions
     HTMLTable</code> adds a number of CSS classes to the resulting HTML.
@@ -1020,13 +1041,17 @@ of the index listing</td></tr>
     relative to the <code class="directive"><a href="../mod/core.html#documentroot">DocumentRoot</a></code>.
     </p>
 
-    <div class="example"><h3>Example 1</h3><p><code>
-      ReadmeName FOOTER.html
-    </code></p></div>
+    <pre class="prettyprint lang-config">
+# Example 1
+ReadmeName FOOTER.html
+    </pre>
 
-    <div class="example"><h3>Example 2</h3><p><code>
-      ReadmeName /include/FOOTER.html
-    </code></p></div>
+
+    <pre class="prettyprint lang-config">
+# Example 2
+ReadmeName /include/FOOTER.html
+    </pre>
+
 
     <p>See also <code class="directive"><a href="#headername">HeaderName</a></code>, where this behavior is described in greater
     detail.</p>
@@ -1039,7 +1064,28 @@ of the index listing</td></tr>
 <a href="../ja/mod/mod_autoindex.html" hreflang="ja" rel="alternate" title="Japanese">&nbsp;ja&nbsp;</a> |
 <a href="../ko/mod/mod_autoindex.html" hreflang="ko" rel="alternate" title="Korean">&nbsp;ko&nbsp;</a> |
 <a href="../tr/mod/mod_autoindex.html" hreflang="tr" rel="alternate" title="Türkçe">&nbsp;tr&nbsp;</a></p>
-</div><div id="footer">
+</div><div class="top"><a href="#page-header"><img src="../images/up.gif" alt="top" /></a></div><div class="section"><h2><a id="comments_section" name="comments_section">Comments</a></h2><div class="warning"><strong>Notice:</strong><br />This is not a Q&amp;A section. Comments placed here should be pointed towards suggestions on improving the documentation or server, and may be removed again by our moderators if they are either implemented or considered invalid/off-topic. Questions on how to manage the Apache HTTP Server should be directed at either our IRC channel, #httpd, on Freenode, or sent to our <a href="http://httpd.apache.org/lists.html">mailing lists</a>.</div>
+<script type="text/javascript"><!--//--><![CDATA[//><!--
+var comments_shortname = 'httpd';
+var comments_identifier = 'http://httpd.apache.org/docs/2.4/mod/mod_autoindex.html';
+(function(w, d) {
+    if (w.location.hostname.toLowerCase() == "httpd.apache.org") {
+        d.write('<div id="comments_thread"><\/div>');
+        var s = d.createElement('script');
+        s.type = 'text/javascript';
+        s.async = true;
+        s.src = 'https://comments.apache.org/show_comments.lua?site=' + comments_shortname + '&page=' + comments_identifier;
+        (d.getElementsByTagName('head')[0] || d.getElementsByTagName('body')[0]).appendChild(s);
+    }
+    else { 
+        d.write('<div id="comments_thread">Comments are disabled for this page at the moment.<\/div>');
+    }
+})(window, document);
+//--><!]]></script></div><div id="footer">
 <p class="apache">Copyright 2012 The Apache Software Foundation.<br />Licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
-<p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="../faq/">FAQ</a> | <a href="../glossary.html">Glossary</a> | <a href="../sitemap.html">Sitemap</a></p></div>
+<p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="http://wiki.apache.org/httpd/FAQ">FAQ</a> | <a href="../glossary.html">Glossary</a> | <a href="../sitemap.html">Sitemap</a></p></div><script type="text/javascript"><!--//--><![CDATA[//><!--
+if (typeof(prettyPrint) !== 'undefined') {
+    prettyPrint();
+}
+//--><!]]></script>
 </body></html>

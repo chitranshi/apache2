@@ -8,11 +8,14 @@
 <title>mod_deflate - Apache HTTP Server</title>
 <link href="../style/css/manual.css" rel="stylesheet" media="all" type="text/css" title="Main stylesheet" />
 <link href="../style/css/manual-loose-100pc.css" rel="alternate stylesheet" media="all" type="text/css" title="No Sidebar - Default font size" />
-<link href="../style/css/manual-print.css" rel="stylesheet" media="print" type="text/css" />
+<link href="../style/css/manual-print.css" rel="stylesheet" media="print" type="text/css" /><link rel="stylesheet" type="text/css" href="../style/css/prettify.css" />
+<script src="../style/scripts/prettify.js" type="text/javascript">
+</script>
+
 <link href="../images/favicon.ico" rel="shortcut icon" /></head>
 <body>
 <div id="page-header">
-<p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="../faq/">FAQ</a> | <a href="../glossary.html">Glossary</a> | <a href="../sitemap.html">Sitemap</a></p>
+<p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="http://wiki.apache.org/httpd/FAQ">FAQ</a> | <a href="../glossary.html">Glossary</a> | <a href="../sitemap.html">Sitemap</a></p>
 <p class="apache">Apache HTTP Server Version 2.4</p>
 <img alt="" src="../images/feather.gif" /></div>
 <div class="up"><a href="./"><img title="&lt;-" alt="&lt;-" src="../images/left.gif" /></a></div>
@@ -54,45 +57,42 @@ client</td></tr>
 </ul><h3>See also</h3>
 <ul class="seealso">
 <li><a href="../filter.html">Filters</a></li>
-</ul></div>
+</ul><ul class="seealso"><li><a href="#comments_section">Comments</a></li></ul></div>
 <div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
 <div class="section">
 <h2><a name="recommended" id="recommended">Sample Configurations</a></h2>
     <p>This is a simple sample configuration for the impatient.</p>
 
-    <div class="example"><h3>Compress only a few types</h3><p><code>
+    <div class="example"><h3>Compress only a few types</h3><pre class="prettyprint lang-config">
       AddOutputFilterByType DEFLATE text/html text/plain text/xml
-    </code></p></div>
+      </pre>
+</div>
 
     <p>The following configuration, while resulting in more compressed content,
     is also much more complicated.  Do not use this unless you fully understand
     all the configuration details.</p>
 
-    <div class="example"><h3>Compress everything except images</h3><p><code>
-      &lt;Location /&gt;<br />
-      <span class="indent">
-        # Insert filter<br />
-        SetOutputFilter DEFLATE<br />
-        <br />
-        # Netscape 4.x has some problems...<br />
-        BrowserMatch ^Mozilla/4         gzip-only-text/html<br />
-        <br />
-        # Netscape 4.06-4.08 have some more problems<br />
-        BrowserMatch ^Mozilla/4\.0[678] no-gzip<br />
-        <br />
-        # MSIE masquerades as Netscape, but it is fine<br />
-        BrowserMatch \bMSIE             !no-gzip !gzip-only-text/html<br />
-        # Don't compress images<br />
-        SetEnvIfNoCase Request_URI \<br />
-        <span class="indent">
-          \.(?:gif|jpe?g|png)$ no-gzip dont-vary<br />
-        </span>
-        <br />
-        # Make sure proxies don't deliver the wrong content<br />
-        Header append Vary User-Agent env=!dont-vary<br />
-      </span>
-      &lt;/Location&gt;
-    </code></p></div>
+    <div class="example"><h3>Compress everything except images</h3><pre class="prettyprint lang-config">
+&lt;Location /&gt;
+    # Insert filter
+    SetOutputFilter DEFLATE
+    
+    # Netscape 4.x has some problems...
+    BrowserMatch ^Mozilla/4         gzip-only-text/html
+    
+    # Netscape 4.06-4.08 have some more problems
+    BrowserMatch ^Mozilla/4\.0[678] no-gzip
+    
+    # MSIE masquerades as Netscape, but it is fine
+    BrowserMatch \bMSIE             !no-gzip !gzip-only-text/html
+    # Don't compress images
+    SetEnvIfNoCase Request_URI \.(?:gif|jpe?g|png)$ no-gzip dont-vary
+    
+    # Make sure proxies don't deliver the wrong content
+    Header append Vary User-Agent env=!dont-vary
+&lt;/Location&gt;
+      </pre>
+</div>
 
 </div><div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
 <div class="section">
@@ -104,9 +104,10 @@ client</td></tr>
       will enable compression for documents in the container where it
       is placed:</p>
 
-      <div class="example"><p><code>
+      <pre class="prettyprint lang-config">
         SetOutputFilter DEFLATE
-      </code></p></div>
+      </pre>
+
 
       <p>Some popular browsers cannot handle compression of all content
       so you may want to set the <code>gzip-only-text/html</code> note to
@@ -119,13 +120,12 @@ client</td></tr>
       enabling compression only for the html files of the Apache
       documentation:</p>
 
-      <div class="example"><p><code>
-        &lt;Directory "/your-server-root/manual"&gt;<br />
-        <span class="indent">
-          AddOutputFilterByType DEFLATE text/html<br />
-        </span>
-        &lt;/Directory&gt;
-      </code></p></div>
+      <pre class="prettyprint lang-config">
+&lt;Directory "/your-server-root/manual"&gt;
+    AddOutputFilterByType DEFLATE text/html
+&lt;/Directory&gt;
+      </pre>
+
 
       <p>For browsers that have problems even with compression of all file
       types, use the <code class="directive"><a href="../mod/mod_setenvif.html#browsermatch">BrowserMatch</a></code> directive to set the <code>no-gzip</code>
@@ -135,11 +135,12 @@ client</td></tr>
       excerpt from the <a href="#recommended">configuration example</a>
       defined in the section above:</p>
 
-      <div class="example"><p><code>
-        BrowserMatch ^Mozilla/4         gzip-only-text/html<br />
-        BrowserMatch ^Mozilla/4\.0[678] no-gzip<br />
-        BrowserMatch \bMSIE             !no-gzip !gzip-only-text/html
-      </code></p></div>
+      <pre class="prettyprint lang-config">
+BrowserMatch ^Mozilla/4         gzip-only-text/html
+BrowserMatch ^Mozilla/4\.0[678] no-gzip
+BrowserMatch \bMSIE             !no-gzip !gzip-only-text/html
+      </pre>
+
 
       <p>At first we probe for a <code>User-Agent</code> string that
       indicates a Netscape Navigator version of 4.x. These versions
@@ -174,14 +175,13 @@ client</td></tr>
       this feature you have to insert the <code>INFLATE</code> filter into
       the outputfilter chain using <code class="directive"><a href="../mod/core.html#setoutputfilter">SetOutputFilter</a></code> or <code class="directive"><a href="../mod/mod_mime.html#addoutputfilter">AddOutputFilter</a></code>, for example:</p>
 
-      <div class="example"><p><code>
-        &lt;Location /dav-area&gt;<br />
-        <span class="indent">
-          ProxyPass http://example.com/<br />
-          SetOutputFilter INFLATE<br />
-        </span>
-        &lt;/Location&gt;
-      </code></p></div>
+      <pre class="prettyprint lang-config">
+&lt;Location /dav-area&gt;
+    ProxyPass http://example.com/
+    SetOutputFilter INFLATE
+&lt;/Location&gt;
+      </pre>
+
 
       <p>This Example will uncompress gzip'ed output from example.com, so other
       filters can do further processing with it.
@@ -194,13 +194,12 @@ client</td></tr>
       this feature you have to insert the <code>DEFLATE</code> filter into
       the input filter chain using <code class="directive"><a href="../mod/core.html#setinputfilter">SetInputFilter</a></code> or <code class="directive"><a href="../mod/mod_mime.html#addinputfilter">AddInputFilter</a></code>, for example:</p>
 
-      <div class="example"><p><code>
-        &lt;Location /dav-area&gt;<br />
-        <span class="indent">
-          SetInputFilter DEFLATE<br />
-        </span>
-        &lt;/Location&gt;
-      </code></p></div>
+      <pre class="prettyprint lang-config">
+&lt;Location /dav-area&gt;
+    SetInputFilter DEFLATE
+&lt;/Location&gt;
+      </pre>
+
 
       <p>Now if a request contains a <code>Content-Encoding:
       gzip</code> header, the body will be automatically decompressed.
@@ -234,18 +233,20 @@ client</td></tr>
     in a typical configuration where the addition of the <code>DEFLATE</code>
     filter depends on the <code>User-Agent</code>, you should add:</p>
 
-    <div class="example"><p><code>
+    <pre class="prettyprint lang-config">
       Header append Vary User-Agent
-    </code></p></div>
+    </pre>
+
 
     <p>If your decision about compression depends on other information
     than request headers (<em>e.g.</em> HTTP version), you have to set the
     <code>Vary</code> header to the value <code>*</code>. This prevents
     compliant proxies from caching entirely.</p>
 
-    <div class="example"><h3>Example</h3><p><code>
+    <div class="example"><h3>Example</h3><pre class="prettyprint lang-config">
       Header set Vary *
-    </code></p></div>
+      </pre>
+</div>
 </div>
 <div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
 <div class="directive-section"><h2><a name="DeflateBufferSize" id="DeflateBufferSize">DeflateBufferSize</a> <a name="deflatebuffersize" id="deflatebuffersize">Directive</a></h2>
@@ -296,12 +297,13 @@ client</td></tr>
     the directive. You can use that note for statistical purposes by
     adding the value to your <a href="../logs.html#accesslog">access log</a>.</p>
 
-    <div class="example"><h3>Example</h3><p><code>
-      DeflateFilterNote ratio<br />
-      <br />
-      LogFormat '"%r" %b (%{ratio}n) "%{User-agent}i"' deflate<br />
+    <div class="example"><h3>Example</h3><pre class="prettyprint lang-config">
+      DeflateFilterNote ratio
+    
+      LogFormat '"%r" %b (%{ratio}n) "%{User-agent}i"' deflate
       CustomLog logs/deflate_log deflate
-    </code></p></div>
+      </pre>
+</div>
 
     <p>If you want to extract more accurate values from your logs, you
     can use the <var>type</var> argument to specify the type of data
@@ -322,14 +324,15 @@ client</td></tr>
 
     <p>Thus you may log it this way:</p>
 
-    <div class="example"><h3>Accurate Logging</h3><p><code>
-      DeflateFilterNote Input instream<br />
-      DeflateFilterNote Output outstream<br />
-      DeflateFilterNote Ratio ratio<br />
-      <br />
-      LogFormat '"%r" %{outstream}n/%{instream}n (%{ratio}n%%)' deflate<br />
-      CustomLog logs/deflate_log deflate
-    </code></p></div>
+    <div class="example"><h3>Accurate Logging</h3><pre class="prettyprint lang-config">
+DeflateFilterNote Input instream
+DeflateFilterNote Output outstream
+DeflateFilterNote Ratio ratio
+
+LogFormat '"%r" %{outstream}n/%{instream}n (%{ratio}n%%)' deflate
+CustomLog logs/deflate_log deflate
+</pre>
+</div>
 
 <h3>See also</h3>
 <ul>
@@ -372,7 +375,28 @@ client</td></tr>
 <a href="../fr/mod/mod_deflate.html" hreflang="fr" rel="alternate" title="Français">&nbsp;fr&nbsp;</a> |
 <a href="../ja/mod/mod_deflate.html" hreflang="ja" rel="alternate" title="Japanese">&nbsp;ja&nbsp;</a> |
 <a href="../ko/mod/mod_deflate.html" hreflang="ko" rel="alternate" title="Korean">&nbsp;ko&nbsp;</a></p>
-</div><div id="footer">
+</div><div class="top"><a href="#page-header"><img src="../images/up.gif" alt="top" /></a></div><div class="section"><h2><a id="comments_section" name="comments_section">Comments</a></h2><div class="warning"><strong>Notice:</strong><br />This is not a Q&amp;A section. Comments placed here should be pointed towards suggestions on improving the documentation or server, and may be removed again by our moderators if they are either implemented or considered invalid/off-topic. Questions on how to manage the Apache HTTP Server should be directed at either our IRC channel, #httpd, on Freenode, or sent to our <a href="http://httpd.apache.org/lists.html">mailing lists</a>.</div>
+<script type="text/javascript"><!--//--><![CDATA[//><!--
+var comments_shortname = 'httpd';
+var comments_identifier = 'http://httpd.apache.org/docs/2.4/mod/mod_deflate.html';
+(function(w, d) {
+    if (w.location.hostname.toLowerCase() == "httpd.apache.org") {
+        d.write('<div id="comments_thread"><\/div>');
+        var s = d.createElement('script');
+        s.type = 'text/javascript';
+        s.async = true;
+        s.src = 'https://comments.apache.org/show_comments.lua?site=' + comments_shortname + '&page=' + comments_identifier;
+        (d.getElementsByTagName('head')[0] || d.getElementsByTagName('body')[0]).appendChild(s);
+    }
+    else { 
+        d.write('<div id="comments_thread">Comments are disabled for this page at the moment.<\/div>');
+    }
+})(window, document);
+//--><!]]></script></div><div id="footer">
 <p class="apache">Copyright 2012 The Apache Software Foundation.<br />Licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
-<p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="../faq/">FAQ</a> | <a href="../glossary.html">Glossary</a> | <a href="../sitemap.html">Sitemap</a></p></div>
+<p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="http://wiki.apache.org/httpd/FAQ">FAQ</a> | <a href="../glossary.html">Glossary</a> | <a href="../sitemap.html">Sitemap</a></p></div><script type="text/javascript"><!--//--><![CDATA[//><!--
+if (typeof(prettyPrint) !== 'undefined') {
+    prettyPrint();
+}
+//--><!]]></script>
 </body></html>

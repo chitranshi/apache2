@@ -312,9 +312,9 @@ extern "C" {
 #define AP_MAX_SENDFILE 16777216  /* 2^24 */
 
 /**
- * Special Apache error codes. These are basically used
- *  in http_main.c so we can keep track of various errors.
- *
+ * MPM child process exit status values
+ * The MPM parent process may check the status to see if special
+ * error handling is required.
  */
 /** a normal exit */
 #define APEXIT_OK               0x0
@@ -472,61 +472,70 @@ AP_DECLARE(const char *) ap_get_server_built(void);
  * @{
  */
 /**
- * The size of the static array in http_protocol.c for storing
- * all of the potential response status-lines (a sparse table).
+ * The size of the static status_lines array in http_protocol.c for
+ * storing all of the potential response status-lines (a sparse table).
+ * When adding a new code here add it to status_lines as well.
  * A future version should dynamically generate the apr_table_t at startup.
  */
-#define RESPONSE_CODES 57
+#define RESPONSE_CODES 83
 
-#define HTTP_CONTINUE                      100
-#define HTTP_SWITCHING_PROTOCOLS           101
-#define HTTP_PROCESSING                    102
-#define HTTP_OK                            200
-#define HTTP_CREATED                       201
-#define HTTP_ACCEPTED                      202
-#define HTTP_NON_AUTHORITATIVE             203
-#define HTTP_NO_CONTENT                    204
-#define HTTP_RESET_CONTENT                 205
-#define HTTP_PARTIAL_CONTENT               206
-#define HTTP_MULTI_STATUS                  207
-#define HTTP_MULTIPLE_CHOICES              300
-#define HTTP_MOVED_PERMANENTLY             301
-#define HTTP_MOVED_TEMPORARILY             302
-#define HTTP_SEE_OTHER                     303
-#define HTTP_NOT_MODIFIED                  304
-#define HTTP_USE_PROXY                     305
-#define HTTP_TEMPORARY_REDIRECT            307
-#define HTTP_BAD_REQUEST                   400
-#define HTTP_UNAUTHORIZED                  401
-#define HTTP_PAYMENT_REQUIRED              402
-#define HTTP_FORBIDDEN                     403
-#define HTTP_NOT_FOUND                     404
-#define HTTP_METHOD_NOT_ALLOWED            405
-#define HTTP_NOT_ACCEPTABLE                406
-#define HTTP_PROXY_AUTHENTICATION_REQUIRED 407
-#define HTTP_REQUEST_TIME_OUT              408
-#define HTTP_CONFLICT                      409
-#define HTTP_GONE                          410
-#define HTTP_LENGTH_REQUIRED               411
-#define HTTP_PRECONDITION_FAILED           412
-#define HTTP_REQUEST_ENTITY_TOO_LARGE      413
-#define HTTP_REQUEST_URI_TOO_LARGE         414
-#define HTTP_UNSUPPORTED_MEDIA_TYPE        415
-#define HTTP_RANGE_NOT_SATISFIABLE         416
-#define HTTP_EXPECTATION_FAILED            417
-#define HTTP_UNPROCESSABLE_ENTITY          422
-#define HTTP_LOCKED                        423
-#define HTTP_FAILED_DEPENDENCY             424
-#define HTTP_UPGRADE_REQUIRED              426
-#define HTTP_INTERNAL_SERVER_ERROR         500
-#define HTTP_NOT_IMPLEMENTED               501
-#define HTTP_BAD_GATEWAY                   502
-#define HTTP_SERVICE_UNAVAILABLE           503
-#define HTTP_GATEWAY_TIME_OUT              504
-#define HTTP_VERSION_NOT_SUPPORTED         505
-#define HTTP_VARIANT_ALSO_VARIES           506
-#define HTTP_INSUFFICIENT_STORAGE          507
-#define HTTP_NOT_EXTENDED                  510
+#define HTTP_CONTINUE                        100
+#define HTTP_SWITCHING_PROTOCOLS             101
+#define HTTP_PROCESSING                      102
+#define HTTP_OK                              200
+#define HTTP_CREATED                         201
+#define HTTP_ACCEPTED                        202
+#define HTTP_NON_AUTHORITATIVE               203
+#define HTTP_NO_CONTENT                      204
+#define HTTP_RESET_CONTENT                   205
+#define HTTP_PARTIAL_CONTENT                 206
+#define HTTP_MULTI_STATUS                    207
+#define HTTP_ALREADY_REPORTED                208
+#define HTTP_IM_USED                         226
+#define HTTP_MULTIPLE_CHOICES                300
+#define HTTP_MOVED_PERMANENTLY               301
+#define HTTP_MOVED_TEMPORARILY               302
+#define HTTP_SEE_OTHER                       303
+#define HTTP_NOT_MODIFIED                    304
+#define HTTP_USE_PROXY                       305
+#define HTTP_TEMPORARY_REDIRECT              307
+#define HTTP_PERMANENT_REDIRECT              308
+#define HTTP_BAD_REQUEST                     400
+#define HTTP_UNAUTHORIZED                    401
+#define HTTP_PAYMENT_REQUIRED                402
+#define HTTP_FORBIDDEN                       403
+#define HTTP_NOT_FOUND                       404
+#define HTTP_METHOD_NOT_ALLOWED              405
+#define HTTP_NOT_ACCEPTABLE                  406
+#define HTTP_PROXY_AUTHENTICATION_REQUIRED   407
+#define HTTP_REQUEST_TIME_OUT                408
+#define HTTP_CONFLICT                        409
+#define HTTP_GONE                            410
+#define HTTP_LENGTH_REQUIRED                 411
+#define HTTP_PRECONDITION_FAILED             412
+#define HTTP_REQUEST_ENTITY_TOO_LARGE        413
+#define HTTP_REQUEST_URI_TOO_LARGE           414
+#define HTTP_UNSUPPORTED_MEDIA_TYPE          415
+#define HTTP_RANGE_NOT_SATISFIABLE           416
+#define HTTP_EXPECTATION_FAILED              417
+#define HTTP_UNPROCESSABLE_ENTITY            422
+#define HTTP_LOCKED                          423
+#define HTTP_FAILED_DEPENDENCY               424
+#define HTTP_UPGRADE_REQUIRED                426
+#define HTTP_PRECONDITION_REQUIRED           428
+#define HTTP_TOO_MANY_REQUESTS               429
+#define HTTP_REQUEST_HEADER_FIELDS_TOO_LARGE 431
+#define HTTP_INTERNAL_SERVER_ERROR           500
+#define HTTP_NOT_IMPLEMENTED                 501
+#define HTTP_BAD_GATEWAY                     502
+#define HTTP_SERVICE_UNAVAILABLE             503
+#define HTTP_GATEWAY_TIME_OUT                504
+#define HTTP_VERSION_NOT_SUPPORTED           505
+#define HTTP_VARIANT_ALSO_VARIES             506
+#define HTTP_INSUFFICIENT_STORAGE            507
+#define HTTP_LOOP_DETECTED                   508
+#define HTTP_NOT_EXTENDED                    510
+#define HTTP_NETWORK_AUTHENTICATION_REQUIRED 511
 
 /** is the status code informational */
 #define ap_is_HTTP_INFO(x)         (((x) >= 100)&&((x) < 200))
@@ -595,7 +604,7 @@ AP_DECLARE(const char *) ap_get_server_built(void);
 #define M_MKACTIVITY            23
 #define M_BASELINE_CONTROL      24
 #define M_MERGE                 25
-#define M_INVALID               26      /** RFC 3253: WebDAV Versioning */
+#define M_INVALID               26      /** no valid method */
 
 /**
  * METHODS needs to be equal to the number of bits
@@ -1019,6 +1028,7 @@ struct request_rec {
 
     /** remote address information from conn_rec, can be overridden if
      * necessary by a module.
+     * This is the address that originated the request.
      */
     apr_sockaddr_t *useragent_addr;
     char *useragent_ip;
@@ -1064,10 +1074,14 @@ struct conn_rec {
     /* Information about the connection itself */
     /** local address */
     apr_sockaddr_t *local_addr;
-    /** remote address */
+    /** remote address; this is the end-point of the next hop, for the address
+     *  of the request creator, see useragent_addr in request_rec
+     */
     apr_sockaddr_t *client_addr;
 
-    /** Client's IP address */
+    /** Client's IP address; this is the end-point of the next hop, for the
+     *  IP of the request creator, see useragent_ip in request_rec
+     */
     char *client_ip;
     /** Client's DNS name, if known.  NULL if DNS hasn't been checked,
      *  "" if it has and no address was found.  N.B. Only access this though
@@ -1147,6 +1161,8 @@ struct conn_rec {
 
 /**
  * Enumeration of connection states
+ * The two states CONN_STATE_LINGER_NORMAL and CONN_STATE_LINGER_SHORT may
+ * only be set by the MPM. Use CONN_STATE_LINGER outside of the MPM.
  */
 typedef enum  {
     CONN_STATE_CHECK_REQUEST_LINE_READABLE,
@@ -1154,9 +1170,9 @@ typedef enum  {
     CONN_STATE_HANDLER,
     CONN_STATE_WRITE_COMPLETION,
     CONN_STATE_SUSPENDED,
-    CONN_STATE_LINGER,
-    CONN_STATE_LINGER_NORMAL,
-    CONN_STATE_LINGER_SHORT
+    CONN_STATE_LINGER,          /* connection may be closed with lingering */
+    CONN_STATE_LINGER_NORMAL,   /* MPM has started lingering close with normal timeout */
+    CONN_STATE_LINGER_SHORT     /* MPM has started lingering close with short timeout */
 } conn_state_e;
 
 /**
@@ -1671,7 +1687,7 @@ AP_DECLARE(char *) ap_make_dirstr_parent(apr_pool_t *p, const char *s);
 
 /**
  * Given a directory and filename, create a single path from them.  This
- * function is smart enough to ensure that there is a sinlge '/' between the
+ * function is smart enough to ensure that there is a single '/' between the
  * directory and file names
  * @param a The pool to allocate from
  * @param dir The directory name
@@ -1706,7 +1722,7 @@ AP_DECLARE(int) ap_is_matchexp(const char *str);
  * Determine if a string matches a patterm containing the wildcards '?' or '*'
  * @param str The string to check
  * @param expected The pattern to match against
- * @return 1 if the two strings match, 0 otherwise
+ * @return 0 if the two strings match, 1 otherwise
  */
 AP_DECLARE(int) ap_strcmp_match(const char *str, const char *expected);
 
@@ -1715,7 +1731,7 @@ AP_DECLARE(int) ap_strcmp_match(const char *str, const char *expected);
  * ignoring case
  * @param str The string to check
  * @param expected The pattern to match against
- * @return 1 if the two strings match, 0 otherwise
+ * @return 0 if the two strings match, 1 otherwise
  */
 AP_DECLARE(int) ap_strcasecmp_match(const char *str, const char *expected);
 

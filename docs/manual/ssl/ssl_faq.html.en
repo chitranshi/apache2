@@ -8,10 +8,13 @@
 <title>SSL/TLS Strong Encryption: FAQ - Apache HTTP Server</title>
 <link href="../style/css/manual.css" rel="stylesheet" media="all" type="text/css" title="Main stylesheet" />
 <link href="../style/css/manual-loose-100pc.css" rel="alternate stylesheet" media="all" type="text/css" title="No Sidebar - Default font size" />
-<link href="../style/css/manual-print.css" rel="stylesheet" media="print" type="text/css" />
+<link href="../style/css/manual-print.css" rel="stylesheet" media="print" type="text/css" /><link rel="stylesheet" type="text/css" href="../style/css/prettify.css" />
+<script src="../style/scripts/prettify.js" type="text/javascript">
+</script>
+
 <link href="../images/favicon.ico" rel="shortcut icon" /></head>
 <body id="manual-page"><div id="page-header">
-<p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="../faq/">FAQ</a> | <a href="../glossary.html">Glossary</a> | <a href="../sitemap.html">Sitemap</a></p>
+<p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="http://wiki.apache.org/httpd/FAQ">FAQ</a> | <a href="../glossary.html">Glossary</a> | <a href="../sitemap.html">Sitemap</a></p>
 <p class="apache">Apache HTTP Server Version 2.4</p>
 <img alt="" src="../images/feather.gif" /></div>
 <div class="up"><a href="./"><img title="&lt;-" alt="&lt;-" src="../images/left.gif" /></a></div>
@@ -34,7 +37,7 @@ he poses the right questions.</p>
 <li><img alt="" src="../images/down.gif" /> <a href="#aboutcerts">Certificates</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#aboutssl">The SSL Protocol</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#support">mod_ssl Support</a></li>
-</ul></div>
+</ul><ul class="seealso"><li><a href="#comments_section">Comments</a></li></ul></div>
 <div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
 <div class="section">
 <h2><a name="installation" id="installation">Installation</a></h2>
@@ -173,11 +176,12 @@ relative hyperlinks?</a></li>
     fully-qualified hyperlinks (because you have to change the URL
     scheme).  Using <code class="module"><a href="../mod/mod_rewrite.html">mod_rewrite</a></code> however, you can
     manipulate relative hyperlinks, to achieve the same effect.</p>
-    <div class="example"><p><code>
-    RewriteEngine on<br />
-    RewriteRule   ^/(.*)_SSL$   https://%{SERVER_NAME}/$1 [R,L]<br />
-    RewriteRule   ^/(.*)_NOSSL$ http://%{SERVER_NAME}/$1  [R,L]
-    </code></p></div>
+    <pre class="prettyprint lang-config">
+RewriteEngine on
+RewriteRule   ^/(.*)_SSL$   https://%{SERVER_NAME}/$1 [R,L]
+RewriteRule   ^/(.*)_NOSSL$ http://%{SERVER_NAME}/$1  [R,L]
+    </pre>
+
 
     <p>This rewrite ruleset lets you use hyperlinks of the form
     <code>&lt;a href="document.html_SSL"&gt;</code>, to switch to HTTPS
@@ -253,10 +257,11 @@ Certificate for testing purposes?</a></h3>
                         -keyout server.key</strong></code><br />
         These can be used as follows in your <code>httpd.conf</code>
         file:
-        <pre>
-             SSLCertificateFile    /path/to/this/server.crt
-             SSLCertificateKeyFile /path/to/this/server.key
+        <pre class="prettyprint lang-config">
+SSLCertificateFile    /path/to/this/server.crt
+SSLCertificateKeyFile /path/to/this/server.key
         </pre>
+
     </li>
     <li>It is important that you are aware that this
         <code>server.key</code> does <em>not</em> have any passphrase.
@@ -333,10 +338,11 @@ Certificate for testing purposes?</a></h3>
     <li>You should now have two files: <code>server.key</code> and
     <code>server.crt</code>. These can be used as follows in your
     <code>httpd.conf</code> file:
-       <pre>
-       SSLCertificateFile    /path/to/this/server.crt
-       SSLCertificateKeyFile /path/to/this/server.key
+       <pre class="prettyprint lang-config">
+SSLCertificateFile    /path/to/this/server.crt
+SSLCertificateKeyFile /path/to/this/server.key
        </pre>
+
        The <code>server.csr</code> file is no longer needed.
     </li>
 
@@ -603,9 +609,9 @@ error when connecting to my newly installed server?</a></h3>
     handshake is finished, but the information is needed in order to
     complete the SSL handshake phase. See the next question for how to
     circumvent this issue.</p>
-
+    
     <p>Note that if you have a wildcard SSL certificate, or a
-    certificate that has multple hostnames on it using subjectAltName
+    certificate that has multiple hostnames on it using subjectAltName
     fields, you can use SSL on name-based virtual hosts without further
     workarounds.</p>
 
@@ -624,7 +630,7 @@ Virtual Hosting to identify different SSL virtual hosts?</a></h3>
     specification added, called Server Name Indication (SNI).</p>
 
     <p>Note that if you have a wildcard SSL certificate, or a
-    certificate that has multple hostnames on it using subjectAltName
+    certificate that has multiple hostnames on it using subjectAltName
     fields, you can use SSL on name-based virtual hosts without further
     workarounds.</p>
 
@@ -648,9 +654,10 @@ Virtual Hosting to identify different SSL virtual hosts?</a></h3>
     you must make sure to put the non-SSL port number on the NameVirtualHost
     directive, e.g.</p>
 
-    <div class="example"><p><code>
+    <pre class="prettyprint lang-config">
       NameVirtualHost 192.168.1.1:80
-    </code></p></div>
+    </pre>
+
 
     <p>Other workaround solutions include: </p>
 
@@ -666,7 +673,7 @@ a negotiable standard compression method.
 <p>OpenSSL 0.9.8 started to support this by default when compiled with the
 <code>zlib</code> option. If both the client and the server support compression,
 it will be used. However, most clients still try to initially connect with an
-SSLv2 Hello. As SSLv2 did not include an array of prefered compression algorithms
+SSLv2 Hello. As SSLv2 did not include an array of preferred compression algorithms
 in its handshake, compression cannot be negotiated with these clients.
 If the client disables support for SSLv2, either an SSLv3 or TLS Hello
 may be sent, depending on which SSL library is used, and compression may
@@ -700,11 +707,12 @@ Explorer (MSIE)?</a></h3>
     keep-alive connections or send the SSL close notify messages to MSIE clients.
     This can be done by using the following directive in your SSL-aware
     virtual host section:</p>
-    <div class="example"><p><code>
-    SetEnvIf User-Agent "MSIE [2-5]" \<br />
-             nokeepalive ssl-unclean-shutdown \<br />
-             downgrade-1.0 force-response-1.0
-    </code></p></div>
+    <pre class="prettyprint lang-config">
+SetEnvIf User-Agent "MSIE [2-5]" \
+         nokeepalive ssl-unclean-shutdown \
+         downgrade-1.0 force-response-1.0
+    </pre>
+
     <p>Further, some MSIE versions have problems with particular ciphers.
     Unfortunately, it is not possible to implement a MSIE-specific
     workaround for this, because the ciphers are needed as early as the
@@ -851,7 +859,28 @@ the reason for my core dump?</a></h3>
 <div class="bottomlang">
 <p><span>Available Languages: </span><a href="../en/ssl/ssl_faq.html" title="English">&nbsp;en&nbsp;</a> |
 <a href="../fr/ssl/ssl_faq.html" hreflang="fr" rel="alternate" title="Français">&nbsp;fr&nbsp;</a></p>
-</div><div id="footer">
+</div><div class="top"><a href="#page-header"><img src="../images/up.gif" alt="top" /></a></div><div class="section"><h2><a id="comments_section" name="comments_section">Comments</a></h2><div class="warning"><strong>Notice:</strong><br />This is not a Q&amp;A section. Comments placed here should be pointed towards suggestions on improving the documentation or server, and may be removed again by our moderators if they are either implemented or considered invalid/off-topic. Questions on how to manage the Apache HTTP Server should be directed at either our IRC channel, #httpd, on Freenode, or sent to our <a href="http://httpd.apache.org/lists.html">mailing lists</a>.</div>
+<script type="text/javascript"><!--//--><![CDATA[//><!--
+var comments_shortname = 'httpd';
+var comments_identifier = 'http://httpd.apache.org/docs/2.4/ssl/ssl_faq.html';
+(function(w, d) {
+    if (w.location.hostname.toLowerCase() == "httpd.apache.org") {
+        d.write('<div id="comments_thread"><\/div>');
+        var s = d.createElement('script');
+        s.type = 'text/javascript';
+        s.async = true;
+        s.src = 'https://comments.apache.org/show_comments.lua?site=' + comments_shortname + '&page=' + comments_identifier;
+        (d.getElementsByTagName('head')[0] || d.getElementsByTagName('body')[0]).appendChild(s);
+    }
+    else { 
+        d.write('<div id="comments_thread">Comments are disabled for this page at the moment.<\/div>');
+    }
+})(window, document);
+//--><!]]></script></div><div id="footer">
 <p class="apache">Copyright 2012 The Apache Software Foundation.<br />Licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
-<p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="../faq/">FAQ</a> | <a href="../glossary.html">Glossary</a> | <a href="../sitemap.html">Sitemap</a></p></div>
+<p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="http://wiki.apache.org/httpd/FAQ">FAQ</a> | <a href="../glossary.html">Glossary</a> | <a href="../sitemap.html">Sitemap</a></p></div><script type="text/javascript"><!--//--><![CDATA[//><!--
+if (typeof(prettyPrint) !== 'undefined') {
+    prettyPrint();
+}
+//--><!]]></script>
 </body></html>

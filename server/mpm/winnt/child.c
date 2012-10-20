@@ -352,9 +352,8 @@ reinit: /* target of data or connect upon too many AcceptEx failures */
     }
 
     ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, ap_server_conf, APLOGNO(00334)
-                 "Child: Accept thread listening on %s:%d using AcceptFilter %s",
-                 lr->bind_addr->hostname ? lr->bind_addr->hostname : "*",
-                 lr->bind_addr->port, accf_name);
+                 "Child: Accept thread listening on %pI using AcceptFilter %s",
+                 lr->bind_addr, accf_name);
 
     while (!shutdown_in_progress) {
         if (!context) {
@@ -650,11 +649,12 @@ reinit: /* target of data or connect upon too many AcceptEx failures */
             }
         }
 
-        sockinfo.os_sock = &context->accept_socket;
-        sockinfo.local   = context->sa_server;
-        sockinfo.remote  = context->sa_client;
-        sockinfo.family  = context->sa_server->sa_family;
-        sockinfo.type    = SOCK_STREAM;
+        sockinfo.os_sock  = &context->accept_socket;
+        sockinfo.local    = context->sa_server;
+        sockinfo.remote   = context->sa_client;
+        sockinfo.family   = context->sa_server->sa_family;
+        sockinfo.type     = SOCK_STREAM;
+        sockinfo.protocol = IPPROTO_TCP;
         /* Restore the state corresponding to apr_os_sock_make's default
          * assumption of timeout -1 (really, a flaw of os_sock_make and
          * os_sock_put that it does not query to determine ->timeout).

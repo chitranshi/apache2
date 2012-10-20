@@ -8,10 +8,13 @@
 <title>Optimisation des performances d'Apache - Serveur Apache HTTP</title>
 <link href="../style/css/manual.css" rel="stylesheet" media="all" type="text/css" title="Main stylesheet" />
 <link href="../style/css/manual-loose-100pc.css" rel="alternate stylesheet" media="all" type="text/css" title="No Sidebar - Default font size" />
-<link href="../style/css/manual-print.css" rel="stylesheet" media="print" type="text/css" />
+<link href="../style/css/manual-print.css" rel="stylesheet" media="print" type="text/css" /><link rel="stylesheet" type="text/css" href="../style/css/prettify.css" />
+<script src="../style/scripts/prettify.js" type="text/javascript">
+</script>
+
 <link href="../images/favicon.ico" rel="shortcut icon" /></head>
 <body id="manual-page"><div id="page-header">
-<p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="../faq/">FAQ</a> | <a href="../glossary.html">Glossaire</a> | <a href="../sitemap.html">Plan du site</a></p>
+<p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="http://wiki.apache.org/httpd/FAQ">FAQ</a> | <a href="../glossary.html">Glossaire</a> | <a href="../sitemap.html">Plan du site</a></p>
 <p class="apache">Serveur Apache HTTP Version 2.4</p>
 <img alt="" src="../images/feather.gif" /></div>
 <div class="up"><a href="./"><img title="&lt;-" alt="&lt;-" src="../images/left.gif" /></a></div>
@@ -48,7 +51,7 @@
 <li><img alt="" src="../images/down.gif" /> <a href="#runtime">Optimisation de la configuration à l'exécution</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#compiletime">Optimisation de la configuration à la compilation</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#trace">Appendice : Analyse détaillée d'une trace</a></li>
-</ul></div>
+</ul><ul class="seealso"><li><a href="#comments_section">Commentaires</a></li></ul></div>
 <div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
 <div class="section">
 <h2><a name="hardware" id="hardware">Problèmes matériels et relatifs au système d'exploitation</a></h2>
@@ -148,14 +151,13 @@
       Voici un exemple qui désactive les recherches DNS sauf pour les fichiers
       <code>.html</code> et <code>.cgi</code> :</p>
 
-      <div class="example"><p><code>
-        HostnameLookups off<br />
-        &lt;Files ~ "\.(html|cgi)$"&gt;<br />
-        <span class="indent">
-          HostnameLookups on<br />
-        </span>
-        &lt;/Files&gt;
-      </code></p></div>
+      <pre class="prettyprint lang-config">
+HostnameLookups off
+&lt;Files ~ "\.(html|cgi)$"&gt;
+  HostnameLookups on
+&lt;/Files&gt;
+      </pre>
+
 
       <p>Mais même dans ce cas, si vous n'avez besoin de noms DNS que dans
       certains CGIs, vous pouvez effectuer l'appel à <code>gethostbyname</code>
@@ -174,14 +176,13 @@
       symboliques. Un appel supplémentaire par élément du chemin du fichier.
       Par exemple, si vous avez :</p>
 
-      <div class="example"><p><code>
-        DocumentRoot /www/htdocs<br />
-        &lt;Directory /&gt;<br />
-        <span class="indent">
-          Options SymLinksIfOwnerMatch<br />
-        </span>
-        &lt;/Directory&gt;
-      </code></p></div>
+      <pre class="prettyprint lang-config">
+DocumentRoot /www/htdocs
+&lt;Directory /&gt;
+  Options SymLinksIfOwnerMatch
+&lt;/Directory&gt;
+      </pre>
+
 
       <p>et si une requête demande l'URI <code>/index.html</code>, Apache
       effectuera un appel à <code>lstat(2)</code> pour
@@ -192,20 +193,17 @@
       vérifier la sécurité des liens symboliques, vous pouvez utiliser une
       configuration du style :</p>
 
-      <div class="example"><p><code>
-        DocumentRoot /www/htdocs<br />
-        &lt;Directory /&gt;<br />
-        <span class="indent">
-          Options FollowSymLinks<br />
-        </span>
-        &lt;/Directory&gt;<br />
-        <br />
-        &lt;Directory /www/htdocs&gt;<br />
-        <span class="indent">
-          Options -FollowSymLinks +SymLinksIfOwnerMatch<br />
-        </span>
-        &lt;/Directory&gt;
-      </code></p></div>
+      <pre class="prettyprint lang-config">
+DocumentRoot /www/htdocs
+&lt;Directory /&gt;
+  Options FollowSymLinks
+&lt;/Directory&gt;
+
+&lt;Directory /www/htdocs&gt;
+  Options -FollowSymLinks +SymLinksIfOwnerMatch
+&lt;/Directory&gt;
+      </pre>
+
 
       <p>Ceci évite au moins les vérifications supplémentaires pour le chemin
       défini par <code class="directive"><a href="../mod/core.html#documentroot">DocumentRoot</a></code>. Notez que
@@ -230,14 +228,13 @@
       pour chaque élément du chemin du fichier demandé. Par exemple, si vous
       avez : </p>
 
-      <div class="example"><p><code>
-        DocumentRoot /www/htdocs<br />
-        &lt;Directory /&gt;<br />
-        <span class="indent">
-          AllowOverride all<br />
-        </span>
-        &lt;/Directory&gt;
-      </code></p></div>
+      <pre class="prettyprint lang-config">
+DocumentRoot /www/htdocs
+&lt;Directory /&gt;
+  AllowOverride all
+&lt;/Directory&gt;
+      </pre>
+
 
       <p>et qu'une requête demande l'URI <code>/index.html</code>, Apache
       tentera d'ouvrir <code>/.htaccess</code>, <code>/www/.htaccess</code>,
@@ -259,15 +256,13 @@
       Il y a cependant un cas dans lequel vous pouvez accélérer le serveur.
       Au lieu d'utiliser une directive générique comme :</p>
 
-      <div class="example"><p><code>
-        DirectoryIndex index
-      </code></p></div>
+      <pre class="prettyprint lang-config">DirectoryIndex index</pre>
+
 
       <p>utilisez une liste explicite d'options :</p>
 
-      <div class="example"><p><code>
-        DirectoryIndex index.cgi index.pl index.shtml index.html
-      </code></p></div>
+      <pre class="prettyprint lang-config">DirectoryIndex index.cgi index.pl index.shtml index.html</pre>
+
 
       <p>où vous placez le choix courant en première position.</p>
 
@@ -461,6 +456,12 @@
 	serveurs présentant un traffic important car il possède une empreinte
 	mémoire plus petite que le MPM prefork.</li>
 
+	<li>Comme le MPM Worker, le MPM <code class="module"><a href="../mod/event.html">event</a></code> utilise
+	les threads, mais il a été conçu pour traiter davantage de
+	requêtes simultanément en confiant une partie du travail à des
+	threads de support, ce qui permet aux threads principaux de
+	traiter de nouvelles requêtes.</li>
+
         <li>Le MPM <code class="module"><a href="../mod/prefork.html">prefork</a></code> utilise plusieurs processus enfants
 	possédant chacun un seul thread. Chaque processus gère une seule
 	connexion à la fois. Sur de nombreux systèmes, prefork est comparable
@@ -612,39 +613,30 @@
       (ces exemples ne sont pas extraits du code d'Apache, ils ne sont
       proposés qu'à des fins pédagogiques) :</p>
 
-      <div class="example"><p><code>
-        for (;;) {<br />
-        <span class="indent">
-          for (;;) {<br />
-          <span class="indent">
-            fd_set accept_fds;<br />
-            <br />
-            FD_ZERO (&amp;accept_fds);<br />
-            for (i = first_socket; i &lt;= last_socket; ++i) {<br />
-            <span class="indent">
-              FD_SET (i, &amp;accept_fds);<br />
-            </span>
-            }<br />
-            rc = select (last_socket+1, &amp;accept_fds, NULL, NULL, NULL);<br />
-            if (rc &lt; 1) continue;<br />
-            new_connection = -1;<br />
-            for (i = first_socket; i &lt;= last_socket; ++i) {<br />
-            <span class="indent">
-              if (FD_ISSET (i, &amp;accept_fds)) {<br />
-              <span class="indent">
-                new_connection = accept (i, NULL, NULL);<br />
-                if (new_connection != -1) break;<br />
-              </span>
-              }<br />
-            </span>
-            }<br />
-            if (new_connection != -1) break;<br />
-          </span>
-          }<br />
-          process the new_connection;<br />
-        </span>
+      <pre class="prettyprint lang-c">
+        for (;;) {
+          for (;;) {
+            fd_set accept_fds;
+
+            FD_ZERO (&amp;accept_fds);
+            for (i = first_socket; i &lt;= last_socket; ++i) {
+              FD_SET (i, &amp;accept_fds);
+            }
+            rc = select (last_socket+1, &amp;accept_fds, NULL, NULL, NULL);
+            if (rc &lt; 1) continue;
+            new_connection = -1;
+            for (i = first_socket; i &lt;= last_socket; ++i) {
+              if (FD_ISSET (i, &amp;accept_fds)) {
+                new_connection = accept (i, NULL, NULL);
+                if (new_connection != -1) break;
+              }
+            }
+            if (new_connection != -1) break;
+          }
+          process_the(new_connection);
         }
-      </code></p></div>
+      </pre>
+
 
       <p>Mais cette implémentation rudimentaire présente une sérieuse lacune.
       Rappelez-vous que les processus enfants exécutent cette boucle au même
@@ -683,41 +675,32 @@
       entrées dans la boucle interne. La boucle ressemble à ceci (les
       différences sont mises en surbrillance) :</p>
 
-      <div class="example"><p><code>
-        for (;;) {<br />
-        <span class="indent">
-          <strong>accept_mutex_on ();</strong><br />
-          for (;;) {<br />
-          <span class="indent">
-            fd_set accept_fds;<br />
-            <br />
-            FD_ZERO (&amp;accept_fds);<br />
-            for (i = first_socket; i &lt;= last_socket; ++i) {<br />
-            <span class="indent">
-              FD_SET (i, &amp;accept_fds);<br />
-            </span>
-            }<br />
-            rc = select (last_socket+1, &amp;accept_fds, NULL, NULL, NULL);<br />
-            if (rc &lt; 1) continue;<br />
-            new_connection = -1;<br />
-            for (i = first_socket; i &lt;= last_socket; ++i) {<br />
-            <span class="indent">
-              if (FD_ISSET (i, &amp;accept_fds)) {<br />
-              <span class="indent">
-                new_connection = accept (i, NULL, NULL);<br />
-                if (new_connection != -1) break;<br />
-              </span>
-              }<br />
-            </span>
-            }<br />
-            if (new_connection != -1) break;<br />
-          </span>
-          }<br />
-          <strong>accept_mutex_off ();</strong><br />
-          process the new_connection;<br />
-        </span>
+      <pre class="prettyprint lang-c">
+        for (;;) {
+          <strong>accept_mutex_on ();</strong>
+          for (;;) {
+            fd_set accept_fds;
+            
+            FD_ZERO (&amp;accept_fds);
+            for (i = first_socket; i &lt;= last_socket; ++i) {
+              FD_SET (i, &amp;accept_fds);
+            }
+            rc = select (last_socket+1, &amp;accept_fds, NULL, NULL, NULL);
+            if (rc &lt; 1) continue;
+            new_connection = -1;
+            for (i = first_socket; i &lt;= last_socket; ++i) {
+              if (FD_ISSET (i, &amp;accept_fds)) {
+                new_connection = accept (i, NULL, NULL);
+                if (new_connection != -1) break;
+              }
+            }
+            if (new_connection != -1) break;
+          }
+          <strong>accept_mutex_off ();</strong>
+          process the new_connection;
         }
-      </code></p></div>
+      </pre>
+
 
       <p><a id="serialize" name="serialize">Les fonctions</a>
       <code>accept_mutex_on</code> et <code>accept_mutex_off</code>
@@ -829,39 +812,32 @@
       <code>http_main.c</code>). La fonction ressemble approximativement à
       ceci :</p>
 
-      <div class="example"><p><code>
-        void lingering_close (int s)<br />
-        {<br />
-        <span class="indent">
-          char junk_buffer[2048];<br />
-          <br />
-          /* shutdown the sending side */<br />
-          shutdown (s, 1);<br />
-          <br />
-          signal (SIGALRM, lingering_death);<br />
-          alarm (30);<br />
-          <br />
-          for (;;) {<br />
-          <span class="indent">
-            select (s for reading, 2 second timeout);<br />
-            if (error) break;<br />
-            if (s is ready for reading) {<br />
-            <span class="indent">
-              if (read (s, junk_buffer, sizeof (junk_buffer)) &lt;= 0) {<br />
-              <span class="indent">
-                break;<br />
-              </span>
-              }<br />
-              /* just toss away whatever is here */<br />
-            </span>
-            }<br />
-          </span>
-          }<br />
-          <br />
-          close (s);<br />
-        </span>
+      <pre class="prettyprint lang-c">
+        void lingering_close (int s)
+        {
+          char junk_buffer[2048];
+          
+          /* shutdown the sending side */
+          shutdown (s, 1);
+
+          signal (SIGALRM, lingering_death);
+          alarm (30);
+
+          for (;;) {
+            select (s for reading, 2 second timeout);
+            if (error) break;
+            if (s is ready for reading) {
+              if (read (s, junk_buffer, sizeof (junk_buffer)) &lt;= 0) {
+                break;
+              }
+              /* just toss away whatever is here */
+            }
+          }
+          
+          close (s);
         }
-      </code></p></div>
+      </pre>
+
 
       <p>Ceci ajoute naturellement un peu de charge à la fin d'une connexion,
       mais s'avère nécessaire pour une implémentation fiable. Comme HTTP/1.1
@@ -1067,7 +1043,28 @@
 <a href="../fr/misc/perf-tuning.html" title="Français">&nbsp;fr&nbsp;</a> |
 <a href="../ko/misc/perf-tuning.html" hreflang="ko" rel="alternate" title="Korean">&nbsp;ko&nbsp;</a> |
 <a href="../tr/misc/perf-tuning.html" hreflang="tr" rel="alternate" title="Türkçe">&nbsp;tr&nbsp;</a></p>
-</div><div id="footer">
+</div><div class="top"><a href="#page-header"><img src="../images/up.gif" alt="top" /></a></div><div class="section"><h2><a id="comments_section" name="comments_section">Commentaires</a></h2><div class="warning"><strong>Notice:</strong><br />This is not a Q&amp;A section. Comments placed here should be pointed towards suggestions on improving the documentation or server, and may be removed again by our moderators if they are either implemented or considered invalid/off-topic. Questions on how to manage the Apache HTTP Server should be directed at either our IRC channel, #httpd, on Freenode, or sent to our <a href="http://httpd.apache.org/lists.html">mailing lists</a>.</div>
+<script type="text/javascript"><!--//--><![CDATA[//><!--
+var comments_shortname = 'httpd';
+var comments_identifier = 'http://httpd.apache.org/docs/2.4/misc/perf-tuning.html';
+(function(w, d) {
+    if (w.location.hostname.toLowerCase() == "httpd.apache.org") {
+        d.write('<div id="comments_thread"><\/div>');
+        var s = d.createElement('script');
+        s.type = 'text/javascript';
+        s.async = true;
+        s.src = 'https://comments.apache.org/show_comments.lua?site=' + comments_shortname + '&page=' + comments_identifier;
+        (d.getElementsByTagName('head')[0] || d.getElementsByTagName('body')[0]).appendChild(s);
+    }
+    else { 
+        d.write('<div id="comments_thread">Comments are disabled for this page at the moment.<\/div>');
+    }
+})(window, document);
+//--><!]]></script></div><div id="footer">
 <p class="apache">Copyright 2012 The Apache Software Foundation.<br />Autorisé sous <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
-<p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="../faq/">FAQ</a> | <a href="../glossary.html">Glossaire</a> | <a href="../sitemap.html">Plan du site</a></p></div>
+<p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="http://wiki.apache.org/httpd/FAQ">FAQ</a> | <a href="../glossary.html">Glossaire</a> | <a href="../sitemap.html">Plan du site</a></p></div><script type="text/javascript"><!--//--><![CDATA[//><!--
+if (typeof(prettyPrint) !== 'undefined') {
+    prettyPrint();
+}
+//--><!]]></script>
 </body></html>

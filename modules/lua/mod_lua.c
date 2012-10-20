@@ -24,6 +24,7 @@
 #include "lua_config.h"
 #include "apr_optional.h"
 #include "mod_ssl.h"
+#include "mod_auth.h"
 
 #ifdef APR_HAS_THREADS
 #include "apr_thread_proc.h"
@@ -39,10 +40,21 @@ APR_IMPLEMENT_OPTIONAL_HOOK_RUN_ALL(ap_lua, AP_LUA, int, lua_request,
 static APR_OPTIONAL_FN_TYPE(ssl_var_lookup) *lua_ssl_val = NULL;
 static APR_OPTIONAL_FN_TYPE(ssl_is_https) *lua_ssl_is_https = NULL;
 
-     module AP_MODULE_DECLARE_DATA lua_module;
+module AP_MODULE_DECLARE_DATA lua_module;
 
 #define AP_LUA_HOOK_FIRST (APR_HOOK_FIRST - 1)
 #define AP_LUA_HOOK_LAST  (APR_HOOK_LAST  + 1)
+
+typedef struct {
+    const char *name;
+    const char *file_name;
+    const char *function_name;
+    ap_lua_vm_spec *spec;
+    apr_array_header_t *args;
+} lua_authz_provider_spec;
+
+apr_hash_t *lua_authz_providers;
+
 
 /**
  * error reporting if lua has an error.
@@ -78,73 +90,114 @@ static int lua_open_hook(lua_State *L, apr_pool_t *p)
     return OK;
 }
 
+static const char *scope_to_string(unsigned int scope)
+{
+    switch (scope) {
+    case AP_LUA_SCOPE_ONCE:
+    case AP_LUA_SCOPE_UNSET:
+        return "once";
+    case AP_LUA_SCOPE_REQUEST:
+        return "request";
+    case AP_LUA_SCOPE_CONN:
+        return "conn";
+#if APR_HAS_THREADS
+    case AP_LUA_SCOPE_THREAD:
+        return "thread";
+#endif
+    default:
+        ap_assert(0);
+    }
+}
+
+static ap_lua_vm_spec *create_vm_spec(apr_pool_t **lifecycle_pool,
+                                      request_rec *r,
+                                      const ap_lua_dir_cfg *cfg,
+                                      const ap_lua_server_cfg *server_cfg,
+                                      const char *filename,
+                                      const char *bytecode,
+                                      apr_size_t bytecode_len,
+                                      const char *function,
+                                      const char *what)
+{
+    apr_pool_t *pool;
+    ap_lua_vm_spec *spec = apr_pcalloc(r->pool, sizeof(ap_lua_vm_spec));
+
+    spec->scope = cfg->vm_scope;
+    spec->pool = r->pool;
+    spec->package_paths = cfg->package_paths;
+    spec->package_cpaths = cfg->package_cpaths;
+    spec->cb = &lua_open_callback;
+    spec->cb_arg = NULL;
+    spec->bytecode = bytecode;
+    spec->bytecode_len = bytecode_len;
+
+    if (filename) {
+        char *file;
+        apr_filepath_merge(&file, server_cfg->root_path,
+                           filename, APR_FILEPATH_NOTRELATIVE, r->pool);
+        spec->file = file;
+    }
+    else {
+        spec->file = r->filename;
+    }
+    ap_log_rerror(APLOG_MARK, APLOG_TRACE2, 0, r, APLOGNO(02313)
+                  "%s details: scope: %s, file: %s, func: %s",
+                  what, scope_to_string(spec->scope), spec->file,
+                  function ? function : "-");
+
+    switch (spec->scope) {
+    case AP_LUA_SCOPE_ONCE:
+    case AP_LUA_SCOPE_UNSET:
+        apr_pool_create(&pool, r->pool);
+        break;
+    case AP_LUA_SCOPE_REQUEST:
+        pool = r->pool;
+        break;
+    case AP_LUA_SCOPE_CONN:
+        pool = r->connection->pool;
+        break;
+#if APR_HAS_THREADS
+    case AP_LUA_SCOPE_THREAD:
+        pool = apr_thread_pool_get(r->connection->current_thread);
+        break;
+#endif
+    default:
+        ap_assert(0);
+    }
+
+    *lifecycle_pool = pool;
+    return spec;
+}
+
 
 /**
  * "main"
  */
 static int lua_handler(request_rec *r)
 {
-    ap_lua_dir_cfg *dcfg;
-    apr_pool_t *pool;
     if (strcmp(r->handler, "lua-script")) {
         return DECLINED;
     }
-  
-    ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r, APLOGNO(01472) "handling [%s] in mod_lua",
-                  r->filename);
-    dcfg = ap_get_module_config(r->per_dir_config, &lua_module);
+    ap_log_rerror(APLOG_MARK, APLOG_TRACE1, 0, r, APLOGNO(01472)
+                  "handling [%s] in mod_lua", r->filename);
 
+    /* XXX: This seems wrong because it may generate wrong headers for HEAD requests */
     if (!r->header_only) {
         lua_State *L;
+        apr_pool_t *pool;
         const ap_lua_dir_cfg *cfg = ap_get_module_config(r->per_dir_config,
                                                          &lua_module);
-        ap_lua_vm_spec *spec = NULL;
+        ap_lua_vm_spec *spec = create_vm_spec(&pool, r, cfg, NULL, NULL, NULL,
+                                              0, "handle", "request handler");
 
-        spec = apr_pcalloc(r->pool, sizeof(ap_lua_vm_spec));
-        spec->scope = dcfg->vm_scope;
-        spec->pool = r->pool;
-        spec->file = r->filename;
-        spec->package_paths = cfg->package_paths;
-        spec->package_cpaths = cfg->package_cpaths;
-        spec->cb = &lua_open_callback;
-        spec->cb_arg = NULL;
-      
-        ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r, APLOGNO(01473)
-                      "request details scope:%u, filename:%s, function:%s",
-                      spec->scope,
-                      spec->file,
-                      "handle");
-
-        switch (spec->scope) {
-        case AP_LUA_SCOPE_ONCE:
-        case AP_LUA_SCOPE_UNSET:
-          apr_pool_create(&pool, r->pool);
-          break;
-        case AP_LUA_SCOPE_REQUEST:
-          pool = r->pool;
-          break;
-        case AP_LUA_SCOPE_CONN:
-          pool = r->connection->pool;
-          break;
-        case AP_LUA_SCOPE_THREAD:
-          #if APR_HAS_THREADS
-          pool = apr_thread_pool_get(r->connection->current_thread);
-          break;
-          #endif
-        default:
-          ap_assert(0);
-        }
-
-        L = ap_lua_get_lua_state(pool,
-                                 spec);
-        
+        L = ap_lua_get_lua_state(pool, spec);
         if (!L) {
             /* TODO annotate spec with failure reason */
             r->status = HTTP_INTERNAL_SERVER_ERROR;
             ap_rputs("Unable to compile VM, see logs", r);
             return HTTP_INTERNAL_SERVER_ERROR;
         }
-        ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r, APLOGNO(01474) "got a vm!");
+        ap_log_rerror(APLOG_MARK, APLOG_TRACE3, 0, r, APLOGNO(01474) "got a vm!");
         lua_getglobal(L, "handle");
         if (!lua_isfunction(L, -1)) {
             ap_log_rerror(APLOG_MARK, APLOG_CRIT, 0, r, APLOGNO(01475)
@@ -160,7 +213,6 @@ static int lua_handler(request_rec *r)
     }
     return OK;
 }
-
 
 
 
@@ -190,46 +242,12 @@ static int lua_request_rec_hook_harness(request_rec *r, const char *name, int ap
             if (hook_spec == NULL) {
                 continue;
             }
-            spec = apr_pcalloc(r->pool, sizeof(ap_lua_vm_spec));
-
-            spec->file = hook_spec->file_name;
-            spec->scope = cfg->vm_scope;
-            spec->bytecode = hook_spec->bytecode;
-            spec->bytecode_len = hook_spec->bytecode_len;
-            spec->pool = r->pool;
-            spec->package_paths = cfg->package_paths;
-            spec->package_cpaths = cfg->package_cpaths;
-            spec->cb = &lua_open_callback;
-            spec->cb_arg = NULL;
-
-            apr_filepath_merge(&spec->file, server_cfg->root_path,
-                               spec->file, APR_FILEPATH_NOTRELATIVE, r->pool);
-
-            ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, r, APLOGNO(01476)
-                          "request details scope:%u, filename:%s, function:%s",
-                          spec->scope,
-                          spec->file,
-                          hook_spec->function_name ? hook_spec->function_name : "-");
-
-            switch (spec->scope) {
-            case AP_LUA_SCOPE_ONCE:
-            case AP_LUA_SCOPE_UNSET:
-             apr_pool_create(&pool, r->pool);
-              break;
-            case AP_LUA_SCOPE_REQUEST:
-              pool = r->pool;
-              break;
-            case AP_LUA_SCOPE_CONN:
-              pool = r->connection->pool;
-              break;
-            case AP_LUA_SCOPE_THREAD:
-              #if APR_HAS_THREADS
-              pool = apr_thread_pool_get(r->connection->current_thread);
-              break;
-              #endif
-            default:
-              ap_assert(0);
-            }
+            spec = create_vm_spec(&pool, r, cfg, server_cfg,
+                                  hook_spec->file_name,
+                                  hook_spec->bytecode,
+                                  hook_spec->bytecode_len,
+                                  hook_spec->function_name,
+                                  "request hook");
 
             L = ap_lua_get_lua_state(pool, spec);
 
@@ -450,16 +468,15 @@ static const char *register_named_block_function_hook(const char *name,
 
     {
         cr_ctx ctx;
-        char buf[32];
         lua_State *lvm;
         char *tmp;
         int rv;
         ap_directive_t **current;
         hack_section_baton *baton;
 
-        apr_snprintf(buf, sizeof(buf), "%u", cmd->config_file->line_number);
-        spec->file_name = apr_pstrcat(cmd->pool, cmd->config_file->name, ":",
-                                      buf, NULL);
+        spec->file_name = apr_psprintf(cmd->pool, "%s:%u",
+                                       cmd->config_file->name,
+                                       cmd->config_file->line_number);
         if (function) {
             spec->function_name = (char *) function;
         }
@@ -959,6 +976,131 @@ AP_LUA_DECLARE(int) ap_lua_ssl_is_https(conn_rec *c)
 
 /*******************************/
 
+static const char *lua_authz_parse(cmd_parms *cmd, const char *require_line,
+                                   const void **parsed_require_line)
+{
+    const char *provider_name;
+    lua_authz_provider_spec *spec;
+
+    apr_pool_userdata_get((void**)&provider_name, AUTHZ_PROVIDER_NAME_NOTE,
+                          cmd->temp_pool);
+    ap_assert(provider_name != NULL);
+
+    spec = apr_hash_get(lua_authz_providers, provider_name, APR_HASH_KEY_STRING);
+    ap_assert(spec != NULL);
+
+    if (require_line && *require_line) {
+        const char *arg;
+        spec->args = apr_array_make(cmd->pool, 2, sizeof(const char *));
+        while ((arg = ap_getword_conf(cmd->pool, &require_line)) && *arg) {
+            APR_ARRAY_PUSH(spec->args, const char *) = arg;
+        }
+    }
+
+    *parsed_require_line = spec;
+    return NULL;
+}
+
+static authz_status lua_authz_check(request_rec *r, const char *require_line,
+                                    const void *parsed_require_line)
+{
+    apr_pool_t *pool;
+    ap_lua_vm_spec *spec;
+    lua_State *L;
+    ap_lua_server_cfg *server_cfg = ap_get_module_config(r->server->module_config,
+                                                         &lua_module);
+    const ap_lua_dir_cfg *cfg = ap_get_module_config(r->per_dir_config,
+                                                     &lua_module);
+    const lua_authz_provider_spec *prov_spec = parsed_require_line;
+    int result;
+    int nargs = 0;
+
+    spec = create_vm_spec(&pool, r, cfg, server_cfg, prov_spec->file_name,
+                          NULL, 0, prov_spec->function_name, "authz provider");
+
+    L = ap_lua_get_lua_state(pool, spec);
+    if (L == NULL) {
+        ap_log_rerror(APLOG_MARK, APLOG_ERR, 0, r, APLOGNO(02314)
+                      "Unable to compile VM for authz provider %s", prov_spec->name);
+        return AUTHZ_GENERAL_ERROR;
+    }
+    lua_getglobal(L, prov_spec->function_name);
+    if (!lua_isfunction(L, -1)) {
+        ap_log_rerror(APLOG_MARK, APLOG_CRIT, 0, r, APLOGNO(02319)
+                      "Unable to find function %s in %s",
+                      prov_spec->function_name, prov_spec->file_name);
+        return AUTHZ_GENERAL_ERROR;
+    }
+    ap_lua_run_lua_request(L, r);
+    if (prov_spec->args) {
+        int i;
+        if (!lua_checkstack(L, prov_spec->args->nelts)) {
+            ap_log_rerror(APLOG_MARK, APLOG_ERR, 0, r, APLOGNO(02315)
+                          "Error: authz provider %s: too many arguments", prov_spec->name);
+            return AUTHZ_GENERAL_ERROR;
+        }
+        for (i = 0; i < prov_spec->args->nelts; i++) {
+            const char *arg = APR_ARRAY_IDX(prov_spec->args, i, const char *);
+            lua_pushstring(L, arg);
+        }
+        nargs = prov_spec->args->nelts;
+    }
+    if (lua_pcall(L, 1 + nargs, 1, 0)) {
+        const char *err = lua_tostring(L, -1);
+        ap_log_rerror(APLOG_MARK, APLOG_ERR, 0, r, APLOGNO(02316)
+                      "Error executing authz provider %s: %s", prov_spec->name, err);
+        return AUTHZ_GENERAL_ERROR;
+    }
+    if (!lua_isnumber(L, -1)) {
+        ap_log_rerror(APLOG_MARK, APLOG_ERR, 0, r, APLOGNO(02317)
+                      "Error: authz provider %s did not return integer", prov_spec->name);
+        return AUTHZ_GENERAL_ERROR;
+    }
+    result = lua_tointeger(L, -1);
+    switch (result) {
+        case AUTHZ_DENIED:
+        case AUTHZ_GRANTED:
+        case AUTHZ_NEUTRAL:
+        case AUTHZ_GENERAL_ERROR:
+        case AUTHZ_DENIED_NO_USER:
+            return result;
+        default:
+            ap_log_rerror(APLOG_MARK, APLOG_ERR, 0, r, APLOGNO(02318)
+                          "Error: authz provider %s: invalid return value %d",
+                          prov_spec->name, result);
+    }
+    return AUTHZ_GENERAL_ERROR;
+}
+
+static const authz_provider lua_authz_provider =
+{
+    &lua_authz_check,
+    &lua_authz_parse,
+};
+
+static const char *register_authz_provider(cmd_parms *cmd, void *_cfg,
+                                           const char *name, const char *file,
+                                           const char *function)
+{
+    lua_authz_provider_spec *spec;
+    const char *err = ap_check_cmd_context(cmd, GLOBAL_ONLY);
+    if (err)
+        return err;
+
+    spec = apr_pcalloc(cmd->pool, sizeof(*spec));
+    spec->name = name;
+    spec->file_name = file;
+    spec->function_name = function;
+
+    apr_hash_set(lua_authz_providers, name, APR_HASH_KEY_STRING, spec);
+    ap_register_auth_provider(cmd->pool, AUTHZ_PROVIDER_GROUP, name,
+                              AUTHZ_PROVIDER_VERSION,
+                              &lua_authz_provider,
+                              AP_AUTH_INTERNAL_PER_CONF);
+    return NULL;
+}
+
+
 command_rec lua_commands[] = {
 
     AP_INIT_TAKE1("LuaRoot", register_lua_root, NULL, OR_ALL,
@@ -970,6 +1112,8 @@ command_rec lua_commands[] = {
     AP_INIT_TAKE1("LuaPackageCPath", register_package_cdir, NULL, OR_ALL,
                   "Add a directory to lua's package.cpath"),
 
+    AP_INIT_TAKE3("LuaAuthzProvider", register_authz_provider, NULL, RSRC_CONF|EXEC_ON_READ,
+                  "Provide an authorization provider"),
 
     AP_INIT_TAKE23("LuaHookTranslateName", register_translate_name_hook, NULL,
                   OR_ALL,
@@ -1202,6 +1346,9 @@ static void lua_register_hooks(apr_pool_t *p)
 
     APR_OPTIONAL_HOOK(ap_lua, lua_request, lua_request_hook, NULL, NULL,
                       APR_HOOK_REALLY_FIRST);
+
+    /* providers */
+    lua_authz_providers = apr_hash_make(p);
 }
 
 AP_DECLARE_MODULE(lua) = {

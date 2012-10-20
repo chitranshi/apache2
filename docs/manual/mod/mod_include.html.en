@@ -8,11 +8,14 @@
 <title>mod_include - Apache HTTP Server</title>
 <link href="../style/css/manual.css" rel="stylesheet" media="all" type="text/css" title="Main stylesheet" />
 <link href="../style/css/manual-loose-100pc.css" rel="alternate stylesheet" media="all" type="text/css" title="No Sidebar - Default font size" />
-<link href="../style/css/manual-print.css" rel="stylesheet" media="print" type="text/css" />
+<link href="../style/css/manual-print.css" rel="stylesheet" media="print" type="text/css" /><link rel="stylesheet" type="text/css" href="../style/css/prettify.css" />
+<script src="../style/scripts/prettify.js" type="text/javascript">
+</script>
+
 <link href="../images/favicon.ico" rel="shortcut icon" /></head>
 <body>
 <div id="page-header">
-<p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="../faq/">FAQ</a> | <a href="../glossary.html">Glossary</a> | <a href="../sitemap.html">Sitemap</a></p>
+<p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="http://wiki.apache.org/httpd/FAQ">FAQ</a> | <a href="../glossary.html">Glossary</a> | <a href="../sitemap.html">Sitemap</a></p>
 <p class="apache">Apache HTTP Server Version 2.4</p>
 <img alt="" src="../images/feather.gif" /></div>
 <div class="up"><a href="./"><img title="&lt;-" alt="&lt;-" src="../images/left.gif" /></a></div>
@@ -66,7 +69,7 @@
 <li><code class="directive"><a href="../mod/core.html#acceptpathinfo">AcceptPathInfo</a></code></li>
 <li><a href="../filter.html">Filters</a></li>
 <li><a href="../howto/ssi.html">SSI Tutorial</a></li>
-</ul></div>
+</ul><ul class="seealso"><li><a href="#comments_section">Comments</a></li></ul></div>
 <div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
 <div class="section">
 <h2><a name="enabling" id="enabling">Enabling Server-Side Includes</a></h2>
@@ -79,10 +82,11 @@
     parse them and assign the resulting document the mime type of
     <code>text/html</code>:</p>
 
-    <div class="example"><p><code>
-      AddType text/html .shtml<br />
-      AddOutputFilter INCLUDES .shtml
-    </code></p></div>
+    <pre class="prettyprint lang-config">
+AddType text/html .shtml
+AddOutputFilter INCLUDES .shtml
+    </pre>
+
 
     <p>The following directive must be given for the directories
     containing the shtml files (typically in a
@@ -91,9 +95,10 @@
     <code class="directive"><a href="../mod/core.html#allowoverride">AllowOverride</a></code> <code>Options</code>
     is set):</p>
 
-    <div class="example"><p><code>
+    <pre class="prettyprint lang-config">
       Options +Includes
-    </code></p></div>
+    </pre>
+
 
     <p>For backwards compatibility, the <code>server-parsed</code>
     <a href="../handler.html">handler</a> also activates the
@@ -770,9 +775,10 @@
     <p>This directive changes the string that <code class="module"><a href="../mod/mod_include.html">mod_include</a></code>
     looks for to mark the end of an include element.</p>
 
-    <div class="example"><h3>Example</h3><p><code>
+    <pre class="prettyprint lang-config">
       SSIEndTag "%&gt;"
-    </code></p></div>
+    </pre>
+
 
 
 <h3>See also</h3>
@@ -803,9 +809,10 @@ directive]"</code></td></tr>
     <p>This directive has the same effect as the <code>&lt;!--#config
     errmsg=<var>message</var> --&gt;</code> element.</p>
 
-    <div class="example"><h3>Example</h3><p><code>
+    <pre class="prettyprint lang-config">
       SSIErrorMsg "&lt;!-- Error --&gt;"
-    </code></p></div>
+    </pre>
+
 
 </div>
 <div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
@@ -927,10 +934,11 @@ server.</td></tr>
     output of a file each processing different commands (possibly at
     different times).</p>
 
-    <div class="example"><h3>Example</h3><p><code>
+    <pre class="prettyprint lang-config">
       SSIStartTag "&lt;%"<br />
       SSIEndTag   "%&gt;"
-    </code></p></div>
+    </pre>
+
 
     <p>The example given above, which also specifies a matching
     <code class="directive"><a href="#ssiendtag">SSIEndTag</a></code>, will
@@ -967,9 +975,10 @@ displayed</td></tr>
     <p>This directive has the same effect as the <code>&lt;!--#config
     timefmt=<var>formatstring</var> --&gt;</code> element.</p>
 
-    <div class="example"><h3>Example</h3><p><code>
+    <pre class="prettyprint lang-config">
       SSITimeFormat "%R, %B %d, %Y"
-    </code></p></div>
+    </pre>
+
 
     <p>The above directive would cause times to be displayed in the
     format "22:26, June 14, 2002".</p>
@@ -990,9 +999,10 @@ displayed</td></tr>
     <p>This directive changes the string that <code class="module"><a href="../mod/mod_include.html">mod_include</a></code>
     displays when a variable is not set and "echoed".</p>
 
-    <div class="example"><h3>Example</h3><p><code>
+    <pre class="prettyprint lang-config">
       SSIUndefinedEcho "&lt;!-- undef --&gt;"
-    </code></p></div>
+    </pre>
+
 
 </div>
 <div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
@@ -1048,7 +1058,28 @@ set</td></tr>
 <div class="bottomlang">
 <p><span>Available Languages: </span><a href="../en/mod/mod_include.html" title="English">&nbsp;en&nbsp;</a> |
 <a href="../ja/mod/mod_include.html" hreflang="ja" rel="alternate" title="Japanese">&nbsp;ja&nbsp;</a></p>
-</div><div id="footer">
+</div><div class="top"><a href="#page-header"><img src="../images/up.gif" alt="top" /></a></div><div class="section"><h2><a id="comments_section" name="comments_section">Comments</a></h2><div class="warning"><strong>Notice:</strong><br />This is not a Q&amp;A section. Comments placed here should be pointed towards suggestions on improving the documentation or server, and may be removed again by our moderators if they are either implemented or considered invalid/off-topic. Questions on how to manage the Apache HTTP Server should be directed at either our IRC channel, #httpd, on Freenode, or sent to our <a href="http://httpd.apache.org/lists.html">mailing lists</a>.</div>
+<script type="text/javascript"><!--//--><![CDATA[//><!--
+var comments_shortname = 'httpd';
+var comments_identifier = 'http://httpd.apache.org/docs/2.4/mod/mod_include.html';
+(function(w, d) {
+    if (w.location.hostname.toLowerCase() == "httpd.apache.org") {
+        d.write('<div id="comments_thread"><\/div>');
+        var s = d.createElement('script');
+        s.type = 'text/javascript';
+        s.async = true;
+        s.src = 'https://comments.apache.org/show_comments.lua?site=' + comments_shortname + '&page=' + comments_identifier;
+        (d.getElementsByTagName('head')[0] || d.getElementsByTagName('body')[0]).appendChild(s);
+    }
+    else { 
+        d.write('<div id="comments_thread">Comments are disabled for this page at the moment.<\/div>');
+    }
+})(window, document);
+//--><!]]></script></div><div id="footer">
 <p class="apache">Copyright 2012 The Apache Software Foundation.<br />Licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
-<p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="../faq/">FAQ</a> | <a href="../glossary.html">Glossary</a> | <a href="../sitemap.html">Sitemap</a></p></div>
+<p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="http://wiki.apache.org/httpd/FAQ">FAQ</a> | <a href="../glossary.html">Glossary</a> | <a href="../sitemap.html">Sitemap</a></p></div><script type="text/javascript"><!--//--><![CDATA[//><!--
+if (typeof(prettyPrint) !== 'undefined') {
+    prettyPrint();
+}
+//--><!]]></script>
 </body></html>

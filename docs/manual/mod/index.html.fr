@@ -8,10 +8,13 @@
 <title>Index des modules - Serveur Apache HTTP</title>
 <link href="../style/css/manual.css" rel="stylesheet" media="all" type="text/css" title="Main stylesheet" />
 <link href="../style/css/manual-loose-100pc.css" rel="alternate stylesheet" media="all" type="text/css" title="No Sidebar - Default font size" />
-<link href="../style/css/manual-print.css" rel="stylesheet" media="print" type="text/css" />
+<link href="../style/css/manual-print.css" rel="stylesheet" media="print" type="text/css" /><link rel="stylesheet" type="text/css" href="../style/css/prettify.css" />
+<script src="../style/scripts/prettify.js" type="text/javascript">
+</script>
+
 <link href="../images/favicon.ico" rel="shortcut icon" /></head>
 <body id="module-index"><div id="page-header">
-<p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="../faq/">FAQ</a> | <a href="../glossary.html">Glossaire</a> | <a href="../sitemap.html">Plan du site</a></p>
+<p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="http://wiki.apache.org/httpd/FAQ">FAQ</a> | <a href="../glossary.html">Glossaire</a> | <a href="../sitemap.html">Plan du site</a></p>
 <p class="apache">Serveur Apache HTTP Version 2.4</p>
 <img alt="" src="../images/feather.gif" /></div>
 <div class="up"><a href="./"><img title="&lt;-" alt="&lt;-" src="../images/left.gif" /></a></div>
@@ -121,7 +124,8 @@ client</dd>
 <dt><a href="mod_dir.html">mod_dir</a></dt><dd>Permet la redirection des adresses se terminant par un
 répertoire sans slash de fin et la mise à disposition des fichiers index
 de répertoire</dd>
-<dt><a href="mod_dumpio.html">mod_dumpio</a></dt><dd>Dumps all I/O to error log as desired.</dd>
+<dt><a href="mod_dumpio.html">mod_dumpio</a></dt><dd>Enregistre toutes les entrées/sorties dans le journal des
+erreurs de la manière souhaitée.</dd>
 <dt><a href="mod_echo.html" id="E" name="E">mod_echo</a></dt><dd>Un simple serveur d'écho pour illustrer les modules de
 protocole</dd>
 <dt><a href="mod_env.html">mod_env</a></dt><dd>Modifie l'environnement transmis aux scripts CGI et aux
@@ -153,7 +157,8 @@ serveur</dd>
 cache du résultat à destination des autres modules LDAP</dd>
 <dt><a href="mod_log_config.html">mod_log_config</a></dt><dd>Logging of the requests made to the server</dd>
 <dt><a href="mod_log_debug.html">mod_log_debug</a></dt><dd>Additional configurable debug logging</dd>
-<dt><a href="mod_log_forensic.html">mod_log_forensic</a></dt><dd>Forensic Logging of the requests made to the server</dd>
+<dt><a href="mod_log_forensic.html">mod_log_forensic</a></dt><dd>Journalisation légale des requêtes envoyées au
+serveur</dd>
 <dt><a href="mod_logio.html">mod_logio</a></dt><dd>Logging of input and output bytes per request</dd>
 <dt><a href="mod_lua.html">mod_lua</a></dt><dd>Fournit des points d'entrée Lua dans différentes parties du
 traitement des requêtes httpd</dd>
@@ -176,14 +181,15 @@ under different user IDs.</dd>
 <code>CONNECT</code> request handling</dd>
 <dt><a href="mod_proxy_express.html">mod_proxy_express</a></dt><dd>Dynamic mass reverse proxy extension for
 <code class="module"><a href="../mod/mod_proxy.html">mod_proxy</a></code></dd>
-<dt><a href="mod_proxy_fcgi.html">mod_proxy_fcgi</a></dt><dd>FastCGI support module for
+<dt><a href="mod_proxy_fcgi.html">mod_proxy_fcgi</a></dt><dd>Module fournissant le support de FastCGI à
 <code class="module"><a href="../mod/mod_proxy.html">mod_proxy</a></code></dd>
 <dt><a href="mod_proxy_fdpass.html">mod_proxy_fdpass</a></dt><dd>fdpass external process support module for
 <code class="module"><a href="../mod/mod_proxy.html">mod_proxy</a></code></dd>
 <dt><a href="mod_proxy_ftp.html">mod_proxy_ftp</a></dt><dd>FTP support module for
 <code class="module"><a href="../mod/mod_proxy.html">mod_proxy</a></code></dd>
-<dt><a href="mod_proxy_html.html">mod_proxy_html</a></dt><dd>Rewrite HTML links in to ensure they are addressable
-from Clients' networks in a proxy context.</dd>
+<dt><a href="mod_proxy_html.html">mod_proxy_html</a></dt><dd>Réécrit les liens HTML afin de s'assurer qu'ils soient bien
+adressables depuis les réseaux des clients dans un contexte de
+mandataire.</dd>
 <dt><a href="mod_proxy_http.html">mod_proxy_http</a></dt><dd>Module fournissant le support HTTP à
 <code class="module"><a href="../mod/mod_proxy.html">mod_proxy</a></code></dd>
 <dt><a href="mod_proxy_scgi.html">mod_proxy_scgi</a></dt><dd>SCGI gateway module for <code class="module"><a href="../mod/mod_proxy.html">mod_proxy</a></code></dd>
@@ -201,7 +207,7 @@ règles permettant de réécrire les URLs des requêtes
 à la volée</dd>
 <dt><a href="mod_sed.html" id="S" name="S">mod_sed</a></dt><dd>Filtre les contenus en entrée (requêtes) et en sortie
 (réponses) en utilisant la syntaxe de <code>sed</code></dd>
-<dt><a href="mod_session.html">mod_session</a></dt><dd>Session support</dd>
+<dt><a href="mod_session.html">mod_session</a></dt><dd>Support des sessions</dd>
 <dt><a href="mod_session_cookie.html">mod_session_cookie</a></dt><dd>Cookie based session support</dd>
 <dt><a href="mod_session_crypto.html">mod_session_crypto</a></dt><dd>Session encryption support</dd>
 <dt><a href="mod_session_dbd.html">mod_session_dbd</a></dt><dd>DBD/SQL based session support</dd>
@@ -251,5 +257,9 @@ filter modules</dd>
 <a href="../zh-cn/mod/" hreflang="zh-cn" rel="alternate" title="Simplified Chinese">&nbsp;zh-cn&nbsp;</a></p>
 </div><div id="footer">
 <p class="apache">Copyright 2012 The Apache Software Foundation.<br />Autorisé sous <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
-<p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="../faq/">FAQ</a> | <a href="../glossary.html">Glossaire</a> | <a href="../sitemap.html">Plan du site</a></p></div>
+<p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="http://wiki.apache.org/httpd/FAQ">FAQ</a> | <a href="../glossary.html">Glossaire</a> | <a href="../sitemap.html">Plan du site</a></p></div><script type="text/javascript"><!--//--><![CDATA[//><!--
+if (typeof(prettyPrint) !== 'undefined') {
+    prettyPrint();
+}
+//--><!]]></script>
 </body></html>

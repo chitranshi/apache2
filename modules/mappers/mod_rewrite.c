@@ -190,6 +190,7 @@ static const char* really_last_key = "rewrite_really_last";
 #define OPTION_INHERIT              1<<1
 #define OPTION_INHERIT_BEFORE       1<<2
 #define OPTION_NOSLASH              1<<3
+#define OPTION_ANYURI               1<<4
 
 #ifndef RAND_MAX
 #define RAND_MAX 32767
@@ -401,7 +402,7 @@ static int proxy_available;
 
 /* Locks/Mutexes */
 static apr_global_mutex_t *rewrite_mapr_lock_acquire = NULL;
-const char *rewritemap_mutex_type = "rewrite-map";
+static const char *rewritemap_mutex_type = "rewrite-map";
 
 /* Optional functions imported from mod_ssl when loaded: */
 static APR_OPTIONAL_FN_TYPE(ssl_var_lookup) *rewrite_ssl_lookup = NULL;
@@ -2893,6 +2894,9 @@ static const char *cmd_rewriteoptions(cmd_parms *cmd,
                          "LimitInternalRecursion directive and will be "
                          "ignored.");
         }
+        else if (!strcasecmp(w, "allowanyuri")) {
+            options |= OPTION_ANYURI;
+        }
         else {
             return apr_pstrcat(cmd->pool, "RewriteOptions: unknown option '",
                                w, "'", NULL);
@@ -2932,8 +2936,7 @@ static const char *cmd_rewritemap(cmd_parms *cmd, void *dconf, const char *a1,
 
     sconf = ap_get_module_config(cmd->server->module_config, &rewrite_module);
 
-    newmap = apr_palloc(cmd->pool, sizeof(rewritemap_entry));
-    newmap->func = NULL;
+    newmap = apr_pcalloc(cmd->pool, sizeof(rewritemap_entry));
 
     if (strncasecmp(a2, "txt:", 4) == 0) {
         if ((fname = ap_server_root_relative(cmd->pool, a2+4)) == NULL) {
@@ -2944,7 +2947,6 @@ static const char *cmd_rewritemap(cmd_parms *cmd, void *dconf, const char *a1,
         newmap->type      = MAPTYPE_TXT;
         newmap->datafile  = fname;
         newmap->checkfile = fname;
-        newmap->checkfile2= NULL;
         newmap->cachename = apr_psprintf(cmd->pool, "%pp:%s",
                                          (void *)cmd->server, a1);
     }
@@ -2957,7 +2959,6 @@ static const char *cmd_rewritemap(cmd_parms *cmd, void *dconf, const char *a1,
         newmap->type      = MAPTYPE_RND;
         newmap->datafile  = fname;
         newmap->checkfile = fname;
-        newmap->checkfile2= NULL;
         newmap->cachename = apr_psprintf(cmd->pool, "%pp:%s",
                                          (void *)cmd->server, a1);
     }
@@ -3031,17 +3032,10 @@ static const char *cmd_rewritemap(cmd_parms *cmd, void *dconf, const char *a1,
         }
 
         newmap->type      = MAPTYPE_PRG;
-        newmap->datafile  = NULL;
         newmap->checkfile = newmap->argv[0];
-        newmap->checkfile2= NULL;
-        newmap->cachename = NULL;
     }
     else if (strncasecmp(a2, "int:", 4) == 0) {
         newmap->type      = MAPTYPE_INT;
-        newmap->datafile  = NULL;
-        newmap->checkfile = NULL;
-        newmap->checkfile2= NULL;
-        newmap->cachename = NULL;
         newmap->func      = (char *(*)(request_rec *,char *))
                             apr_hash_get(mapfunc_hash, a2+4, strlen(a2+4));
         if (newmap->func == NULL) {
@@ -3058,12 +3052,9 @@ static const char *cmd_rewritemap(cmd_parms *cmd, void *dconf, const char *a1,
         newmap->type      = MAPTYPE_TXT;
         newmap->datafile  = fname;
         newmap->checkfile = fname;
-        newmap->checkfile2= NULL;
         newmap->cachename = apr_psprintf(cmd->pool, "%pp:%s",
                                          (void *)cmd->server, a1);
     }
-    newmap->fpin  = NULL;
-    newmap->fpout = NULL;
 
     if (newmap->checkfile
         && (apr_stat(&st, newmap->checkfile, APR_FINFO_MIN,
@@ -3243,37 +3234,60 @@ static const char *cmd_rewritecond(cmd_parms *cmd, void *in_dconf,
         newcond->ptype = CONDPAT_AP_EXPR;
     }
     else if (*a2 && a2[1]) {
-        if (!a2[2] && *a2 == '-') {
-            switch (a2[1]) {
-            case 'f': newcond->ptype = CONDPAT_FILE_EXISTS; break;
-            case 's': newcond->ptype = CONDPAT_FILE_SIZE;   break;
-            case 'd': newcond->ptype = CONDPAT_FILE_DIR;    break;
-            case 'x': newcond->ptype = CONDPAT_FILE_XBIT;   break;
-            case 'h': newcond->ptype = CONDPAT_FILE_LINK;   break;
-            case 'L': newcond->ptype = CONDPAT_FILE_LINK;   break;
-            case 'U': newcond->ptype = CONDPAT_LU_URL;      break;
-            case 'F': newcond->ptype = CONDPAT_LU_FILE;     break;
-            case 'l': if (a2[2] == 't')
-                          a2 += 3, newcond->ptype = CONDPAT_INT_LT;
-                      else if (a2[2] == 'e')
-                          a2 += 3, newcond->ptype = CONDPAT_INT_LE;
-                      else /* Historical; prefer -L or -h instead */
-                          newcond->ptype = CONDPAT_FILE_LINK;
-                      break;
-            case 'g': if (a2[2] == 't')
-                          a2 += 3, newcond->ptype = CONDPAT_INT_GT;
-                      else if (a2[2] == 'e')
-                          a2 += 3, newcond->ptype = CONDPAT_INT_GE;
-                      break;
-            case 'e': if (a2[2] == 'q')
-                          a2 += 3, newcond->ptype = CONDPAT_INT_EQ;
-                      break;
-            case 'n': if (a2[2] == 'e') {
-                          /* Inversion, ensure !-ne == -eq */
-                          a2 += 3, newcond->ptype = CONDPAT_INT_EQ;
-                          newcond->flags ^= CONDFLAG_NOTMATCH;
-                      }
-                      break;
+        if (*a2 == '-') {
+            if (!a2[2]) {
+                switch (a2[1]) {
+                case 'f': newcond->ptype = CONDPAT_FILE_EXISTS; break;
+                case 's': newcond->ptype = CONDPAT_FILE_SIZE;   break;
+                case 'd': newcond->ptype = CONDPAT_FILE_DIR;    break;
+                case 'x': newcond->ptype = CONDPAT_FILE_XBIT;   break;
+                case 'h': newcond->ptype = CONDPAT_FILE_LINK;   break;
+                case 'L': newcond->ptype = CONDPAT_FILE_LINK;   break;
+                case 'l': newcond->ptype = CONDPAT_FILE_LINK;   break;
+                case 'U': newcond->ptype = CONDPAT_LU_URL;      break;
+                case 'F': newcond->ptype = CONDPAT_LU_FILE;     break;
+                }
+            }
+            else if (a2[3]) {
+                switch (a2[1]) {
+                case 'l':
+                    if (a2[2] == 't') {
+                        a2 += 3;
+                        newcond->ptype = CONDPAT_INT_LT;
+                    }
+                    else if (a2[2] == 'e') {
+                        a2 += 3;
+                        newcond->ptype = CONDPAT_INT_LE;
+                    }
+                    break;
+
+                case 'g':
+                    if (a2[2] == 't') {
+                        a2 += 3;
+                        newcond->ptype = CONDPAT_INT_GT;
+                    }
+                    else if (a2[2] == 'e') {
+                        a2 += 3;
+                        newcond->ptype = CONDPAT_INT_GE;
+                    }
+                    break;
+
+                case 'e':
+                    if (a2[2] == 'q') {
+                        a2 += 3;
+                        newcond->ptype = CONDPAT_INT_EQ;
+                    }
+                    break;
+
+                case 'n':
+                    if (a2[2] == 'e') {
+                        /* Inversion, ensure !-ne == -eq */
+                        a2 += 3;
+                        newcond->ptype = CONDPAT_INT_EQ;
+                        newcond->flags ^= CONDFLAG_NOTMATCH;
+                    }
+                    break;
+                }
             }
         }
         else {
@@ -4419,8 +4433,16 @@ static int hook_uri2file(request_rec *r)
         return DECLINED;
     }
 
-    if ((r->unparsed_uri[0] == '*' && r->unparsed_uri[1] == '\0')
-        || !r->uri || r->uri[0] != '/') {
+    /* Unless the anyuri option is set, ensure that the input to the
+     * first rule really is a URL-path, avoiding security issues with
+     * poorly configured rules.  See CVE-2011-3368, CVE-2011-4317. */
+    if ((dconf->options & OPTION_ANYURI) == 0
+        && ((r->unparsed_uri[0] == '*' && r->unparsed_uri[1] == '\0')
+            || !r->uri || r->uri[0] != '/')) {
+        rewritelog((r, 8, NULL, "Declining, request-URI '%s' is not a URL-path. "
+                    "Consult the manual entry for the RewriteOptions directive "
+                    "for options and caveats about matching other strings.",
+                    r->uri));
         return DECLINED;
     }
 

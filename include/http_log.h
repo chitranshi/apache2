@@ -363,8 +363,8 @@ AP_DECLARE(void) ap_log_error(const char *file, int line, int module_index,
 #define ap_log_error(...) ap_log_error__(__VA_ARGS__)
 /* need server_rec *sr = ... for the case if s is verbatim NULL */
 #define ap_log_error__(file, line, mi, level, status, s, ...)           \
-    do { const server_rec *sr = s; if (APLOG_MODULE_IS_LEVEL(sr, mi, level))      \
-             ap_log_error_(file, line, mi, level, status, sr, __VA_ARGS__); \
+    do { const server_rec *sr__ = s; if (APLOG_MODULE_IS_LEVEL(sr__, mi, level)) \
+             ap_log_error_(file, line, mi, level, status, sr__, __VA_ARGS__);    \
     } while(0)
 #else
 #define ap_log_error ap_log_error_
@@ -569,21 +569,24 @@ AP_DECLARE(void) ap_log_command_line(apr_pool_t *p, server_rec *s);
 /**
  * Log the current pid of the parent process
  * @param p The pool to use for processing
- * @param fname The name of the file to log to
+ * @param fname The name of the file to log to.  If the filename is not
+ * absolute then it is assumed to be relative to ServerRoot.
  */
 AP_DECLARE(void) ap_log_pid(apr_pool_t *p, const char *fname);
 
 /**
  * Remove the pidfile.
  * @param p The pool to use for processing
- * @param fname The name of the pid file to remove
+ * @param fname The name of the pid file to remove.  If the filename is not
+ * absolute then it is assumed to be relative to ServerRoot.
  */
 AP_DECLARE(void) ap_remove_pid(apr_pool_t *p, const char *fname);
 
 /**
  * Retrieve the pid from a pidfile.
  * @param p The pool to use for processing
- * @param filename The name of the file containing the pid
+ * @param filename The name of the file containing the pid.  If the filename is not
+ * absolute then it is assumed to be relative to ServerRoot.
  * @param mypid Pointer to pid_t (valid only if return APR_SUCCESS)
  */
 AP_DECLARE(apr_status_t) ap_read_pid(apr_pool_t *p, const char *filename, pid_t *mypid);

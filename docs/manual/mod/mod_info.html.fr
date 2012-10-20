@@ -8,11 +8,14 @@
 <title>mod_info - Serveur Apache HTTP</title>
 <link href="../style/css/manual.css" rel="stylesheet" media="all" type="text/css" title="Main stylesheet" />
 <link href="../style/css/manual-loose-100pc.css" rel="alternate stylesheet" media="all" type="text/css" title="No Sidebar - Default font size" />
-<link href="../style/css/manual-print.css" rel="stylesheet" media="print" type="text/css" />
+<link href="../style/css/manual-print.css" rel="stylesheet" media="print" type="text/css" /><link rel="stylesheet" type="text/css" href="../style/css/prettify.css" />
+<script src="../style/scripts/prettify.js" type="text/javascript">
+</script>
+
 <link href="../images/favicon.ico" rel="shortcut icon" /></head>
 <body>
 <div id="page-header">
-<p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="../faq/">FAQ</a> | <a href="../glossary.html">Glossaire</a> | <a href="../sitemap.html">Plan du site</a></p>
+<p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="http://wiki.apache.org/httpd/FAQ">FAQ</a> | <a href="../glossary.html">Glossaire</a> | <a href="../sitemap.html">Plan du site</a></p>
 <p class="apache">Serveur Apache HTTP Version 2.4</p>
 <img alt="" src="../images/feather.gif" /></div>
 <div class="up"><a href="./"><img title="&lt;-" alt="&lt;-" src="../images/left.gif" /></a></div>
@@ -26,6 +29,8 @@
 <a href="../ja/mod/mod_info.html" hreflang="ja" rel="alternate" title="Japanese">&nbsp;ja&nbsp;</a> |
 <a href="../ko/mod/mod_info.html" hreflang="ko" rel="alternate" title="Korean">&nbsp;ko&nbsp;</a></p>
 </div>
+<div class="outofdate">Cette traduction peut être périmée. Vérifiez la version
+            anglaise pour les changements récents.</div>
 <table class="module"><tr><th><a href="module-dict.html#Description">Description:</a></th><td>Affiche une présentation complète de la configuration du
 serveur</td></tr>
 <tr><th><a href="module-dict.html#Status">Statut:</a></th><td>Extension</td></tr>
@@ -36,26 +41,24 @@ serveur</td></tr>
     <p>Pour activer <code class="module"><a href="../mod/mod_info.html">mod_info</a></code>, ajoutez les lignes
     suivantes à votre fichier <code>httpd.conf</code>.</p>
 
-    <div class="example"><p><code>
-      &lt;Location /infos-serveur&gt;<br />
-      <span class="indent">
-        SetHandler server-info<br />
-      </span>
-      &lt;/Location&gt;
-    </code></p></div>
+    <pre class="prettyprint lang-config">
+&lt;Location /server-info&gt;
+    SetHandler server-info
+&lt;/Location&gt;
+    </pre>
+
 
     <p>Il est recommandé d'utiliser <code class="module"><a href="../mod/mod_access.html">mod_access</a></code> à
     l'intérieur de la section <code class="directive"><a href="../mod/core.html#location">&lt;Location&gt;</a></code> afin de restreindre l'accès aux
     informations de configuration de votre serveur :</p>
 
-    <div class="example"><p><code>
-      &lt;Location /infos-serveur&gt;<br />
-      <span class="indent">
-        SetHandler server-info<br />
-        Require host example.com<br />
-      </span>
-      &lt;/Location&gt;
-    </code></p></div>
+    <pre class="prettyprint lang-config">
+&lt;Location /server-info&gt;
+    SetHandler server-info
+    Require host example.com
+&lt;/Location&gt;
+    </pre>
+
 
     <p>Une fois cette configuration effectuée, les informations du
     serveur sont disponibles à l'adresse
@@ -71,7 +74,7 @@ serveur</td></tr>
 <li><img alt="" src="../images/down.gif" /> <a href="#queries">Filtrage des informations affichées</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#startup">Affichage de la configuration au démarrage</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#limitations">Limitations connues</a></li>
-</ul></div>
+</ul><ul class="seealso"><li><a href="#comments_section">Commentaires</a></li></ul></div>
 <div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
 <div class="section">
 <h2><a name="security" id="security">Problèmes liés à la sécurité</a></h2>
@@ -93,19 +96,18 @@ serveur</td></tr>
     restreindre l'accès aux informations de configuration de votre
     serveur.</p>
 
-    <div class="example"><h3>Contrôle d'accès</h3><p><code>
-      &lt;Location /infos-serveur&gt;<br />
-      <span class="indent">
-        SetHandler server-info<br />
-        Order allow,deny<br />
-        # Autorisation d'accès depuis le serveur lui-même<br />
-        Allow from 127.0.0.1<br />
-        # Autorisation d'accès depuis une station de travail du réseau
-	# local<br />
-        Allow from 192.168.1.17<br />
-      </span>
-      &lt;/Location&gt;
-    </code></p></div>
+    <div class="example"><h3>Contrôle d'accès</h3><pre class="prettyprint lang-config">
+&lt;Location /server-info&gt;
+    SetHandler server-info
+    Order allow,deny
+    # Autorisation d'accès depuis le serveur lui-même
+    Allow from 127.0.0.1
+    # Autorisation d'accès depuis une station de travail du réseau
+# local
+    Allow from 192.168.1.17
+&lt;/Location&gt;
+      </pre>
+</div>
 </div><div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
 <div class="section">
 <h2><a name="queries" id="queries">Filtrage des informations affichées</a></h2>
@@ -139,10 +141,18 @@ serveur</td></tr>
 <div class="section">
 <h2><a name="startup" id="startup">Affichage de la configuration au démarrage</a></h2>
     <p>Si la directive de configuration define
-    <code>-DDUMP_CONFIG</code> est définie, <code class="module"><a href="../mod/mod_info.html">mod_info</a></code> va
+    <code>-DDUMP_CONFIG</code> est utilisée, <code class="module"><a href="../mod/mod_info.html">mod_info</a></code> va
     envoyer la configuration préinterprétée vers <code>stdout</code> au
-    cours du démarrage du serveur. Ceci est pratiquement équivalent au
-    paramètre de requête <code>?config</code>.</p>
+    cours du démarrage du serveur. "Préinterprétée" signifie que
+    les directives telles que <code class="directive"><a href="../mod/core.html#ifdefine">&lt;IfDefine&gt;</a></code> et <code class="directive"><a href="../mod/core.html#ifmodule">&lt;IfModule&gt;</a></code> sont évaluées et les variables
+    d'environnement remplacées par leurs valeurs. Cela ne représente
+    cependant pas la configuration définitive. En particulier, les
+    fusions ou écrasementsde définitions en cas de directives multiples ne sont pas
+    représentés.</p>
+
+    <p>Le résultat est équivalent à celui de la requête
+    <code>?config</code>.</p>
+    
 </div><div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
 <div class="section">
 <h2><a name="limitations" id="limitations">Limitations connues</a></h2>
@@ -187,13 +197,12 @@ module affichées par le gestionnaire server-info</td></tr>
     en tant qu'<strong>Information supplémentaire</strong> interprétée
     en HTML pour le module <var>nom-module</var>. Exemple :</p>
 
-    <div class="example"><p><code>
-      AddModuleInfo mod_deflate.c 'Voir &lt;a \<br />
-      <span class="indent">
-        href="http://www.apache.org/docs/2.4/mod/mod_deflate.html"&gt;\<br />
-        http://www.apache.org/docs/2.4/mod/mod_deflate.html&lt;/a&gt;'
-      </span>
-    </code></p></div>
+    <pre class="prettyprint lang-config">
+AddModuleInfo mod_deflate.c 'See &lt;a \
+    href="http://www.apache.org/docs/2.4/mod/mod_deflate.html"&gt;\
+    http://www.apache.org/docs/2.4/mod/mod_deflate.html&lt;/a&gt;'
+    </pre>
+
 
 </div>
 </div>
@@ -202,7 +211,28 @@ module affichées par le gestionnaire server-info</td></tr>
 <a href="../fr/mod/mod_info.html" title="Français">&nbsp;fr&nbsp;</a> |
 <a href="../ja/mod/mod_info.html" hreflang="ja" rel="alternate" title="Japanese">&nbsp;ja&nbsp;</a> |
 <a href="../ko/mod/mod_info.html" hreflang="ko" rel="alternate" title="Korean">&nbsp;ko&nbsp;</a></p>
-</div><div id="footer">
+</div><div class="top"><a href="#page-header"><img src="../images/up.gif" alt="top" /></a></div><div class="section"><h2><a id="comments_section" name="comments_section">Commentaires</a></h2><div class="warning"><strong>Notice:</strong><br />This is not a Q&amp;A section. Comments placed here should be pointed towards suggestions on improving the documentation or server, and may be removed again by our moderators if they are either implemented or considered invalid/off-topic. Questions on how to manage the Apache HTTP Server should be directed at either our IRC channel, #httpd, on Freenode, or sent to our <a href="http://httpd.apache.org/lists.html">mailing lists</a>.</div>
+<script type="text/javascript"><!--//--><![CDATA[//><!--
+var comments_shortname = 'httpd';
+var comments_identifier = 'http://httpd.apache.org/docs/2.4/mod/mod_info.html';
+(function(w, d) {
+    if (w.location.hostname.toLowerCase() == "httpd.apache.org") {
+        d.write('<div id="comments_thread"><\/div>');
+        var s = d.createElement('script');
+        s.type = 'text/javascript';
+        s.async = true;
+        s.src = 'https://comments.apache.org/show_comments.lua?site=' + comments_shortname + '&page=' + comments_identifier;
+        (d.getElementsByTagName('head')[0] || d.getElementsByTagName('body')[0]).appendChild(s);
+    }
+    else { 
+        d.write('<div id="comments_thread">Comments are disabled for this page at the moment.<\/div>');
+    }
+})(window, document);
+//--><!]]></script></div><div id="footer">
 <p class="apache">Copyright 2012 The Apache Software Foundation.<br />Autorisé sous <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
-<p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="../faq/">FAQ</a> | <a href="../glossary.html">Glossaire</a> | <a href="../sitemap.html">Plan du site</a></p></div>
+<p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="http://wiki.apache.org/httpd/FAQ">FAQ</a> | <a href="../glossary.html">Glossaire</a> | <a href="../sitemap.html">Plan du site</a></p></div><script type="text/javascript"><!--//--><![CDATA[//><!--
+if (typeof(prettyPrint) !== 'undefined') {
+    prettyPrint();
+}
+//--><!]]></script>
 </body></html>

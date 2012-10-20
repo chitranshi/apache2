@@ -8,11 +8,14 @@
 <title>mod_session - Apache HTTP Server</title>
 <link href="../style/css/manual.css" rel="stylesheet" media="all" type="text/css" title="Main stylesheet" />
 <link href="../style/css/manual-loose-100pc.css" rel="alternate stylesheet" media="all" type="text/css" title="No Sidebar - Default font size" />
-<link href="../style/css/manual-print.css" rel="stylesheet" media="print" type="text/css" />
+<link href="../style/css/manual-print.css" rel="stylesheet" media="print" type="text/css" /><link rel="stylesheet" type="text/css" href="../style/css/prettify.css" />
+<script src="../style/scripts/prettify.js" type="text/javascript">
+</script>
+
 <link href="../images/favicon.ico" rel="shortcut icon" /></head>
 <body>
 <div id="page-header">
-<p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="../faq/">FAQ</a> | <a href="../glossary.html">Glossary</a> | <a href="../sitemap.html">Sitemap</a></p>
+<p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="http://wiki.apache.org/httpd/FAQ">FAQ</a> | <a href="../glossary.html">Glossary</a> | <a href="../sitemap.html">Sitemap</a></p>
 <p class="apache">Apache HTTP Server Version 2.4</p>
 <img alt="" src="../images/feather.gif" /></div>
 <div class="up"><a href="./"><img title="&lt;-" alt="&lt;-" src="../images/left.gif" /></a></div>
@@ -21,7 +24,8 @@
 <div id="page-content">
 <div id="preamble"><h1>Apache Module mod_session</h1>
 <div class="toplang">
-<p><span>Available Languages: </span><a href="../en/mod/mod_session.html" title="English">&nbsp;en&nbsp;</a></p>
+<p><span>Available Languages: </span><a href="../en/mod/mod_session.html" title="English">&nbsp;en&nbsp;</a> |
+<a href="../fr/mod/mod_session.html" hreflang="fr" rel="alternate" title="Français">&nbsp;fr&nbsp;</a></p>
 </div>
 <table class="module"><tr><th><a href="module-dict.html#Description">Description:</a></th><td>Session support</td></tr>
 <tr><th><a href="module-dict.html#Status">Status:</a></th><td>Extension</td></tr>
@@ -82,7 +86,7 @@
 <li><code class="module"><a href="../mod/mod_session_cookie.html">mod_session_cookie</a></code></li>
 <li><code class="module"><a href="../mod/mod_session_crypto.html">mod_session_crypto</a></code></li>
 <li><code class="module"><a href="../mod/mod_session_dbd.html">mod_session_dbd</a></code></li>
-</ul></div>
+</ul><ul class="seealso"><li><a href="#comments_section">Comments</a></li></ul></div>
 <div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
 <div class="section">
 <h2><a name="whatisasession" id="whatisasession">What is a session?</a></h2>
@@ -156,45 +160,49 @@
       where the session will be stored. In this example, the session will be
       stored on the browser, in a cookie called <code>session</code>.</p>
 
-      <div class="example"><h3>Browser based session</h3><p><code>
-        Session On<br />
-        SessionCookieName session path=/<br />
-      </code></p></div>
+      <div class="example"><h3>Browser based session</h3><pre class="prettyprint lang-config">
+Session On
+SessionCookieName session path=/
+        </pre>
+</div>
 
       <p>The session is not useful unless it can be written to or read from. The
       following example shows how values can be injected into the session through
       the use of a predetermined HTTP response header called
       <code>X-Replace-Session</code>.</p>
 
-      <div class="example"><h3>Writing to a session</h3><p><code>
-        Session On<br />
-        SessionCookieName session path=/<br />
-        SessionHeader X-Replace-Session<br />
-      </code></p></div>
+      <div class="example"><h3>Writing to a session</h3><pre class="prettyprint lang-config">
+Session On
+SessionCookieName session path=/
+SessionHeader X-Replace-Session
+        </pre>
+</div>
 
       <p>The header should contain name value pairs expressed in the same format
       as a query string in a URL, as in the example below. Setting a key to the
       empty string has the effect of removing that key from the session.</p>
 
-      <div class="example"><h3>CGI to write to a session</h3><p><code>
-        #!/bin/bash<br />
-        echo "Content-Type: text/plain"<br />
-        echo "X-Replace-Session: key1=foo&amp;key2=&amp;key3=bar"<br />
-        echo<br />
-        env<br />
-      </code></p></div>
+      <div class="example"><h3>CGI to write to a session</h3><pre class="prettyprint lang-sh">
+#!/bin/bash
+echo "Content-Type: text/plain"
+echo "X-Replace-Session: key1=foo&amp;key2=&amp;key3=bar"
+echo
+env
+        </pre>
+</div>
 
       <p>If configured, the session can be read back from the HTTP_SESSION
       environment variable. By default, the session is kept private, so this
       has to be explicitly turned on with the
       <code class="directive"><a href="#sessionenv">SessionEnv</a></code> directive.</p>
 
-      <div class="example"><h3>Read from a session</h3><p><code>
-        Session On<br />
-        SessionEnv On<br />
-        SessionCookieName session path=/<br />
-        SessionHeader X-Replace-Session<br />
-      </code></p></div>
+      <div class="example"><h3>Read from a session</h3><pre class="prettyprint lang-config">
+Session On
+SessionEnv On
+SessionCookieName session path=/
+SessionHeader X-Replace-Session
+        </pre>
+</div>
 
       <p>Once read, the CGI variable <code>HTTP_SESSION</code> should contain
       the value <code>key1=foo&amp;key3=bar</code>.</p>
@@ -213,11 +221,12 @@
       placed on the browser using the <code class="module"><a href="../mod/mod_session_crypto.html">mod_session_crypto</a></code>
       module.</p>
 
-      <div class="example"><h3>Browser based encrypted session</h3><p><code>
-        Session On<br />
-        SessionCryptoPassphrase secret<br />
-        SessionCookieName session path=/<br />
-      </code></p></div>
+      <div class="example"><h3>Browser based encrypted session</h3><pre class="prettyprint lang-config">
+Session On
+SessionCryptoPassphrase secret
+SessionCookieName session path=/
+        </pre>
+</div>
 
       <p>The session will be automatically decrypted on load, and encrypted on
       save by Apache, the underlying application using the session need have
@@ -250,11 +259,12 @@
       <p>Standard cookie parameters can be specified after the name of the cookie,
       as in the example below.</p>
 
-      <div class="example"><h3>Setting cookie parameters</h3><p><code>
-        Session On<br />
-        SessionCryptoPassphrase secret<br />
-        SessionCookieName session path=/private;domain=example.com;httponly;secure;<br />
-      </code></p></div>
+      <div class="example"><h3>Setting cookie parameters</h3><pre class="prettyprint lang-config">
+Session On
+SessionCryptoPassphrase secret
+SessionCookieName session path=/private;domain=example.com;httponly;secure;
+        </pre>
+</div>
 
       <p>In cases where the Apache server forms the frontend for backend origin servers,
       it is possible to have the session cookies removed from the incoming HTTP headers using
@@ -272,16 +282,17 @@
       <code class="module"><a href="../mod/mod_auth_form.html">mod_auth_form</a></code> saves the user's login name and password within
       the session.</p>
 
-      <div class="example"><h3>Form based authentication</h3><p><code>
-        Session On<br />
-        SessionCryptoPassphrase secret<br />
-        SessionCookieName session path=/<br />
-        AuthFormProvider file<br />
-        AuthUserFile conf/passwd<br />
-        AuthType form<br />
-        AuthName realm<br />
-        ...<br />
-      </code></p></div>
+      <div class="example"><h3>Form based authentication</h3><pre class="prettyprint lang-config">
+Session On
+SessionCryptoPassphrase secret
+SessionCookieName session path=/
+AuthFormProvider file
+AuthUserFile conf/passwd
+AuthType form
+AuthName realm
+#...
+        </pre>
+</div>
 
       <p>See the <code class="module"><a href="../mod/mod_auth_form.html">mod_auth_form</a></code> module for documentation and complete
       examples.</p>
@@ -486,8 +497,30 @@
 </div>
 </div>
 <div class="bottomlang">
-<p><span>Available Languages: </span><a href="../en/mod/mod_session.html" title="English">&nbsp;en&nbsp;</a></p>
-</div><div id="footer">
+<p><span>Available Languages: </span><a href="../en/mod/mod_session.html" title="English">&nbsp;en&nbsp;</a> |
+<a href="../fr/mod/mod_session.html" hreflang="fr" rel="alternate" title="Français">&nbsp;fr&nbsp;</a></p>
+</div><div class="top"><a href="#page-header"><img src="../images/up.gif" alt="top" /></a></div><div class="section"><h2><a id="comments_section" name="comments_section">Comments</a></h2><div class="warning"><strong>Notice:</strong><br />This is not a Q&amp;A section. Comments placed here should be pointed towards suggestions on improving the documentation or server, and may be removed again by our moderators if they are either implemented or considered invalid/off-topic. Questions on how to manage the Apache HTTP Server should be directed at either our IRC channel, #httpd, on Freenode, or sent to our <a href="http://httpd.apache.org/lists.html">mailing lists</a>.</div>
+<script type="text/javascript"><!--//--><![CDATA[//><!--
+var comments_shortname = 'httpd';
+var comments_identifier = 'http://httpd.apache.org/docs/2.4/mod/mod_session.html';
+(function(w, d) {
+    if (w.location.hostname.toLowerCase() == "httpd.apache.org") {
+        d.write('<div id="comments_thread"><\/div>');
+        var s = d.createElement('script');
+        s.type = 'text/javascript';
+        s.async = true;
+        s.src = 'https://comments.apache.org/show_comments.lua?site=' + comments_shortname + '&page=' + comments_identifier;
+        (d.getElementsByTagName('head')[0] || d.getElementsByTagName('body')[0]).appendChild(s);
+    }
+    else { 
+        d.write('<div id="comments_thread">Comments are disabled for this page at the moment.<\/div>');
+    }
+})(window, document);
+//--><!]]></script></div><div id="footer">
 <p class="apache">Copyright 2012 The Apache Software Foundation.<br />Licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
-<p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="../faq/">FAQ</a> | <a href="../glossary.html">Glossary</a> | <a href="../sitemap.html">Sitemap</a></p></div>
+<p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="http://wiki.apache.org/httpd/FAQ">FAQ</a> | <a href="../glossary.html">Glossary</a> | <a href="../sitemap.html">Sitemap</a></p></div><script type="text/javascript"><!--//--><![CDATA[//><!--
+if (typeof(prettyPrint) !== 'undefined') {
+    prettyPrint();
+}
+//--><!]]></script>
 </body></html>

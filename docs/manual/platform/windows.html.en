@@ -8,10 +8,13 @@
 <title>Using Apache HTTP Server on Microsoft Windows - Apache HTTP Server</title>
 <link href="../style/css/manual.css" rel="stylesheet" media="all" type="text/css" title="Main stylesheet" />
 <link href="../style/css/manual-loose-100pc.css" rel="alternate stylesheet" media="all" type="text/css" title="No Sidebar - Default font size" />
-<link href="../style/css/manual-print.css" rel="stylesheet" media="print" type="text/css" />
+<link href="../style/css/manual-print.css" rel="stylesheet" media="print" type="text/css" /><link rel="stylesheet" type="text/css" href="../style/css/prettify.css" />
+<script src="../style/scripts/prettify.js" type="text/javascript">
+</script>
+
 <link href="../images/favicon.ico" rel="shortcut icon" /></head>
 <body id="manual-page"><div id="page-header">
-<p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="../faq/">FAQ</a> | <a href="../glossary.html">Glossary</a> | <a href="../sitemap.html">Sitemap</a></p>
+<p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="http://wiki.apache.org/httpd/FAQ">FAQ</a> | <a href="../glossary.html">Glossary</a> | <a href="../sitemap.html">Sitemap</a></p>
 <p class="apache">Apache HTTP Server Version 2.4</p>
 <img alt="" src="../images/feather.gif" /></div>
 <div class="up"><a href="./"><img title="&lt;-" alt="&lt;-" src="../images/left.gif" /></a></div>
@@ -44,7 +47,7 @@
 <li><img alt="" src="../images/down.gif" /> <a href="#wincons">Running Apache as a Console Application</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#test">Testing the Installation</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#windrivemap">Configuring Access to Network Resources</a></li>
-</ul></div>
+</ul><ul class="seealso"><li><a href="#comments_section">Comments</a></li></ul></div>
 <div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
 <div class="section">
 <h2><a name="req" id="req">Operating System Requirements</a></h2>
@@ -290,12 +293,13 @@
       how it is accessed.  If you wish to assure that only lowercase
       is used in URLs, you can use something like:</p>
 
-      <div class="example"><p><code>
-      RewriteEngine On<br />
-      RewriteMap lowercase int:tolower<br />
-      RewriteCond %{REQUEST_URI} [A-Z]<br />
-      RewriteRule (.*) ${lowercase:$1} [R,L]
-      </code></p></div></li>
+      <pre class="prettyprint lang-config">
+RewriteEngine On
+RewriteMap lowercase int:tolower
+RewriteCond %{REQUEST_URI} [A-Z]
+RewriteRule (.*) ${lowercase:$1} [R,L]
+      </pre>
+</li>
 
       <li><p>When running, Apache needs write access only to the logs
       directory and any configured cache directory tree.  Due to the
@@ -316,9 +320,10 @@
       module, use the following (in addition to the status-activating
       directives in <code>access.conf</code>):</p>
 
-      <div class="example"><p><code>
+      <pre class="prettyprint lang-config">
         LoadModule status_module modules/mod_status.so
-      </code></p></div>
+      </pre>
+
 
       <p>Information on <a href="../mod/mod_so.html#creating">creating
       loadable modules</a> is also available.</p></li>
@@ -680,7 +685,7 @@
     </p>
 
     <div class="example"><p><code>
-      HKEY_LOCAL_MACHINE\SOFTWARE\Apache Software Foundation\Apache\2.42
+      HKEY_LOCAL_MACHINE\SOFTWARE\Apache Software Foundation\Apache\2.43
     </code></p></div>
 
     <p>Correspondingly, if you chose to install Apache for the current
@@ -689,7 +694,7 @@
     logged on:</p>
 
     <div class="example"><p><code>
-      HKEY_CURRENT_USER\SOFTWARE\Apache Software Foundation\Apache\2.42
+      HKEY_CURRENT_USER\SOFTWARE\Apache Software Foundation\Apache\2.43
     </code></p></div>
 
     <p>This key is compiled into the server and can enable you to test
@@ -786,21 +791,24 @@
   (Arcane and error prone procedures may work around the restriction
   on mapped drive letters, but this is not recommended.)</p>
 
-  <div class="example"><h3>Example DocumentRoot with UNC path</h3><p><code>
+  <div class="example"><h3>Example DocumentRoot with UNC path</h3><pre class="prettyprint lang-config">
   DocumentRoot //dochost/www/html/
-  </code></p></div>
+  </pre>
+</div>
 
-  <div class="example"><h3>Example DocumentRoot with IP address in UNC path</h3><p><code>
-  DocumentRoot //192.168.1.50/docs/<br />
-  </code></p></div>
+  <div class="example"><h3>Example DocumentRoot with IP address in UNC path</h3><pre class="prettyprint lang-config">
+  DocumentRoot //192.168.1.50/docs/
+  </pre>
+</div>
 
-  <div class="example"><h3>Example Alias and corresponding Directory with UNC path</h3><p><code>
-  Alias /images/ //imagehost/www/images/<br />
-  <br />
-  &lt;Directory //imagehost/www/images/&gt;<br />
-  ...<br />
-  &lt;Directory&gt;<br />
-  </code></p></div>
+  <div class="example"><h3>Example Alias and corresponding Directory with UNC path</h3><pre class="prettyprint lang-config">
+Alias /images/ //imagehost/www/images/
+
+&lt;Directory //imagehost/www/images/&gt;
+#...
+&lt;Directory&gt;
+  </pre>
+</div>
 
   <p>When running Apache httpd as a service, you must create a
   separate account in order to access network resources, as described
@@ -809,7 +817,28 @@
 <div class="bottomlang">
 <p><span>Available Languages: </span><a href="../en/platform/windows.html" title="English">&nbsp;en&nbsp;</a> |
 <a href="../ko/platform/windows.html" hreflang="ko" rel="alternate" title="Korean">&nbsp;ko&nbsp;</a></p>
-</div><div id="footer">
+</div><div class="top"><a href="#page-header"><img src="../images/up.gif" alt="top" /></a></div><div class="section"><h2><a id="comments_section" name="comments_section">Comments</a></h2><div class="warning"><strong>Notice:</strong><br />This is not a Q&amp;A section. Comments placed here should be pointed towards suggestions on improving the documentation or server, and may be removed again by our moderators if they are either implemented or considered invalid/off-topic. Questions on how to manage the Apache HTTP Server should be directed at either our IRC channel, #httpd, on Freenode, or sent to our <a href="http://httpd.apache.org/lists.html">mailing lists</a>.</div>
+<script type="text/javascript"><!--//--><![CDATA[//><!--
+var comments_shortname = 'httpd';
+var comments_identifier = 'http://httpd.apache.org/docs/2.4/platform/windows.html';
+(function(w, d) {
+    if (w.location.hostname.toLowerCase() == "httpd.apache.org") {
+        d.write('<div id="comments_thread"><\/div>');
+        var s = d.createElement('script');
+        s.type = 'text/javascript';
+        s.async = true;
+        s.src = 'https://comments.apache.org/show_comments.lua?site=' + comments_shortname + '&page=' + comments_identifier;
+        (d.getElementsByTagName('head')[0] || d.getElementsByTagName('body')[0]).appendChild(s);
+    }
+    else { 
+        d.write('<div id="comments_thread">Comments are disabled for this page at the moment.<\/div>');
+    }
+})(window, document);
+//--><!]]></script></div><div id="footer">
 <p class="apache">Copyright 2012 The Apache Software Foundation.<br />Licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
-<p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="../faq/">FAQ</a> | <a href="../glossary.html">Glossary</a> | <a href="../sitemap.html">Sitemap</a></p></div>
+<p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="http://wiki.apache.org/httpd/FAQ">FAQ</a> | <a href="../glossary.html">Glossary</a> | <a href="../sitemap.html">Sitemap</a></p></div><script type="text/javascript"><!--//--><![CDATA[//><!--
+if (typeof(prettyPrint) !== 'undefined') {
+    prettyPrint();
+}
+//--><!]]></script>
 </body></html>

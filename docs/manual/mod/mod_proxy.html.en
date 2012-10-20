@@ -8,11 +8,14 @@
 <title>mod_proxy - Apache HTTP Server</title>
 <link href="../style/css/manual.css" rel="stylesheet" media="all" type="text/css" title="Main stylesheet" />
 <link href="../style/css/manual-loose-100pc.css" rel="alternate stylesheet" media="all" type="text/css" title="No Sidebar - Default font size" />
-<link href="../style/css/manual-print.css" rel="stylesheet" media="print" type="text/css" />
+<link href="../style/css/manual-print.css" rel="stylesheet" media="print" type="text/css" /><link rel="stylesheet" type="text/css" href="../style/css/prettify.css" />
+<script src="../style/scripts/prettify.js" type="text/javascript">
+</script>
+
 <link href="../images/favicon.ico" rel="shortcut icon" /></head>
 <body>
 <div id="page-header">
-<p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="../faq/">FAQ</a> | <a href="../glossary.html">Glossary</a> | <a href="../sitemap.html">Sitemap</a></p>
+<p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="http://wiki.apache.org/httpd/FAQ">FAQ</a> | <a href="../glossary.html">Glossary</a> | <a href="../sitemap.html">Sitemap</a></p>
 <p class="apache">Apache HTTP Server Version 2.4</p>
 <img alt="" src="../images/feather.gif" /></div>
 <div class="up"><a href="./"><img title="&lt;-" alt="&lt;-" src="../images/left.gif" /></a></div>
@@ -134,7 +137,7 @@
 <li><code class="module"><a href="../mod/mod_proxy_scgi.html">mod_proxy_scgi</a></code></li>
 <li><code class="module"><a href="../mod/mod_proxy_balancer.html">mod_proxy_balancer</a></code></li>
 <li><code class="module"><a href="../mod/mod_ssl.html">mod_ssl</a></code></li>
-</ul></div>
+</ul><ul class="seealso"><li><a href="#comments_section">Comments</a></li></ul></div>
 <div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
 <div class="section">
 <h2><a name="forwardreverse" id="forwardreverse">Forward Proxies and Reverse
@@ -193,21 +196,21 @@
     <p>In addition, if you wish to have caching enabled, consult
     the documentation from <code class="module"><a href="../mod/mod_cache.html">mod_cache</a></code>.</p>
 
-    <div class="example"><h3>Reverse Proxy</h3><p><code>
-    ProxyPass /foo http://foo.example.com/bar<br />
-    ProxyPassReverse /foo http://foo.example.com/bar
-    </code></p></div>
+    <div class="example"><h3>Reverse Proxy</h3><pre class="prettyprint lang-config">
+ProxyPass /foo http://foo.example.com/bar
+ProxyPassReverse /foo http://foo.example.com/bar
+    </pre>
+</div>
 
-    <div class="example"><h3>Forward Proxy</h3><p><code>
-    ProxyRequests On<br />
-    ProxyVia On<br />
-    <br />
-    &lt;Proxy *&gt;<br />
-    <span class="indent">
-      Require host internal.example.com<br />
-    </span>
-    &lt;/Proxy&gt;
-    </code></p></div>
+    <div class="example"><h3>Forward Proxy</h3><pre class="prettyprint lang-config">
+ProxyRequests On
+ProxyVia On
+
+&lt;Proxy *&gt;
+  Require host internal.example.com
+&lt;/Proxy&gt;
+    </pre>
+</div>
     </div><div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
 <div class="section">
 <h2><a name="workers" id="workers">Workers</a></h2>
@@ -229,29 +232,30 @@
       <code class="directive"><a href="#proxypassmatch">ProxyPassMatch</a></code> when used
       for a reverse proxy:</p>
 
-      <div class="example"><p><code>
+      <pre class="prettyprint lang-config">
           ProxyPass /example http://backend.example.com connectiontimeout=5 timeout=30
-      </code></p></div>
+      </pre>
+
 
       <p>This will create a worker associated with the origin server URL
       <code>http://backend.example.com</code> and using the given timeout
       values. When used in a forward proxy, workers are usually defined
       via the <code class="directive"><a href="#proxyset">ProxySet</a></code> directive:</p>
 
-      <div class="example"><p><code>
+      <pre class="prettyprint lang-config">
           ProxySet http://backend.example.com connectiontimeout=5 timeout=30
-      </code></p></div>
+      </pre>
+
 
       <p>or alternatively using <code class="directive"><a href="#proxy">Proxy</a></code>
       and <code class="directive"><a href="#proxyset">ProxySet</a></code>:</p>
 
-      <div class="example"><p><code>
-        &lt;Proxy http://backend.example.com&gt;<br />
-        <span class="indent">
-          ProxySet connectiontimeout=5 timeout=30
-        </span>
-        &lt;/Proxy&gt;
-      </code></p></div>
+      <pre class="prettyprint lang-config">
+&lt;Proxy http://backend.example.com&gt;
+  ProxySet connectiontimeout=5 timeout=30
+&lt;/Proxy&gt;
+      </pre>
+
 
       <p>Using explicitly configured workers in the forward mode is
       not very common, because forward proxies usually communicate with many
@@ -267,10 +271,11 @@
       <p>The URL identifying a direct worker is the URL of its
       origin server including any path components given:</p>
 
-      <div class="example"><p><code>
-          ProxyPass /examples http://backend.example.com/examples<br />
-          ProxyPass /docs http://backend.example.com/docs
-      </code></p></div>
+     <pre class="prettyprint lang-config">
+ProxyPass /examples http://backend.example.com/examples
+ProxyPass /docs http://backend.example.com/docs
+      </pre>
+
 
       <p>This example defines two different workers, each using a separate
       connection pool and configuration.</p>
@@ -280,10 +285,11 @@
         the URL of some worker is a leading substring of the URL of another
         worker defined later in the configuration file. In the following example</p>
 
-        <div class="example"><p><code>
-            ProxyPass /apps http://backend.example.com/ timeout=60<br />
-            ProxyPass /examples http://backend.example.com/examples timeout=10
-        </code></p></div>
+        <pre class="prettyprint lang-config">
+ProxyPass /apps http://backend.example.com/ timeout=60
+ProxyPass /examples http://backend.example.com/examples timeout=10
+        </pre>
+
 
         <p>the second worker isn't actually created. Instead the first
         worker is used. The benefit is, that there is only one connection pool,
@@ -329,13 +335,12 @@
       <p>You can control who can access your proxy via the <code class="directive"><a href="#proxy">&lt;Proxy&gt;</a></code> control block as in
       the following example:</p>
 
-      <div class="example"><p><code>
-        &lt;Proxy *&gt;<br />
-        <span class="indent">
-          Require ip 192.168.0<br />
-        </span>
-        &lt;/Proxy&gt;
-      </code></p></div>
+      <pre class="prettyprint lang-config">
+&lt;Proxy *&gt;
+  Require ip 192.168.0
+&lt;/Proxy&gt;
+      </pre>
+
 
       <p>For more information on access control directives, see
       <code class="module"><a href="../mod/mod_authz_host.html">mod_authz_host</a></code>.</p>
@@ -392,15 +397,14 @@
       <p>These are the <code>force-proxy-request-1.0</code> and
       <code>proxy-nokeepalive</code> notes.</p>
 
-      <div class="example"><p><code>
-        &lt;Location /buggyappserver/&gt;<br />
-        <span class="indent">
-          ProxyPass http://buggyappserver:7001/foo/<br />
-          SetEnv force-proxy-request-1.0 1<br />
-          SetEnv proxy-nokeepalive 1<br />
-        </span>
-        &lt;/Location&gt;
-      </code></p></div>
+      <pre class="prettyprint lang-config">
+&lt;Location /buggyappserver/&gt;
+  ProxyPass http://buggyappserver:7001/foo/
+  SetEnv force-proxy-request-1.0 1
+  SetEnv proxy-nokeepalive 1
+&lt;/Location&gt;
+        </pre>
+
 
     </div><div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
 <div class="section">
@@ -523,10 +527,11 @@ directly</td></tr>
     always served directly, without forwarding to the configured
     <code class="directive"><a href="#proxyremote">ProxyRemote</a></code> proxy server(s).</p>
 
-    <div class="example"><h3>Example</h3><p><code>
-      ProxyRemote  *  http://firewall.example.com:81<br />
-      NoProxy         .example.com 192.168.112.0/21
-    </code></p></div>
+    <div class="example"><h3>Example</h3><pre class="prettyprint lang-config">
+ProxyRemote  *  http://firewall.example.com:81
+NoProxy         .example.com 192.168.112.0/21
+    </pre>
+</div>
 
     <p>The <var>host</var> arguments to the <code class="directive">NoProxy</code>
     directive are one of the following type list:</p>
@@ -648,25 +653,23 @@ directly</td></tr>
     <code>yournetwork.example.com</code> to access content via your proxy
     server:</p>
 
-    <div class="example"><p><code>
-      &lt;Proxy *&gt;<br />
-      <span class="indent">
-        Require host yournetwork.example.com<br />
-      </span>
-      &lt;/Proxy&gt;
-    </code></p></div>
+    <pre class="prettyprint lang-config">
+&lt;Proxy *&gt;
+  Require host yournetwork.example.com
+&lt;/Proxy&gt;
+    </pre>
+
 
     <p>The following example will process all files in the <code>foo</code>
     directory of <code>example.com</code> through the <code>INCLUDES</code>
     filter when they are sent through the proxy server:</p>
 
-    <div class="example"><p><code>
-      &lt;Proxy http://example.com/foo/*&gt;<br />
-      <span class="indent">
-        SetOutputFilter INCLUDES<br />
-      </span>
-      &lt;/Proxy&gt;
-    </code></p></div>
+   <pre class="prettyprint lang-config">    
+&lt;Proxy http://example.com/foo/*&gt;
+  SetOutputFilter INCLUDES
+&lt;/Proxy&gt;
+    </pre>
+
 
 
 <h3>See also</h3>
@@ -743,9 +746,10 @@ proxied</td></tr>
     may be hostnames during startup, and cache them for match test as
     well. That may slow down the startup time of the server.</p>
 
-    <div class="example"><h3>Example</h3><p><code>
+    <div class="example"><h3>Example</h3><pre class="prettyprint lang-config">
       ProxyBlock news.example.com auctions.example.com friends.example.com
-    </code></p></div>
+      </pre>
+</div>
 
     <p>Note that <code>example</code> would also be sufficient to match any
     of these sites.</p>
@@ -754,9 +758,10 @@ proxied</td></tr>
 
     <p>Note also that</p>
 
-    <div class="example"><p><code>
+    <pre class="prettyprint lang-config">
       ProxyBlock *
-    </code></p></div>
+    </pre>
+
 
     <p>blocks connections to all sites.</p>
 
@@ -777,11 +782,12 @@ proxied</td></tr>
     response to the same host with the configured <var>Domain</var> appended
     will be generated.</p>
 
-    <div class="example"><h3>Example</h3><p><code>
+    <div class="example"><h3>Example</h3><pre class="prettyprint lang-config">
       ProxyRemote  *  http://firewall.example.com:81<br />
       NoProxy         .example.com 192.168.112.0/21<br />
       ProxyDomain     .example.com
-    </code></p></div>
+      </pre>
+</div>
 
 </div>
 <div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
@@ -870,9 +876,10 @@ through</td></tr>
     <code>Max-Forwards</code> header supplied with the request. This may
     be set to prevent infinite proxy loops, or a DoS attack.</p>
 
-    <div class="example"><h3>Example</h3><p><code>
+    <div class="example"><h3>Example</h3><pre class="prettyprint lang-config">
       ProxyMaxForwards 15
-    </code></p></div>
+      </pre>
+</div>
 
     <p>Note that setting <code class="directive">ProxyMaxForwards</code> is a
     violation of the HTTP/1.1 protocol (RFC2616), which forbids a Proxy
@@ -908,13 +915,12 @@ through</td></tr>
     <p>Suppose the local server has address <code>http://example.com/</code>;
     then</p>
 
-    <div class="example"><p><code>
-        &lt;Location /mirror/foo/&gt;<br />
-        <span class="indent">
-          ProxyPass http://backend.example.com/<br />
-        </span>
-        &lt;/Location&gt;<br />
-    </code></p></div>
+    <pre class="prettyprint lang-config">
+&lt;Location /mirror/foo/&gt;
+    ProxyPass http://backend.example.com/
+&lt;/Location&gt;
+    </pre>
+
 
     <p>will cause a local request for
     <code>http://example.com/mirror/foo/bar</code> to be internally converted
@@ -925,9 +931,10 @@ through</td></tr>
     the below syntax is that it allows for dynamic control via the
     <a href="mod_proxy_balancer.html#balancer_manager">Balancer Manager</a> interface:</p>
 
-    <div class="example"><p><code>
+    <pre class="prettyprint lang-config">
         ProxyPass /mirror/foo/ http://backend.example.com/
-    </code></p></div>
+    </pre>
+
 
     <div class="warning">
     <p>If the first argument ends with a trailing <strong>/</strong>, the second
@@ -940,23 +947,21 @@ through</td></tr>
     <p>The <code>!</code> directive is useful in situations where you don't want
     to reverse-proxy a subdirectory, <em>e.g.</em></p>
 
-    <div class="example"><p><code>
-        &lt;Location /mirror/foo/&gt;<br />
-        <span class="indent">
-          ProxyPass http://backend.example.com/<br />
-        </span>
-        &lt;/Location&gt;<br />
-        &lt;Location /mirror/foo/i&gt;<br />
-        <span class="indent">
-            ProxyPass !<br />
-        </span>
-        &lt;/Location&gt;<br />
-    </code></p></div>
+    <pre class="prettyprint lang-config">
+&lt;Location /mirror/foo/&gt;
+    ProxyPass http://backend.example.com/
+&lt;/Location&gt;
+&lt;Location /mirror/foo/i&gt;
+    ProxyPass !
+&lt;/Location&gt;
+    </pre>
 
-    <div class="example"><p><code>
-      ProxyPass /mirror/foo/i !<br />
-      ProxyPass /mirror/foo http://backend.example.com
-    </code></p></div>
+
+    <pre class="prettyprint lang-config">
+ProxyPass /mirror/foo/i !
+ProxyPass /mirror/foo http://backend.example.com
+    </pre>
+
 
     <p>will proxy all requests to <code>/mirror/foo</code> to
     <code>backend.example.com</code> <em>except</em> requests made to
@@ -1002,9 +1007,10 @@ through</td></tr>
     among all child processes, except when only one child process is allowed
     by configuration or MPM design.</p>
 
-    <div class="example"><h3>Example</h3><p><code>
+    <div class="example"><h3>Example</h3><pre class="prettyprint lang-config">
         ProxyPass /example http://backend.example.com max=20 ttl=120 retry=300
-    </code></p></div>
+        </pre>
+</div>
 
     <table class="bordered"><tr><th>BalancerMember parameters</th></tr></table>
     <table>
@@ -1267,33 +1273,31 @@ through</td></tr>
 
     </table>
     <p>A sample balancer setup</p>
-    <div class="example"><p><code>
-      ProxyPass /special-area http://special.example.com smax=5 max=10<br />
-      ProxyPass / balancer://mycluster/ stickysession=JSESSIONID|jsessionid nofailover=On<br />
-      &lt;Proxy balancer://mycluster&gt;<br />
-      <span class="indent">
-        BalancerMember ajp://1.2.3.4:8009<br />
-        BalancerMember ajp://1.2.3.5:8009 loadfactor=20<br />
-        # Less powerful server, don't send as many requests there,<br />
-        BalancerMember ajp://1.2.3.6:8009 loadfactor=5<br />
-      </span>
-      &lt;/Proxy&gt;
-    </code></p></div>
+    <pre class="prettyprint lang-config">
+ProxyPass /special-area http://special.example.com smax=5 max=10
+ProxyPass / balancer://mycluster/ stickysession=JSESSIONID|jsessionid nofailover=On
+&lt;Proxy balancer://mycluster&gt;
+    BalancerMember ajp://1.2.3.4:8009
+    BalancerMember ajp://1.2.3.5:8009 loadfactor=20
+    # Less powerful server, don't send as many requests there,
+    BalancerMember ajp://1.2.3.6:8009 loadfactor=5
+&lt;/Proxy&gt;
+    </pre>
+
 
     <p>Setting up a hot-standby, that will only be used if no other
      members are available</p>
-    <div class="example"><p><code>
-      ProxyPass / balancer://hotcluster/ <br />
-      &lt;Proxy balancer://hotcluster&gt;<br />
-      <span class="indent">
-        BalancerMember ajp://1.2.3.4:8009 loadfactor=1<br />
-        BalancerMember ajp://1.2.3.5:8009 loadfactor=2<br />
-        # The below is the hot standby<br />
-        BalancerMember ajp://1.2.3.6:8009 status=+H<br />
-        ProxySet lbmethod=bytraffic
-      </span>
-      &lt;/Proxy&gt;
-    </code></p></div>
+    <pre class="prettyprint lang-config">
+ProxyPass / balancer://hotcluster/ 
+&lt;Proxy balancer://hotcluster&gt;
+    BalancerMember ajp://1.2.3.4:8009 loadfactor=1
+    BalancerMember ajp://1.2.3.5:8009 loadfactor=2
+    # The server below is on hot standby
+    BalancerMember ajp://1.2.3.6:8009 status=+H
+    ProxySet lbmethod=bytraffic
+&lt;/Proxy&gt;
+    </pre>
+
 
     <p>Normally, mod_proxy will canonicalise ProxyPassed URLs.
     But this may be incompatible with some backends, particularly those
@@ -1378,9 +1382,10 @@ through</td></tr>
     <p>Suppose the local server has address <code>http://example.com/</code>;
     then</p>
 
-    <div class="example"><p><code>
+    <pre class="prettyprint lang-config">
       ProxyPassMatch ^(/.*\.gif)$ http://backend.example.com$1
-    </code></p></div>
+    </pre>
+
 
     <p>will cause a local request for
     <code>http://example.com/foo/bar.gif</code> to be internally converted
@@ -1389,15 +1394,17 @@ through</td></tr>
       <p>The URL argument must be parsable as a URL <em>before</em> regexp
       substitutions (as well as after).  This limits the matches you can use.
       For instance, if we had used</p>
-      <div class="example"><p><code>
+      <pre class="prettyprint lang-config">
         ProxyPassMatch ^(/.*\.gif)$ http://backend.example.com:8000$1
-      </code></p></div>
+      </pre>
+
       <p>in our previous example, it would fail with a syntax error
       at server startup.  This is a bug (PR 46665 in the ASF bugzilla),
       and the workaround is to reformulate the match:</p>
-      <div class="example"><p><code>
+      <pre class="prettyprint lang-config">
         ProxyPassMatch ^/(.*\.gif)$ http://backend.example.com:8000/$1
-      </code></p></div>
+      </pre>
+
     </div>
     <p>The <code>!</code> directive is useful in situations where you don't want
     to reverse-proxy a subdirectory.</p>
@@ -1439,11 +1446,11 @@ proxied server</td></tr>
 
     <p>Only the HTTP response headers specifically mentioned above
     will be rewritten. Apache httpd will not rewrite other response
-    headers, nor will it rewrite URL references inside HTML pages.
+    headers, nor will it by default rewrite URL references inside HTML pages.
     This means that if the proxied content contains absolute URL
-    references, they will by-pass the proxy.  A third-party module
-    that will look inside the HTML and rewrite URL references is Nick
-    Kew's <a href="http://apache.webthing.com/mod_proxy_html/">mod_proxy_html</a>.</p>
+    references, they will by-pass the proxy. To rewrite HTML content to
+    match the proxy, you must load and enable <code class="module"><a href="../mod/mod_proxy_html.html">mod_proxy_html</a></code>.
+    </p>
 
     <p><var>path</var> is the name of a local virtual path. <var>url</var> is a
     partial URL for the remote server - the same way they are used for the
@@ -1452,12 +1459,13 @@ proxied server</td></tr>
     <p>For example, suppose the local server has address
     <code>http://example.com/</code>; then</p>
 
-    <div class="example"><p><code>
-      ProxyPass         /mirror/foo/ http://backend.example.com/<br />
-      ProxyPassReverse  /mirror/foo/ http://backend.example.com/<br />
-      ProxyPassReverseCookieDomain  backend.example.com  public.example.com<br />
-      ProxyPassReverseCookiePath  /  /mirror/foo/
-    </code></p></div>
+    <pre class="prettyprint lang-config">
+ProxyPass         /mirror/foo/ http://backend.example.com/
+ProxyPassReverse  /mirror/foo/ http://backend.example.com/
+ProxyPassReverseCookieDomain  backend.example.com  public.example.com
+ProxyPassReverseCookiePath  /  /mirror/foo/
+    </pre>
+
 
     <p>will not only cause a local request for the
     <code>http://example.com/mirror/foo/bar</code> to be internally converted
@@ -1530,9 +1538,10 @@ reverse proxy. This directive rewrites the <code>path</code> string in
 In the example given with 
 <code class="directive"><a href="#proxypassreverse">ProxyPassReverse</a></code>, the directive:
 </p>
-    <div class="example"><p><code>
+    <pre class="prettyprint lang-config">
       ProxyPassReverseCookiePath  /  /mirror/foo/
-    </code></p></div>
+    </pre>
+
 <p>
 will rewrite a cookie with backend path <code>/</code> (or
 <code>/example</code> or, in fact, anything) to <code>/mirror/foo/</code>.
@@ -1579,9 +1588,10 @@ connections</td></tr>
     to <code>0</code> to indicate that the system's default buffer size should
     be used.</p>
 
-    <div class="example"><h3>Example</h3><p><code>
+    <div class="example"><h3>Example</h3><pre class="prettyprint lang-config">
       ProxyReceiveBufferSize 2048
-    </code></p></div>
+      </pre>
+</div>
 
 </div>
 <div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
@@ -1609,11 +1619,12 @@ connections</td></tr>
     are supported by this module. When using <code>https</code>, the requests
     are forwarded through the remote proxy using the HTTP CONNECT method.</p>
 
-    <div class="example"><h3>Example</h3><p><code>
-      ProxyRemote http://goodguys.example.com/ http://mirrorguys.example.com:8000<br />
-      ProxyRemote * http://cleverproxy.localdomain<br />
-      ProxyRemote ftp http://ftpproxy.mydomain:8080
-    </code></p></div>
+    <div class="example"><h3>Example</h3><pre class="prettyprint lang-config">
+ProxyRemote http://goodguys.example.com/ http://mirrorguys.example.com:8000
+ProxyRemote * http://cleverproxy.localdomain
+ProxyRemote ftp http://ftpproxy.mydomain:8080
+    </pre>
+</div>
 
     <p>In the last example, the proxy will forward FTP requests, encapsulated
     as yet another HTTP proxy request, to another proxy which can handle
@@ -1662,6 +1673,9 @@ expressions</td></tr>
     need also <code class="module"><a href="../mod/mod_proxy_http.html">mod_proxy_http</a></code> or <code class="module"><a href="../mod/mod_proxy_ftp.html">mod_proxy_ftp</a></code>
     (or both) present in the server.</p>
 
+    <p>In order to get the functionality of (forward) proxying HTTPS sites, you
+    need <code class="module"><a href="../mod/mod_proxy_connect.html">mod_proxy_connect</a></code> enabled in the server.</p>
+
     <div class="warning"><h3>Warning</h3>
       <p>Do not enable proxying with <code class="directive"><a href="#proxyrequests">ProxyRequests</a></code> until you have <a href="#access">secured your server</a>.  Open proxy servers are dangerous
       both to your network and to the Internet at large.</p>
@@ -1693,31 +1707,31 @@ expressions</td></tr>
     <code class="directive"><a href="../mod/mod_rewrite.html#rewriterule">RewriteRule</a></code> instead of a
     <code class="directive"><a href="#proxypass">ProxyPass</a></code> directive.</p>
 
-    <div class="example"><p><code>
-      &lt;Proxy balancer://hotcluster&gt;<br />
-      <span class="indent">
-        BalancerMember http://www2.example.com:8080 loadfactor=1<br />
-        BalancerMember http://www3.example.com:8080 loadfactor=2<br />
-        ProxySet lbmethod=bytraffic<br />
-      </span>
-      &lt;/Proxy&gt;
-    </code></p></div>
+    <div class="example"><pre class="prettyprint lang-config">
+&lt;Proxy balancer://hotcluster&gt;
+    BalancerMember http://www2.example.com:8080 loadfactor=1
+    BalancerMember http://www3.example.com:8080 loadfactor=2
+    ProxySet lbmethod=bytraffic
+&lt;/Proxy&gt;
+      </pre>
+</div>
 
-    <div class="example"><p><code>
-      &lt;Proxy http://backend&gt;<br />
-      <span class="indent">
-        ProxySet keepalive=On<br />
-      </span>
-      &lt;/Proxy&gt;
-    </code></p></div>
+    <pre class="prettyprint lang-config">
+&lt;Proxy http://backend&gt;
+    ProxySet keepalive=On
+&lt;/Proxy&gt;
+    </pre>
 
-    <div class="example"><p><code>
+
+    <pre class="prettyprint lang-config">
         ProxySet balancer://foo lbmethod=bytraffic timeout=15
-    </code></p></div>
+    </pre>
 
-    <div class="example"><p><code>
+
+    <pre class="prettyprint lang-config">
         ProxySet ajp://backend:7001 timeout=15
-    </code></p></div>
+    </pre>
+
 
    <div class="warning"><h3>Warning</h3>
       <p>Keep in mind that the same parameter key can have a different meaning
@@ -1817,7 +1831,28 @@ header for proxied requests</td></tr>
 <p><span>Available Languages: </span><a href="../en/mod/mod_proxy.html" title="English">&nbsp;en&nbsp;</a> |
 <a href="../fr/mod/mod_proxy.html" hreflang="fr" rel="alternate" title="Français">&nbsp;fr&nbsp;</a> |
 <a href="../ja/mod/mod_proxy.html" hreflang="ja" rel="alternate" title="Japanese">&nbsp;ja&nbsp;</a></p>
-</div><div id="footer">
+</div><div class="top"><a href="#page-header"><img src="../images/up.gif" alt="top" /></a></div><div class="section"><h2><a id="comments_section" name="comments_section">Comments</a></h2><div class="warning"><strong>Notice:</strong><br />This is not a Q&amp;A section. Comments placed here should be pointed towards suggestions on improving the documentation or server, and may be removed again by our moderators if they are either implemented or considered invalid/off-topic. Questions on how to manage the Apache HTTP Server should be directed at either our IRC channel, #httpd, on Freenode, or sent to our <a href="http://httpd.apache.org/lists.html">mailing lists</a>.</div>
+<script type="text/javascript"><!--//--><![CDATA[//><!--
+var comments_shortname = 'httpd';
+var comments_identifier = 'http://httpd.apache.org/docs/2.4/mod/mod_proxy.html';
+(function(w, d) {
+    if (w.location.hostname.toLowerCase() == "httpd.apache.org") {
+        d.write('<div id="comments_thread"><\/div>');
+        var s = d.createElement('script');
+        s.type = 'text/javascript';
+        s.async = true;
+        s.src = 'https://comments.apache.org/show_comments.lua?site=' + comments_shortname + '&page=' + comments_identifier;
+        (d.getElementsByTagName('head')[0] || d.getElementsByTagName('body')[0]).appendChild(s);
+    }
+    else { 
+        d.write('<div id="comments_thread">Comments are disabled for this page at the moment.<\/div>');
+    }
+})(window, document);
+//--><!]]></script></div><div id="footer">
 <p class="apache">Copyright 2012 The Apache Software Foundation.<br />Licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
-<p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="../faq/">FAQ</a> | <a href="../glossary.html">Glossary</a> | <a href="../sitemap.html">Sitemap</a></p></div>
+<p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="http://wiki.apache.org/httpd/FAQ">FAQ</a> | <a href="../glossary.html">Glossary</a> | <a href="../sitemap.html">Sitemap</a></p></div><script type="text/javascript"><!--//--><![CDATA[//><!--
+if (typeof(prettyPrint) !== 'undefined') {
+    prettyPrint();
+}
+//--><!]]></script>
 </body></html>

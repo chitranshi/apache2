@@ -50,8 +50,6 @@ authdbmtype	mod/mod_authn_dbm.html#authdbmtype
 authdbmuserfile	mod/mod_authn_dbm.html#authdbmuserfile
 authdigestalgorithm	mod/mod_auth_digest.html#authdigestalgorithm
 authdigestdomain	mod/mod_auth_digest.html#authdigestdomain
-authdigestnccheck	mod/mod_auth_digest.html#authdigestnccheck
-authdigestnonceformat	mod/mod_auth_digest.html#authdigestnonceformat
 authdigestnoncelifetime	mod/mod_auth_digest.html#authdigestnoncelifetime
 authdigestprovider	mod/mod_auth_digest.html#authdigestprovider
 authdigestqop	mod/mod_auth_digest.html#authdigestqop
@@ -165,6 +163,7 @@ davgenericlockdb	mod/mod_dav_lock.html#davgenericlockdb
 davlockdb	mod/mod_dav_fs.html#davlockdb
 davmintimeout	mod/mod_dav.html#davmintimeout
 dbdexptime	mod/mod_dbd.html#dbdexptime
+dbdinitsql	mod/mod_dbd.html#dbdinitsql
 dbdkeep	mod/mod_dbd.html#dbdkeep
 dbdmax	mod/mod_dbd.html#dbdmax
 dbdmin	mod/mod_dbd.html#dbdmin
@@ -174,6 +173,7 @@ dbdpreparesql	mod/mod_dbd.html#dbdpreparesql
 dbdriver	mod/mod_dbd.html#dbdriver
 defaulticon	mod/mod_autoindex.html#defaulticon
 defaultlanguage	mod/mod_mime.html#defaultlanguage
+defaultruntimedir	mod/core.html#defaultruntimedir
 defaulttype	mod/core.html#defaulttype
 define	mod/core.html#define
 deflatebuffersize	mod/mod_deflate.html#deflatebuffersize
@@ -267,6 +267,8 @@ ldapopcacheentries	mod/mod_ldap.html#ldapopcacheentries
 ldapopcachettl	mod/mod_ldap.html#ldapopcachettl
 ldapreferralhoplimit	mod/mod_ldap.html#ldapreferralhoplimit
 ldapreferrals	mod/mod_ldap.html#ldapreferrals
+ldapretries	mod/mod_ldap.html#ldapretries
+ldapretrydelay	mod/mod_ldap.html#ldapretrydelay
 ldapsharedcachefile	mod/mod_ldap.html#ldapsharedcachefile
 ldapsharedcachesize	mod/mod_ldap.html#ldapsharedcachesize
 ldaptimeout	mod/mod_ldap.html#ldaptimeout
@@ -291,7 +293,6 @@ locationmatch	mod/core.html#locationmatch
 logformat	mod/mod_log_config.html#logformat
 loglevel	mod/core.html#loglevel
 logmessage	mod/mod_log_debug.html#logmessage
-luacodecache	mod/mod_lua.html#luacodecache
 luahookaccesschecker	mod/mod_lua.html#luahookaccesschecker
 luahookauthchecker	mod/mod_lua.html#luahookauthchecker
 luahookcheckuserid	mod/mod_lua.html#luahookcheckuserid
@@ -361,6 +362,7 @@ proxyhtmlextended	mod/mod_proxy_html.html#proxyhtmlextended
 proxyhtmlfixups	mod/mod_proxy_html.html#proxyhtmlfixups
 proxyhtmlinterp	mod/mod_proxy_html.html#proxyhtmlinterp
 proxyhtmllinks	mod/mod_proxy_html.html#proxyhtmllinks
+proxyhtmlmeta	mod/mod_proxy_html.html#proxyhtmlmeta
 proxyhtmlstripcomments	mod/mod_proxy_html.html#proxyhtmlstripcomments
 proxyhtmlurlmap	mod/mod_proxy_html.html#proxyhtmlurlmap
 proxyiobuffersize	mod/mod_proxy.html#proxyiobuffersize
@@ -487,6 +489,7 @@ sslcertificatechainfile	mod/mod_ssl.html#sslcertificatechainfile
 sslcertificatefile	mod/mod_ssl.html#sslcertificatefile
 sslcertificatekeyfile	mod/mod_ssl.html#sslcertificatekeyfile
 sslciphersuite	mod/mod_ssl.html#sslciphersuite
+sslcompression	mod/mod_ssl.html#sslcompression
 sslcryptodevice	mod/mod_ssl.html#sslcryptodevice
 sslengine	mod/mod_ssl.html#sslengine
 sslfips	mod/mod_ssl.html#sslfips

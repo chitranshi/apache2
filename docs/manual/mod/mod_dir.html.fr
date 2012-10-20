@@ -8,11 +8,14 @@
 <title>mod_dir - Serveur Apache HTTP</title>
 <link href="../style/css/manual.css" rel="stylesheet" media="all" type="text/css" title="Main stylesheet" />
 <link href="../style/css/manual-loose-100pc.css" rel="alternate stylesheet" media="all" type="text/css" title="No Sidebar - Default font size" />
-<link href="../style/css/manual-print.css" rel="stylesheet" media="print" type="text/css" />
+<link href="../style/css/manual-print.css" rel="stylesheet" media="print" type="text/css" /><link rel="stylesheet" type="text/css" href="../style/css/prettify.css" />
+<script src="../style/scripts/prettify.js" type="text/javascript">
+</script>
+
 <link href="../images/favicon.ico" rel="shortcut icon" /></head>
 <body>
 <div id="page-header">
-<p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="../faq/">FAQ</a> | <a href="../glossary.html">Glossaire</a> | <a href="../sitemap.html">Plan du site</a></p>
+<p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="http://wiki.apache.org/httpd/FAQ">FAQ</a> | <a href="../glossary.html">Glossaire</a> | <a href="../sitemap.html">Plan du site</a></p>
 <p class="apache">Serveur Apache HTTP Version 2.4</p>
 <img alt="" src="../images/feather.gif" /></div>
 <div class="up"><a href="./"><img title="&lt;-" alt="&lt;-" src="../images/left.gif" /></a></div>
@@ -64,7 +67,7 @@ de répertoire</td></tr>
 <li><img alt="" src="../images/down.gif" /> <a href="#directoryslash">DirectorySlash</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#fallbackresource">FallbackResource</a></li>
 </ul>
-</div>
+<ul class="seealso"><li><a href="#comments_section">Commentaires</a></li></ul></div>
 
 <div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
 <div class="directive-section"><h2><a name="DirectoryIndex" id="DirectoryIndex">DirectoryIndex</a> <a name="directoryindex" id="directoryindex">Directive</a></h2>
@@ -92,9 +95,10 @@ client envoie une requête pour un répertoire</td></tr>
     <code>Indexes</code> est définie, le serveur générera son propre
     listing du répertoire.</p>
 
-    <div class="example"><h3>Exemple</h3><p><code>
+    <div class="example"><h3>Exemple</h3><pre class="prettyprint lang-config">
       DirectoryIndex index.html
-    </code></p></div>
+      </pre>
+</div>
 
     <p>Avec cette configuration, une requête pour l'URL
     <code>http://example.com/docs/</code> renverrait au client la
@@ -105,9 +109,10 @@ client envoie une requête pour un répertoire</td></tr>
     <p>Notez qu'il n'est pas nécessaire que les documents soient
     relatifs au répertoire ;</p>
 
-    <div class="example"><p><code>
+    <pre class="prettyprint lang-config">
       DirectoryIndex index.html index.txt  /cgi-bin/index.pl
-    </code></p></div>
+    </pre>
+
 
     <p>provoquerait l'exécution du script CGI
     <code>/cgi-bin/index.pl</code> si aucun des fichiers
@@ -119,6 +124,34 @@ client envoie une requête pour un répertoire</td></tr>
     "disabled" sera interprété de manière littérale si d'autres
     arguments sont présents avant ou après lui, même s'ils sont
     eux-mêmes des arguments "disabled".</p>
+
+    <p><strong>Note :</strong>La définition de plusieurs directives
+    <code class="directive">DirectoryIndex</code> au sein d'un <a href="../sections.html"><em>même
+    contexte</em></a> permet d'ajouter des ressources à rechercher plutôt
+    que de remplacer celle déjà définies :
+    </p>
+    <pre class="prettyprint lang-config">
+# Exemple A: définit index.html comme page d'index, ainsi qu'index.php.
+&lt;Directory /foo&gt;
+    DirectoryIndex index.html
+    DirectoryIndex index.php
+&lt;/Directory&gt;
+
+# Exemple B: identique à l'exemple A, mais avec une seule directive.
+&lt;Directory /foo&gt;
+    DirectoryIndex index.html index.php
+&lt;/Directory&gt;
+
+# Exemple C: pour remplacer la liste des pages d'index par une autre,
+# vous devez tout d'abord supprimer la première liste : dans l'exemple
+# suivant, il ne restera qu'index.php comme page d'index.
+&lt;Directory /foo&gt;
+    DirectoryIndex index.html
+    DirectoryIndex disabled
+    DirectoryIndex index.php
+&lt;/Directory&gt;
+    </pre>
+
 
 
 </div>
@@ -144,9 +177,10 @@ répertoires.
     <code class="directive">DirectoryIndexRedirect</code> permet de rediriger le
     client vers une ressource externe.</p>
 
-    <div class="example"><h3>Exemple</h3><p><code>
+    <div class="example"><h3>Exemple</h3><pre class="prettyprint lang-config">
       DirectoryIndexRedirect on
-    </code></p></div>
+      </pre>
+</div>
 
     <p>Une requête pour <code>http://example.com/docs/</code> se
     solderait par une redirection temporaire vers
@@ -197,15 +231,14 @@ d'Apache</td></tr>
     Gardez cependant à l'esprit que ceci peut avoir des répercutions en
     matière de sécurité.</p>
 
-    <div class="example"><p><code>
-        # voir l'avertissement de sécurité ci-dessous !<br />
-        &lt;Location /un/chemin&gt;<br />
-        <span class="indent">
-            DirectorySlash Off<br />
-            SetHandler un-gestionnaire<br />
-        </span>
-        &lt;/Location&gt;
-    </code></p></div>
+    <pre class="prettyprint lang-config">
+# voir l'avertissement de sécurité ci-dessous !
+&lt;Location /some/path&gt;
+    DirectorySlash Off
+    SetHandler some-handler
+&lt;/Location&gt;
+    </pre>
+
 
     <div class="warning"><h3>Avertissement de sécurité</h3>
     <p>La désactivation de la redirection "slash de fin" peut entraîner
@@ -241,9 +274,10 @@ aucun fichier</td></tr>
     et qui provoquerait sans cela l'envoi d'un code d'erreur HTTP 404
     (Not Found).
     Par exemple</p>
-    <div class="example"><p><code>
-        <code>FallbackResource /not-404.php</code>
-    </code></p></div>
+    <pre class="prettyprint lang-config">
+        FallbackResource /not-404.php
+    </pre>
+
     <p>fait en sorte que les requêtes ne correspondant à aucun fichier
     soient traitées par <code>non-404.php</code>, sans affecter les
     requêtes pour des fichiers existants.</p>
@@ -257,23 +291,21 @@ aucun fichier</td></tr>
     conditionnels <code>-f</code> et <code>-d</code> pour vérifier
     l'existence des fichiers et répertoires. Maintenant, une seule ligne
     de configuration est nécessaire.</p>
-    <div class="example"><p><code>
-        <code>FallbackResource /index.php</code>
-    </code></p></div>
+    <pre class="prettyprint lang-config">
+        FallbackResource /index.php
+    </pre>
+
     <p>Les fichiers existants comme des images, des fichiers css, etc...
     seront traités normalement.</p>
     <p>Pour un URI intermédiaire tel que
     <em>http://example.com/blog/</em>, cet URI intermédiaire doit être
     spécifié en tant que <var>url-locale</var> :</p>
-    <div class="example"><p><code>
-         <code>
-             &lt;Directory /web/example.com/htdocs/blog&gt;<br />
-	     <span class="indent">
-		   FallbackResource /blog/index.php<br />
-             </span>
-             &lt;/Directory&gt;
-         </code>
-    </code></p></div>
+    <pre class="prettyprint lang-config">
+&lt;Directory /web/example.com/htdocs/blog&gt;
+    FallbackResource /blog/index.php
+&lt;/Directory&gt;
+    </pre>
+
 
 </div>
 </div>
@@ -283,7 +315,28 @@ aucun fichier</td></tr>
 <a href="../ja/mod/mod_dir.html" hreflang="ja" rel="alternate" title="Japanese">&nbsp;ja&nbsp;</a> |
 <a href="../ko/mod/mod_dir.html" hreflang="ko" rel="alternate" title="Korean">&nbsp;ko&nbsp;</a> |
 <a href="../tr/mod/mod_dir.html" hreflang="tr" rel="alternate" title="Türkçe">&nbsp;tr&nbsp;</a></p>
-</div><div id="footer">
+</div><div class="top"><a href="#page-header"><img src="../images/up.gif" alt="top" /></a></div><div class="section"><h2><a id="comments_section" name="comments_section">Commentaires</a></h2><div class="warning"><strong>Notice:</strong><br />This is not a Q&amp;A section. Comments placed here should be pointed towards suggestions on improving the documentation or server, and may be removed again by our moderators if they are either implemented or considered invalid/off-topic. Questions on how to manage the Apache HTTP Server should be directed at either our IRC channel, #httpd, on Freenode, or sent to our <a href="http://httpd.apache.org/lists.html">mailing lists</a>.</div>
+<script type="text/javascript"><!--//--><![CDATA[//><!--
+var comments_shortname = 'httpd';
+var comments_identifier = 'http://httpd.apache.org/docs/2.4/mod/mod_dir.html';
+(function(w, d) {
+    if (w.location.hostname.toLowerCase() == "httpd.apache.org") {
+        d.write('<div id="comments_thread"><\/div>');
+        var s = d.createElement('script');
+        s.type = 'text/javascript';
+        s.async = true;
+        s.src = 'https://comments.apache.org/show_comments.lua?site=' + comments_shortname + '&page=' + comments_identifier;
+        (d.getElementsByTagName('head')[0] || d.getElementsByTagName('body')[0]).appendChild(s);
+    }
+    else { 
+        d.write('<div id="comments_thread">Comments are disabled for this page at the moment.<\/div>');
+    }
+})(window, document);
+//--><!]]></script></div><div id="footer">
 <p class="apache">Copyright 2012 The Apache Software Foundation.<br />Autorisé sous <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
-<p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="../faq/">FAQ</a> | <a href="../glossary.html">Glossaire</a> | <a href="../sitemap.html">Plan du site</a></p></div>
+<p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="http://wiki.apache.org/httpd/FAQ">FAQ</a> | <a href="../glossary.html">Glossaire</a> | <a href="../sitemap.html">Plan du site</a></p></div><script type="text/javascript"><!--//--><![CDATA[//><!--
+if (typeof(prettyPrint) !== 'undefined') {
+    prettyPrint();
+}
+//--><!]]></script>
 </body></html>

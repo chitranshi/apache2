@@ -174,6 +174,9 @@ static int mkrecord(char *user, char *record, apr_size_t rlen, char *passwd,
     char pwv[MAX_STRING_LEN];
     char salt[9];
     apr_size_t bufsize;
+#if CRYPT_ALGO_SUPPORTED
+    char *cbuf;
+#endif
 
     if (passwd != NULL) {
         pw = passwd;
@@ -226,7 +229,16 @@ static int mkrecord(char *user, char *record, apr_size_t rlen, char *passwd,
         to64(&salt[0], rand(), 8);
         salt[8] = '\0';
 
-        apr_cpystrn(cpw, crypt(pw, salt), sizeof(cpw) - 1);
+        cbuf = crypt(pw, salt);
+        if (cbuf == NULL) {
+            char errbuf[128];
+
+            apr_snprintf(record, rlen-1, "crypt() failed: %s", 
+                         apr_strerror(errno, errbuf, sizeof errbuf));
+            return ERR_PWMISMATCH;
+        }
+
+        apr_cpystrn(cpw, cbuf, sizeof(cpw) - 1);
         if (strlen(pw) > 8) {
             char *truncpw = strdup(pw);
             truncpw[8] = '\0';
@@ -271,9 +283,10 @@ static void usage(void)
         " (default)"
         "." NL);
     apr_file_printf(errfile, " -d  Force CRYPT encryption of the password"
-            "." NL);
+            " (8 chars max, insecure)." NL);
     apr_file_printf(errfile, " -p  Do not encrypt the password (plaintext)." NL);
-    apr_file_printf(errfile, " -s  Force SHA encryption of the password." NL);
+    apr_file_printf(errfile, " -s  Force SHA encryption of the password"
+            " (insecure)." NL);
     apr_file_printf(errfile, " -b  Use the password from the command line "
             "rather than prompting for it." NL);
     apr_file_printf(errfile, " -D  Delete the specified user." NL);
@@ -507,7 +520,7 @@ int main(int argc, const char * const argv[])
             /*
              * Check that this existing file is readable and writable.
              */
-            if (!accessible(pool, pwfilename, APR_READ | APR_APPEND)) {
+            if (!accessible(pool, pwfilename, APR_FOPEN_READ|APR_FOPEN_WRITE)) {
                 apr_file_printf(errfile, "%s: cannot open file %s for "
                                 "read/write access" NL, argv[0], pwfilename);
                 exit(ERR_FILEPERM);
@@ -526,7 +539,7 @@ int main(int argc, const char * const argv[])
             /*
              * As it doesn't exist yet, verify that we can create it.
              */
-            if (!accessible(pool, pwfilename, APR_CREATE | APR_WRITE)) {
+            if (!accessible(pool, pwfilename, APR_FOPEN_WRITE|APR_FOPEN_CREATE)) {
                 apr_file_printf(errfile, "%s: cannot create file %s" NL,
                                 argv[0], pwfilename);
                 exit(ERR_FILEPERM);

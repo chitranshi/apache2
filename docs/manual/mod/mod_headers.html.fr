@@ -8,11 +8,14 @@
 <title>mod_headers - Serveur Apache HTTP</title>
 <link href="../style/css/manual.css" rel="stylesheet" media="all" type="text/css" title="Main stylesheet" />
 <link href="../style/css/manual-loose-100pc.css" rel="alternate stylesheet" media="all" type="text/css" title="No Sidebar - Default font size" />
-<link href="../style/css/manual-print.css" rel="stylesheet" media="print" type="text/css" />
+<link href="../style/css/manual-print.css" rel="stylesheet" media="print" type="text/css" /><link rel="stylesheet" type="text/css" href="../style/css/prettify.css" />
+<script src="../style/scripts/prettify.js" type="text/javascript">
+</script>
+
 <link href="../images/favicon.ico" rel="shortcut icon" /></head>
 <body>
 <div id="page-header">
-<p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="../faq/">FAQ</a> | <a href="../glossary.html">Glossaire</a> | <a href="../sitemap.html">Plan du site</a></p>
+<p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="http://wiki.apache.org/httpd/FAQ">FAQ</a> | <a href="../glossary.html">Glossaire</a> | <a href="../sitemap.html">Plan du site</a></p>
 <p class="apache">Serveur Apache HTTP Version 2.4</p>
 <img alt="" src="../images/feather.gif" /></div>
 <div class="up"><a href="./"><img title="&lt;-" alt="&lt;-" src="../images/left.gif" /></a></div>
@@ -26,6 +29,8 @@
 <a href="../ja/mod/mod_headers.html" hreflang="ja" rel="alternate" title="Japanese">&nbsp;ja&nbsp;</a> |
 <a href="../ko/mod/mod_headers.html" hreflang="ko" rel="alternate" title="Korean">&nbsp;ko&nbsp;</a></p>
 </div>
+<div class="outofdate">Cette traduction peut être périmée. Vérifiez la version
+            anglaise pour les changements récents.</div>
 <table class="module"><tr><th><a href="module-dict.html#Description">Description:</a></th><td>Personnalisation des en-têtes de requêtes et de réponses
 HTTP</td></tr>
 <tr><th><a href="module-dict.html#Status">Statut:</a></th><td>Extension</td></tr>
@@ -48,7 +53,7 @@ HTTP</td></tr>
 <li><img alt="" src="../images/down.gif" /> <a href="#early">Traitement précoce et traitement
 tardif</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#examples">Exemples</a></li>
-</ul></div>
+</ul><ul class="seealso"><li><a href="#comments_section">Commentaires</a></li></ul></div>
 <div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
 <div class="section">
 <h2><a name="order" id="order">Chronologie du traitement</a></h2>
@@ -63,10 +68,11 @@ tardif</a></li>
     ces deux directives ont un effet différent si leur ordre est inversé
     :</p>
 
-    <div class="example"><p><code>
-      RequestHeader append MirrorID "mirror 12"<br />
-      RequestHeader unset MirrorID
-    </code></p></div>
+    <pre class="prettyprint lang-config">
+RequestHeader append MirrorID "mirror 12"
+RequestHeader unset MirrorID
+    </pre>
+
 
     <p>Dans cet ordre, l'en-tête <code>MirrorID</code> n'est pas défini.
     Si l'ordre des directives était inversé, l'en-tête
@@ -107,9 +113,10 @@ tardif</a></h2>
         Copie tous les en-têtes de requête qui commencent par "TS" vers
 	les en-têtes de la réponse :
 
-        <div class="example"><p><code>
+        <pre class="prettyprint lang-config">
           Header echo ^TS
-        </code></p></div>
+        </pre>
+
       </li>
 
       <li>
@@ -121,9 +128,10 @@ tardif</a></h2>
 	isoler les goulets d'étranglement entre le client et le
 	serveur.
 
-        <div class="example"><p><code>
+        <pre class="prettyprint lang-config">
           Header set mon-en-tête "%D %t"
-        </code></p></div>
+        </pre>
+
 
         <p>le résultat est l'ajout à la réponse d'un en-tête du type :</p>
 
@@ -142,10 +150,11 @@ tardif</a></h2>
 
         <p>le résultat est l'ajout à la réponse d'un en-tête du type :</p>
 
-        <div class="example"><p><code>
-          mon-en-tête: Bonjour Joe. Il a fallu D=3775428 microsecondes à Apache
-          pour servir cette requête.
-        </code></p></div>
+        <pre class="prettyprint lang-config">
+	Header set MyHeader "Bonjour Joe. Il a fallu D=3775428 microsecondes à Apache
+          pour servir cette requête."
+        </pre>
+
       </li>
 
       <li>
@@ -156,10 +165,11 @@ tardif</a></h2>
 	exemple nécessite les services du module
 	<code class="module"><a href="../mod/mod_setenvif.html">mod_setenvif</a></code>.
 
-        <div class="example"><p><code>
-          SetEnvIf mon-en-tête-requête mavaleur HAVE_MyRequestHeader<br />
-          Header set mon-en-tête "%D %t montexte" env=HAVE_MyRequestHeader
-        </code></p></div>
+        <pre class="prettyprint lang-config">
+SetEnvIf MyRequestHeader myvalue HAVE_MyRequestHeader
+Header set MyHeader "%D %t mytext" env=HAVE_MyRequestHeader
+        </pre>
+
 
         <p>Si l'en-tête <code>mon-en-tête-requête: mavaleur</code> est
 	présent dans la requête HTTP, la réponse contiendra un en-tête
@@ -175,9 +185,10 @@ tardif</a></h2>
 	du problème</a>) en remplaçant <var>https:</var> par
 	<var>http:</var> dans l'en-tête <var>Destination</var> :
 
-        <div class="example"><p><code>
+        <pre class="prettyprint lang-config">
           RequestHeader edit Destination ^https: http: early
-        </code></p></div>
+        </pre>
+
       </li>
 
       <li>
@@ -189,11 +200,12 @@ tardif</a></h2>
 	<code>NO_CACHE</code> et <code>NO_STORE</code> existent pour la
 	requête) :
 
-        <div class="example"><p><code>
-          Header merge Cache-Control no-cache env=CGI<br />
-          Header merge Cache-Control no-cache env=NO_CACHE<br />
-          Header merge Cache-Control no-store env=NO_STORE
-        </code></p></div>
+        <pre class="prettyprint lang-config">
+Header merge Cache-Control no-cache env=CGI
+Header merge Cache-Control no-cache env=NO_CACHE
+Header merge Cache-Control no-store env=NO_STORE
+        </pre>
+
 
         <p>alors, la réponse contiendra l'en-tête suivant :</p>
 
@@ -212,9 +224,10 @@ tardif</a></h2>
       <li>
         Définit un cookie de test si et seulement si le client n'envoie
 	pas de cookie
-        <div class="example"><p><code>
+        <pre class="prettyprint lang-config">
           Header set Set-Cookie testcookie "expr=-z %{req:Cookie}"
-        </code></p></div>
+        </pre>
+
       </li>
     </ol>
 </div>
@@ -519,7 +532,28 @@ tardif</a></h2>
 <a href="../fr/mod/mod_headers.html" title="Français">&nbsp;fr&nbsp;</a> |
 <a href="../ja/mod/mod_headers.html" hreflang="ja" rel="alternate" title="Japanese">&nbsp;ja&nbsp;</a> |
 <a href="../ko/mod/mod_headers.html" hreflang="ko" rel="alternate" title="Korean">&nbsp;ko&nbsp;</a></p>
-</div><div id="footer">
+</div><div class="top"><a href="#page-header"><img src="../images/up.gif" alt="top" /></a></div><div class="section"><h2><a id="comments_section" name="comments_section">Commentaires</a></h2><div class="warning"><strong>Notice:</strong><br />This is not a Q&amp;A section. Comments placed here should be pointed towards suggestions on improving the documentation or server, and may be removed again by our moderators if they are either implemented or considered invalid/off-topic. Questions on how to manage the Apache HTTP Server should be directed at either our IRC channel, #httpd, on Freenode, or sent to our <a href="http://httpd.apache.org/lists.html">mailing lists</a>.</div>
+<script type="text/javascript"><!--//--><![CDATA[//><!--
+var comments_shortname = 'httpd';
+var comments_identifier = 'http://httpd.apache.org/docs/2.4/mod/mod_headers.html';
+(function(w, d) {
+    if (w.location.hostname.toLowerCase() == "httpd.apache.org") {
+        d.write('<div id="comments_thread"><\/div>');
+        var s = d.createElement('script');
+        s.type = 'text/javascript';
+        s.async = true;
+        s.src = 'https://comments.apache.org/show_comments.lua?site=' + comments_shortname + '&page=' + comments_identifier;
+        (d.getElementsByTagName('head')[0] || d.getElementsByTagName('body')[0]).appendChild(s);
+    }
+    else { 
+        d.write('<div id="comments_thread">Comments are disabled for this page at the moment.<\/div>');
+    }
+})(window, document);
+//--><!]]></script></div><div id="footer">
 <p class="apache">Copyright 2012 The Apache Software Foundation.<br />Autorisé sous <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
-<p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="../faq/">FAQ</a> | <a href="../glossary.html">Glossaire</a> | <a href="../sitemap.html">Plan du site</a></p></div>
+<p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="http://wiki.apache.org/httpd/FAQ">FAQ</a> | <a href="../glossary.html">Glossaire</a> | <a href="../sitemap.html">Plan du site</a></p></div><script type="text/javascript"><!--//--><![CDATA[//><!--
+if (typeof(prettyPrint) !== 'undefined') {
+    prettyPrint();
+}
+//--><!]]></script>
 </body></html>

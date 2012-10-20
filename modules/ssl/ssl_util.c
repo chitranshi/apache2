@@ -76,8 +76,7 @@ apr_file_t *ssl_util_ppopen(server_rec *s, apr_pool_t *p, const char *cmd,
         return NULL;
     if (apr_procattr_cmdtype_set(procattr, APR_PROGRAM) != APR_SUCCESS)
         return NULL;
-    if ((proc = (apr_proc_t *)apr_pcalloc(p, sizeof(apr_proc_t))) == NULL)
-        return NULL;
+    proc = apr_pcalloc(p, sizeof(apr_proc_t));
     if (apr_proc_create(proc, cmd, argv, NULL, procattr, p) != APR_SUCCESS)
         return NULL;
     return proc->out;
@@ -287,7 +286,7 @@ STACK_OF(X509) *ssl_read_pkcs7(server_rec *s, const char *pkcs7)
     f = fopen(pkcs7, "r");
     if (!f) {
         ap_log_error(APLOG_MARK, APLOG_EMERG, 0, s, APLOGNO(02212) "Can't open %s", pkcs7);
-        ssl_die();
+        ssl_die(s);
     }
 
     p7 = PEM_read_PKCS7(f, NULL, NULL, NULL);
@@ -314,13 +313,13 @@ STACK_OF(X509) *ssl_read_pkcs7(server_rec *s, const char *pkcs7)
     default:
         ap_log_error(APLOG_MARK, APLOG_EMERG, 0, s, APLOGNO(02213)
                      "Don't understand PKCS7 file %s", pkcs7);
-        ssl_die();
+        ssl_die(s);
     }
 
     if (!certs) {
         ap_log_error(APLOG_MARK, APLOG_EMERG, 0, s, APLOGNO(02214)
                      "No certificates in %s", pkcs7);
-        ssl_die();
+        ssl_die(s);
     }
 
     fclose(f);
@@ -376,24 +375,11 @@ static struct CRYPTO_dynlock_value *ssl_dyn_create_function(const char *file,
      * allocated memory from a pool, create a subpool that we can blow
      * away in the destruction callback.
      */
-    rv = apr_pool_create(&p, dynlockpool);
-    if (rv != APR_SUCCESS) {
-        ap_log_perror(file, line, APLOG_MODULE_INDEX, APLOG_ERR, rv, dynlockpool,
-                      APLOGNO(02183) "Failed to create subpool for dynamic lock");
-        return NULL;
-    }
-
+    apr_pool_create(&p, dynlockpool);
     ap_log_perror(file, line, APLOG_MODULE_INDEX, APLOG_TRACE1, 0, p,
                   "Creating dynamic lock");
 
-    value = (struct CRYPTO_dynlock_value *)apr_palloc(p,
-                                                      sizeof(struct CRYPTO_dynlock_value));
-    if (!value) {
-        ap_log_perror(file, line, APLOG_MODULE_INDEX, APLOG_ERR, 0, p,
-                      APLOGNO(02185) "Failed to allocate dynamic lock structure");
-        return NULL;
-    }
-
+    value = apr_palloc(p, sizeof(struct CRYPTO_dynlock_value));
     value->pool = p;
     /* Keep our own copy of the place from which we were created,
        using our own pool. */

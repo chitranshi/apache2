@@ -8,11 +8,14 @@
 <title>mod_authn_core - Apache HTTP Server</title>
 <link href="../style/css/manual.css" rel="stylesheet" media="all" type="text/css" title="Main stylesheet" />
 <link href="../style/css/manual-loose-100pc.css" rel="alternate stylesheet" media="all" type="text/css" title="No Sidebar - Default font size" />
-<link href="../style/css/manual-print.css" rel="stylesheet" media="print" type="text/css" />
+<link href="../style/css/manual-print.css" rel="stylesheet" media="print" type="text/css" /><link rel="stylesheet" type="text/css" href="../style/css/prettify.css" />
+<script src="../style/scripts/prettify.js" type="text/javascript">
+</script>
+
 <link href="../images/favicon.ico" rel="shortcut icon" /></head>
 <body>
 <div id="page-header">
-<p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="../faq/">FAQ</a> | <a href="../glossary.html">Glossary</a> | <a href="../sitemap.html">Sitemap</a></p>
+<p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="http://wiki.apache.org/httpd/FAQ">FAQ</a> | <a href="../glossary.html">Glossary</a> | <a href="../sitemap.html">Sitemap</a></p>
 <p class="apache">Apache HTTP Server Version 2.4</p>
 <img alt="" src="../images/feather.gif" /></div>
 <div class="up"><a href="./"><img title="&lt;-" alt="&lt;-" src="../images/left.gif" /></a></div>
@@ -45,7 +48,7 @@
 <h3>Topics</h3>
 <ul id="topics">
 <li><img alt="" src="../images/down.gif" /> <a href="#authnalias">Creating Authentication Provider Aliases</a></li>
-</ul></div>
+</ul><ul class="seealso"><li><a href="#comments_section">Comments</a></li></ul></div>
 <div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
 <div class="section">
 <h2><a name="authnalias" id="authnalias">Creating Authentication Provider Aliases</a></h2>
@@ -65,68 +68,60 @@
         <p>This example checks for passwords in two different text
         files.</p>
 
-        <div class="example"><h3>Checking multiple text password files</h3><p><code>
+        <div class="example"><h3>Checking multiple text password files</h3><pre class="prettyprint lang-config">
+# Check here first
+&lt;AuthnProviderAlias file file1&gt;
+    AuthUserFile /www/conf/passwords1
+&lt;/AuthnProviderAlias&gt;
 
-        # Check here first<br />
-        &lt;AuthnProviderAlias file file1&gt;<br />
-        <span class="indent">
-            AuthUserFile /www/conf/passwords1<br />
-        </span>
-        &lt;/AuthnProviderAlias&gt;<br />
-        <br />
-        # Then check here<br />
-        &lt;AuthnProviderAlias file file2&gt;   <br />
-        <span class="indent">
-            AuthUserFile /www/conf/passwords2<br />
-        </span>
-        &lt;/AuthnProviderAlias&gt;<br />
-        <br />
-        &lt;Directory /var/web/pages/secure&gt;<br />
-        <span class="indent">
-            AuthBasicProvider file1 file2<br />
-            <br />
-            AuthType Basic<br />
-            AuthName "Protected Area"<br />
-            Require valid-user<br />
-        </span>
-        &lt;/Directory&gt;<br />
-        </code></p></div>
+# Then check here
+&lt;AuthnProviderAlias file file2&gt;   
+    AuthUserFile /www/conf/passwords2
+&lt;/AuthnProviderAlias&gt;
+
+&lt;Directory /var/web/pages/secure&gt;
+    AuthBasicProvider file1 file2
+    
+    AuthType Basic
+    AuthName "Protected Area"
+    Require valid-user
+&lt;/Directory&gt;
+        </pre>
+</div>
 
         <p>The example below creates two different ldap authentication
         provider aliases based on the ldap provider.  This allows
         a single authenticated location to be serviced by multiple ldap
         hosts:</p>
 
-        <div class="example"><h3>Checking multiple LDAP servers</h3><p><code>
-          &lt;AuthnProviderAlias ldap ldap-alias1&gt;<br />
-          <span class="indent">
-             AuthLDAPBindDN cn=youruser,o=ctx<br />
-             AuthLDAPBindPassword yourpassword<br />
-             AuthLDAPURL ldap://ldap.host/o=ctx<br />
-          </span>
-          &lt;/AuthnProviderAlias&gt;<br /><br />
-          &lt;AuthnProviderAlias ldap ldap-other-alias&gt;<br />
-          <span class="indent">
-             AuthLDAPBindDN cn=yourotheruser,o=dev<br />
-             AuthLDAPBindPassword yourotherpassword<br />
-             AuthLDAPURL ldap://other.ldap.host/o=dev?cn<br />
-          </span>
-          &lt;/AuthnProviderAlias&gt;<br /><br />
+        <div class="example"><h3>Checking multiple LDAP servers</h3><pre class="prettyprint lang-config">
+&lt;AuthnProviderAlias ldap ldap-alias1&gt;
+    AuthLDAPBindDN cn=youruser,o=ctx
+    AuthLDAPBindPassword yourpassword
+    AuthLDAPURL ldap://ldap.host/o=ctx
+&lt;/AuthnProviderAlias&gt;
+&lt;AuthnProviderAlias ldap ldap-other-alias&gt;
+    AuthLDAPBindDN cn=yourotheruser,o=dev
+    AuthLDAPBindPassword yourotherpassword
+    AuthLDAPURL ldap://other.ldap.host/o=dev?cn
+&lt;/AuthnProviderAlias&gt;
 
-          Alias /secure /webpages/secure<br />
-          &lt;Directory /webpages/secure&gt;<br />
-          <span class="indent">
-             Order deny,allow<br />
-             Allow from all<br /><br />
-
-             AuthBasicProvider ldap-other-alias  ldap-alias1<br /><br />
-
-             AuthType Basic<br />
-             AuthName LDAP_Protected_Place<br />
-             Require valid-user<br />
-          </span>
-          &lt;/Directory&gt;<br />
-        </code></p></div>
+Alias /secure /webpages/secure
+&lt;Directory /webpages/secure&gt;
+    Order deny,allow
+    Allow from all
+    
+    AuthBasicProvider ldap-other-alias  ldap-alias1
+    
+    AuthType Basic
+    AuthName "LDAP Protected Place"
+    Require valid-user
+    # Note that Require ldap-* would not work here, since the 
+    # AuthnProviderAlias does not provide the config to authorization providers
+    # that are implemented in the same module as the authentication provider.
+&lt;/Directory&gt;
+          </pre>
+</div>
     
 
 </div>
@@ -153,9 +148,10 @@ authentication</td></tr>
 
    <p>For example:</p>
 
-   <div class="example"><p><code>
+   <pre class="prettyprint lang-config">
      AuthName "Top Secret"
-   </code></p></div>
+   </pre>
+
 
     <p>The string provided for the <code>AuthName</code> is what will
     appear in the password dialog provided by most browsers.</p>
@@ -219,24 +215,21 @@ the specified alias</td></tr>
     in the following example, clients may access the
     <code>/www/docs/public</code> directory without authenticating:</p>
 
-    <div class="example"><p><code>
-        &lt;Directory /www/docs&gt;
-        <span class="indent">
-            AuthType Basic<br />
-            AuthName Documents<br />
-            AuthBasicProvider file<br />
-            AuthUserFile /usr/local/apache/passwd/passwords<br />
-            Require valid-user
-        </span>
-        &lt;/Directory&gt;<br />
-        <br />
-        &lt;Directory /www/docs/public&gt;
-        <span class="indent">
-            AuthType None<br />
-            Require all granted
-        </span>
-        &lt;/Directory&gt;
-    </code></p></div>
+    <pre class="prettyprint lang-config">
+&lt;Directory /www/docs&gt;
+    AuthType Basic
+    AuthName Documents
+    AuthBasicProvider file
+    AuthUserFile /usr/local/apache/passwd/passwords
+    Require valid-user
+&lt;/Directory&gt;
+
+&lt;Directory /www/docs/public&gt;
+    AuthType None
+    Require all granted
+&lt;/Directory&gt;
+    </pre>
+
 
     <div class="note">When disabling authentication, note that clients which have
     already authenticated against another portion of the server's document
@@ -254,7 +247,28 @@ the specified alias</td></tr>
 <div class="bottomlang">
 <p><span>Available Languages: </span><a href="../en/mod/mod_authn_core.html" title="English">&nbsp;en&nbsp;</a> |
 <a href="../fr/mod/mod_authn_core.html" hreflang="fr" rel="alternate" title="Français">&nbsp;fr&nbsp;</a></p>
-</div><div id="footer">
+</div><div class="top"><a href="#page-header"><img src="../images/up.gif" alt="top" /></a></div><div class="section"><h2><a id="comments_section" name="comments_section">Comments</a></h2><div class="warning"><strong>Notice:</strong><br />This is not a Q&amp;A section. Comments placed here should be pointed towards suggestions on improving the documentation or server, and may be removed again by our moderators if they are either implemented or considered invalid/off-topic. Questions on how to manage the Apache HTTP Server should be directed at either our IRC channel, #httpd, on Freenode, or sent to our <a href="http://httpd.apache.org/lists.html">mailing lists</a>.</div>
+<script type="text/javascript"><!--//--><![CDATA[//><!--
+var comments_shortname = 'httpd';
+var comments_identifier = 'http://httpd.apache.org/docs/2.4/mod/mod_authn_core.html';
+(function(w, d) {
+    if (w.location.hostname.toLowerCase() == "httpd.apache.org") {
+        d.write('<div id="comments_thread"><\/div>');
+        var s = d.createElement('script');
+        s.type = 'text/javascript';
+        s.async = true;
+        s.src = 'https://comments.apache.org/show_comments.lua?site=' + comments_shortname + '&page=' + comments_identifier;
+        (d.getElementsByTagName('head')[0] || d.getElementsByTagName('body')[0]).appendChild(s);
+    }
+    else { 
+        d.write('<div id="comments_thread">Comments are disabled for this page at the moment.<\/div>');
+    }
+})(window, document);
+//--><!]]></script></div><div id="footer">
 <p class="apache">Copyright 2012 The Apache Software Foundation.<br />Licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
-<p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="../faq/">FAQ</a> | <a href="../glossary.html">Glossary</a> | <a href="../sitemap.html">Sitemap</a></p></div>
+<p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="http://wiki.apache.org/httpd/FAQ">FAQ</a> | <a href="../glossary.html">Glossary</a> | <a href="../sitemap.html">Sitemap</a></p></div><script type="text/javascript"><!--//--><![CDATA[//><!--
+if (typeof(prettyPrint) !== 'undefined') {
+    prettyPrint();
+}
+//--><!]]></script>
 </body></html>

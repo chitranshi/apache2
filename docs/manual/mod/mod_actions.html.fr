@@ -8,11 +8,14 @@
 <title>mod_actions - Serveur Apache HTTP</title>
 <link href="../style/css/manual.css" rel="stylesheet" media="all" type="text/css" title="Main stylesheet" />
 <link href="../style/css/manual-loose-100pc.css" rel="alternate stylesheet" media="all" type="text/css" title="No Sidebar - Default font size" />
-<link href="../style/css/manual-print.css" rel="stylesheet" media="print" type="text/css" />
+<link href="../style/css/manual-print.css" rel="stylesheet" media="print" type="text/css" /><link rel="stylesheet" type="text/css" href="../style/css/prettify.css" />
+<script src="../style/scripts/prettify.js" type="text/javascript">
+</script>
+
 <link href="../images/favicon.ico" rel="shortcut icon" /></head>
 <body>
 <div id="page-header">
-<p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="../faq/">FAQ</a> | <a href="../glossary.html">Glossaire</a> | <a href="../sitemap.html">Plan du site</a></p>
+<p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="http://wiki.apache.org/httpd/FAQ">FAQ</a> | <a href="../glossary.html">Glossaire</a> | <a href="../sitemap.html">Plan du site</a></p>
 <p class="apache">Serveur Apache HTTP Version 2.4</p>
 <img alt="" src="../images/feather.gif" /></div>
 <div class="up"><a href="./"><img title="&lt;-" alt="&lt;-" src="../images/left.gif" /></a></div>
@@ -52,7 +55,7 @@ type de média ou de la méthode de requête.</td></tr>
 <li><a href="../howto/cgi.html">Contenu dynamique avec CGI</a></li>
 <li><a href="../handler.html">Utilisation des gestionnaires
 d'Apache httpd</a></li>
-</ul></div>
+</ul><ul class="seealso"><li><a href="#comments_section">Commentaires</a></li></ul></div>
 
 <div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
 <div class="directive-section"><h2><a name="Action" id="Action">Action</a> <a name="action" id="action">Directive</a></h2>
@@ -81,23 +84,22 @@ gestionnaire ont été introduits dans Apache 2.1</td></tr>
     requête particulière est transmis à l'aide de la variable
     <code>REDIRECT_HANDLER</code>.</p>
 
-    <div class="example"><h3>Exemple : type MIME</h3><p><code>
-      # Requêtes concernant des fichiers possédant un type de contenu
-      # MIME particulier :<br />
-      Action image/gif /cgi-bin/images.cgi<br />
-      <br />
-    </code></p></div>
+    <div class="example"><h3>Exemple : type MIME</h3><pre class="prettyprint lang-config">
+# Requests for files of a particular MIME content type:
+Action image/gif /cgi-bin/images.cgi
+    </pre>
+</div>
 
     <p>Dans cet exemple, les requêtes pour des fichiers possédant
     le type de contenu MIME <code>image/gif</code> seront traitées par
     le script CGI <code>/cgi-bin/images.cgi</code>.</p>
 
-    <div class="example"><h3>Example: extension de nom de fichier</h3><p><code>
-      # Fichiers dont le nom possède une extension particulière<br />
-      AddHandler mon-type-de-fichier .xyz<br />
-      Action mon-type-de-fichier /cgi-bin/program.cgi<br />
-    </code></p></div>
-
+    <div class="example"><h3>Example: File extension</h3><pre class="prettyprint lang-config">
+# Files of a particular file extension
+AddHandler my-file-type .xyz
+Action my-file-type /cgi-bin/program.cgi
+    </pre>
+</div>
     <p>Dans cet exemple, les requêtes pour des fichiers possédant
     l'extension <code>.xyz</code> seront traitées par
     le script CGI <code>/cgi-bin/programme.cgi</code>.</p>
@@ -108,14 +110,13 @@ gestionnaire ont été introduits dans Apache 2.1</td></tr>
     directive <code class="directive">Action</code> pour des localisations
     virtuelles.</p>
 
-    <div class="example"><h3>Exemple</h3><p><code>
-      &lt;Location /news&gt;<br />
-      <span class="indent">
-        SetHandler news-handler<br />
-        Action news-handler /cgi-bin/news.cgi virtual<br />
-      </span>
-      &lt;/Location&gt;
-    </code></p></div>
+    <pre class="prettyprint lang-config">
+&lt;Location /news&gt;
+    SetHandler news-handler
+    Action news-handler /cgi-bin/news.cgi virtual
+&lt;/Location&gt;
+    </pre>
+
 
 <h3>Voir aussi</h3>
 <ul>
@@ -157,13 +158,14 @@ particulière.</td></tr>
     foo.html?hi). Dans le cas contraire, la requête sera traitée
     normalement.</p>
 
-    <div class="example"><h3>Exemples</h3><p><code>
-      # Toutes les requêtes GET aboutissent ici<br />
-      Script GET /cgi-bin/search<br />
-      <br />
-      # Un gestionnaire CGI pour la méthode PUT<br />
-      Script PUT /~bob/put.cgi<br />
-    </code></p></div>
+    <pre class="prettyprint lang-config">
+# All GET requests go here
+Script GET /cgi-bin/search
+
+# A CGI PUT handler
+Script PUT /~bob/put.cgi
+    </pre>
+
 
 </div>
 </div>
@@ -173,7 +175,28 @@ particulière.</td></tr>
 <a href="../fr/mod/mod_actions.html" title="Français">&nbsp;fr&nbsp;</a> |
 <a href="../ja/mod/mod_actions.html" hreflang="ja" rel="alternate" title="Japanese">&nbsp;ja&nbsp;</a> |
 <a href="../ko/mod/mod_actions.html" hreflang="ko" rel="alternate" title="Korean">&nbsp;ko&nbsp;</a></p>
-</div><div id="footer">
+</div><div class="top"><a href="#page-header"><img src="../images/up.gif" alt="top" /></a></div><div class="section"><h2><a id="comments_section" name="comments_section">Commentaires</a></h2><div class="warning"><strong>Notice:</strong><br />This is not a Q&amp;A section. Comments placed here should be pointed towards suggestions on improving the documentation or server, and may be removed again by our moderators if they are either implemented or considered invalid/off-topic. Questions on how to manage the Apache HTTP Server should be directed at either our IRC channel, #httpd, on Freenode, or sent to our <a href="http://httpd.apache.org/lists.html">mailing lists</a>.</div>
+<script type="text/javascript"><!--//--><![CDATA[//><!--
+var comments_shortname = 'httpd';
+var comments_identifier = 'http://httpd.apache.org/docs/2.4/mod/mod_actions.html';
+(function(w, d) {
+    if (w.location.hostname.toLowerCase() == "httpd.apache.org") {
+        d.write('<div id="comments_thread"><\/div>');
+        var s = d.createElement('script');
+        s.type = 'text/javascript';
+        s.async = true;
+        s.src = 'https://comments.apache.org/show_comments.lua?site=' + comments_shortname + '&page=' + comments_identifier;
+        (d.getElementsByTagName('head')[0] || d.getElementsByTagName('body')[0]).appendChild(s);
+    }
+    else { 
+        d.write('<div id="comments_thread">Comments are disabled for this page at the moment.<\/div>');
+    }
+})(window, document);
+//--><!]]></script></div><div id="footer">
 <p class="apache">Copyright 2012 The Apache Software Foundation.<br />Autorisé sous <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
-<p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="../faq/">FAQ</a> | <a href="../glossary.html">Glossaire</a> | <a href="../sitemap.html">Plan du site</a></p></div>
+<p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="http://wiki.apache.org/httpd/FAQ">FAQ</a> | <a href="../glossary.html">Glossaire</a> | <a href="../sitemap.html">Plan du site</a></p></div><script type="text/javascript"><!--//--><![CDATA[//><!--
+if (typeof(prettyPrint) !== 'undefined') {
+    prettyPrint();
+}
+//--><!]]></script>
 </body></html>

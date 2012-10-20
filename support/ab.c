@@ -1186,8 +1186,10 @@ static void start_connect(struct connection * c)
     apr_err("socket", rv);
     }
 
-    if ((rv = apr_socket_bind(c->aprsock, mysa)) != APR_SUCCESS) {
-        apr_err("bind", rv);
+    if (myhost) {
+        if ((rv = apr_socket_bind(c->aprsock, mysa)) != APR_SUCCESS) {
+            apr_err("bind", rv);
+        }
     }
 
     c->pollfd.desc_type = APR_POLL_SOCKET;
@@ -1345,11 +1347,21 @@ static void read_connection(struct connection * c)
                 good++;
                 close_connection(c);
             }
+            else if (scode == SSL_ERROR_SYSCALL
+                     && status == 0
+                     && c->read != 0) {
+                /* connection closed, but in violation of the protocol, after
+                 * some data has already been read; this commonly happens, so
+                 * let the length check catch any response errors
+                 */
+                good++;
+                close_connection(c);
+            }
             else if (scode != SSL_ERROR_WANT_WRITE
                      && scode != SSL_ERROR_WANT_READ) {
                 /* some fatal error: */
                 c->read = 0;
-                BIO_printf(bio_err, "SSL read failed - closing connection\n");
+                BIO_printf(bio_err, "SSL read failed (%d) - closing connection\n", scode);
                 ERR_print_errors(bio_err);
                 close_connection(c);
             }
@@ -1686,17 +1698,21 @@ static void test(void)
         exit(1);
     }
 #endif              /* NOT_ASCII */
-
-    /* This only needs to be done once */
-    if ((rv = apr_sockaddr_info_get(&mysa, myhost, APR_UNSPEC, 0, 0, cntxt)) != APR_SUCCESS) {
-        char buf[120];
-        apr_snprintf(buf, sizeof(buf),
-                 "apr_sockaddr_info_get() for %s", myhost);
-        apr_err(buf, rv);
+    
+    if (myhost) {
+        /* This only needs to be done once */
+        if ((rv = apr_sockaddr_info_get(&mysa, myhost, APR_UNSPEC, 0, 0, cntxt)) != APR_SUCCESS) {
+            char buf[120];
+            apr_snprintf(buf, sizeof(buf),
+                         "apr_sockaddr_info_get() for %s", myhost);
+            apr_err(buf, rv);
+        }
     }
 
     /* This too */
-    if ((rv = apr_sockaddr_info_get(&destsa, connecthost, APR_UNSPEC, connectport, 0, cntxt))
+    if ((rv = apr_sockaddr_info_get(&destsa, connecthost, 
+                                    myhost ? mysa->family : APR_UNSPEC,
+                                    connectport, 0, cntxt))
        != APR_SUCCESS) {
         char buf[120];
         apr_snprintf(buf, sizeof(buf),
@@ -1825,14 +1841,14 @@ static void test(void)
 static void copyright(void)
 {
     if (!use_html) {
-        printf("This is ApacheBench, Version %s\n", AP_AB_BASEREVISION " <$Revision: 1178079 $>");
+        printf("This is ApacheBench, Version %s\n", AP_AB_BASEREVISION " <$Revision: 1373084 $>");
         printf("Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/\n");
         printf("Licensed to The Apache Software Foundation, http://www.apache.org/\n");
         printf("\n");
     }
     else {
         printf("<p>\n");
-        printf(" This is ApacheBench, Version %s <i>&lt;%s&gt;</i><br>\n", AP_AB_BASEREVISION, "$Revision: 1178079 $");
+        printf(" This is ApacheBench, Version %s <i>&lt;%s&gt;</i><br>\n", AP_AB_BASEREVISION, "$Revision: 1373084 $");
         printf(" Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/<br>\n");
         printf(" Licensed to The Apache Software Foundation, http://www.apache.org/<br>\n");
         printf("</p>\n<p>\n");

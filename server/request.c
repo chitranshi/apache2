@@ -236,7 +236,9 @@ AP_DECLARE(int) ap_process_request_internal(request_rec *r)
                 if (r->user == NULL) {
                     /* don't let buggy authn module crash us in authz */
                     ap_log_rerror(APLOG_MARK, APLOG_ERR, 0, r, APLOGNO(00027)
-                                  "Buggy authn provider failed to set user for %s",
+                                  "No authentication done but request not "
+                                  "allowed without authentication for %s. "
+                                  "Authentication not configured?",
                                   r->uri);
                     access_status = HTTP_INTERNAL_SERVER_ERROR;
                     return decl_die(access_status, "check user", r);
@@ -271,7 +273,9 @@ AP_DECLARE(int) ap_process_request_internal(request_rec *r)
                 if (r->user == NULL) {
                     /* don't let buggy authn module crash us in authz */
                     ap_log_rerror(APLOG_MARK, APLOG_ERR, 0, r, APLOGNO(00028)
-                                  "Buggy authn provider failed to set user for %s",
+                                  "No authentication done but request not "
+                                  "allowed without authentication for %s. "
+                                  "Authentication not configured?",
                                   r->uri);
                     access_status = HTTP_INTERNAL_SERVER_ERROR;
                     return decl_die(access_status, "check user", r);
@@ -750,7 +754,7 @@ AP_DECLARE(int) ap_directory_walk(request_rec *r)
 
         /* Set aside path_info to merge back onto path_info later.
          * If r->filename is a directory, we must remerge the path_info,
-         * before we continue!  [Directories cannot, by defintion, have
+         * before we continue!  [Directories cannot, by definition, have
          * path info.  Either the next segment is not-found, or a file.]
          *
          * r->path_info tracks the unconsumed source path.

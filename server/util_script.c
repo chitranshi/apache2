@@ -553,7 +553,7 @@ AP_DECLARE(int) ap_scan_script_header_err_core_ex(request_rec *r, char *buffer,
         if (!(l = strchr(w, ':'))) {
             if (!buffer) {
                 /* Soak up all the script output - may save an outright kill */
-                while ((*getsfunc) (w, MAX_STRING_LEN - 1, getsfunc_data)) {
+                while ((*getsfunc)(w, MAX_STRING_LEN - 1, getsfunc_data) > 0) {
                     continue;
                 }
             }
@@ -592,11 +592,11 @@ AP_DECLARE(int) ap_scan_script_header_err_core_ex(request_rec *r, char *buffer,
             if (!ap_is_HTTP_VALID_RESPONSE(cgi_status))
                 ap_log_rerror(SCRIPT_LOG_MARK, APLOG_ERR|APLOG_TOCLIENT, 0, r,
                               "Invalid status line from script '%s': %s",
-                              apr_filepath_name_get(r->filename), w);
+                              apr_filepath_name_get(r->filename), l);
             else
                 ap_log_rerror(SCRIPT_LOG_MARK, APLOG_TRACE1, 0, r,
                               "Status line from script '%s': %s",
-                              apr_filepath_name_get(r->filename), w);
+                              apr_filepath_name_get(r->filename), l);
             r->status_line = apr_pstrdup(r->pool, l);
         }
         else if (!strcasecmp(w, "Location")) {
@@ -672,7 +672,8 @@ static int getsfunc_BRIGADE(char *buf, int len, void *arg)
     apr_status_t rv;
     int done = 0;
 
-    while ((dst < dst_end) && !done && !APR_BUCKET_IS_EOS(e)) {
+    while ((dst < dst_end) && !done && e != APR_BRIGADE_SENTINEL(bb)
+           && !APR_BUCKET_IS_EOS(e)) {
         const char *bucket_data;
         apr_size_t bucket_data_len;
         const char *src;
@@ -706,7 +707,7 @@ static int getsfunc_BRIGADE(char *buf, int len, void *arg)
         e = next;
     }
     *dst = 0;
-    return 1;
+    return done;
 }
 
 AP_DECLARE(int) ap_scan_script_header_err_brigade(request_rec *r,

@@ -6,7 +6,6 @@ Summary: Apache HTTP Server
 Name: httpd
 Version: APACHE_VERSION
 Release: APACHE_RELEASE
-Epoch: APACHE_EPOCH00%{release}
 URL: http://httpd.apache.org/
 Vendor: Apache Software Foundation
 Source0: http://www.apache.org/dist/httpd/httpd-%{version}.tar.bz2
@@ -50,7 +49,6 @@ Group: Documentation
 Summary: Documentation for the Apache HTTP server.
 Requires: httpd = %{epoch}:%{version}-%{release}
 Obsoletes: secureweb-manual, apache-manual
-BuildArch: noarch
 
 %description manual
 The httpd-manual package contains the complete manual and
@@ -432,6 +430,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man8/apachectl.8*
 %{_mandir}/man8/httpd.8*
 %{_mandir}/man8/htcacheclean.8*
+%{_mandir}/man8/fcgistarter.8*
 
 %files manual
 %defattr(-,root,root)

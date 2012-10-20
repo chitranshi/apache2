@@ -8,10 +8,13 @@
 <title>Quand ne pas utiliser mod_rewrite - Serveur Apache HTTP</title>
 <link href="../style/css/manual.css" rel="stylesheet" media="all" type="text/css" title="Main stylesheet" />
 <link href="../style/css/manual-loose-100pc.css" rel="alternate stylesheet" media="all" type="text/css" title="No Sidebar - Default font size" />
-<link href="../style/css/manual-print.css" rel="stylesheet" media="print" type="text/css" />
+<link href="../style/css/manual-print.css" rel="stylesheet" media="print" type="text/css" /><link rel="stylesheet" type="text/css" href="../style/css/prettify.css" />
+<script src="../style/scripts/prettify.js" type="text/javascript">
+</script>
+
 <link href="../images/favicon.ico" rel="shortcut icon" /></head>
 <body id="manual-page"><div id="page-header">
-<p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="../faq/">FAQ</a> | <a href="../glossary.html">Glossaire</a> | <a href="../sitemap.html">Plan du site</a></p>
+<p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="http://wiki.apache.org/httpd/FAQ">FAQ</a> | <a href="../glossary.html">Glossaire</a> | <a href="../sitemap.html">Plan du site</a></p>
 <p class="apache">Serveur Apache HTTP Version 2.4</p>
 <img alt="" src="../images/feather.gif" /></div>
 <div class="up"><a href="./"><img title="&lt;-" alt="&lt;-" src="../images/left.gif" /></a></div>
@@ -55,7 +58,7 @@ vous tourner vers <code class="module"><a href="../mod/mod_rewrite.html">mod_rew
 <li><img alt="" src="../images/down.gif" /> <a href="#proxy">Mandat simple</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#setenv">Test de variables d'environnement</a></li>
 </ul><h3>Voir aussi</h3><ul class="seealso"><li><a href="../mod/mod_rewrite.html">Documentation du module mod_rewrite</a></li><li><a href="intro.html">Introduction à mod_rewrite</a></li><li><a href="remapping.html">Redirection et remise en
-correspondance</a></li><li><a href="access.html">Contrôle d'accès</a></li><li><a href="vhosts.html">Serveurs virtuels</a></li><li><a href="proxy.html">Serveurs mandataires</a></li><li><a href="rewritemap.html">Utilisation de RewriteMap</a></li><li><a href="advanced.html">Techniques avancées</a></li></ul></div>
+correspondance</a></li><li><a href="access.html">Contrôle d'accès</a></li><li><a href="vhosts.html">Serveurs virtuels</a></li><li><a href="proxy.html">Serveurs mandataires</a></li><li><a href="rewritemap.html">Utilisation de RewriteMap</a></li><li><a href="advanced.html">Techniques avancées</a></li></ul><ul class="seealso"><li><a href="#comments_section">Commentaires</a></li></ul></div>
 <div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
 <div class="section">
 <h2><a name="redirect" id="redirect">Redirection simple</a></h2>
@@ -88,25 +91,24 @@ rediriger toutes les URLs de niveaux inférieurs comme
 <p>Pour rediriger les URLs sous <code>/un</code> vers
 <code>http://un.example.com/</code>, utilisez cette définition :</p>
 
-<div class="example"><p><code>
-Redirect /un/ http://un.example.com/
-</code></p></div>
+<pre class="prettyprint lang-config">Redirect /one/ http://one.example.com/</pre>
+
 
 <p>Pour rediriger les URLs <code>http</code> vers <code>https</code>,
 utilisez cette définition :</p>
 
-<div class="example"><p><code>
+<pre class="prettyprint lang-config">
 &lt;VirtualHost *:80&gt;
-ServerName www.example.com<br />
-Redirect / https://www.example.com/<br />
+ServerName www.example.com
+Redirect / https://www.example.com/
 &lt;/VirtualHost &gt;
-<br />
+
 &lt;VirtualHost *:443&gt;
-ServerName www.example.com<br />
-<br />
-# ... insérer ici la configuration SSL<br />
+ServerName www.example.com
+#  ... insérer ici la configuration SSL
 &lt;/VirtualHost &gt;
-</code></p></div>
+</pre>
+
 
 <p>L'utilisation de la directive <code>RewriteRule</code> pour accomplir
 cette tâche peut se justifier s'il existe d'autres directives
@@ -132,9 +134,9 @@ possible d'effectuer cette mise en correspondance avec
 <code>mod_rewrite</code>, il est préférable d'utiliser la directive
 <code>Alias</code> pour des raisons de simplicité et de performances.</p>
 
-<div class="example"><h3>Utilisation de la directive Alias</h3><p><code>
-Alias /chats /var/www/virtualhosts/felin/htdocs
-</code></p></div>
+<div class="example"><h3>Utilisation de la directive Alias</h3><pre class="prettyprint lang-config">Alias /cats
+/var/www/virtualhosts/felines/htdocs</pre>
+</div>
 
 <p>
 Pour effectuer cette mise en correspondance, <code>mod_rewrite</code>
@@ -164,7 +166,7 @@ créer un grand nombre de serveurs virtuels dynamiquement.</p>
 <p>L'utilisation de <code class="module"><a href="../mod/mod_rewrite.html">mod_rewrite</a></code> pour la création de
 serveurs virtuels peut se révéler appropriée si votre service
 d'hébergement ne vous permet pas d'accéder aux fichiers de configuration
-du serveur, et que vous vous trouvez par conséquent obligé de passer par les
+du serveur, et que vous soyez par conséquent obligé de passer par les
 fichiers <code>.htaccess</code>.</p>
 
 <p>Voir le document <a href="vhosts.html">création de serveurs virtuels
@@ -178,26 +180,29 @@ cela semble être tout de même la meilleure approche.</p>
 <p>La directive <code>RewriteRule</code> fournit le drapeau <a href="flags.html#flag_p">[P]</a> qui permet de faire passer les URIs
 réécrits par <code class="module"><a href="../mod/mod_proxy.html">mod_proxy</a></code>.</p>
 
-<div class="example"><p><code>
+<pre class="prettyprint lang-config">
 RewriteRule ^/?images(.*) http://serveur-images.local/images$1 [P]
-</code></p></div>
+</pre>
+
 
 <p>Cependant, dans les nombreux cas où aucune correspondance au modèle
 n'est vraiment nécessaire, comme dans l'exemple ci-dessus, il est
 préférable d'utiliser la directive <code class="directive"><a href="../mod/mod_proxy.html#proxypass">ProxyPass</a></code>. L'exemple précédent pourrait
 être remplacé par :</p>
 
-<div class="example"><p><code>
+<pre class="prettyprint lang-config">
 ProxyPass /images/ http://serveur-images.local/images/
-</code></p></div>
+</pre>
+
 
 <p>Que vous utilisiez <code class="directive"><a href="../mod/mod_rewrite.html#rewriterule">RewriteRule</a></code> ou <code class="directive"><a href="../mod/mod_proxy.html#proxypass">ProxyPass</a></code>, vous devrez dans tous les cas
 utiliser aussi la directive <code class="directive"><a href="../mod/mod_proxy.html#proxypassreverse">ProxyPassReverse</a></code> pour intercepter les
 redirections en provenance du serveur d'arrière-plan :</p>
 
-<div class="example"><p><code>
+<pre class="prettyprint lang-config">
 ProxyPassReverse /images/ http://serveur-images.local/images/
-</code></p></div>
+</pre>
+
 
 <p>Vous devrez cependant tout de même utiliser <code>RewriteRule</code>
 lorsque d'autres <code>RewriteRule</code>s se trouvent dans la même portée,
@@ -220,14 +225,15 @@ d'hôte canonique, tel que <code>www.example.com</code> au lieu de
 directive <code class="directive"><a href="../mod/core.html#if">&lt;If&gt;</a></code> comme
 suit :</p>
 
-<div class="example"><p><code>
-&lt;If "$req{Host} != 'www.example.com'"&gt;<br />
-RedirectMatch (.*) http://www.example.com$1<br />
+<pre class="prettyprint lang-config">
+&lt;If "req('Host') != 'www.example.com'"&gt;
+    Redirect / http://www.example.com
 &lt;/If&gt;
-</code></p></div>
+</pre>
 
-<p>On peut utiliser cette technique dans de nombreux scénarios courants
-en remplacement de <code class="module"><a href="../mod/mod_rewrite.html">mod_rewrite</a></code> pour effectuer des actions
+
+<p>On peut utiliser cette technique dans de nombreux scénarios courant
+pour remplacer <code class="module"><a href="../mod/mod_rewrite.html">mod_rewrite</a></code> pour effectuer des actions
 en fonction d'en-têtes de requêtes ou de réponses, ou de variables
 d'environnement.</p>
 
@@ -240,7 +246,28 @@ ainsi que dans certaines directives.</p>
 <div class="bottomlang">
 <p><span>Langues Disponibles: </span><a href="../en/rewrite/avoid.html" hreflang="en" rel="alternate" title="English">&nbsp;en&nbsp;</a> |
 <a href="../fr/rewrite/avoid.html" title="Français">&nbsp;fr&nbsp;</a></p>
-</div><div id="footer">
+</div><div class="top"><a href="#page-header"><img src="../images/up.gif" alt="top" /></a></div><div class="section"><h2><a id="comments_section" name="comments_section">Commentaires</a></h2><div class="warning"><strong>Notice:</strong><br />This is not a Q&amp;A section. Comments placed here should be pointed towards suggestions on improving the documentation or server, and may be removed again by our moderators if they are either implemented or considered invalid/off-topic. Questions on how to manage the Apache HTTP Server should be directed at either our IRC channel, #httpd, on Freenode, or sent to our <a href="http://httpd.apache.org/lists.html">mailing lists</a>.</div>
+<script type="text/javascript"><!--//--><![CDATA[//><!--
+var comments_shortname = 'httpd';
+var comments_identifier = 'http://httpd.apache.org/docs/2.4/rewrite/avoid.html';
+(function(w, d) {
+    if (w.location.hostname.toLowerCase() == "httpd.apache.org") {
+        d.write('<div id="comments_thread"><\/div>');
+        var s = d.createElement('script');
+        s.type = 'text/javascript';
+        s.async = true;
+        s.src = 'https://comments.apache.org/show_comments.lua?site=' + comments_shortname + '&page=' + comments_identifier;
+        (d.getElementsByTagName('head')[0] || d.getElementsByTagName('body')[0]).appendChild(s);
+    }
+    else { 
+        d.write('<div id="comments_thread">Comments are disabled for this page at the moment.<\/div>');
+    }
+})(window, document);
+//--><!]]></script></div><div id="footer">
 <p class="apache">Copyright 2012 The Apache Software Foundation.<br />Autorisé sous <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
-<p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="../faq/">FAQ</a> | <a href="../glossary.html">Glossaire</a> | <a href="../sitemap.html">Plan du site</a></p></div>
+<p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="http://wiki.apache.org/httpd/FAQ">FAQ</a> | <a href="../glossary.html">Glossaire</a> | <a href="../sitemap.html">Plan du site</a></p></div><script type="text/javascript"><!--//--><![CDATA[//><!--
+if (typeof(prettyPrint) !== 'undefined') {
+    prettyPrint();
+}
+//--><!]]></script>
 </body></html>

@@ -8,10 +8,13 @@
 <title>Apache’de Başarımın Arttırılması - Apache HTTP Sunucusu</title>
 <link href="../style/css/manual.css" rel="stylesheet" media="all" type="text/css" title="Main stylesheet" />
 <link href="../style/css/manual-loose-100pc.css" rel="alternate stylesheet" media="all" type="text/css" title="No Sidebar - Default font size" />
-<link href="../style/css/manual-print.css" rel="stylesheet" media="print" type="text/css" />
+<link href="../style/css/manual-print.css" rel="stylesheet" media="print" type="text/css" /><link rel="stylesheet" type="text/css" href="../style/css/prettify.css" />
+<script src="../style/scripts/prettify.js" type="text/javascript">
+</script>
+
 <link href="../images/favicon.ico" rel="shortcut icon" /></head>
 <body id="manual-page"><div id="page-header">
-<p class="menu"><a href="../mod/">Modüller</a> | <a href="../mod/directives.html">Yönergeler</a> | <a href="../faq/">SSS</a> | <a href="../glossary.html">Terimler</a> | <a href="../sitemap.html">Site Haritası</a></p>
+<p class="menu"><a href="../mod/">Modüller</a> | <a href="../mod/directives.html">Yönergeler</a> | <a href="http://wiki.apache.org/httpd/FAQ">SSS</a> | <a href="../glossary.html">Terimler</a> | <a href="../sitemap.html">Site Haritası</a></p>
 <p class="apache">Apache HTTP Sunucusu Sürüm 2.4</p>
 <img alt="" src="../images/feather.gif" /></div>
 <div class="up"><a href="./"><img title="&lt;-" alt="&lt;-" src="../images/left.gif" /></a></div>
@@ -49,7 +52,7 @@
 <li><img alt="" src="../images/down.gif" /> <a href="#runtime">Çalışma Anı Yapılandırması ile İlgili Konular</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#compiletime">Derleme Sırasında Yapılandırma ile İlgili Konular</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#trace">Ek: Bir çağrı izlemesinin ayrıntılı çözümlemesi</a></li>
-</ul></div>
+</ul><ul class="seealso"><li><a href="#comments_section">Yorum</a></li></ul></div>
 <div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
 <div class="section">
 <h2><a name="hardware" id="hardware">Donanım ve İşletim Sistemi ile İlgili Konular</a></h2>
@@ -60,7 +63,7 @@
       (RAM). Bir HTTP sunucusu asla takaslama yapmamalıdır. Çünkü takaslama,
       kullanıcının "yeterince hız" umduğu noktada sunumun gecikmesine sebep
       olur. Böyle bir durumda kullanıcılar yüklemeyi durdurup tekrar
-      başlatma eğilimindedirler; sonuçta yük daha da artar. <code class="directive"><a href="../mod/mpm_common.html#maxclients">MaxClients</a></code> yönergesinin değerini
+      başlatma eğilimindedirler; sonuçta yük daha da artar. <code class="directive"><a href="../mod/mpm_common.html#maxrequestworkers">MaxRequestWorkers</a></code> yönergesinin değerini
       değiştirerek takaslamaya sebep olabilecek kadar çok çocuk süreç
       oluşturulmasını engelleyebilirsiniz ve böyle bir durumda bunu mutlaka
       yapmalısınız. Bunun için yapacağınız işlem basittir: <code>top</code>
@@ -392,7 +395,7 @@
         demektir. Bunun için <code class="module"><a href="../mod/mod_status.html">mod_status</a></code> çıktısını bir
         kılavuz olarak kullanabilirsiniz.</p>
 
-      <p>Süreç oluşturmayla ilgili olarak süreç ölümü <code class="directive"><a href="../mod/mpm_common.html#maxrequestsperchild">MaxRequestsPerChild</a></code> değeri ile
+      <p>Süreç oluşturmayla ilgili olarak süreç ölümü <code class="directive"><a href="../mod/mpm_common.html#maxconnectionsperchild">MaxConnectionsPerChild</a></code> değeri ile
         sağlanır. Bu değer öntanımlı olarak <code>0</code> olup, çocuk süreç
         başına istek sayısının sınırsız olduğu anlamına gelir. Eğer
         yapılandırmanızda bu değeri <code>30</code> gibi çok düşük bir
@@ -690,69 +693,10 @@
       değildir. Böyle mimarilerde çok sayıda <code class="directive"><a href="../mod/mpm_common.html#listen">Listen</a></code> yönergesi kullanmak güvenilir
       olmayacaktır.</p>
 
-      <p><code class="directive"><a href="../mod/mpm_common.html#acceptmutex">AcceptMutex</a></code> yönergesi,
-      seçilen muteks gerçeklenimini çalışma anında değiştirmek için
-      kullanılabilir.</p>
-
-      <dl>
-        <dt><code>AcceptMutex flock</code></dt>
-
-        <dd>
-          <p>Bu yöntem, bir kilit dosyasını kilitlemek için
-          <code>flock(2)</code> sistem çağrısını kullanır (Kilit dosyasının
-          yeri <code class="directive"><a href="../mod/mpm_common.html#lockfile">LockFile</a></code>
-          yönergesiyle belirtilir).</p>
-        </dd>
-
-        <dt><code>AcceptMutex fcntl</code></dt>
-
-        <dd>
-          <p>Bu yöntem, bir kilit dosyasını kilitlemek için
-          <code>fcntl(2)</code> sistem çağrısını kullanır (Kilit dosyasının
-          yeri <code class="directive"><a href="../mod/mpm_common.html#lockfile">LockFile</a></code>
-          yönergesiyle belirtilir).</p>
-        </dd>
-
-        <dt><code>AcceptMutex sysvsem</code></dt>
-
-        <dd>
-          <p>(1.3 ve sonrası) Bu yöntem muteksi gerçeklemek için SysV tarzı
-          semaforları kullanır. Maalesef, SysV tarzı semaforların bazı yan
-          etkileri vardır. Bunlardan biri Apache'nin semaforu temizlemeden
-          ölme ihtimalidir (<code>ipcs(8)</code> kılavuz sayfasına bakınız).
-          Diğer biri, CGI'lerin sunucu ile aynı kullanıcı kimliğini
-          kullanmaları nedeniyle semafor arayüzünün hizmet reddi
-          saldırılarına açık olmasıdır (<code class="program"><a href="../programs/suexec.html">suexec</a></code> veya
-          <code>cgiwrapper</code> gibi bir şeyler kullanmadıkça bütün
-          CGI'ler için söz konusudur).</p>
-        </dd>
-
-        <dt><code>AcceptMutex pthread</code></dt>
-
-        <dd>
-          <p>(1.3 ve sonrası) Bu yöntem POSIX mutekslerini kullanır ve POSIX
-          evreleri belirtiminin tamamen gerçeklendiği mimarilerde çalışması
-          gerekirse de sadece Solaris (2.5 ve sonrası) üzerinde ve sadece
-          belli yapılandırmalarla çalışmakta gibi görünmektedir. Bunu
-          denemişseniz sunucunuzun çöktüğünü ve yanıt vermediğini
-          görmüşsünüzdür. Sadece duruk içerikli sunucular iyi
-          çalışmaktadır.</p>
-        </dd>
-
-        <dt><code>AcceptMutex posixsem</code></dt>
-
-        <dd>
-          <p>(2.0 ve sonrası)  Bu yöntem POSIX semaforlarını kullanır. Eğer
-          işlem sırasında bir evre muteks kaynaklı parçalama arızalarıyla
-          karşı karşıya kalırsa HTTP sunucusunun çökmesiyle semaforun sahibi
-          kurtarılamaz.</p>
-        </dd>
-
-      </dl>
-
-      <p>Eğer sisteminiz yukarıda bahsedilenler dışında başka bir dizgileme
-      yöntemi kullanıyorsa bununla ilgili kodun APR'ye eklenmesi girilen
-      zahmete değecektir.</p>
+      <p><code class="directive"><a href="../mod/core.html#mutex">Mutex</a></code> yönergesi,
+      <code>mpm-accept</code> muteks gerçeklenimini çalışma anında değiştirmek
+      için kullanılabilir. Farklı muteks gerçeklenimleri ile ilgili hususlar
+      bu yönergede belgelenmiştir.</p>
 
       <p>Başka bir çözüm daha vardır ancak döngü kısmen dizgilenmeyeceğinden
       (yani belli sayıda sürece izin verilemeyeceğinden) asla
@@ -814,9 +758,7 @@
       bahsedildiği gibi, bir HTTP sunucusunun protokolü <strong>güvenilir
       şekilde</strong> gerçeklemesi için her iki yöndeki iletişimi
       birbirinden bağımsız olarak (iki yönlü bir TCP bağlantısının her
-      yarısını diğerinden bağımsız olarak) kapatması gerekir. Bu olgu başka
-      sunucular tarafından çoğunlukla dikkate alınmaz fakat Apache'nin 1.2
-      sürümünden beri gerektiği gibi gerçeklenmektedir.</p>
+      yarısını diğerinden bağımsız olarak) kapatması gerekir.</p>
 
       <p>Bu özellik Apache'ye eklendiğinde Unix'in çeşitli sürümlerinde
       uzgörüsüzlükten dolayı bir takım geçici telaş sorunlarına sebep oldu.
@@ -1095,7 +1037,28 @@
 <a href="../fr/misc/perf-tuning.html" hreflang="fr" rel="alternate" title="Français">&nbsp;fr&nbsp;</a> |
 <a href="../ko/misc/perf-tuning.html" hreflang="ko" rel="alternate" title="Korean">&nbsp;ko&nbsp;</a> |
 <a href="../tr/misc/perf-tuning.html" title="Türkçe">&nbsp;tr&nbsp;</a></p>
-</div><div id="footer">
+</div><div class="top"><a href="#page-header"><img src="../images/up.gif" alt="top" /></a></div><div class="section"><h2><a id="comments_section" name="comments_section">Yorum</a></h2><div class="warning"><strong>Notice:</strong><br />This is not a Q&amp;A section. Comments placed here should be pointed towards suggestions on improving the documentation or server, and may be removed again by our moderators if they are either implemented or considered invalid/off-topic. Questions on how to manage the Apache HTTP Server should be directed at either our IRC channel, #httpd, on Freenode, or sent to our <a href="http://httpd.apache.org/lists.html">mailing lists</a>.</div>
+<script type="text/javascript"><!--//--><![CDATA[//><!--
+var comments_shortname = 'httpd';
+var comments_identifier = 'http://httpd.apache.org/docs/2.4/misc/perf-tuning.html';
+(function(w, d) {
+    if (w.location.hostname.toLowerCase() == "httpd.apache.org") {
+        d.write('<div id="comments_thread"><\/div>');
+        var s = d.createElement('script');
+        s.type = 'text/javascript';
+        s.async = true;
+        s.src = 'https://comments.apache.org/show_comments.lua?site=' + comments_shortname + '&page=' + comments_identifier;
+        (d.getElementsByTagName('head')[0] || d.getElementsByTagName('body')[0]).appendChild(s);
+    }
+    else { 
+        d.write('<div id="comments_thread">Comments are disabled for this page at the moment.<\/div>');
+    }
+})(window, document);
+//--><!]]></script></div><div id="footer">
 <p class="apache">Copyright 2012 The Apache Software Foundation.<br /><a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a> altında lisanslıdır.</p>
-<p class="menu"><a href="../mod/">Modüller</a> | <a href="../mod/directives.html">Yönergeler</a> | <a href="../faq/">SSS</a> | <a href="../glossary.html">Terimler</a> | <a href="../sitemap.html">Site Haritası</a></p></div>
+<p class="menu"><a href="../mod/">Modüller</a> | <a href="../mod/directives.html">Yönergeler</a> | <a href="http://wiki.apache.org/httpd/FAQ">SSS</a> | <a href="../glossary.html">Terimler</a> | <a href="../sitemap.html">Site Haritası</a></p></div><script type="text/javascript"><!--//--><![CDATA[//><!--
+if (typeof(prettyPrint) !== 'undefined') {
+    prettyPrint();
+}
+//--><!]]></script>
 </body></html>

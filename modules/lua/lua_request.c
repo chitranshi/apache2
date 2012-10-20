@@ -164,6 +164,34 @@ static int req_parseargs(lua_State *L)
     return 2;                   /* [table<string, string>, table<string, array<string>>] */
 }
 
+/* r:parsebody() returning a lua table */
+static int req_parsebody(lua_State *L)
+{
+    apr_array_header_t          *pairs;
+    apr_off_t len;
+    int res;
+    apr_size_t size;
+    apr_size_t max_post_size;
+    char *buffer;
+    request_rec *r = ap_lua_check_request_rec(L, 1);
+    max_post_size = (apr_size_t) luaL_optint(L, 2, MAX_STRING_LEN);
+    lua_newtable(L);
+    lua_newtable(L);            /* [table, table] */
+    res = ap_parse_form_data(r, NULL, &pairs, -1, max_post_size);
+    if (res == OK) {
+        while(pairs && !apr_is_empty_array(pairs)) {
+            ap_form_pair_t *pair = (ap_form_pair_t *) apr_array_pop(pairs);
+            apr_brigade_length(pair->value, 1, &len);
+            size = (apr_size_t) len;
+            buffer = apr_palloc(r->pool, size + 1);
+            apr_brigade_flatten(pair->value, buffer, &size);
+            buffer[len] = 0;
+            req_aprtable2luatable_cb(L, pair->name, buffer);
+        }
+    }
+    return 2;                   /* [table<string, string>, table<string, array<string>>] */
+}
+
 /* wrap ap_rputs as r:puts(String) */
 static int req_puts(lua_State *L)
 {
@@ -233,6 +261,16 @@ static int req_ssl_var_lookup(lua_State *L)
 static const char *req_document_root(request_rec *r)
 {
     return ap_document_root(r);
+}
+
+static const char *req_context_prefix(request_rec *r)
+{
+    return ap_context_prefix(r);
+}
+
+static const char *req_context_document_root(request_rec *r)
+{
+    return ap_context_document_root(r);
 }
 
 static char *req_uri_field(request_rec *r)
@@ -321,6 +359,16 @@ static const char *req_protocol_field(request_rec *r)
 static const char *req_the_request_field(request_rec *r)
 {
     return r->the_request;
+}
+
+static const char *req_log_id_field(request_rec *r)
+{
+    return r->log_id;
+}
+
+static const char *req_useragent_ip_field(request_rec *r)
+{
+    return r->useragent_ip;
 }
 
 static int req_status_field(request_rec *r)
@@ -452,49 +500,40 @@ static int req_log_at(lua_State *L, int level)
 /* r:debug(String) and friends which use apache logging */
 static int req_emerg(lua_State *L)
 {
-    req_log_at(L, APLOG_EMERG);
-    return 0;
+    return req_log_at(L, APLOG_EMERG);
 }
 static int req_alert(lua_State *L)
 {
-    req_log_at(L, APLOG_ALERT);
-    return 0;
+    return req_log_at(L, APLOG_ALERT);
 }
 static int req_crit(lua_State *L)
 {
-    req_log_at(L, APLOG_CRIT);
-    return 0;
+    return req_log_at(L, APLOG_CRIT);
 }
 static int req_err(lua_State *L)
 {
-    req_log_at(L, APLOG_ERR);
-    return 0;
+    return req_log_at(L, APLOG_ERR);
 }
 static int req_warn(lua_State *L)
 {
-    req_log_at(L, APLOG_WARNING);
-    return 0;
+    return req_log_at(L, APLOG_WARNING);
 }
 static int req_notice(lua_State *L)
 {
-    req_log_at(L, APLOG_NOTICE);
-    return 0;
+    return req_log_at(L, APLOG_NOTICE);
 }
 static int req_info(lua_State *L)
 {
-    req_log_at(L, APLOG_INFO);
-    return 0;
+    return req_log_at(L, APLOG_INFO);
 }
 static int req_debug(lua_State *L)
 {
-    req_log_at(L, APLOG_DEBUG);
-    return 0;
+    return req_log_at(L, APLOG_DEBUG);
 }
 
 #define APLUA_REQ_TRACE(lev) static int req_trace##lev(lua_State *L)  \
 {                                                               \
-    req_log_at(L, APLOG_TRACE##lev);                            \
-    return 0;                                                   \
+    return req_log_at(L, APLOG_TRACE##lev);                     \
 }
 
 APLUA_REQ_TRACE(1)
@@ -608,8 +647,14 @@ AP_LUA_DECLARE(void) ap_lua_load_request_lmodule(lua_State *L, apr_pool_t *p)
                  makefun(&req_write, APL_REQ_FUNTYPE_LUACFUN, p));
     apr_hash_set(dispatch, "document_root", APR_HASH_KEY_STRING,
                  makefun(&req_document_root, APL_REQ_FUNTYPE_STRING, p));
+    apr_hash_set(dispatch, "context_prefix", APR_HASH_KEY_STRING,
+                 makefun(&req_context_prefix, APL_REQ_FUNTYPE_STRING, p));
+    apr_hash_set(dispatch, "context_document_root", APR_HASH_KEY_STRING,
+                 makefun(&req_context_document_root, APL_REQ_FUNTYPE_STRING, p));
     apr_hash_set(dispatch, "parseargs", APR_HASH_KEY_STRING,
                  makefun(&req_parseargs, APL_REQ_FUNTYPE_LUACFUN, p));
+    apr_hash_set(dispatch, "parsebody", APR_HASH_KEY_STRING,
+                 makefun(&req_parsebody, APL_REQ_FUNTYPE_LUACFUN, p));
     apr_hash_set(dispatch, "debug", APR_HASH_KEY_STRING,
                  makefun(&req_debug, APL_REQ_FUNTYPE_LUACFUN, p));
     apr_hash_set(dispatch, "info", APR_HASH_KEY_STRING,
@@ -688,6 +733,10 @@ AP_LUA_DECLARE(void) ap_lua_load_request_lmodule(lua_State *L, apr_pool_t *p)
                  makefun(&req_uri_field, APL_REQ_FUNTYPE_STRING, p));
     apr_hash_set(dispatch, "the_request", APR_HASH_KEY_STRING,
                  makefun(&req_the_request_field, APL_REQ_FUNTYPE_STRING, p));
+    apr_hash_set(dispatch, "log_id", APR_HASH_KEY_STRING,
+                 makefun(&req_log_id_field, APL_REQ_FUNTYPE_STRING, p));
+    apr_hash_set(dispatch, "useragent_ip", APR_HASH_KEY_STRING,
+                 makefun(&req_useragent_ip_field, APL_REQ_FUNTYPE_STRING, p));
     apr_hash_set(dispatch, "method", APR_HASH_KEY_STRING,
                  makefun(&req_method_field, APL_REQ_FUNTYPE_STRING, p));
     apr_hash_set(dispatch, "proxyreq", APR_HASH_KEY_STRING,
@@ -744,7 +793,7 @@ AP_LUA_DECLARE(void) ap_lua_push_connection(lua_State *L, conn_rec *c)
     lua_setfield(L, -2, "notes");
 
     lua_pushstring(L, c->client_ip);
-    lua_setfield(L, -2, "remote_ip");
+    lua_setfield(L, -2, "client_ip");
 
     lua_pop(L, 1);
 }

@@ -8,11 +8,14 @@
 <title>mpm_common - Apache HTTP Server</title>
 <link href="../style/css/manual.css" rel="stylesheet" media="all" type="text/css" title="Main stylesheet" />
 <link href="../style/css/manual-loose-100pc.css" rel="alternate stylesheet" media="all" type="text/css" title="No Sidebar - Default font size" />
-<link href="../style/css/manual-print.css" rel="stylesheet" media="print" type="text/css" />
+<link href="../style/css/manual-print.css" rel="stylesheet" media="print" type="text/css" /><link rel="stylesheet" type="text/css" href="../style/css/prettify.css" />
+<script src="../style/scripts/prettify.js" type="text/javascript">
+</script>
+
 <link href="../images/favicon.ico" rel="shortcut icon" /></head>
 <body>
 <div id="page-header">
-<p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="../faq/">FAQ</a> | <a href="../glossary.html">Glossary</a> | <a href="../sitemap.html">Sitemap</a></p>
+<p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="http://wiki.apache.org/httpd/FAQ">FAQ</a> | <a href="../glossary.html">Glossary</a> | <a href="../sitemap.html">Sitemap</a></p>
 <p class="apache">Apache HTTP Server Version 2.4</p>
 <img alt="" src="../images/feather.gif" /></div>
 <div class="up"><a href="./"><img title="&lt;-" alt="&lt;-" src="../images/left.gif" /></a></div>
@@ -53,7 +56,7 @@ more than one multi-processing module (MPM)</td></tr>
 <li><img alt="" src="../images/down.gif" /> <a href="#threadsperchild">ThreadsPerChild</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#threadstacksize">ThreadStackSize</a></li>
 </ul>
-</div>
+<ul class="seealso"><li><a href="#comments_section">Comments</a></li></ul></div>
 
 <div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
 <div class="directive-section"><h2><a name="CoreDumpDirectory" id="CoreDumpDirectory">CoreDumpDirectory</a> <a name="coredumpdirectory" id="coredumpdirectory">Directive</a></h2>
@@ -123,7 +126,7 @@ after a crash</td></tr>
 
     <p>There are already two modules, <code>mod_whatkilledus</code> and
     <code>mod_backtrace</code> that make use of this hook. Please have a
-    look at Jeff Trawick's <a href="http://www.apache.org/~trawick/exception_hook.html">EnableExceptionHook site</a> for more information about these.</p>
+    look at Jeff Trawick's <a href="http://people.apache.org/~trawick/exception_hook.html">EnableExceptionHook site</a> for more information about these.</p>
 
 </div>
 <div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
@@ -179,25 +182,28 @@ The <var>protocol</var> argument was added in 2.1.5</td></tr>
     <p>For example, to make the server accept connections on both
     port 80 and port 8000, use:</p>
 
-    <div class="example"><p><code>
-      Listen 80<br />
-      Listen 8000
-    </code></p></div>
+    <pre class="prettyprint lang-config">
+Listen 80
+Listen 8000
+    </pre>
+
 
     <p>To make the server accept connections on two specified
     interfaces and port numbers, use </p>
 
-    <div class="example"><p><code>
-      Listen 192.170.2.1:80<br />
-      Listen 192.170.2.5:8000
-    </code></p></div>
+    <pre class="prettyprint lang-config">
+Listen 192.170.2.1:80
+Listen 192.170.2.5:8000
+    </pre>
+
 
     <p>IPv6 addresses must be surrounded in square brackets, as in the
     following example:</p>
 
-    <div class="example"><p><code>
+    <pre class="prettyprint lang-config">
       Listen [2001:db8::a00:20ff:fea7:ccea]:80
-    </code></p></div>
+    </pre>
+
 
     <p>The optional <var>protocol</var> argument is not required for most
        configurations. If not specified, <code>https</code> is the default for
@@ -209,9 +215,10 @@ The <var>protocol</var> argument was added in 2.1.5</td></tr>
     <p>You only need to set the protocol if you are running on non-standard
        ports.  For example, running an <code>https</code> site on port 8443:</p>
 
-    <div class="example"><p><code>
+    <pre class="prettyprint lang-config">
       Listen 192.170.2.1:8443 https
-    </code></p></div>
+    </pre>
+
 
     <div class="note"><h3>Error condition</h3>
       Multiple <code class="directive">Listen</code> directives for the same ip
@@ -433,9 +440,10 @@ of the daemon</td></tr>
     filename is not absolute then it is assumed to be relative to the
     <code class="directive"><a href="../mod/core.html#serverroot">ServerRoot</a></code>.</p>
 
-    <div class="example"><h3>Example</h3><p><code>
+    <div class="example"><h3>Example</h3><pre class="prettyprint lang-config">
       PidFile /var/run/apache.pid
-    </code></p></div>
+      </pre>
+</div>
 
     <p>It is often useful to be able to send the server a signal,
     so that it closes and then re-opens its <code class="directive"><a href="../mod/core.html#errorlog">ErrorLog</a></code> and <code class="directive"><a href="../mod/mod_log_config.html#transferlog">TransferLog</a></code>, and
@@ -475,7 +483,7 @@ of the daemon</td></tr>
 <tr><th><a href="directive-dict.html#Description">Description:</a></th><td>Location of the file used to store coordination data for
 the child processes</td></tr>
 <tr><th><a href="directive-dict.html#Syntax">Syntax:</a></th><td><code>ScoreBoardFile <var>file-path</var></code></td></tr>
-<tr><th><a href="directive-dict.html#Default">Default:</a></th><td><code>ScoreBoardFile logs/apache_status</code></td></tr>
+<tr><th><a href="directive-dict.html#Default">Default:</a></th><td><code>ScoreBoardFile logs/apache_runtime_status</code></td></tr>
 <tr><th><a href="directive-dict.html#Context">Context:</a></th><td>server config</td></tr>
 <tr><th><a href="directive-dict.html#Status">Status:</a></th><td>MPM</td></tr>
 <tr><th><a href="directive-dict.html#Module">Module:</a></th><td><code class="module"><a href="../mod/event.html">event</a></code>, <code class="module"><a href="../mod/mpm_winnt.html">mpm_winnt</a></code>, <code class="module"><a href="../mod/prefork.html">prefork</a></code>, <code class="module"><a href="../mod/worker.html">worker</a></code></td></tr>
@@ -488,9 +496,10 @@ the child processes</td></tr>
     disk (using file-based shared memory). Specifying this directive causes
     Apache httpd to always create the file on the disk.</p>
 
-    <div class="example"><h3>Example</h3><p><code>
-      ScoreBoardFile /var/run/apache_status
-    </code></p></div>
+    <div class="example"><h3>Example</h3><pre class="prettyprint lang-config">
+      ScoreBoardFile /var/run/apache_runtime_status
+      </pre>
+</div>
 
     <p>File-based shared memory is useful for third-party applications
     that require direct access to the scoreboard.</p>
@@ -518,7 +527,7 @@ Apache HTTP Server</a></li>
 </table>
     <p>Sets the server's TCP send buffer size to the number of bytes
     specified. It is often useful to set this past the OS's standard
-    default value on high speed, high latency conections
+    default value on high speed, high latency connections
     (<em>i.e.</em>, 100ms or so, such as transcontinental fast pipes).</p>
 
     <p>If set to the value of <code>0</code>, the server will use the
@@ -762,7 +771,28 @@ client connections</td></tr>
 <a href="../en/mod/mpm_common.html" title="English">&nbsp;en&nbsp;</a> |
 <a href="../ja/mod/mpm_common.html" hreflang="ja" rel="alternate" title="Japanese">&nbsp;ja&nbsp;</a> |
 <a href="../tr/mod/mpm_common.html" hreflang="tr" rel="alternate" title="Türkçe">&nbsp;tr&nbsp;</a></p>
-</div><div id="footer">
+</div><div class="top"><a href="#page-header"><img src="../images/up.gif" alt="top" /></a></div><div class="section"><h2><a id="comments_section" name="comments_section">Comments</a></h2><div class="warning"><strong>Notice:</strong><br />This is not a Q&amp;A section. Comments placed here should be pointed towards suggestions on improving the documentation or server, and may be removed again by our moderators if they are either implemented or considered invalid/off-topic. Questions on how to manage the Apache HTTP Server should be directed at either our IRC channel, #httpd, on Freenode, or sent to our <a href="http://httpd.apache.org/lists.html">mailing lists</a>.</div>
+<script type="text/javascript"><!--//--><![CDATA[//><!--
+var comments_shortname = 'httpd';
+var comments_identifier = 'http://httpd.apache.org/docs/2.4/mod/mpm_common.html';
+(function(w, d) {
+    if (w.location.hostname.toLowerCase() == "httpd.apache.org") {
+        d.write('<div id="comments_thread"><\/div>');
+        var s = d.createElement('script');
+        s.type = 'text/javascript';
+        s.async = true;
+        s.src = 'https://comments.apache.org/show_comments.lua?site=' + comments_shortname + '&page=' + comments_identifier;
+        (d.getElementsByTagName('head')[0] || d.getElementsByTagName('body')[0]).appendChild(s);
+    }
+    else { 
+        d.write('<div id="comments_thread">Comments are disabled for this page at the moment.<\/div>');
+    }
+})(window, document);
+//--><!]]></script></div><div id="footer">
 <p class="apache">Copyright 2012 The Apache Software Foundation.<br />Licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
-<p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="../faq/">FAQ</a> | <a href="../glossary.html">Glossary</a> | <a href="../sitemap.html">Sitemap</a></p></div>
+<p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="http://wiki.apache.org/httpd/FAQ">FAQ</a> | <a href="../glossary.html">Glossary</a> | <a href="../sitemap.html">Sitemap</a></p></div><script type="text/javascript"><!--//--><![CDATA[//><!--
+if (typeof(prettyPrint) !== 'undefined') {
+    prettyPrint();
+}
+//--><!]]></script>
 </body></html>

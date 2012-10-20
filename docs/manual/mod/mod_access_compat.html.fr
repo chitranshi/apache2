@@ -8,11 +8,14 @@
 <title>mod_access_compat - Serveur Apache HTTP</title>
 <link href="../style/css/manual.css" rel="stylesheet" media="all" type="text/css" title="Main stylesheet" />
 <link href="../style/css/manual-loose-100pc.css" rel="alternate stylesheet" media="all" type="text/css" title="No Sidebar - Default font size" />
-<link href="../style/css/manual-print.css" rel="stylesheet" media="print" type="text/css" />
+<link href="../style/css/manual-print.css" rel="stylesheet" media="print" type="text/css" /><link rel="stylesheet" type="text/css" href="../style/css/prettify.css" />
+<script src="../style/scripts/prettify.js" type="text/javascript">
+</script>
+
 <link href="../images/favicon.ico" rel="shortcut icon" /></head>
 <body>
 <div id="page-header">
-<p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="../faq/">FAQ</a> | <a href="../glossary.html">Glossaire</a> | <a href="../sitemap.html">Plan du site</a></p>
+<p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="http://wiki.apache.org/httpd/FAQ">FAQ</a> | <a href="../glossary.html">Glossaire</a> | <a href="../sitemap.html">Plan du site</a></p>
 <p class="apache">Serveur Apache HTTP Version 2.4</p>
 <img alt="" src="../images/feather.gif" /></div>
 <div class="up"><a href="./"><img title="&lt;-" alt="&lt;-" src="../images/left.gif" /></a></div>
@@ -92,7 +95,7 @@ ce module sont devenues obsolètes depuis la refonte d'authz. Voir
 <li><code class="directive"><a href="../mod/mod_authz_core.html#require">Require</a></code></li>
 <li><code class="module"><a href="../mod/mod_authz_host.html">mod_authz_host</a></code></li>
 <li><code class="module"><a href="../mod/mod_authz_core.html">mod_authz_core</a></code></li>
-</ul></div>
+</ul><ul class="seealso"><li><a href="#comments_section">Commentaires</a></li></ul></div>
 
 <div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
 <div class="directive-section"><h2><a name="Allow" id="Allow">Allow</a> <a name="allow" id="allow">Directive</a></h2>
@@ -126,10 +129,11 @@ d'environnement</var>
       <dt>Un nom de domaine (partiel)</dt>
 
       <dd>
-      <div class="example"><h3>Exemple :</h3><p><code>
-        Allow from example.org<br />
-        Allow from .net example.edu
-      </code></p></div>
+      <pre class="prettyprint lang-config">
+Allow from example.org
+Allow from .net example.edu
+      </pre>
+
       <p>Les hôtes dont les noms correspondent ou se terminent par la
       chaîne spécifiée ont l'autorisation d'accès. Seules les
       composantes entières du nom d'hôte doivent correspondre ; ainsi,
@@ -148,28 +152,31 @@ d'environnement</var>
       <dt>Une adresse IP complète</dt>
 
       <dd>
-      <div class="example"><h3>Exemple :</h3><p><code>
-        Allow from 10.1.2.3<br />
-        Allow from 192.168.1.104 192.168.1.205
-      </code></p></div>
+      <pre class="prettyprint lang-config">
+Allow from 10.1.2.3
+Allow from 192.168.1.104 192.168.1.205
+      </pre>
+
       <p>L'adresse IP d'un hôte auquel on a accordé l'accès</p></dd>
 
       <dt>Une adresse IP partielle</dt>
 
       <dd>
-      <div class="example"><h3>Exemple :</h3><p><code>
-        Allow from 10.1<br />
-        Allow from 10 172.20 192.168.2
-      </code></p></div>
+      <pre class="prettyprint lang-config">
+Allow from 10.1
+Allow from 10 172.20 192.168.2
+      </pre>
+
       <p>De un à trois des premiers octets d'une adresse IP, afin de
       restreindre l'accès à un sous-réseau.</p></dd>
 
       <dt>Une paire réseau/masque de sous-réseau</dt>
 
       <dd>
-      <div class="example"><h3>Exemple :</h3><p><code>
+      <pre class="prettyprint lang-config">
         Allow from 10.1.0.0/255.255.0.0
-      </code></p></div>
+      </pre>
+
       <p>Un réseau a.b.c.d, et un masque de sous-réseau w.x.y.z, pour
       une définition plus précise de la restriction d'accès imposée à un
       sous-réseau.</p></dd>
@@ -177,9 +184,10 @@ d'environnement</var>
       <dt>Une spécification CIDR réseau/nnn</dt>
 
       <dd>
-      <div class="example"><h3>Exemple :</h3><p><code>
+      <pre class="prettyprint lang-config">
         Allow from 10.1.0.0/16
-      </code></p></div>
+      </pre>
+
       <p>Identique au cas précédent, mis à part que le masque est
       constitué des nnn bits de poids fort.</p></dd>
     </dl>
@@ -190,10 +198,11 @@ d'environnement</var>
     <p>On peut spécifier des adresses et sous-réseaux IPv6 de la manière
     suivante :</p>
 
-    <div class="example"><p><code>
-       Allow from 2001:db8::a00:20ff:fea7:ccea<br />
-       Allow from 2001:db8::a00:20ff:fea7:ccea/10
-    </code></p></div>
+    <pre class="prettyprint lang-config">
+Allow from 2001:db8::a00:20ff:fea7:ccea
+Allow from 2001:db8::a00:20ff:fea7:ccea/10
+    </pre>
+
 
     <p>Le troisième format d'argument de la directive
     <code class="directive">Allow</code> permet de contrôler l'accès au serveur
@@ -212,16 +221,15 @@ d'environnement</var>
     (type de navigateur) des clients, le <code>Referer</code>, ou
     d'autres champs d'en-tête de la requête HTTP.</p>
 
-    <div class="example"><h3>Exemple :</h3><p><code>
-      SetEnvIf User-Agent ^KnockKnock/2\.0 laissez_moi_entrer<br />
-      &lt;Directory /docroot&gt;<br />
-      <span class="indent">
-        Order Deny,Allow<br />
-        Deny from all<br />
-        Allow from env=laissez_moi_entrer<br />
-      </span>
-      &lt;/Directory&gt;
-    </code></p></div>
+    <pre class="prettyprint lang-config">
+SetEnvIf User-Agent ^KnockKnock/2\.0 let_me_in
+&lt;Directory /docroot&gt;
+    Order Deny,Allow
+    Deny from all
+    Allow from env=let_me_in
+&lt;/Directory&gt;
+    </pre>
+
 
     <p>Dans cet exemple, les navigateurs dont la chaîne user-agent
     commence par <code>KnockKnock/2.0</code> se verront accorder
@@ -349,11 +357,12 @@ les directives <code class="directive">Allow</code> et
     l'autorisation d'accès ; tous les autres voient leur accès
     refusé.</p>
 
-    <div class="example"><p><code>
-      Order Deny,Allow<br />
-      Deny from all<br />
-      Allow from example.org
-    </code></p></div>
+    <pre class="prettyprint lang-config">
+Order Deny,Allow
+Deny from all
+Allow from example.org
+    </pre>
+
 
     <p>Dans l'exemple suivant, tous les hôtes du domaine example.org ont
     l'autorisation d'accès, sauf ceux du sous-domaine foo.example.org qui
@@ -362,11 +371,12 @@ les directives <code class="directive">Allow</code> et
     sur <code class="directive"><a href="#deny">Deny</a></code>, et consiste donc en un
     refus d'accès.</p>
 
-    <div class="example"><p><code>
-      Order Allow,Deny<br />
-      Allow from example.org<br />
-      Deny from foo.example.org
-    </code></p></div>
+    <pre class="prettyprint lang-config">
+Order Allow,Deny
+Allow from example.org
+Deny from foo.example.org
+    </pre>
+
 
     <p>Par contre, si la valeur de la directive
     <code class="directive">Order</code>, dans l'exemple précédent, est
@@ -385,13 +395,12 @@ les directives <code class="directive">Allow</code> et
     l'abscence de directives <code class="directive"><a href="#allow">Allow</a></code> et <code class="directive"><a href="#deny">Deny</a></code> associées, à cause de
     son influence sur le statut par défaut. Par exemple,</p>
 
-    <div class="example"><p><code>
-      &lt;Directory /www&gt;<br />
-      <span class="indent">
-        Order Allow,Deny<br />
-      </span>
-      &lt;/Directory&gt;
-    </code></p></div>
+    <pre class="prettyprint lang-config">
+&lt;Directory /www&gt;
+    Order Allow,Deny
+&lt;/Directory&gt;
+    </pre>
+
 
     <p>va interdire tout accès au répertoire <code>/www</code> à cause
     du statut d'accès par défaut qui est défini à <code class="directive"><a href="#deny">Deny</a></code>.</p>
@@ -450,11 +459,12 @@ et l'authentification utilisateur</td></tr>
     que l'accès à cette zone nécessite un mot de passe pour les autres
     utilisateurs, vous pouvez utiliser une configuration du style :</p>
 
-    <div class="example"><p><code>
-      Require valid-user<br />
-      Allow from 192.168.1<br />
-      Satisfy Any
-    </code></p></div>
+    <pre class="prettyprint lang-config">
+Require valid-user
+Allow from 192.168.1
+Satisfy Any
+    </pre>
+
 
     <p>
     Une autre utilisation fréquente de la directive
@@ -463,16 +473,17 @@ et l'authentification utilisateur</td></tr>
     répertoire parent :
     </p>
 
-    <div class="example"><p><code>
-      &lt;Directory /var/www/private&gt;<br />
-        Require valid-user<br />
-      &lt;/Directory&gt;<br />
-      <br />
-      &lt;Directory /var/www/private/public&gt;<br />
-        Allow from all<br />
-        Satisfy Any<br />
-      &lt;/Directory&gt;
-    </code></p></div>
+    <pre class="prettyprint lang-config">
+&lt;Directory /var/www/private&gt;
+    Require valid-user
+&lt;/Directory&gt;
+
+&lt;Directory /var/www/private/public&gt;
+    Allow from all
+    Satisfy Any
+&lt;/Directory&gt;
+    </pre>
+
 
     <p>Dans l'exemple ci-dessus, l'accès au répertoire
     <code>/var/www/private</code> nécessitera une authentification,
@@ -501,7 +512,28 @@ et l'authentification utilisateur</td></tr>
 <p><span>Langues Disponibles: </span><a href="../en/mod/mod_access_compat.html" hreflang="en" rel="alternate" title="English">&nbsp;en&nbsp;</a> |
 <a href="../fr/mod/mod_access_compat.html" title="Français">&nbsp;fr&nbsp;</a> |
 <a href="../ja/mod/mod_access_compat.html" hreflang="ja" rel="alternate" title="Japanese">&nbsp;ja&nbsp;</a></p>
-</div><div id="footer">
+</div><div class="top"><a href="#page-header"><img src="../images/up.gif" alt="top" /></a></div><div class="section"><h2><a id="comments_section" name="comments_section">Commentaires</a></h2><div class="warning"><strong>Notice:</strong><br />This is not a Q&amp;A section. Comments placed here should be pointed towards suggestions on improving the documentation or server, and may be removed again by our moderators if they are either implemented or considered invalid/off-topic. Questions on how to manage the Apache HTTP Server should be directed at either our IRC channel, #httpd, on Freenode, or sent to our <a href="http://httpd.apache.org/lists.html">mailing lists</a>.</div>
+<script type="text/javascript"><!--//--><![CDATA[//><!--
+var comments_shortname = 'httpd';
+var comments_identifier = 'http://httpd.apache.org/docs/2.4/mod/mod_access_compat.html';
+(function(w, d) {
+    if (w.location.hostname.toLowerCase() == "httpd.apache.org") {
+        d.write('<div id="comments_thread"><\/div>');
+        var s = d.createElement('script');
+        s.type = 'text/javascript';
+        s.async = true;
+        s.src = 'https://comments.apache.org/show_comments.lua?site=' + comments_shortname + '&page=' + comments_identifier;
+        (d.getElementsByTagName('head')[0] || d.getElementsByTagName('body')[0]).appendChild(s);
+    }
+    else { 
+        d.write('<div id="comments_thread">Comments are disabled for this page at the moment.<\/div>');
+    }
+})(window, document);
+//--><!]]></script></div><div id="footer">
 <p class="apache">Copyright 2012 The Apache Software Foundation.<br />Autorisé sous <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
-<p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="../faq/">FAQ</a> | <a href="../glossary.html">Glossaire</a> | <a href="../sitemap.html">Plan du site</a></p></div>
+<p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="http://wiki.apache.org/httpd/FAQ">FAQ</a> | <a href="../glossary.html">Glossaire</a> | <a href="../sitemap.html">Plan du site</a></p></div><script type="text/javascript"><!--//--><![CDATA[//><!--
+if (typeof(prettyPrint) !== 'undefined') {
+    prettyPrint();
+}
+//--><!]]></script>
 </body></html>

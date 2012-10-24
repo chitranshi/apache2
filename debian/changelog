@@ -30,8 +30,10 @@ apache2 (2.4.3-1) UNRELEASED; urgency=low
     directory.
   * Compress the data.tar in binary packages using xz to save some space on
     installation medias (Debian only).
+  * Fix "invoke-rc.d apache2 status fails" by merging patch of Jean-Michel
+    Vourgère. Thanks! (Closes: #691365)
 
- -- Arno Töll <arno@debian.org>  Sat, 20 Oct 2012 02:58:36 +0200
+ -- Arno Töll <arno@debian.org>  Thu, 25 Oct 2012 00:37:23 +0200
 
 apache2 (2.4.2-2) experimental; urgency=low
 

@@ -79,7 +79,7 @@ APACHE2_INIT_MESSAGE=""
 apache_wait_stop() {
         local STATUS=$1
 
-        PIDTMP=$(pidofproc $DAEMON -p $PIDFILE)
+        PIDTMP=$(pidofproc -p $PIDFILE $DAEMON)
         if [ -n "${PIDTMP:-}" ] && kill -0 "${PIDTMP:-}" 2> /dev/null; then
                 local i=0
                 while kill -0 "${PIDTMP:-}" 2> /dev/null;  do
@@ -108,7 +108,7 @@ do_start()
 	#   1 if daemon was already running
 	#   2 if daemon could not be started
 
-	if pidofproc "$DAEMON" -p $PIDFILE > /dev/null 2>&1 ; then
+	if pidofproc -p $PIDFILE "$DAEMON" > /dev/null 2>&1 ; then
                 return 1
         fi
 
@@ -180,7 +180,7 @@ do_stop()
 #
 do_reload() {
         if $APACHE2CTL configtest > /dev/null 2>&1; then
-	        if ! pidofproc "$DAEMON" -p $PIDFILE > /dev/null 2>&1 ; then
+	        if ! pidofproc -p $PIDFILE "$DAEMON" > /dev/null 2>&1 ; then
                         APACHE2_INIT_MESSAGE="Apache2 is not running"
                         return 2
                 fi
@@ -279,7 +279,7 @@ case "$1" in
 
 	;;
   status)
-	status_of_proc "apache2" "$NAME" -p $PIDFILE && exit 0 || exit $?
+	status_of_proc -p $PIDFILE "apache2" "$NAME" && exit 0 || exit $?
 	;;
   reload|force-reload|graceful)
 	log_daemon_msg "Reloading $DESC" "$NAME"

@@ -7,6 +7,7 @@ on|off" directive to mod_ssl.
 Origin: upstream, https://issues.apache.org/bugzilla/attachment.cgi?id=28804
 Bug: https://issues.apache.org/bugzilla/show_bug.cgi?id=53219
 Bug-Debian: http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=674142
+
 --- a/modules/ssl/mod_ssl.c
 +++ b/modules/ssl/mod_ssl.c
 @@ -146,6 +146,9 @@
@@ -21,31 +22,41 @@ Bug-Debian: http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=674142
      SSL_CMD_ALL(UserName, TAKE1,
 --- a/modules/ssl/ssl_engine_config.c
 +++ b/modules/ssl/ssl_engine_config.c
-@@ -178,6 +178,7 @@
+@@ -178,6 +178,9 @@
  #ifdef HAVE_FIPS
      sc->fips                   = UNSET;
  #endif
++#ifndef OPENSSL_NO_COMP
 +    sc->compression            = UNSET;
++#endif
  
      modssl_ctx_init_proxy(sc, p);
  
-@@ -275,6 +276,7 @@
+@@ -275,6 +278,9 @@
  #ifdef HAVE_FIPS
      cfgMergeBool(fips);
  #endif
++#ifndef OPENSSL_NO_COMP
 +    cfgMergeBool(compression);
++#endif
  
      modssl_ctx_cfg_merge_proxy(base->proxy, add->proxy, mrg->proxy);
  
-@@ -708,6 +710,17 @@
+@@ -708,6 +714,23 @@
  
  }
  
 +const char *ssl_cmd_SSLCompression(cmd_parms *cmd, void *dcfg, int flag)
 +{
-+#if defined(SSL_OP_NO_COMPRESSION) || OPENSSL_VERSION_NUMBER >= 0x00908000L
++#if !defined(OPENSSL_NO_COMP)
 +    SSLSrvConfigRec *sc = mySrvConfig(cmd->server);
-+    sc->compression = flag?TRUE:FALSE;
++#ifndef SSL_OP_NO_COMPRESSION
++    const char *err = ap_check_cmd_context(cmd, GLOBAL_ONLY);
++    if (err)
++        return "This version of openssl does not support configuring "
++               "compression within <VirtualHost> sections.";
++#endif
++    sc->compression = flag ? TRUE : FALSE;
 +    return NULL;
 +#else
 +    return "Setting Compression mode unsupported; not implemented by the SSL library";
@@ -57,22 +68,19 @@ Bug-Debian: http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=674142
  #ifdef SSL_OP_CIPHER_SERVER_PREFERENCE
 --- a/modules/ssl/ssl_engine_init.c
 +++ b/modules/ssl/ssl_engine_init.c
-@@ -532,6 +532,21 @@
+@@ -532,6 +532,18 @@
      }
  #endif
  
++
++#ifndef OPENSSL_NO_COMP
++    if (sc->compression == FALSE) {
 +#ifdef SSL_OP_NO_COMPRESSION
-+    /* OpenSSL >= 1.0 only */
-+    if (sc->compression != TRUE) {
++        /* OpenSSL >= 1.0 only */
 +        SSL_CTX_set_options(ctx, SSL_OP_NO_COMPRESSION);
-+    }
 +#elif OPENSSL_VERSION_NUMBER >= 0x00908000L
-+    /* workaround for OpenSSL 0.9.8 */
-+    if (sc->compression != TRUE) {
-+	SSL_CTX * tls_ctx;
-+        STACK_OF(SSL_COMP)* comp_methods;
-+	comp_methods = SSL_COMP_get_compression_methods();
-+        sk_SSL_COMP_zero(comp_methods);
++        sk_SSL_COMP_zero(SSL_COMP_get_compression_methods());
++#endif
 +    }
 +#endif
 +
@@ -81,15 +89,29 @@ Bug-Debian: http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=674142
          SSL_CTX_set_options(ctx, SSL_OP_ALLOW_UNSAFE_LEGACY_RENEGOTIATION);
 --- a/modules/ssl/ssl_private.h
 +++ b/modules/ssl/ssl_private.h
-@@ -495,6 +495,7 @@
+@@ -64,6 +64,11 @@
+ #define HAVE_TLSV1_X
+ #endif
+ 
++#if !defined(OPENSSL_NO_COMP) && !defined(SSL_OP_NO_COMPRESSION) \
++    && OPENSSL_VERSION_NUMBER < 0x00908000L
++#define OPENSSL_NO_COMP
++#endif
++
+ #include "ssl_util_ssl.h"
+ 
+ /** The #ifdef macros are only defined AFTER including the above
+@@ -495,6 +500,9 @@
  #ifdef HAVE_FIPS
      BOOL             fips;
  #endif
++#ifndef OPENSSL_NO_COMP
 +    BOOL             compression;
++#endif
  };
  
  /**
-@@ -551,6 +552,7 @@
+@@ -551,6 +559,7 @@
  const char  *ssl_cmd_SSLCARevocationPath(cmd_parms *, void *, const char *);
  const char  *ssl_cmd_SSLCARevocationFile(cmd_parms *, void *, const char *);
  const char  *ssl_cmd_SSLHonorCipherOrder(cmd_parms *cmd, void *dcfg, int flag);

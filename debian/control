@@ -143,7 +143,7 @@ Architecture: any
 Section: oldlibs
 Priority: extra
 Depends: ${misc:Depends},
- apache2-suexec-pristine (= ${binary:Version}) | apache2-suexec-custom (= ${binary:Version})
+ apache2-suexec-pristine (= ${binary:Version})
 Description: transitional package for apache2-suexec-pristine
  This is a transitional package for apache2-suexec-pristine, and can be safely
  removed after the installation is complete.

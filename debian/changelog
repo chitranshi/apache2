@@ -6,7 +6,7 @@ apache2 (2.2.22-12) unstable; urgency=low
     - "make it possible to disable ssl compression in apache2 mod_ssl"
       (Closes: #674142)
 
- -- Arno Töll <arno@debian.org>  Sat, 20 Oct 2012 01:41:57 +0200
+ -- Arno Töll <arno@debian.org>  Wed, 31 Oct 2012 00:23:59 +0100
 
 apache2 (2.2.22-11) unstable; urgency=low
 

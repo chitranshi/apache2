@@ -34,8 +34,9 @@ apache2 (2.4.3-1) UNRELEASED; urgency=low
     Vourgère. Thanks! (Closes: #691365)
   * Fix "copyright file missing after upgrade (policy 12.5)" - add link
     manually when necessary in postinst (Closes: #691440)
+  * Document APACHE_ARGUMENTS in envvars (ported from our 2.2 branch, reported as #693299)
 
- -- Arno Töll <arno@debian.org>  Tue, 30 Oct 2012 00:03:02 +0100
+ -- Arno Töll <arno@debian.org>  Fri, 16 Nov 2012 01:09:36 +0100
 
 apache2 (2.4.2-2) experimental; urgency=low
 

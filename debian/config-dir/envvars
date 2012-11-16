@@ -37,6 +37,10 @@ export LANG
 ## following line (default is 8192):
 #APACHE_ULIMIT_MAX_FILES='ulimit -n 65536'
 
+## If you would like to pass arguments to the web server, add them below
+## to the APACHE_ARGUMENTS environment.
+#export APACHE_ARGUMENTS=''
+
 ## Enable the debug mode for maintainer scripts.
 ## This will produce a verbose output on package installations of web server modules and web application
 ## installations which interact with Apache

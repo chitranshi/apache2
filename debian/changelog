@@ -1,3 +1,9 @@
+apache2 (2.2.22-13) UNRELEASED; urgency=low
+
+  * Document APACHE_ARGUMENTS in envvars (Closes: #693299)
+
+ -- Arno Töll <arno@debian.org>  Fri, 16 Nov 2012 01:07:59 +0100
+
 apache2 (2.2.22-12) unstable; urgency=low
 
   * Backport mod_ssl "SSLCompression on|off" flag from upstream. The default is

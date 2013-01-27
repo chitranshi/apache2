@@ -13,32 +13,20 @@ AP2_CFLAGS = -pipe $(shell dpkg-buildflags --get CFLAGS)
 AP2_LDFLAGS = -Wl,--as-needed $(shell dpkg-buildflags --get LDFLAGS)
 AP2_CPPFLAGS = -DPLATFORM='\"$(LSB_RELEASE)\"' $(shell dpkg-buildflags --get CPPFLAGS)
 
-patch: patch.stamp
-patch.stamp: 
+
+support/suexec-custom.c: support/suexec.c debian/patches/suexec-custom.patch
 	cp support/suexec.c support/suexec-custom.c
-	patch -p1 < debian/patches/suexec-custom.patch
+	patch -p1 -i debian/patches/suexec-custom.patch
+
+server/mpm/itk/.stamp:
 	mkdir server/mpm/itk/
 	cp server/mpm/prefork/* server/mpm/itk/
 	mv server/mpm/itk/prefork.c server/mpm/itk/itk.c
 	set -ex; for p in $$(grep -v '^#' debian/patches/itk/series) ; do \
 		echo Applying $$p ... ;\
-		patch -p1 < debian/patches/itk/$$p ;\
+		patch -p1 -i debian/patches/itk/$$p ;\
 	done
-	touch $@
-
-unpatch:
-	if [ -e patch.stamp ] ;\
-	then \
-		set -ex ;\
-		for p in $$(grep -v '^#' debian/patches/itk/series | tac) ;\
-		do \
-			echo De-applying $$p ... ;\
-			patch -R -p1 < debian/patches/itk/$$p ;\
-		done ;\
-		rm -r server/mpm/itk ;\
-		rm support/suexec-custom.c ;\
-		rm patch.stamp ;\
-	fi
+	touch "$@"
 
 prebuild-checks:
 	ERRS="" ;\
@@ -83,7 +71,7 @@ generate-maintainer-scripts:
 clean build build-arch build-indep binary binary-arch binary-indep: %:
 	dh $@ --parallel --with autotools_dev
 
-override_dh_auto_configure: patch generate-maintainer-scripts prebuild-checks
+override_dh_auto_configure: generate-maintainer-scripts prebuild-checks server/mpm/itk/.stamp support/suexec-custom.c
 	./configure --enable-layout=Debian --enable-so --with-program-name=apache2 \
 		--enable-suexec --with-suexec-caller=www-data \
 		--with-suexec-bin=/usr/lib/apache2/suexec --with-suexec-docroot=/var/www \
@@ -153,9 +141,11 @@ override_dh_strip:
 override_dh_auto_install:
 	dh_auto_install -- -j1
 
-override_dh_clean: unpatch
-	dh_clean
 override_dh_builddeb:
 	dh_builddeb -- -Zxz
 
-.PHONY: patch unpatch generate-maintainer-scripts clean-config-vars prepare-scripts prebuild-checks
+override_dh_auto_clean:
+	dh_auto_clean
+	if test -d server/mpm/itk ; then rm -r server/mpm/itk ; fi
+
+.PHONY: generate-maintainer-scripts clean-config-vars prepare-scripts prebuild-checks

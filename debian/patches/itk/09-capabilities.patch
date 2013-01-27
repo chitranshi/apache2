@@ -3,20 +3,6 @@ all root privilegies except the ability to setuid. An attacker capable of inject
 code will still be able to run as any (normal) user on the system, but at least
 he/she cannot directly load kernel code etc.
 
-Index: httpd-2.4.1/server/mpm/config2.m4
-===================================================================
---- httpd-2.4.1.orig/server/mpm/config2.m4
-+++ httpd-2.4.1/server/mpm/config2.m4
-@@ -66,6 +66,9 @@ for i in $ap_enabled_mpms; do
-     else
-         AC_MSG_ERROR([MPM $i is not supported on this platform.])
-     fi
-+    if test "$i" = "itk" ; then
-+        AC_CHECK_LIB(cap, cap_init)
-+    fi
- done
- 
- if test $mpm_build = "shared"; then
 Index: httpd-2.4.1/server/mpm/itk/itk.c
 ===================================================================
 --- httpd-2.4.1.orig/server/mpm/itk/itk.c

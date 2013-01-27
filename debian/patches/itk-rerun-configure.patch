@@ -1,9 +1,9 @@
 # the analogon of running autoheader; autoconf, which is a pain to clean up
-diff --git a/configure b/configure
-index c94d7b8..3eb397a 100755
---- a/configure
-+++ b/configure
-@@ -1946,8 +1946,8 @@ Optional Packages:
+Index: apache2/configure
+===================================================================
+--- apache2.orig/configure	2013-01-27 22:24:48.027752260 +0100
++++ apache2/configure	2013-01-27 22:24:48.019752226 +0100
+@@ -1964,8 +1964,8 @@
    --with-lua=PATH         Path to the Lua 5.1 prefix
    --with-ssl=DIR          OpenSSL base directory
    --with-mpm=MPM          Choose the process model for Apache to use by
@@ -14,7 +14,7 @@ index c94d7b8..3eb397a 100755
                            unless --enable-mpms-shared is also specified.
    --with-module=module-type:module-file
                            Enable module-file in the modules/<module-type>
-@@ -24988,6 +24988,27 @@ $as_echo "yes" >&6; }
+@@ -25131,6 +25131,27 @@
  
  fi
  
@@ -42,7 +42,7 @@ index c94d7b8..3eb397a 100755
  { $as_echo "$as_me:${as_lineno-$LINENO}: checking if mpmt_os2 MPM supports this platform" >&5
  $as_echo_n "checking if mpmt_os2 MPM supports this platform... " >&6; }
  case $host in
-@@ -26565,6 +26586,53 @@ for i in $ap_enabled_mpms; do
+@@ -26708,6 +26729,53 @@
      else
          as_fn_error $? "MPM $i is not supported on this platform." "$LINENO" 5
      fi
@@ -96,7 +96,7 @@ index c94d7b8..3eb397a 100755
  done
  
  if test $mpm_build = "shared"; then
-@@ -26685,6 +26753,77 @@ done
+@@ -26828,6 +26896,77 @@
  
  
  
@@ -174,7 +174,7 @@ index c94d7b8..3eb397a 100755
      if ap_mpm_is_enabled prefork; then
          if test -z ""; then
              objects="prefork.lo"
-@@ -26923,6 +27062,7 @@ done
+@@ -27066,6 +27205,7 @@
  
  if ap_mpm_is_enabled "worker" \
     || ap_mpm_is_enabled "event" \
@@ -182,10 +182,10 @@ index c94d7b8..3eb397a 100755
     || ap_mpm_is_enabled "prefork"; then
      unixd_mods_enable=yes
  else
-diff --git a/include/ap_config_auto.h.in b/include/ap_config_auto.h.in
-index 6b6fbfa..73bb460 100644
---- a/include/ap_config_auto.h.in
-+++ b/include/ap_config_auto.h.in
+Index: apache2/include/ap_config_auto.h.in
+===================================================================
+--- apache2.orig/include/ap_config_auto.h.in	2013-01-27 22:24:48.027752260 +0100
++++ apache2/include/ap_config_auto.h.in	2013-01-27 22:24:48.019752226 +0100
 @@ -100,6 +100,9 @@
  /* Define to 1 if you have the `kqueue' function. */
  #undef HAVE_KQUEUE

@@ -15,3 +15,4 @@ debian/manpages/a2query.8
 debian/manpages/dh_apache2.1
 debian/debhelper/dh_apache2
 config.nice
+support/suexec-custom.c

@@ -79,7 +79,8 @@ generate-maintainer-scripts:
 		done ;\
 	done
 
-%:
+.PHONY: clean build build-arch build-indep binary binary-arch binary-indep
+clean build build-arch build-indep binary binary-arch binary-indep: %:
 	dh $@ --parallel --with autotools_dev
 
 override_dh_auto_configure: patch generate-maintainer-scripts prebuild-checks

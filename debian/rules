@@ -67,7 +67,6 @@ generate-maintainer-scripts:
 		done ;\
 	done
 
-.PHONY: clean build build-arch build-indep binary binary-arch binary-indep
 clean build build-arch build-indep binary binary-arch binary-indep: %:
 	dh $@ --parallel --with autotools_dev
 
@@ -149,3 +148,4 @@ override_dh_auto_clean:
 	if test -d server/mpm/itk ; then rm -r server/mpm/itk ; fi
 
 .PHONY: generate-maintainer-scripts clean-config-vars prepare-scripts prebuild-checks
+.PHONY: clean build build-arch build-indep binary binary-arch binary-indep

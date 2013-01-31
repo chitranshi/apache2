@@ -6,7 +6,13 @@ no_LD_LIBRARY_PATH.patch
 suexec-CVE-2007-1742.patch
 customize_apxs.patch
 build_suexec-custom.patch
-# some changed to the core needed for itk:
+# The patch below must not be applied by quilt at extraction time.  It depends
+# on some script-fu to be executed before. Have a look
+# to debian/rules' prepare-custom-suexec target.
+# If you're aware of that you can uncomment it at any time later and work on it
+# as you wish. However, it must be shipped commented out in the final package.
+#suexec-custom.patch
+# some changes to the core needed for itk:
 add-itk-to-build-system.patch
 itk-hook-just-after-merging-perdir-config.patch
 itk-fix-htaccess-reads-for-persistent-connections.patch

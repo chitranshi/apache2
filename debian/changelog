@@ -36,7 +36,15 @@ apache2 (2.4.3-1) UNRELEASED; urgency=low
     manually when necessary in postinst (Closes: #691440)
   * Document APACHE_ARGUMENTS in envvars (ported from our 2.2 branch, reported as #693299)
 
- -- Arno Töll <arno@debian.org>  Fri, 16 Nov 2012 01:09:36 +0100
+  [ Bernhard R. Link ]
+
+  * Rearrane patches: Move all the patches or parts of patches touching non-itk
+    specific files (i.e. those from the upstream tarball) directly in the
+    debian/patches/series series.  While this seperates the itk patches into two
+    heaps, it makes both more visible what changes happen to the general code (and
+    thus are also done to the other servers generated)
+
+ -- Arno Töll <arno@debian.org>  Thu, 31 Jan 2013 23:20:20 +0100
 
 apache2 (2.4.2-2) experimental; urgency=low
 

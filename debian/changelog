@@ -13,6 +13,7 @@ apache2 (2.4.4-1) experimental; urgency=low
   * Add Replaces for the old mpm packages to apache2-bin. Closes: #671683
   * Add transitional package for libapache2-mod-proxy-html. Closes: #666816
   * Don't ship changelogs in the apache2.2-bin transitional package.
+  * CVE-2013-1048: Fix symlink vulnerability when creating /var/lock/apache2
 
   [ Arno Töll ]
   * Rewrite most parts of the init script to make it more readable and improve
@@ -38,6 +39,8 @@ apache2 (2.4.4-1) experimental; urgency=low
   * Fix "copyright file missing after upgrade (policy 12.5)" - add link
     manually when necessary in postinst (Closes: #691440)
   * Document APACHE_ARGUMENTS in envvars (ported from our 2.2 branch, reported as #693299)
+  * Don't croak about lacking permissions in apache2ctl when the script is
+    executed as a non-privileged user
 
   [ Bernhard R. Link ]
 
@@ -47,7 +50,7 @@ apache2 (2.4.4-1) experimental; urgency=low
     heaps, it makes both more visible what changes happen to the general code (and
     thus are also done to the other servers generated)
 
- -- Arno Töll <arno@debian.org>  Wed, 06 Mar 2013 00:06:20 +0100
+ -- Arno Töll <arno@debian.org>  Wed, 06 Mar 2013 00:24:15 +0100
 
 apache2 (2.4.2-2) experimental; urgency=low
 

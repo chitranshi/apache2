@@ -104,10 +104,35 @@ get_status () {
     fi
 }
 
+mkdir_chown () {
+    local OWNER="$1"
+    local DIR="$2"
+    local STAT="$(LC_ALL=C stat -c %F:%U $DIR 2> /dev/null || true)"
+    if [ "$STAT" = "" ] ; then
+        local TMPNAME=$(mktemp -d $DIR.XXXXXXXXXX) || exit 1
+        chmod 755 $TMPNAME || exit 1
+        chown $OWNER $TMPNAME || exit 1
+        if ! mv -T $TMPNAME $DIR 2> /dev/null; then
+            rmdir $TMPNAME
+            # check for race with other apachectl
+            if [ "$(LC_ALL=C stat -c %F:%U $DIR 2>/dev/null)" != "directory:$OWNER" ]
+            then
+                echo Cannot create $DIR with owner $OWNER.
+                echo Please fix manually. Aborting.
+                exit 1
+            fi
+        fi
+    elif [ "$STAT" != "directory:$OWNER" ] ; then
+        echo $DIR already exists but is not a directory owned by $OWNER.
+        echo Please fix manually. Aborting.
+        exit 1
+    fi
+}
+
 case $ARGV in
 start)
     mkdir -p ${APACHE_RUN_DIR:-/var/run/apache2}
-    install -d -o ${APACHE_RUN_USER:-www-data} ${APACHE_LOCK_DIR:-/var/lock/apache2}
+    mkdir_chown ${APACHE_RUN_USER:-www-data} ${APACHE_LOCK_DIR:-/var/lock/apache2}
     # ssl_scache shouldn't be here if we're just starting up.
     # (this is bad if there are several apache2 instances running)
     rm -f ${APACHE_RUN_DIR:-/var/run/apache2}/*ssl_scache*

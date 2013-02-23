@@ -1,0 +1,20 @@
+http://svn.apache.org/viewvc?view=revision&revision=r1410954
+
+    Don't log a spurious "-" if a request has been rejected
+    before mod_log_forensic could attach its id to it.
+    
+    http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=693292
+
+diff --git a/modules/loggers/mod_log_forensic.c b/modules/loggers/mod_log_forensic.c
+index add3eb9..7cbb76d 100644
+--- a/modules/loggers/mod_log_forensic.c
++++ b/modules/loggers/mod_log_forensic.c
+@@ -240,7 +240,7 @@ static int log_after(request_rec *r)
+     apr_size_t l, n;
+     apr_status_t rv;
+ 
+-    if (!cfg->fd) {
++    if (!cfg->fd || id == NULL) {
+         return DECLINED;
+     }
+ 

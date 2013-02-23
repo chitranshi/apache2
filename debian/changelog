@@ -2,6 +2,8 @@ apache2 (2.2.22-13) UNRELEASED; urgency=low
 
   [ Stefan Fritsch ]
   * CVE-2012-3499, CVE-2012-4558: Fix XSS flaws in various modules.
+  * mod_log_forensic: Fix spurious '-' characters being logged, causing
+    false positives. Closes: #693292
 
   [ Arno Töll ]
   * Document APACHE_ARGUMENTS in envvars (Closes: #693299)

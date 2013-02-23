@@ -1,5 +1,9 @@
 apache2 (2.2.22-13) UNRELEASED; urgency=low
 
+  [ Stefan Fritsch ]
+  * CVE-2012-3499, CVE-2012-4558: Fix XSS flaws in various modules.
+
+  [ Arno Töll ]
   * Document APACHE_ARGUMENTS in envvars (Closes: #693299)
 
  -- Arno Töll <arno@debian.org>  Fri, 16 Nov 2012 01:07:59 +0100

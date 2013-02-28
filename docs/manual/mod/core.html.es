@@ -191,7 +191,7 @@ En Windows desde Apache httpd 2.3.3 y posteriores.</td></tr>
        transmitidos como se comentaba anteriormente, y el buffer inicial de datos y las
        direcciones de red son recuperadas a partir de una única llamada AcceptEx().
        <code>connect</code> utiliza la API AcceptEx() API, y recupera también
-       las direccciones de red, pero a diferencia de <code>none</code> 
+       las direcciones de red, pero a diferencia de <code>none</code> 
        la opción <code>connect</code> no espera a la transmisión inicial de los datos.</p>
 
     <p>Sobre Windows, <code>none</code> prefiere accept() antes que AcceptEx()
@@ -1634,7 +1634,7 @@ media type in the HTTP Content-Type header field</td></tr>
 <tr><th><a href="directive-dict.html#Status">Estado:</a></th><td>Core</td></tr>
 <tr><th><a href="directive-dict.html#Module">Módulo:</a></th><td>core</td></tr>
 </table>
-    <p>When the server has been compiled with gprof profiling suppport,
+    <p>When the server has been compiled with gprof profiling support,
     <code class="directive">GprofDir</code> causes <code>gmon.out</code> files to
     be written to the specified directory when the process exits.  If the
     argument ends with a percent symbol ('%'), subdirectories are created
@@ -4310,7 +4310,7 @@ var comments_identifier = 'http://httpd.apache.org/docs/2.4/mod/core.html';
     }
 })(window, document);
 //--><!]]></script></div><div id="footer">
-<p class="apache">Copyright 2012 The Apache Software Foundation.<br />Licencia bajo los términos de la <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
+<p class="apache">Copyright 2013 The Apache Software Foundation.<br />Licencia bajo los términos de la <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
 <p class="menu"><a href="../mod/">Módulos</a> | <a href="../mod/directives.html">Directivas</a> | <a href="http://wiki.apache.org/httpd/FAQ">Preguntas Frecuentes</a> | <a href="../glossary.html">Glosario</a> | <a href="../sitemap.html">Mapa de este sitio web</a></p></div><script type="text/javascript"><!--//--><![CDATA[//><!--
 if (typeof(prettyPrint) !== 'undefined') {
     prettyPrint();

@@ -894,7 +894,12 @@ PROXY_DECLARE(const char *) ap_proxy_location_reverse_map(request_rec *r,
                     }
                 }
                 else if (l1 >= l2 && strncasecmp((*worker)->s->name, url, l2) == 0) {
-                    u = apr_pstrcat(r->pool, ent[i].fake, &url[l2], NULL);
+                    /* edge case where fake is just "/"... avoid double slash */
+                    if ((ent[i].fake[0] == '/') && (ent[i].fake[1] == 0) && (url[l2] == '/')) {
+                        u = apr_pstrdup(r->pool, &url[l2]);
+                    } else {
+                        u = apr_pstrcat(r->pool, ent[i].fake, &url[l2], NULL);
+                    }
                     return ap_is_url(u) ? u : ap_construct_url(r->pool, u, r);
                 }
                 worker++;
@@ -1116,6 +1121,8 @@ PROXY_DECLARE(char *) ap_proxy_update_balancer(apr_pool_t *p,
     return NULL;
 }
 
+#define PROXY_UNSET_NONCE '\n'
+
 PROXY_DECLARE(char *) ap_proxy_define_balancer(apr_pool_t *p,
                                                proxy_balancer **balancer,
                                                proxy_server_conf *conf,
@@ -1123,9 +1130,7 @@ PROXY_DECLARE(char *) ap_proxy_define_balancer(apr_pool_t *p,
                                                const char *alias,
                                                int do_malloc)
 {
-    char nonce[APR_UUID_FORMATTED_LENGTH + 1];
     proxy_balancer_method *lbmethod;
-    apr_uuid_t uuid;
     proxy_balancer_shared *bshared;
     char *c, *q, *uri = apr_pstrdup(p, url);
     const char *sname;
@@ -1144,13 +1149,10 @@ PROXY_DECLARE(char *) ap_proxy_define_balancer(apr_pool_t *p,
     memset(*balancer, 0, sizeof(proxy_balancer));
 
     /*
-     * NOTE: The default method is byrequests, which we assume
-     * exists!
+     * NOTE: The default method is byrequests - if it doesn't
+     * exist, that's OK at this time. We check when we share and sync
      */
     lbmethod = ap_lookup_provider(PROXY_LBMETHOD, "byrequests", "0");
-    if (!lbmethod) {
-        return "Can't find 'byrequests' lb method";
-    }
 
     (*balancer)->workers = apr_array_make(p, 5, sizeof(proxy_worker *));
     (*balancer)->gmutex = NULL;
@@ -1169,6 +1171,10 @@ PROXY_DECLARE(char *) ap_proxy_define_balancer(apr_pool_t *p,
     if (PROXY_STRNCPY(bshared->name, uri) != APR_SUCCESS) {
         return apr_psprintf(p, "balancer name (%s) too long", uri);
     }
+    /*
+     * We do the below for verification. The real sname will be
+     * done post_config
+     */
     ap_pstr2_alnum(p, bshared->name + sizeof(BALANCER_PREFIX) - 1,
                    &sname);
     sname = apr_pstrcat(p, conf->id, "_", sname, NULL);
@@ -1180,14 +1186,8 @@ PROXY_DECLARE(char *) ap_proxy_define_balancer(apr_pool_t *p,
     (*balancer)->hash = bshared->hash;
 
     bshared->forcerecovery = 1;
-
-    /* Retrieve a UUID and store the nonce for the lifetime of
-     * the process. */
-    apr_uuid_get(&uuid);
-    apr_uuid_format(nonce, &uuid);
-    if (PROXY_STRNCPY(bshared->nonce, nonce) != APR_SUCCESS) {
-        return apr_psprintf(p, "balancer nonce (%s) too long", nonce);
-    }
+    bshared->sticky_separator = '.';
+    *bshared->nonce = PROXY_UNSET_NONCE;  /* impossible valid input */
 
     (*balancer)->s = bshared;
     (*balancer)->sconf = conf;
@@ -1202,20 +1202,45 @@ PROXY_DECLARE(apr_status_t) ap_proxy_share_balancer(proxy_balancer *balancer,
                                                     proxy_balancer_shared *shm,
                                                     int i)
 {
+    apr_status_t rv = APR_SUCCESS;
     proxy_balancer_method *lbmethod;
+    char *action = "copying";
     if (!shm || !balancer->s)
         return APR_EINVAL;
 
-    memcpy(shm, balancer->s, sizeof(proxy_balancer_shared));
-    if (balancer->s->was_malloced)
-        free(balancer->s);
+    if ((balancer->s->hash.def != shm->hash.def) ||
+        (balancer->s->hash.fnv != shm->hash.fnv)) {
+        memcpy(shm, balancer->s, sizeof(proxy_balancer_shared));
+        if (balancer->s->was_malloced)
+            free(balancer->s);
+    } else {
+        action = "re-using";
+    }
+    ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, ap_server_conf, APLOGNO(02337)
+                 "%s shm[%d] (0x%pp) for %s", action, i, (void *)shm,
+                 balancer->s->name);
     balancer->s = shm;
     balancer->s->index = i;
     /* the below should always succeed */
     lbmethod = ap_lookup_provider(PROXY_LBMETHOD, balancer->s->lbpname, "0");
-    if (lbmethod)
+    if (lbmethod) {
         balancer->lbmethod = lbmethod;
-    return APR_SUCCESS;
+    } else {
+        ap_log_error(APLOG_MARK, APLOG_CRIT, 0, ap_server_conf, APLOGNO(02432)
+                     "Cannot find LB Method: %s", balancer->s->lbpname);
+        return APR_EINVAL;
+    }
+    if (*balancer->s->nonce == PROXY_UNSET_NONCE) {
+        char nonce[APR_UUID_FORMATTED_LENGTH + 1];
+        apr_uuid_t uuid;
+        /* Retrieve a UUID and store the nonce for the lifetime of
+         * the process.
+         */
+        apr_uuid_get(&uuid);
+        apr_uuid_format(nonce, &uuid);
+        rv = PROXY_STRNCPY(balancer->s->nonce, nonce);
+    }
+    return rv;
 }
 
 PROXY_DECLARE(apr_status_t) ap_proxy_initialize_balancer(proxy_balancer *balancer, server_rec *s, apr_pool_t *p)
@@ -1631,12 +1656,22 @@ PROXY_DECLARE(char *) ap_proxy_define_worker(apr_pool_t *p,
 PROXY_DECLARE(apr_status_t) ap_proxy_share_worker(proxy_worker *worker, proxy_worker_shared *shm,
                                                   int i)
 {
+    char *action = "copying";
     if (!shm || !worker->s)
         return APR_EINVAL;
 
-    memcpy(shm, worker->s, sizeof(proxy_worker_shared));
-    if (worker->s->was_malloced)
-        free(worker->s); /* was malloced in ap_proxy_define_worker */
+    if ((worker->s->hash.def != shm->hash.def) ||
+        (worker->s->hash.fnv != shm->hash.fnv)) {
+        memcpy(shm, worker->s, sizeof(proxy_worker_shared));
+        if (worker->s->was_malloced)
+            free(worker->s); /* was malloced in ap_proxy_define_worker */
+    } else {
+        action = "re-using";
+    }
+    ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, ap_server_conf, APLOGNO(02338)
+                 "%s shm[%d] (0x%pp) for worker: %s", action, i, (void *)shm,
+                 worker->s->name);
+
     worker->s = shm;
     worker->s->index = i;
     return APR_SUCCESS;
@@ -2690,7 +2725,12 @@ PROXY_DECLARE(apr_status_t) ap_proxy_sync_balancer(proxy_balancer *b, server_rec
     lbmethod = ap_lookup_provider(PROXY_LBMETHOD, b->s->lbpname, "0");
     if (lbmethod) {
         b->lbmethod = lbmethod;
+    } else {
+        ap_log_error(APLOG_MARK, APLOG_CRIT, 0, s, APLOGNO(02433)
+                     "Cannot find LB Method: %s", b->s->lbpname);
+        return APR_EINVAL;
     }
+
     /* worker sync */
 
     /*
@@ -2718,6 +2758,9 @@ PROXY_DECLARE(apr_status_t) ap_proxy_sync_balancer(proxy_balancer *b, server_rec
             proxy_worker *worker = *workers;
             if (worker->hash.def == shm->hash.def && worker->hash.fnv == shm->hash.fnv) {
                 found = 1;
+                ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, s, APLOGNO(02402)
+                             "re-grabbing shm[%d] (0x%pp) for worker: %s", i, (void *)shm,
+                             worker->s->name);
                 break;
             }
         }
@@ -2735,6 +2778,9 @@ PROXY_DECLARE(apr_status_t) ap_proxy_sync_balancer(proxy_balancer *b, server_rec
                 ap_log_error(APLOG_MARK, APLOG_EMERG, rv, s, APLOGNO(00966) "Cannot init worker");
                 return rv;
             }
+            ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, s, APLOGNO(02403)
+                         "grabbing shm[%d] (0x%pp) for worker: %s", i, (void *)shm,
+                         (*runtime)->s->name);
         }
     }
     if (b->s->need_reset) {
@@ -2744,6 +2790,48 @@ PROXY_DECLARE(apr_status_t) ap_proxy_sync_balancer(proxy_balancer *b, server_rec
     }
     b->wupdated = b->s->wupdated;
     return APR_SUCCESS;
+}
+
+PROXY_DECLARE(proxy_worker_shared *) ap_proxy_find_workershm(ap_slotmem_provider_t *storage,
+                                                               ap_slotmem_instance_t *slot,
+                                                               proxy_worker *worker,
+                                                               unsigned int *index)
+{
+    proxy_worker_shared *shm;
+    unsigned int i, limit;
+    limit = storage->num_slots(slot);
+    for (i = 0; i < limit; i++) {
+        if (storage->dptr(slot, i, (void *)&shm) != APR_SUCCESS) {
+            return NULL;
+        }
+        if ((worker->s->hash.def == shm->hash.def) &&
+            (worker->s->hash.fnv == shm->hash.fnv)) {
+            *index = i;
+            return shm;
+        }
+    }
+    return NULL;
+}
+
+PROXY_DECLARE(proxy_balancer_shared *) ap_proxy_find_balancershm(ap_slotmem_provider_t *storage,
+                                                                 ap_slotmem_instance_t *slot,
+                                                                 proxy_balancer *balancer,
+                                                                 unsigned int *index)
+{
+    proxy_balancer_shared *shm;
+    unsigned int i, limit;
+    limit = storage->num_slots(slot);
+    for (i = 0; i < limit; i++) {
+        if (storage->dptr(slot, i, (void *)&shm) != APR_SUCCESS) {
+            return NULL;
+        }
+        if ((balancer->s->hash.def == shm->hash.def) &&
+            (balancer->s->hash.fnv == shm->hash.fnv)) {
+            *index = i;
+            return shm;
+        }
+    }
+    return NULL;
 }
 
 void proxy_util_register_hooks(apr_pool_t *p)

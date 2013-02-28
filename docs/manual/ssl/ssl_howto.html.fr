@@ -50,6 +50,8 @@ accéder à une URL particulière ?</a></li>
 suivantes :</p>
 
 <pre class="prettyprint lang-config">
+LoadModule ssl_module modules/mod_ssl.so
+
 Listen 443
 &lt;VirtualHost *:443&gt;
     ServerName www.example.com
@@ -276,9 +278,7 @@ SSLCACertificateFile conf/ssl.crt/company-ca.crt
 &lt;Directory /usr/local/apache2/htdocs&gt;
 #   En dehors de subarea, seul l'accès depuis l'intranet est
 #   autorisé
-    Order                deny,allow
-    Deny                 from all
-    Allow                from 192.168.1.0/24
+    Require              ip 192.168.1.0/24
 &lt;/Directory&gt;
 
 &lt;Directory /usr/local/apache2/htdocs/subarea&gt;
@@ -304,9 +304,7 @@ SSLCACertificateFile conf/ssl.crt/company-ca.crt
     Satisfy              any
     
     #   Contrôle d'accès réseau
-    Order                deny,allow
-    Deny                 from all
-    Allow                192.168.1.0/24
+    Require              ip 192.168.1.0/24
     
     #   Configuration de l'authentification HTTP Basique
     AuthType             basic
@@ -353,7 +351,7 @@ var comments_identifier = 'http://httpd.apache.org/docs/2.4/ssl/ssl_howto.html';
     }
 })(window, document);
 //--><!]]></script></div><div id="footer">
-<p class="apache">Copyright 2012 The Apache Software Foundation.<br />Autorisé sous <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
+<p class="apache">Copyright 2013 The Apache Software Foundation.<br />Autorisé sous <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
 <p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="http://wiki.apache.org/httpd/FAQ">FAQ</a> | <a href="../glossary.html">Glossaire</a> | <a href="../sitemap.html">Plan du site</a></p></div><script type="text/javascript"><!--//--><![CDATA[//><!--
 if (typeof(prettyPrint) !== 'undefined') {
     prettyPrint();

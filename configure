@@ -740,7 +740,8 @@ MOD_OPTIONAL_FN_IMPORT_LDADD
 MOD_OPTIONAL_HOOK_IMPORT_LDADD
 MOD_OPTIONAL_HOOK_EXPORT_LDADD
 MOD_SSL_LDADD
-SSL_LIBS
+ab_LDFLAGS
+ab_CFLAGS
 MOD_SLOTMEM_PLAIN_LDADD
 MOD_SLOTMEM_SHM_LDADD
 MOD_SESSION_DBD_LDADD
@@ -1063,6 +1064,7 @@ enable_slotmem_shm
 enable_slotmem_plain
 enable_ssl
 with_ssl
+enable_ssl_staticlib_deps
 enable_optional_hook_export
 enable_optional_hook_import
 enable_optional_fn_import
@@ -1089,7 +1091,6 @@ enable_unixd
 enable_privileges
 enable_heartbeat
 enable_heartmonitor
-with_module
 enable_dav
 enable_status
 enable_autoindex
@@ -1100,6 +1101,7 @@ enable_cgid
 enable_cgi
 enable_dav_fs
 enable_dav_lock
+with_module
 enable_vhost_alias
 enable_negotiation
 enable_dir
@@ -1878,6 +1880,10 @@ Optional Features:
   --enable-slotmem-shm    slotmem provider that uses shared memory
   --enable-slotmem-plain  slotmem provider that uses plain memory
   --enable-ssl            SSL/TLS support (mod_ssl)
+  --enable-ssl-staticlib-deps
+                          link mod_ssl with dependencies of OpenSSL's static
+                          libraries (as indicated by "pkg-config --static").
+                          Must be specified in addition to --enable-ssl.
   --enable-optional-hook-export
                           example optional hook exporter
   --enable-optional-hook-import
@@ -1958,11 +1964,11 @@ Optional Packages:
   --with-pcre=PATH        Use external PCRE library
   --with-port=PORT        Port on which to listen (default is 80)
   --with-sslport=SSLPORT  Port on which to securelisten (default is 443)
-  --with-distcache=DIR    Distcache installation directory
-  --with-z=DIR            use a specific zlib library
-  --with-libxml2          location for libxml2
+  --with-distcache=PATH   Distcache installation directory
+  --with-z=PATH           use a specific zlib library
+  --with-libxml2=PATH     location for libxml2
   --with-lua=PATH         Path to the Lua 5.1 prefix
-  --with-ssl=DIR          OpenSSL base directory
+  --with-ssl=PATH         OpenSSL installation directory
   --with-mpm=MPM          Choose the process model for Apache to use by
                           default. MPM={event|worker|prefork|winnt} This will
                           be statically linked as the only available MPM
@@ -2853,6 +2859,7 @@ abs_srcdir=`(cd $srcdir && pwd)`
 abs_builddir=`pwd`
 
 HTTPD_VERSION=`$abs_srcdir/build/get-version.sh all $abs_srcdir/include/ap_release.h AP_SERVER`
+
 
 
 
@@ -6086,6 +6093,11 @@ if test "$PCRE_CONFIG" != "false"; then
   if $PCRE_CONFIG --version >/dev/null 2>&1; then :; else
     as_fn_error $? "Did not find pcre-config script at $PCRE_CONFIG" "$LINENO" 5
   fi
+  case `$PCRE_CONFIG --version` in
+  [1-5].*)
+    as_fn_error $? "Need at least pcre version 6.0" "$LINENO" 5
+    ;;
+  esac
   { $as_echo "$as_me:${as_lineno-$LINENO}: Using external PCRE library from $PCRE_CONFIG" >&5
 $as_echo "$as_me: Using external PCRE library from $PCRE_CONFIG" >&6;}
 
@@ -7341,7 +7353,8 @@ strings.h \
 sys/prctl.h \
 sys/processor.h \
 sys/sem.h \
-sys/sdt.h
+sys/sdt.h \
+sys/loadavg.h
 
 do :
   as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
@@ -7619,7 +7632,8 @@ bindprocessor \
 prctl \
 timegm \
 getpgid \
-fopen64
+fopen64 \
+getloadavg
 
 do :
   as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`
@@ -7781,6 +7795,7 @@ DTRACE=true
 if test "${enable_dtrace+set}" = set; then :
   enableval=$enable_dtrace;
   enable_dtrace=$enableval
+  if test "$enableval" = "yes"; then
 
   if test "x$CPPFLAGS" = "x"; then
     test "x$silent" != "xyes" && echo "  setting CPPFLAGS to \"-DAPR_DTRACE_PROVIDER\""
@@ -7802,7 +7817,8 @@ if test "${enable_dtrace+set}" = set; then :
     done
   fi
 
-  as_fn_error $? "'DTrace Support in the build system is not complete. Patches Welcome!'" "$LINENO" 5
+    as_fn_error $? "'DTrace Support in the build system is not complete. Patches Welcome!'" "$LINENO" 5
+  fi
 
 else
 
@@ -7833,6 +7849,7 @@ esac
 # Check whether --enable-hook-probes was given.
 if test "${enable_hook_probes+set}" = set; then :
   enableval=$enable_hook_probes;
+    if test "$enableval" = "yes"; then
 
 $as_echo "#define AP_HOOK_PROBES_ENABLED 1" >>confdefs.h
 
@@ -7857,15 +7874,18 @@ $as_echo "#define AP_HOOK_PROBES_ENABLED 1" >>confdefs.h
     done
   fi
 
+    fi
 
 fi
 
 # Check whether --enable-exception-hook was given.
 if test "${enable_exception_hook+set}" = set; then :
   enableval=$enable_exception_hook;
+    if test "$enableval" = "yes"; then
 
 $as_echo "#define AP_ENABLE_EXCEPTION_HOOK 1" >>confdefs.h
 
+    fi
 
 fi
 
@@ -7886,6 +7906,7 @@ fi
 # Check whether --enable-maintainer-mode was given.
 if test "${enable_maintainer_mode+set}" = set; then :
   enableval=$enable_maintainer_mode;
+  if test "$enableval" = "yes"; then
 
   if test "x$CPPFLAGS" = "x"; then
     test "x$silent" != "xyes" && echo "  setting CPPFLAGS to \"-DAP_DEBUG\""
@@ -7907,7 +7928,7 @@ if test "${enable_maintainer_mode+set}" = set; then :
     done
   fi
 
-  if test "$GCC" = "yes"; then
+    if test "$GCC" = "yes"; then
 
   if test "x$CFLAGS" = "x"; then
     test "x$silent" != "xyes" && echo "  setting CFLAGS to \"-Wall -Wmissing-prototypes -Wstrict-prototypes -Wmissing-declarations -Wpointer-arith\""
@@ -8189,7 +8210,7 @@ $as_echo "$ac_cv_gcc__Werror_format_security" >&6; }
   fi
 
 
-  elif test "$AIX_XLC" = "yes"; then
+    elif test "$AIX_XLC" = "yes"; then
 
   if test "x$CFLAGS" = "x"; then
     test "x$silent" != "xyes" && echo "  setting CFLAGS to \"-qfullpath -qinitauto=FE -qcheck=all -qinfo=pro\""
@@ -8211,11 +8232,12 @@ $as_echo "$ac_cv_gcc__Werror_format_security" >&6; }
     done
   fi
 
-  fi
-  if test "x$enable_load_all_modules" = "x"; then
-    LOAD_ALL_MODULES=yes
-    { $as_echo "$as_me:${as_lineno-$LINENO}: Maintainer mode setting \"LOAD_ALL_MODULES\" to $LOAD_ALL_MODULES" >&5
+    fi
+    if test "x$enable_load_all_modules" = "x"; then
+      LOAD_ALL_MODULES=yes
+      { $as_echo "$as_me:${as_lineno-$LINENO}: Maintainer mode setting \"LOAD_ALL_MODULES\" to $LOAD_ALL_MODULES" >&5
 $as_echo "$as_me: Maintainer mode setting \"LOAD_ALL_MODULES\" to $LOAD_ALL_MODULES" >&6;}
+    fi
   fi
 
 fi
@@ -8223,6 +8245,7 @@ fi
 # Check whether --enable-debugger-mode was given.
 if test "${enable_debugger_mode+set}" = set; then :
   enableval=$enable_debugger_mode;
+  if test "$enableval" = "yes"; then
 
   if test "x$CPPFLAGS" = "x"; then
     test "x$silent" != "xyes" && echo "  setting CPPFLAGS to \"-DAP_DEBUG\""
@@ -8244,7 +8267,7 @@ if test "${enable_debugger_mode+set}" = set; then :
     done
   fi
 
-  if test "$GCC" = "yes"; then
+    if test "$GCC" = "yes"; then
 
   if test "x$CFLAGS" = "x"; then
     test "x$silent" != "xyes" && echo "  setting CFLAGS to \"-Wall -Wmissing-prototypes -Wstrict-prototypes -Wmissing-declarations -Wpointer-arith -O0\""
@@ -8526,7 +8549,7 @@ $as_echo "$ac_cv_gcc__Werror_format_security" >&6; }
   fi
 
 
-  elif test "$AIX_XLC" = "yes"; then
+    elif test "$AIX_XLC" = "yes"; then
 
   if test "x$CFLAGS" = "x"; then
     test "x$silent" != "xyes" && echo "  setting CFLAGS to \"-qfullpath -qinitauto=FE -qcheck=all -qinfo=pro\""
@@ -8548,6 +8571,7 @@ $as_echo "$ac_cv_gcc__Werror_format_security" >&6; }
     done
   fi
 
+    fi
   fi
 
 fi
@@ -8597,6 +8621,12 @@ $as_echo "$ap_cv_cc_pie" >&6; }
      as_fn_error $? "--enable-pie requested but $CC failed using PIE flags" "$LINENO" 5
    fi
 fi
+
+  APACHE_VAR_SUBST="$APACHE_VAR_SUBST PICFLAGS"
+
+
+
+  APACHE_VAR_SUBST="$APACHE_VAR_SUBST PILDFLAGS"
 
 
 
@@ -8698,6 +8728,9 @@ fi
   modpath_current=modules/aaa
   modpath_static=
   modpath_shared=
+  for var in CFLAGS CXXFLAGS CPPFLAGS LDFLAGS LIBS INCLUDES; do
+    eval MOD_$var=
+  done
   test -d aaa || $srcdir/build/mkdir.sh $modpath_current
   > $modpath_current/modules.mk
 
@@ -11403,6 +11436,11 @@ EOF
   echo "DISTCLEAN_TARGETS = modules.mk" >> $modpath_current/modules.mk
   echo "static = $modpath_static" >> $modpath_current/modules.mk
   echo "shared = $modpath_shared" >> $modpath_current/modules.mk
+  for var in CFLAGS CXXFLAGS CPPFLAGS LDFLAGS LIBS INCLUDES; do
+    if eval val=\"\$MOD_$var\"; test -n "$val"; then
+      echo "MOD_$var = $val" >> $modpath_current/modules.mk
+    fi
+  done
   if test ! -z "$modpath_static" -o ! -z "$modpath_shared"; then
     MODULE_DIRS="$MODULE_DIRS $current_dir"
   else
@@ -11420,6 +11458,9 @@ EOF
   modpath_current=modules/arch/win32
   modpath_static=
   modpath_shared=
+  for var in CFLAGS CXXFLAGS CPPFLAGS LDFLAGS LIBS INCLUDES; do
+    eval MOD_$var=
+  done
   test -d arch/win32 || $srcdir/build/mkdir.sh $modpath_current
   > $modpath_current/modules.mk
 
@@ -11563,6 +11604,11 @@ EOF
   echo "DISTCLEAN_TARGETS = modules.mk" >> $modpath_current/modules.mk
   echo "static = $modpath_static" >> $modpath_current/modules.mk
   echo "shared = $modpath_shared" >> $modpath_current/modules.mk
+  for var in CFLAGS CXXFLAGS CPPFLAGS LDFLAGS LIBS INCLUDES; do
+    if eval val=\"\$MOD_$var\"; test -n "$val"; then
+      echo "MOD_$var = $val" >> $modpath_current/modules.mk
+    fi
+  done
   if test ! -z "$modpath_static" -o ! -z "$modpath_shared"; then
     MODULE_DIRS="$MODULE_DIRS $current_dir"
   else
@@ -11580,6 +11626,9 @@ EOF
   modpath_current=modules/cache
   modpath_static=
   modpath_shared=
+  for var in CFLAGS CXXFLAGS CPPFLAGS LDFLAGS LIBS INCLUDES; do
+    eval MOD_$var=
+  done
   test -d cache || $srcdir/build/mkdir.sh $modpath_current
   > $modpath_current/modules.mk
 
@@ -12536,22 +12585,22 @@ $as_echo "$ap_distcache_base" >&6; }
   fi
 
 
-  if test "x$INCLUDES" = "x"; then
-    test "x$silent" != "xyes" && echo "  setting INCLUDES to \"-I$ap_distcache_base/include\""
-    INCLUDES="-I$ap_distcache_base/include"
+  if test "x$MOD_INCLUDES" = "x"; then
+    test "x$silent" != "xyes" && echo "  setting MOD_INCLUDES to \"-I$ap_distcache_base/include\""
+    MOD_INCLUDES="-I$ap_distcache_base/include"
   else
     apr_addto_bugger="-I$ap_distcache_base/include"
     for i in $apr_addto_bugger; do
       apr_addto_duplicate="0"
-      for j in $INCLUDES; do
+      for j in $MOD_INCLUDES; do
         if test "x$i" = "x$j"; then
           apr_addto_duplicate="1"
           break
         fi
       done
       if test $apr_addto_duplicate = "0"; then
-        test "x$silent" != "xyes" && echo "  adding \"$i\" to INCLUDES"
-        INCLUDES="$INCLUDES $i"
+        test "x$silent" != "xyes" && echo "  adding \"$i\" to MOD_INCLUDES"
+        MOD_INCLUDES="$MOD_INCLUDES $i"
       fi
     done
   fi
@@ -12898,6 +12947,11 @@ EOF
   echo "DISTCLEAN_TARGETS = modules.mk" >> $modpath_current/modules.mk
   echo "static = $modpath_static" >> $modpath_current/modules.mk
   echo "shared = $modpath_shared" >> $modpath_current/modules.mk
+  for var in CFLAGS CXXFLAGS CPPFLAGS LDFLAGS LIBS INCLUDES; do
+    if eval val=\"\$MOD_$var\"; test -n "$val"; then
+      echo "MOD_$var = $val" >> $modpath_current/modules.mk
+    fi
+  done
   if test ! -z "$modpath_static" -o ! -z "$modpath_shared"; then
     MODULE_DIRS="$MODULE_DIRS $current_dir"
   else
@@ -12915,6 +12969,9 @@ EOF
   modpath_current=modules/core
   modpath_static=
   modpath_shared=
+  for var in CFLAGS CXXFLAGS CPPFLAGS LDFLAGS LIBS INCLUDES; do
+    eval MOD_$var=
+  done
   test -d core || $srcdir/build/mkdir.sh $modpath_current
   > $modpath_current/modules.mk
 
@@ -13338,6 +13395,11 @@ EOF
   echo "DISTCLEAN_TARGETS = modules.mk" >> $modpath_current/modules.mk
   echo "static = $modpath_static" >> $modpath_current/modules.mk
   echo "shared = $modpath_shared" >> $modpath_current/modules.mk
+  for var in CFLAGS CXXFLAGS CPPFLAGS LDFLAGS LIBS INCLUDES; do
+    if eval val=\"\$MOD_$var\"; test -n "$val"; then
+      echo "MOD_$var = $val" >> $modpath_current/modules.mk
+    fi
+  done
   if test ! -z "$modpath_static" -o ! -z "$modpath_shared"; then
     MODULE_DIRS="$MODULE_DIRS $current_dir"
   else
@@ -13354,6 +13416,9 @@ EOF
   modpath_current=modules/database
   modpath_static=
   modpath_shared=
+  for var in CFLAGS CXXFLAGS CPPFLAGS LDFLAGS LIBS INCLUDES; do
+    eval MOD_$var=
+  done
   test -d database || $srcdir/build/mkdir.sh $modpath_current
   > $modpath_current/modules.mk
 
@@ -13519,6 +13584,11 @@ EOF
   echo "DISTCLEAN_TARGETS = modules.mk" >> $modpath_current/modules.mk
   echo "static = $modpath_static" >> $modpath_current/modules.mk
   echo "shared = $modpath_shared" >> $modpath_current/modules.mk
+  for var in CFLAGS CXXFLAGS CPPFLAGS LDFLAGS LIBS INCLUDES; do
+    if eval val=\"\$MOD_$var\"; test -n "$val"; then
+      echo "MOD_$var = $val" >> $modpath_current/modules.mk
+    fi
+  done
   if test ! -z "$modpath_static" -o ! -z "$modpath_shared"; then
     MODULE_DIRS="$MODULE_DIRS $current_dir"
   else
@@ -13535,6 +13605,9 @@ EOF
   modpath_current=modules/debugging
   modpath_static=
   modpath_shared=
+  for var in CFLAGS CXXFLAGS CPPFLAGS LDFLAGS LIBS INCLUDES; do
+    eval MOD_$var=
+  done
   test -d debugging || $srcdir/build/mkdir.sh $modpath_current
   > $modpath_current/modules.mk
 
@@ -13812,6 +13885,11 @@ EOF
   echo "DISTCLEAN_TARGETS = modules.mk" >> $modpath_current/modules.mk
   echo "static = $modpath_static" >> $modpath_current/modules.mk
   echo "shared = $modpath_shared" >> $modpath_current/modules.mk
+  for var in CFLAGS CXXFLAGS CPPFLAGS LDFLAGS LIBS INCLUDES; do
+    if eval val=\"\$MOD_$var\"; test -n "$val"; then
+      echo "MOD_$var = $val" >> $modpath_current/modules.mk
+    fi
+  done
   if test ! -z "$modpath_static" -o ! -z "$modpath_shared"; then
     MODULE_DIRS="$MODULE_DIRS $current_dir"
   else
@@ -13829,6 +13907,9 @@ EOF
   modpath_current=modules/echo
   modpath_static=
   modpath_shared=
+  for var in CFLAGS CXXFLAGS CPPFLAGS LDFLAGS LIBS INCLUDES; do
+    eval MOD_$var=
+  done
   test -d echo || $srcdir/build/mkdir.sh $modpath_current
   > $modpath_current/modules.mk
 
@@ -13972,6 +14053,11 @@ EOF
   echo "DISTCLEAN_TARGETS = modules.mk" >> $modpath_current/modules.mk
   echo "static = $modpath_static" >> $modpath_current/modules.mk
   echo "shared = $modpath_shared" >> $modpath_current/modules.mk
+  for var in CFLAGS CXXFLAGS CPPFLAGS LDFLAGS LIBS INCLUDES; do
+    if eval val=\"\$MOD_$var\"; test -n "$val"; then
+      echo "MOD_$var = $val" >> $modpath_current/modules.mk
+    fi
+  done
   if test ! -z "$modpath_static" -o ! -z "$modpath_shared"; then
     MODULE_DIRS="$MODULE_DIRS $current_dir"
   else
@@ -13988,6 +14074,9 @@ EOF
   modpath_current=modules/examples
   modpath_static=
   modpath_shared=
+  for var in CFLAGS CXXFLAGS CPPFLAGS LDFLAGS LIBS INCLUDES; do
+    eval MOD_$var=
+  done
   test -d examples || $srcdir/build/mkdir.sh $modpath_current
   > $modpath_current/modules.mk
 
@@ -14533,6 +14622,11 @@ EOF
   echo "DISTCLEAN_TARGETS = modules.mk" >> $modpath_current/modules.mk
   echo "static = $modpath_static" >> $modpath_current/modules.mk
   echo "shared = $modpath_shared" >> $modpath_current/modules.mk
+  for var in CFLAGS CXXFLAGS CPPFLAGS LDFLAGS LIBS INCLUDES; do
+    if eval val=\"\$MOD_$var\"; test -n "$val"; then
+      echo "MOD_$var = $val" >> $modpath_current/modules.mk
+    fi
+  done
   if test ! -z "$modpath_static" -o ! -z "$modpath_shared"; then
     MODULE_DIRS="$MODULE_DIRS $current_dir"
   else
@@ -14549,6 +14643,9 @@ EOF
   modpath_current=modules/experimental
   modpath_static=
   modpath_shared=
+  for var in CFLAGS CXXFLAGS CPPFLAGS LDFLAGS LIBS INCLUDES; do
+    eval MOD_$var=
+  done
   test -d experimental || $srcdir/build/mkdir.sh $modpath_current
   > $modpath_current/modules.mk
 
@@ -14557,6 +14654,11 @@ EOF
   echo "DISTCLEAN_TARGETS = modules.mk" >> $modpath_current/modules.mk
   echo "static = $modpath_static" >> $modpath_current/modules.mk
   echo "shared = $modpath_shared" >> $modpath_current/modules.mk
+  for var in CFLAGS CXXFLAGS CPPFLAGS LDFLAGS LIBS INCLUDES; do
+    if eval val=\"\$MOD_$var\"; test -n "$val"; then
+      echo "MOD_$var = $val" >> $modpath_current/modules.mk
+    fi
+  done
   if test ! -z "$modpath_static" -o ! -z "$modpath_shared"; then
     MODULE_DIRS="$MODULE_DIRS $current_dir"
   else
@@ -14574,6 +14676,9 @@ EOF
   modpath_current=modules/filters
   modpath_static=
   modpath_shared=
+  for var in CFLAGS CXXFLAGS CPPFLAGS LDFLAGS LIBS INCLUDES; do
+    eval MOD_$var=
+  done
   test -d filters || $srcdir/build/mkdir.sh $modpath_current
   > $modpath_current/modules.mk
 
@@ -16489,6 +16594,27 @@ $as_echo "$ap_zlib_base" >&6; }
     done
   fi
 
+
+  if test "x$MOD_INCLUDES" = "x"; then
+    test "x$silent" != "xyes" && echo "  setting MOD_INCLUDES to \"-I${ap_zlib_base}/include\""
+    MOD_INCLUDES="-I${ap_zlib_base}/include"
+  else
+    apr_addto_bugger="-I${ap_zlib_base}/include"
+    for i in $apr_addto_bugger; do
+      apr_addto_duplicate="0"
+      for j in $MOD_INCLUDES; do
+        if test "x$i" = "x$j"; then
+          apr_addto_duplicate="1"
+          break
+        fi
+      done
+      if test $apr_addto_duplicate = "0"; then
+        test "x$silent" != "xyes" && echo "  adding \"$i\" to MOD_INCLUDES"
+        MOD_INCLUDES="$MOD_INCLUDES $i"
+      fi
+    done
+  fi
+
             CPPFLAGS="$CPPFLAGS $INCLUDES"
 
   if test "x$LDFLAGS" = "x"; then
@@ -16639,7 +16765,6 @@ else
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: not found" >&5
 $as_echo "not found" >&6; }
        enable_deflate=no
-       INCLUDES=$ap_save_includes
        if test "x$ap_zlib_with" = "x"; then
          { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: ... Error, zlib was missing or unusable" >&5
 $as_echo "$as_me: WARNING: ... Error, zlib was missing or unusable" >&2;}
@@ -16650,6 +16775,7 @@ $as_echo "$as_me: WARNING: ... Error, zlib was missing or unusable" >&2;}
 fi
 rm -f core conftest.err conftest.$ac_objext \
     conftest$ac_exeext conftest.$ac_ext
+    INCLUDES=$ap_save_includes
     LDFLAGS=$ap_save_ldflags
     CPPFLAGS=$ap_save_cppflags
 
@@ -16862,22 +16988,22 @@ $as_echo "$ac_cv_libxml2" >&6; }
 
   if test "$ac_cv_libxml2" = "yes" ; then
 
-  if test "x$CFLAGS" = "x"; then
-    test "x$silent" != "xyes" && echo "  setting CFLAGS to \"-I${XML2_INCLUDES}\""
-    CFLAGS="-I${XML2_INCLUDES}"
+  if test "x$MOD_CFLAGS" = "x"; then
+    test "x$silent" != "xyes" && echo "  setting MOD_CFLAGS to \"-I${XML2_INCLUDES}\""
+    MOD_CFLAGS="-I${XML2_INCLUDES}"
   else
     apr_addto_bugger="-I${XML2_INCLUDES}"
     for i in $apr_addto_bugger; do
       apr_addto_duplicate="0"
-      for j in $CFLAGS; do
+      for j in $MOD_CFLAGS; do
         if test "x$i" = "x$j"; then
           apr_addto_duplicate="1"
           break
         fi
       done
       if test $apr_addto_duplicate = "0"; then
-        test "x$silent" != "xyes" && echo "  adding \"$i\" to CFLAGS"
-        CFLAGS="$CFLAGS $i"
+        test "x$silent" != "xyes" && echo "  adding \"$i\" to MOD_CFLAGS"
+        MOD_CFLAGS="$MOD_CFLAGS $i"
       fi
     done
   fi
@@ -17092,22 +17218,22 @@ $as_echo "$ac_cv_libxml2" >&6; }
 
   if test "$ac_cv_libxml2" = "yes" ; then
 
-  if test "x$CFLAGS" = "x"; then
-    test "x$silent" != "xyes" && echo "  setting CFLAGS to \"-I${XML2_INCLUDES}\""
-    CFLAGS="-I${XML2_INCLUDES}"
+  if test "x$MOD_CFLAGS" = "x"; then
+    test "x$silent" != "xyes" && echo "  setting MOD_CFLAGS to \"-I${XML2_INCLUDES}\""
+    MOD_CFLAGS="-I${XML2_INCLUDES}"
   else
     apr_addto_bugger="-I${XML2_INCLUDES}"
     for i in $apr_addto_bugger; do
       apr_addto_duplicate="0"
-      for j in $CFLAGS; do
+      for j in $MOD_CFLAGS; do
         if test "x$i" = "x$j"; then
           apr_addto_duplicate="1"
           break
         fi
       done
       if test $apr_addto_duplicate = "0"; then
-        test "x$silent" != "xyes" && echo "  adding \"$i\" to CFLAGS"
-        CFLAGS="$CFLAGS $i"
+        test "x$silent" != "xyes" && echo "  adding \"$i\" to MOD_CFLAGS"
+        MOD_CFLAGS="$MOD_CFLAGS $i"
       fi
     done
   fi
@@ -17256,6 +17382,11 @@ EOF
   echo "DISTCLEAN_TARGETS = modules.mk" >> $modpath_current/modules.mk
   echo "static = $modpath_static" >> $modpath_current/modules.mk
   echo "shared = $modpath_shared" >> $modpath_current/modules.mk
+  for var in CFLAGS CXXFLAGS CPPFLAGS LDFLAGS LIBS INCLUDES; do
+    if eval val=\"\$MOD_$var\"; test -n "$val"; then
+      echo "MOD_$var = $val" >> $modpath_current/modules.mk
+    fi
+  done
   if test ! -z "$modpath_static" -o ! -z "$modpath_shared"; then
     MODULE_DIRS="$MODULE_DIRS $current_dir"
   else
@@ -17272,6 +17403,9 @@ EOF
   modpath_current=modules/http
   modpath_static=
   modpath_shared=
+  for var in CFLAGS CXXFLAGS CPPFLAGS LDFLAGS LIBS INCLUDES; do
+    eval MOD_$var=
+  done
   test -d http || $srcdir/build/mkdir.sh $modpath_current
   > $modpath_current/modules.mk
 
@@ -17557,6 +17691,11 @@ EOF
   echo "DISTCLEAN_TARGETS = modules.mk" >> $modpath_current/modules.mk
   echo "static = $modpath_static" >> $modpath_current/modules.mk
   echo "shared = $modpath_shared" >> $modpath_current/modules.mk
+  for var in CFLAGS CXXFLAGS CPPFLAGS LDFLAGS LIBS INCLUDES; do
+    if eval val=\"\$MOD_$var\"; test -n "$val"; then
+      echo "MOD_$var = $val" >> $modpath_current/modules.mk
+    fi
+  done
   if test ! -z "$modpath_static" -o ! -z "$modpath_shared"; then
     MODULE_DIRS="$MODULE_DIRS $current_dir"
   else
@@ -17574,6 +17713,9 @@ EOF
   modpath_current=modules/ldap
   modpath_static=
   modpath_shared=
+  for var in CFLAGS CXXFLAGS CPPFLAGS LDFLAGS LIBS INCLUDES; do
+    eval MOD_$var=
+  done
   test -d ldap || $srcdir/build/mkdir.sh $modpath_current
   > $modpath_current/modules.mk
 
@@ -17819,6 +17961,11 @@ EOF
   echo "DISTCLEAN_TARGETS = modules.mk" >> $modpath_current/modules.mk
   echo "static = $modpath_static" >> $modpath_current/modules.mk
   echo "shared = $modpath_shared" >> $modpath_current/modules.mk
+  for var in CFLAGS CXXFLAGS CPPFLAGS LDFLAGS LIBS INCLUDES; do
+    if eval val=\"\$MOD_$var\"; test -n "$val"; then
+      echo "MOD_$var = $val" >> $modpath_current/modules.mk
+    fi
+  done
   if test ! -z "$modpath_static" -o ! -z "$modpath_shared"; then
     MODULE_DIRS="$MODULE_DIRS $current_dir"
   else
@@ -17836,6 +17983,9 @@ EOF
   modpath_current=modules/loggers
   modpath_static=
   modpath_shared=
+  for var in CFLAGS CXXFLAGS CPPFLAGS LDFLAGS LIBS INCLUDES; do
+    eval MOD_$var=
+  done
   test -d loggers || $srcdir/build/mkdir.sh $modpath_current
   > $modpath_current/modules.mk
 
@@ -18429,6 +18579,11 @@ EOF
   echo "DISTCLEAN_TARGETS = modules.mk" >> $modpath_current/modules.mk
   echo "static = $modpath_static" >> $modpath_current/modules.mk
   echo "shared = $modpath_shared" >> $modpath_current/modules.mk
+  for var in CFLAGS CXXFLAGS CPPFLAGS LDFLAGS LIBS INCLUDES; do
+    if eval val=\"\$MOD_$var\"; test -n "$val"; then
+      echo "MOD_$var = $val" >> $modpath_current/modules.mk
+    fi
+  done
   if test ! -z "$modpath_static" -o ! -z "$modpath_shared"; then
     MODULE_DIRS="$MODULE_DIRS $current_dir"
   else
@@ -18445,13 +18600,16 @@ EOF
   modpath_current=modules/lua
   modpath_static=
   modpath_shared=
+  for var in CFLAGS CXXFLAGS CPPFLAGS LDFLAGS LIBS INCLUDES; do
+    eval MOD_$var=
+  done
   test -d lua || $srcdir/build/mkdir.sh $modpath_current
   > $modpath_current/modules.mk
 
 
 
 
-lua_objects="lua_apr.lo lua_config.lo mod_lua.lo lua_request.lo lua_vmprep.lo"
+lua_objects="lua_apr.lo lua_config.lo mod_lua.lo lua_request.lo lua_vmprep.lo lua_dbd.lo"
 
 
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to enable mod_lua" >&5
@@ -19023,25 +19181,29 @@ $as_echo "$as_me: using '${LUA_LIBS}' for Lua Library" >&6;}
   # Check whether --enable-luajit was given.
 if test "${enable_luajit+set}" = set; then :
   enableval=$enable_luajit;
-  if test "x$CPPFLAGS" = "x"; then
-    test "x$silent" != "xyes" && echo "  setting CPPFLAGS to \""-DAP_ENABLE_LUAJIT"\""
-    CPPFLAGS=""-DAP_ENABLE_LUAJIT""
+    if test "$enableval" = "yes"; then
+
+  if test "x$MOD_CPPFLAGS" = "x"; then
+    test "x$silent" != "xyes" && echo "  setting MOD_CPPFLAGS to \""-DAP_ENABLE_LUAJIT"\""
+    MOD_CPPFLAGS=""-DAP_ENABLE_LUAJIT""
   else
     apr_addto_bugger=""-DAP_ENABLE_LUAJIT""
     for i in $apr_addto_bugger; do
       apr_addto_duplicate="0"
-      for j in $CPPFLAGS; do
+      for j in $MOD_CPPFLAGS; do
         if test "x$i" = "x$j"; then
           apr_addto_duplicate="1"
           break
         fi
       done
       if test $apr_addto_duplicate = "0"; then
-        test "x$silent" != "xyes" && echo "  adding \"$i\" to CPPFLAGS"
-        CPPFLAGS="$CPPFLAGS $i"
+        test "x$silent" != "xyes" && echo "  adding \"$i\" to MOD_CPPFLAGS"
+        MOD_CPPFLAGS="$MOD_CPPFLAGS $i"
       fi
     done
   fi
+
+    fi
 
 fi
 
@@ -19050,22 +19212,22 @@ fi
 
   if test "x$enable_lua" != "xno" ; then
 
-  if test "x$INCLUDES" = "x"; then
-    test "x$silent" != "xyes" && echo "  setting INCLUDES to \"$LUA_CFLAGS\""
-    INCLUDES="$LUA_CFLAGS"
+  if test "x$MOD_INCLUDES" = "x"; then
+    test "x$silent" != "xyes" && echo "  setting MOD_INCLUDES to \"$LUA_CFLAGS\""
+    MOD_INCLUDES="$LUA_CFLAGS"
   else
     apr_addto_bugger="$LUA_CFLAGS"
     for i in $apr_addto_bugger; do
       apr_addto_duplicate="0"
-      for j in $INCLUDES; do
+      for j in $MOD_INCLUDES; do
         if test "x$i" = "x$j"; then
           apr_addto_duplicate="1"
           break
         fi
       done
       if test $apr_addto_duplicate = "0"; then
-        test "x$silent" != "xyes" && echo "  adding \"$i\" to INCLUDES"
-        INCLUDES="$INCLUDES $i"
+        test "x$silent" != "xyes" && echo "  adding \"$i\" to MOD_INCLUDES"
+        MOD_INCLUDES="$MOD_INCLUDES $i"
       fi
     done
   fi
@@ -19211,6 +19373,11 @@ EOF
   echo "DISTCLEAN_TARGETS = modules.mk" >> $modpath_current/modules.mk
   echo "static = $modpath_static" >> $modpath_current/modules.mk
   echo "shared = $modpath_shared" >> $modpath_current/modules.mk
+  for var in CFLAGS CXXFLAGS CPPFLAGS LDFLAGS LIBS INCLUDES; do
+    if eval val=\"\$MOD_$var\"; test -n "$val"; then
+      echo "MOD_$var = $val" >> $modpath_current/modules.mk
+    fi
+  done
   if test ! -z "$modpath_static" -o ! -z "$modpath_shared"; then
     MODULE_DIRS="$MODULE_DIRS $current_dir"
   else
@@ -19228,6 +19395,9 @@ EOF
   modpath_current=modules/metadata
   modpath_static=
   modpath_shared=
+  for var in CFLAGS CXXFLAGS CPPFLAGS LDFLAGS LIBS INCLUDES; do
+    eval MOD_$var=
+  done
   test -d metadata || $srcdir/build/mkdir.sh $modpath_current
   > $modpath_current/modules.mk
 
@@ -20750,6 +20920,11 @@ EOF
   echo "DISTCLEAN_TARGETS = modules.mk" >> $modpath_current/modules.mk
   echo "static = $modpath_static" >> $modpath_current/modules.mk
   echo "shared = $modpath_shared" >> $modpath_current/modules.mk
+  for var in CFLAGS CXXFLAGS CPPFLAGS LDFLAGS LIBS INCLUDES; do
+    if eval val=\"\$MOD_$var\"; test -n "$val"; then
+      echo "MOD_$var = $val" >> $modpath_current/modules.mk
+    fi
+  done
   if test ! -z "$modpath_static" -o ! -z "$modpath_shared"; then
     MODULE_DIRS="$MODULE_DIRS $current_dir"
   else
@@ -20766,6 +20941,9 @@ EOF
   modpath_current=modules/proxy
   modpath_static=
   modpath_shared=
+  for var in CFLAGS CXXFLAGS CPPFLAGS LDFLAGS LIBS INCLUDES; do
+    eval MOD_$var=
+  done
   test -d proxy || $srcdir/build/mkdir.sh $modpath_current
   > $modpath_current/modules.mk
 
@@ -22376,6 +22554,11 @@ EOF
   echo "DISTCLEAN_TARGETS = modules.mk" >> $modpath_current/modules.mk
   echo "static = $modpath_static" >> $modpath_current/modules.mk
   echo "shared = $modpath_shared" >> $modpath_current/modules.mk
+  for var in CFLAGS CXXFLAGS CPPFLAGS LDFLAGS LIBS INCLUDES; do
+    if eval val=\"\$MOD_$var\"; test -n "$val"; then
+      echo "MOD_$var = $val" >> $modpath_current/modules.mk
+    fi
+  done
   if test ! -z "$modpath_static" -o ! -z "$modpath_shared"; then
     MODULE_DIRS="$MODULE_DIRS $current_dir"
   else
@@ -22401,6 +22584,9 @@ fi
   modpath_current=modules/session
   modpath_static=
   modpath_shared=
+  for var in CFLAGS CXXFLAGS CPPFLAGS LDFLAGS LIBS INCLUDES; do
+    eval MOD_$var=
+  done
   test -d session || $srcdir/build/mkdir.sh $modpath_current
   > $modpath_current/modules.mk
 
@@ -23090,6 +23276,11 @@ EOF
   echo "DISTCLEAN_TARGETS = modules.mk" >> $modpath_current/modules.mk
   echo "static = $modpath_static" >> $modpath_current/modules.mk
   echo "shared = $modpath_shared" >> $modpath_current/modules.mk
+  for var in CFLAGS CXXFLAGS CPPFLAGS LDFLAGS LIBS INCLUDES; do
+    if eval val=\"\$MOD_$var\"; test -n "$val"; then
+      echo "MOD_$var = $val" >> $modpath_current/modules.mk
+    fi
+  done
   if test ! -z "$modpath_static" -o ! -z "$modpath_shared"; then
     MODULE_DIRS="$MODULE_DIRS $current_dir"
   else
@@ -23108,6 +23299,9 @@ EOF
   modpath_current=modules/slotmem
   modpath_static=
   modpath_shared=
+  for var in CFLAGS CXXFLAGS CPPFLAGS LDFLAGS LIBS INCLUDES; do
+    eval MOD_$var=
+  done
   test -d slotmem || $srcdir/build/mkdir.sh $modpath_current
   > $modpath_current/modules.mk
 
@@ -23385,6 +23579,11 @@ EOF
   echo "DISTCLEAN_TARGETS = modules.mk" >> $modpath_current/modules.mk
   echo "static = $modpath_static" >> $modpath_current/modules.mk
   echo "shared = $modpath_shared" >> $modpath_current/modules.mk
+  for var in CFLAGS CXXFLAGS CPPFLAGS LDFLAGS LIBS INCLUDES; do
+    if eval val=\"\$MOD_$var\"; test -n "$val"; then
+      echo "MOD_$var = $val" >> $modpath_current/modules.mk
+    fi
+  done
   if test ! -z "$modpath_static" -o ! -z "$modpath_shared"; then
     MODULE_DIRS="$MODULE_DIRS $current_dir"
   else
@@ -23401,6 +23600,9 @@ EOF
   modpath_current=modules/ssl
   modpath_static=
   modpath_shared=
+  for var in CFLAGS CXXFLAGS CPPFLAGS LDFLAGS LIBS INCLUDES; do
+    eval MOD_$var=
+  done
   test -d ssl || $srcdir/build/mkdir.sh $modpath_current
   > $modpath_current/modules.mk
 
@@ -23497,7 +23699,6 @@ $as_echo "$ap_openssl_base" >&6; }
         saved_CPPFLAGS="$CPPFLAGS"
     saved_LIBS="$LIBS"
     saved_LDFLAGS="$LDFLAGS"
-    SSL_LIBS=""
 
         if test -n "$PKGCONFIG"; then
       saved_PKG_CONFIG_PATH="$PKG_CONFIG_PATH"
@@ -23506,7 +23707,16 @@ $as_echo "$ap_openssl_base" >&6; }
                         PKG_CONFIG_PATH="${ap_openssl_base}/lib/pkgconfig${PKG_CONFIG_PATH+:}${PKG_CONFIG_PATH}"
         export PKG_CONFIG_PATH
       fi
-      ap_openssl_libs="`$PKGCONFIG --libs-only-l openssl 2>&1`"
+      # Check whether --enable-ssl-staticlib-deps was given.
+if test "${enable_ssl_staticlib_deps+set}" = set; then :
+  enableval=$enable_ssl_staticlib_deps;
+        if test "$enableval" = "yes"; then
+          PKGCONFIG_LIBOPTS="--static"
+        fi
+
+fi
+
+      ap_openssl_libs="`$PKGCONFIG $PKGCONFIG_LIBOPTS --libs-only-l --silence-errors openssl`"
       if test $? -eq 0; then
         ap_openssl_found="yes"
         pkglookup="`$PKGCONFIG --cflags-only-I openssl`"
@@ -23532,27 +23742,48 @@ $as_echo "$ap_openssl_base" >&6; }
   fi
 
 
-  if test "x$INCLUDES" = "x"; then
-    test "x$silent" != "xyes" && echo "  setting INCLUDES to \"$pkglookup\""
-    INCLUDES="$pkglookup"
+  if test "x$MOD_CFLAGS" = "x"; then
+    test "x$silent" != "xyes" && echo "  setting MOD_CFLAGS to \"$pkglookup\""
+    MOD_CFLAGS="$pkglookup"
   else
     apr_addto_bugger="$pkglookup"
     for i in $apr_addto_bugger; do
       apr_addto_duplicate="0"
-      for j in $INCLUDES; do
+      for j in $MOD_CFLAGS; do
         if test "x$i" = "x$j"; then
           apr_addto_duplicate="1"
           break
         fi
       done
       if test $apr_addto_duplicate = "0"; then
-        test "x$silent" != "xyes" && echo "  adding \"$i\" to INCLUDES"
-        INCLUDES="$INCLUDES $i"
+        test "x$silent" != "xyes" && echo "  adding \"$i\" to MOD_CFLAGS"
+        MOD_CFLAGS="$MOD_CFLAGS $i"
       fi
     done
   fi
 
-        pkglookup="`$PKGCONFIG --libs-only-L --libs-only-other openssl`"
+
+  if test "x$ab_CFLAGS" = "x"; then
+    test "x$silent" != "xyes" && echo "  setting ab_CFLAGS to \"$pkglookup\""
+    ab_CFLAGS="$pkglookup"
+  else
+    apr_addto_bugger="$pkglookup"
+    for i in $apr_addto_bugger; do
+      apr_addto_duplicate="0"
+      for j in $ab_CFLAGS; do
+        if test "x$i" = "x$j"; then
+          apr_addto_duplicate="1"
+          break
+        fi
+      done
+      if test $apr_addto_duplicate = "0"; then
+        test "x$silent" != "xyes" && echo "  adding \"$i\" to ab_CFLAGS"
+        ab_CFLAGS="$ab_CFLAGS $i"
+      fi
+    done
+  fi
+
+        pkglookup="`$PKGCONFIG $PKGCONFIG_LIBOPTS --libs-only-L openssl`"
 
   if test "x$LDFLAGS" = "x"; then
     test "x$silent" != "xyes" && echo "  setting LDFLAGS to \"$pkglookup\""
@@ -23575,22 +23806,65 @@ $as_echo "$ap_openssl_base" >&6; }
   fi
 
 
-  if test "x$SSL_LIBS" = "x"; then
-    test "x$silent" != "xyes" && echo "  setting SSL_LIBS to \"$pkglookup\""
-    SSL_LIBS="$pkglookup"
+  if test "x$MOD_LDFLAGS" = "x"; then
+    test "x$silent" != "xyes" && echo "  setting MOD_LDFLAGS to \"$pkglookup\""
+    MOD_LDFLAGS="$pkglookup"
   else
     apr_addto_bugger="$pkglookup"
     for i in $apr_addto_bugger; do
       apr_addto_duplicate="0"
-      for j in $SSL_LIBS; do
+      for j in $MOD_LDFLAGS; do
         if test "x$i" = "x$j"; then
           apr_addto_duplicate="1"
           break
         fi
       done
       if test $apr_addto_duplicate = "0"; then
-        test "x$silent" != "xyes" && echo "  adding \"$i\" to SSL_LIBS"
-        SSL_LIBS="$SSL_LIBS $i"
+        test "x$silent" != "xyes" && echo "  adding \"$i\" to MOD_LDFLAGS"
+        MOD_LDFLAGS="$MOD_LDFLAGS $i"
+      fi
+    done
+  fi
+
+        pkglookup="`$PKGCONFIG $PKGCONFIG_LIBOPTS --libs-only-other openssl`"
+
+  if test "x$LDFLAGS" = "x"; then
+    test "x$silent" != "xyes" && echo "  setting LDFLAGS to \"$pkglookup\""
+    LDFLAGS="$pkglookup"
+  else
+    apr_addto_bugger="$pkglookup"
+    for i in $apr_addto_bugger; do
+      apr_addto_duplicate="0"
+      for j in $LDFLAGS; do
+        if test "x$i" = "x$j"; then
+          apr_addto_duplicate="1"
+          break
+        fi
+      done
+      if test $apr_addto_duplicate = "0"; then
+        test "x$silent" != "xyes" && echo "  adding \"$i\" to LDFLAGS"
+        LDFLAGS="$LDFLAGS $i"
+      fi
+    done
+  fi
+
+
+  if test "x$MOD_LDFLAGS" = "x"; then
+    test "x$silent" != "xyes" && echo "  setting MOD_LDFLAGS to \"$pkglookup\""
+    MOD_LDFLAGS="$pkglookup"
+  else
+    apr_addto_bugger="$pkglookup"
+    for i in $apr_addto_bugger; do
+      apr_addto_duplicate="0"
+      for j in $MOD_LDFLAGS; do
+        if test "x$i" = "x$j"; then
+          apr_addto_duplicate="1"
+          break
+        fi
+      done
+      if test $apr_addto_duplicate = "0"; then
+        test "x$silent" != "xyes" && echo "  adding \"$i\" to MOD_LDFLAGS"
+        MOD_LDFLAGS="$MOD_LDFLAGS $i"
       fi
     done
   fi
@@ -23622,22 +23896,43 @@ $as_echo "$ap_openssl_base" >&6; }
   fi
 
 
-  if test "x$INCLUDES" = "x"; then
-    test "x$silent" != "xyes" && echo "  setting INCLUDES to \"-I$ap_openssl_base/include\""
-    INCLUDES="-I$ap_openssl_base/include"
+  if test "x$MOD_CFLAGS" = "x"; then
+    test "x$silent" != "xyes" && echo "  setting MOD_CFLAGS to \"-I$ap_openssl_base/include\""
+    MOD_CFLAGS="-I$ap_openssl_base/include"
   else
     apr_addto_bugger="-I$ap_openssl_base/include"
     for i in $apr_addto_bugger; do
       apr_addto_duplicate="0"
-      for j in $INCLUDES; do
+      for j in $MOD_CFLAGS; do
         if test "x$i" = "x$j"; then
           apr_addto_duplicate="1"
           break
         fi
       done
       if test $apr_addto_duplicate = "0"; then
-        test "x$silent" != "xyes" && echo "  adding \"$i\" to INCLUDES"
-        INCLUDES="$INCLUDES $i"
+        test "x$silent" != "xyes" && echo "  adding \"$i\" to MOD_CFLAGS"
+        MOD_CFLAGS="$MOD_CFLAGS $i"
+      fi
+    done
+  fi
+
+
+  if test "x$ab_CFLAGS" = "x"; then
+    test "x$silent" != "xyes" && echo "  setting ab_CFLAGS to \"-I$ap_openssl_base/include\""
+    ab_CFLAGS="-I$ap_openssl_base/include"
+  else
+    apr_addto_bugger="-I$ap_openssl_base/include"
+    for i in $apr_addto_bugger; do
+      apr_addto_duplicate="0"
+      for j in $ab_CFLAGS; do
+        if test "x$i" = "x$j"; then
+          apr_addto_duplicate="1"
+          break
+        fi
+      done
+      if test $apr_addto_duplicate = "0"; then
+        test "x$silent" != "xyes" && echo "  adding \"$i\" to ab_CFLAGS"
+        ab_CFLAGS="$ab_CFLAGS $i"
       fi
     done
   fi
@@ -23664,22 +23959,22 @@ $as_echo "$ap_openssl_base" >&6; }
   fi
 
 
-  if test "x$SSL_LIBS" = "x"; then
-    test "x$silent" != "xyes" && echo "  setting SSL_LIBS to \"-L$ap_openssl_base/lib\""
-    SSL_LIBS="-L$ap_openssl_base/lib"
+  if test "x$MOD_LDFLAGS" = "x"; then
+    test "x$silent" != "xyes" && echo "  setting MOD_LDFLAGS to \"-L$ap_openssl_base/lib\""
+    MOD_LDFLAGS="-L$ap_openssl_base/lib"
   else
     apr_addto_bugger="-L$ap_openssl_base/lib"
     for i in $apr_addto_bugger; do
       apr_addto_duplicate="0"
-      for j in $SSL_LIBS; do
+      for j in $MOD_LDFLAGS; do
         if test "x$i" = "x$j"; then
           apr_addto_duplicate="1"
           break
         fi
       done
       if test $apr_addto_duplicate = "0"; then
-        test "x$silent" != "xyes" && echo "  adding \"$i\" to SSL_LIBS"
-        SSL_LIBS="$SSL_LIBS $i"
+        test "x$silent" != "xyes" && echo "  adding \"$i\" to MOD_LDFLAGS"
+        MOD_LDFLAGS="$MOD_LDFLAGS $i"
       fi
     done
   fi
@@ -23707,22 +24002,22 @@ $as_echo "$ap_openssl_base" >&6; }
   fi
 
 
-  if test "x$SSL_LIBS" = "x"; then
-    test "x$silent" != "xyes" && echo "  setting SSL_LIBS to \"$ap_platform_runtime_link_flag$ap_openssl_base/lib\""
-    SSL_LIBS="$ap_platform_runtime_link_flag$ap_openssl_base/lib"
+  if test "x$MOD_LDFLAGS" = "x"; then
+    test "x$silent" != "xyes" && echo "  setting MOD_LDFLAGS to \"$ap_platform_runtime_link_flag$ap_openssl_base/lib\""
+    MOD_LDFLAGS="$ap_platform_runtime_link_flag$ap_openssl_base/lib"
   else
     apr_addto_bugger="$ap_platform_runtime_link_flag$ap_openssl_base/lib"
     for i in $apr_addto_bugger; do
       apr_addto_duplicate="0"
-      for j in $SSL_LIBS; do
+      for j in $MOD_LDFLAGS; do
         if test "x$i" = "x$j"; then
           apr_addto_duplicate="1"
           break
         fi
       done
       if test $apr_addto_duplicate = "0"; then
-        test "x$silent" != "xyes" && echo "  adding \"$i\" to SSL_LIBS"
-        SSL_LIBS="$SSL_LIBS $i"
+        test "x$silent" != "xyes" && echo "  adding \"$i\" to MOD_LDFLAGS"
+        MOD_LDFLAGS="$MOD_LDFLAGS $i"
       fi
     done
   fi
@@ -23760,24 +24055,24 @@ fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
 
     if test "x$ac_cv_openssl" = "xyes"; then
-      ap_openssl_libs="-lssl -lcrypto `$apr_config --libs`"
+      ap_openssl_libs="${ap_openssl_libs:--lssl -lcrypto} `$apr_config --libs`"
 
-  if test "x$SSL_LIBS" = "x"; then
-    test "x$silent" != "xyes" && echo "  setting SSL_LIBS to \"$ap_openssl_libs\""
-    SSL_LIBS="$ap_openssl_libs"
+  if test "x$MOD_LDFLAGS" = "x"; then
+    test "x$silent" != "xyes" && echo "  setting MOD_LDFLAGS to \"$ap_openssl_libs\""
+    MOD_LDFLAGS="$ap_openssl_libs"
   else
     apr_addto_bugger="$ap_openssl_libs"
     for i in $apr_addto_bugger; do
       apr_addto_duplicate="0"
-      for j in $SSL_LIBS; do
+      for j in $MOD_LDFLAGS; do
         if test "x$i" = "x$j"; then
           apr_addto_duplicate="1"
           break
         fi
       done
       if test $apr_addto_duplicate = "0"; then
-        test "x$silent" != "xyes" && echo "  adding \"$i\" to SSL_LIBS"
-        SSL_LIBS="$SSL_LIBS $i"
+        test "x$silent" != "xyes" && echo "  adding \"$i\" to MOD_LDFLAGS"
+        MOD_LDFLAGS="$MOD_LDFLAGS $i"
       fi
     done
   fi
@@ -23804,7 +24099,15 @@ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
   fi
 
 
-  APACHE_VAR_SUBST="$APACHE_VAR_SUBST SSL_LIBS"
+  test "x$silent" != "xyes" && echo "  forcing ab_LDFLAGS to \"$MOD_LDFLAGS\""
+  ab_LDFLAGS="$MOD_LDFLAGS"
+
+
+  APACHE_VAR_SUBST="$APACHE_VAR_SUBST ab_CFLAGS"
+
+
+
+  APACHE_VAR_SUBST="$APACHE_VAR_SUBST ab_LDFLAGS"
 
 
 
@@ -23870,27 +24173,6 @@ $as_echo "#define HAVE_OPENSSL 1" >>confdefs.h
   fi
 
     if test "$ac_cv_openssl" = "yes" ; then
-
-  if test "x$MOD_SSL_LDADD" = "x"; then
-    test "x$silent" != "xyes" && echo "  setting MOD_SSL_LDADD to \"\$(SSL_LIBS)\""
-    MOD_SSL_LDADD="\$(SSL_LIBS)"
-  else
-    apr_addto_bugger="\$(SSL_LIBS)"
-    for i in $apr_addto_bugger; do
-      apr_addto_duplicate="0"
-      for j in $MOD_SSL_LDADD; do
-        if test "x$i" = "x$j"; then
-          apr_addto_duplicate="1"
-          break
-        fi
-      done
-      if test $apr_addto_duplicate = "0"; then
-        test "x$silent" != "xyes" && echo "  adding \"$i\" to MOD_SSL_LDADD"
-        MOD_SSL_LDADD="$MOD_SSL_LDADD $i"
-      fi
-    done
-  fi
-
         if test "x$enable_ssl" = "xshared"; then
            # The only symbol which needs to be exported is the module
            # structure, so ask libtool to hide everything else:
@@ -24039,6 +24321,11 @@ EOF
   echo "DISTCLEAN_TARGETS = modules.mk" >> $modpath_current/modules.mk
   echo "static = $modpath_static" >> $modpath_current/modules.mk
   echo "shared = $modpath_shared" >> $modpath_current/modules.mk
+  for var in CFLAGS CXXFLAGS CPPFLAGS LDFLAGS LIBS INCLUDES; do
+    if eval val=\"\$MOD_$var\"; test -n "$val"; then
+      echo "MOD_$var = $val" >> $modpath_current/modules.mk
+    fi
+  done
   if test ! -z "$modpath_static" -o ! -z "$modpath_shared"; then
     MODULE_DIRS="$MODULE_DIRS $current_dir"
   else
@@ -24056,6 +24343,9 @@ EOF
   modpath_current=modules/test
   modpath_static=
   modpath_shared=
+  for var in CFLAGS CXXFLAGS CPPFLAGS LDFLAGS LIBS INCLUDES; do
+    eval MOD_$var=
+  done
   test -d test || $srcdir/build/mkdir.sh $modpath_current
   > $modpath_current/modules.mk
 
@@ -24758,6 +25048,11 @@ EOF
   echo "DISTCLEAN_TARGETS = modules.mk" >> $modpath_current/modules.mk
   echo "static = $modpath_static" >> $modpath_current/modules.mk
   echo "shared = $modpath_shared" >> $modpath_current/modules.mk
+  for var in CFLAGS CXXFLAGS CPPFLAGS LDFLAGS LIBS INCLUDES; do
+    if eval val=\"\$MOD_$var\"; test -n "$val"; then
+      echo "MOD_$var = $val" >> $modpath_current/modules.mk
+    fi
+  done
   if test ! -z "$modpath_static" -o ! -z "$modpath_shared"; then
     MODULE_DIRS="$MODULE_DIRS $current_dir"
   else
@@ -26054,6 +26349,9 @@ esac
   modpath_current=modules/proxy/balancers
   modpath_static=
   modpath_shared=
+  for var in CFLAGS CXXFLAGS CPPFLAGS LDFLAGS LIBS INCLUDES; do
+    eval MOD_$var=
+  done
   test -d proxy/balancers || $srcdir/build/mkdir.sh $modpath_current
   > $modpath_current/modules.mk
 
@@ -26599,6 +26897,11 @@ EOF
   echo "DISTCLEAN_TARGETS = modules.mk" >> $modpath_current/modules.mk
   echo "static = $modpath_static" >> $modpath_current/modules.mk
   echo "shared = $modpath_shared" >> $modpath_current/modules.mk
+  for var in CFLAGS CXXFLAGS CPPFLAGS LDFLAGS LIBS INCLUDES; do
+    if eval val=\"\$MOD_$var\"; test -n "$val"; then
+      echo "MOD_$var = $val" >> $modpath_current/modules.mk
+    fi
+  done
   if test ! -z "$modpath_static" -o ! -z "$modpath_shared"; then
     MODULE_DIRS="$MODULE_DIRS $current_dir"
   else
@@ -27060,6 +27363,9 @@ done
   modpath_current=modules/arch/unix
   modpath_static=
   modpath_shared=
+  for var in CFLAGS CXXFLAGS CPPFLAGS LDFLAGS LIBS INCLUDES; do
+    eval MOD_$var=
+  done
   test -d arch/unix || $srcdir/build/mkdir.sh $modpath_current
   > $modpath_current/modules.mk
 
@@ -27400,6 +27706,11 @@ EOF
   echo "DISTCLEAN_TARGETS = modules.mk" >> $modpath_current/modules.mk
   echo "static = $modpath_static" >> $modpath_current/modules.mk
   echo "shared = $modpath_shared" >> $modpath_current/modules.mk
+  for var in CFLAGS CXXFLAGS CPPFLAGS LDFLAGS LIBS INCLUDES; do
+    if eval val=\"\$MOD_$var\"; test -n "$val"; then
+      echo "MOD_$var = $val" >> $modpath_current/modules.mk
+    fi
+  done
   if test ! -z "$modpath_static" -o ! -z "$modpath_shared"; then
     MODULE_DIRS="$MODULE_DIRS $current_dir"
   else
@@ -27417,6 +27728,9 @@ EOF
   modpath_current=modules/cluster
   modpath_static=
   modpath_shared=
+  for var in CFLAGS CXXFLAGS CPPFLAGS LDFLAGS LIBS INCLUDES; do
+    eval MOD_$var=
+  done
   test -d cluster || $srcdir/build/mkdir.sh $modpath_current
   > $modpath_current/modules.mk
 
@@ -27725,6 +28039,11 @@ EOF
   echo "DISTCLEAN_TARGETS = modules.mk" >> $modpath_current/modules.mk
   echo "static = $modpath_static" >> $modpath_current/modules.mk
   echo "shared = $modpath_shared" >> $modpath_current/modules.mk
+  for var in CFLAGS CXXFLAGS CPPFLAGS LDFLAGS LIBS INCLUDES; do
+    if eval val=\"\$MOD_$var\"; test -n "$val"; then
+      echo "MOD_$var = $val" >> $modpath_current/modules.mk
+    fi
+  done
   if test ! -z "$modpath_static" -o ! -z "$modpath_shared"; then
     MODULE_DIRS="$MODULE_DIRS $current_dir"
   else
@@ -27735,78 +28054,15 @@ EOF
 
 
 
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for extra modules" >&5
-$as_echo_n "checking for extra modules... " >&6; }
-
-# Check whether --with-module was given.
-if test "${with_module+set}" = set; then :
-  withval=$with_module;
-    as_save_IFS="$IFS"; IFS=","
-    for mod in $withval
-    do
-      modtype=`echo $mod | sed -e's/\(.*\):.*/\1/'`
-      pkg=`echo $mod | sed -e's/.*:\(.*\)/\1/'`
-      modfilec=`echo $pkg | sed -e 's;^.*/;;'`
-      modfileo=`echo $pkg | sed -e 's;^.*/;;' -e 's;\.c$;.o;'`
-      modpath_current="modules/$modtype"
-      if test "x$mod" != "x$modpath_current/$modfilec"; then
-        if test ! -d "$modpath_current"; then
-          mkdir $modpath_current
-          echo 'include $(top_srcdir)/build/special.mk' > $modpath_current/Makefile.in
-        fi
-        cp $pkg $modpath_current/$modfilec
-      fi
-      module=`echo $pkg | sed -e 's;\(.*/\).*mod_\(.*\).c;\2;'`
-      objects="mod_$module.lo"
-      # The filename of a convenience library must have a "lib" prefix:
-      libname="libmod_$module.la"
-      BUILTIN_LIBS="$BUILTIN_LIBS $modpath_current/$libname"
-      if test ! -s "$modpath_current/modules.mk"; then
-        cat >>$modpath_current/modules.mk<<EOF
-$libname: $objects
-	\$(MOD_LINK) $objects
-DISTCLEAN_TARGETS = modules.mk
-static = $libname
-shared =
-EOF
-      else
-        cat >>$modpath_current/modules.mk.tmp<<EOF
-$libname: $objects
-	\$(MOD_LINK) $objects
-EOF
-        cat $modpath_current/modules.mk >> $modpath_current/modules.mk.tmp
-        rm $modpath_current/modules.mk
-        mv $modpath_current/modules.mk.tmp $modpath_current/modules.mk
-        sed -e "s/\(static =.*\)/\1 $libname/" $modpath_current/modules.mk > $modpath_current/modules.mk.tmp
-        rm $modpath_current/modules.mk
-        mv $modpath_current/modules.mk.tmp $modpath_current/modules.mk
-      fi
-      MODLIST="$MODLIST $module"
-      EXTRA_MODLIST="$EXTRA_MODLIST $modtype:$modfilec"
-      MODULE_DIRS="$MODULE_DIRS $modtype"
-
-  APACHE_FAST_OUTPUT_FILES="$APACHE_FAST_OUTPUT_FILES $modpath_current/Makefile"
-
-    done
-    if test ! -z "$EXTRA_MODLIST"; then
-      { $as_echo "$as_me:${as_lineno-$LINENO}: result: added:$EXTRA_MODLIST" >&5
-$as_echo "added:$EXTRA_MODLIST" >&6; }
-    fi
-    IFS="$as_save_IFS"
-
-else
-   { $as_echo "$as_me:${as_lineno-$LINENO}: result: none" >&5
-$as_echo "none" >&6; }
-
-fi
-
-
 
 
   current_dir=dav/main
   modpath_current=modules/dav/main
   modpath_static=
   modpath_shared=
+  for var in CFLAGS CXXFLAGS CPPFLAGS LDFLAGS LIBS INCLUDES; do
+    eval MOD_$var=
+  done
   test -d dav/main || $srcdir/build/mkdir.sh $modpath_current
   > $modpath_current/modules.mk
 
@@ -27984,6 +28240,11 @@ fi
   echo "DISTCLEAN_TARGETS = modules.mk" >> $modpath_current/modules.mk
   echo "static = $modpath_static" >> $modpath_current/modules.mk
   echo "shared = $modpath_shared" >> $modpath_current/modules.mk
+  for var in CFLAGS CXXFLAGS CPPFLAGS LDFLAGS LIBS INCLUDES; do
+    if eval val=\"\$MOD_$var\"; test -n "$val"; then
+      echo "MOD_$var = $val" >> $modpath_current/modules.mk
+    fi
+  done
   if test ! -z "$modpath_static" -o ! -z "$modpath_shared"; then
     MODULE_DIRS="$MODULE_DIRS $current_dir"
   else
@@ -28001,6 +28262,9 @@ fi
   modpath_current=modules/generators
   modpath_static=
   modpath_shared=
+  for var in CFLAGS CXXFLAGS CPPFLAGS LDFLAGS LIBS INCLUDES; do
+    eval MOD_$var=
+  done
   test -d generators || $srcdir/build/mkdir.sh $modpath_current
   > $modpath_current/modules.mk
 
@@ -29320,6 +29584,11 @@ fi
   echo "DISTCLEAN_TARGETS = modules.mk" >> $modpath_current/modules.mk
   echo "static = $modpath_static" >> $modpath_current/modules.mk
   echo "shared = $modpath_shared" >> $modpath_current/modules.mk
+  for var in CFLAGS CXXFLAGS CPPFLAGS LDFLAGS LIBS INCLUDES; do
+    if eval val=\"\$MOD_$var\"; test -n "$val"; then
+      echo "MOD_$var = $val" >> $modpath_current/modules.mk
+    fi
+  done
   if test ! -z "$modpath_static" -o ! -z "$modpath_shared"; then
     MODULE_DIRS="$MODULE_DIRS $current_dir"
   else
@@ -29429,6 +29698,9 @@ EOF
   modpath_current=modules/dav/fs
   modpath_static=
   modpath_shared=
+  for var in CFLAGS CXXFLAGS CPPFLAGS LDFLAGS LIBS INCLUDES; do
+    eval MOD_$var=
+  done
   test -d dav/fs || $srcdir/build/mkdir.sh $modpath_current
   > $modpath_current/modules.mk
 
@@ -29609,6 +29881,11 @@ EOF
   echo "DISTCLEAN_TARGETS = modules.mk" >> $modpath_current/modules.mk
   echo "static = $modpath_static" >> $modpath_current/modules.mk
   echo "shared = $modpath_shared" >> $modpath_current/modules.mk
+  for var in CFLAGS CXXFLAGS CPPFLAGS LDFLAGS LIBS INCLUDES; do
+    if eval val=\"\$MOD_$var\"; test -n "$val"; then
+      echo "MOD_$var = $val" >> $modpath_current/modules.mk
+    fi
+  done
   if test ! -z "$modpath_static" -o ! -z "$modpath_shared"; then
     MODULE_DIRS="$MODULE_DIRS $current_dir"
   else
@@ -29625,6 +29902,9 @@ EOF
   modpath_current=modules/dav/lock
   modpath_static=
   modpath_shared=
+  for var in CFLAGS CXXFLAGS CPPFLAGS LDFLAGS LIBS INCLUDES; do
+    eval MOD_$var=
+  done
   test -d dav/lock || $srcdir/build/mkdir.sh $modpath_current
   > $modpath_current/modules.mk
 
@@ -29799,6 +30079,11 @@ EOF
   echo "DISTCLEAN_TARGETS = modules.mk" >> $modpath_current/modules.mk
   echo "static = $modpath_static" >> $modpath_current/modules.mk
   echo "shared = $modpath_shared" >> $modpath_current/modules.mk
+  for var in CFLAGS CXXFLAGS CPPFLAGS LDFLAGS LIBS INCLUDES; do
+    if eval val=\"\$MOD_$var\"; test -n "$val"; then
+      echo "MOD_$var = $val" >> $modpath_current/modules.mk
+    fi
+  done
   if test ! -z "$modpath_static" -o ! -z "$modpath_shared"; then
     MODULE_DIRS="$MODULE_DIRS $current_dir"
   else
@@ -29809,6 +30094,71 @@ EOF
 
 
 
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for extra modules" >&5
+$as_echo_n "checking for extra modules... " >&6; }
+
+# Check whether --with-module was given.
+if test "${with_module+set}" = set; then :
+  withval=$with_module;
+    withval=`echo $withval | sed -e 's/,/ /g'`
+    for mod in $withval
+    do
+      modtype=`echo $mod | sed -e's/\(.*\):.*/\1/'`
+      pkg=`echo $mod | sed -e's/.*:\(.*\)/\1/'`
+      modfilec=`echo $pkg | sed -e 's;^.*/;;'`
+      modfileo=`echo $pkg | sed -e 's;^.*/;;' -e 's;\.c$;.o;'`
+      modpath_current="modules/$modtype"
+      if test "x$mod" != "x$modpath_current/$modfilec"; then
+        if test ! -d "$modpath_current"; then
+          mkdir $modpath_current
+          echo 'include $(top_srcdir)/build/special.mk' > $modpath_current/Makefile.in
+        fi
+        cp $pkg $modpath_current/$modfilec
+      fi
+      module=`echo $pkg | sed -e 's;\(.*/\).*mod_\(.*\).c;\2;'`
+      objects="mod_$module.lo"
+      # The filename of a convenience library must have a "lib" prefix:
+      libname="libmod_$module.la"
+      BUILTIN_LIBS="$BUILTIN_LIBS $modpath_current/$libname"
+      if test ! -s "$modpath_current/modules.mk"; then
+        cat >>$modpath_current/modules.mk<<EOF
+$libname: $objects
+	\$(MOD_LINK) $objects
+DISTCLEAN_TARGETS = modules.mk
+static = $libname
+shared =
+EOF
+      else
+        cat >>$modpath_current/modules.mk.tmp<<EOF
+$libname: $objects
+	\$(MOD_LINK) $objects
+EOF
+        cat $modpath_current/modules.mk >> $modpath_current/modules.mk.tmp
+        rm $modpath_current/modules.mk
+        mv $modpath_current/modules.mk.tmp $modpath_current/modules.mk
+        sed -e "s/\(static =.*\)/\1 $libname/" $modpath_current/modules.mk > $modpath_current/modules.mk.tmp
+        rm $modpath_current/modules.mk
+        mv $modpath_current/modules.mk.tmp $modpath_current/modules.mk
+      fi
+      MODLIST="$MODLIST $module"
+      EXTRA_MODLIST="$EXTRA_MODLIST $modtype:$modfilec"
+      MODULE_DIRS="$MODULE_DIRS $modtype"
+
+  APACHE_FAST_OUTPUT_FILES="$APACHE_FAST_OUTPUT_FILES $modpath_current/Makefile"
+
+    done
+    if test ! -z "$EXTRA_MODLIST"; then
+      { $as_echo "$as_me:${as_lineno-$LINENO}: result: added:$EXTRA_MODLIST" >&5
+$as_echo "added:$EXTRA_MODLIST" >&6; }
+    fi
+
+else
+   { $as_echo "$as_me:${as_lineno-$LINENO}: result: none" >&5
+$as_echo "none" >&6; }
+
+fi
+
+
 
 
 
@@ -29816,6 +30166,9 @@ EOF
   modpath_current=modules/mappers
   modpath_static=
   modpath_shared=
+  for var in CFLAGS CXXFLAGS CPPFLAGS LDFLAGS LIBS INCLUDES; do
+    eval MOD_$var=
+  done
   test -d mappers || $srcdir/build/mkdir.sh $modpath_current
   > $modpath_current/modules.mk
 
@@ -31053,6 +31406,11 @@ EOF
   echo "DISTCLEAN_TARGETS = modules.mk" >> $modpath_current/modules.mk
   echo "static = $modpath_static" >> $modpath_current/modules.mk
   echo "shared = $modpath_shared" >> $modpath_current/modules.mk
+  for var in CFLAGS CXXFLAGS CPPFLAGS LDFLAGS LIBS INCLUDES; do
+    if eval val=\"\$MOD_$var\"; test -n "$val"; then
+      echo "MOD_$var = $val" >> $modpath_current/modules.mk
+    fi
+  done
   if test ! -z "$modpath_static" -o ! -z "$modpath_shared"; then
     MODULE_DIRS="$MODULE_DIRS $current_dir"
   else

@@ -24,6 +24,7 @@
 <p><span>Idiomas disponibles: </span><a href="../de/mod/directives.html" hreflang="de" rel="alternate" title="Deutsch">&nbsp;de&nbsp;</a> |
 <a href="../en/mod/directives.html" hreflang="en" rel="alternate" title="English">&nbsp;en&nbsp;</a> |
 <a href="../es/mod/directives.html" title="Español">&nbsp;es&nbsp;</a> |
+<a href="../fr/mod/directives.html" hreflang="fr" rel="alternate" title="Français">&nbsp;fr&nbsp;</a> |
 <a href="../ja/mod/directives.html" hreflang="ja" rel="alternate" title="Japanese">&nbsp;ja&nbsp;</a> |
 <a href="../ko/mod/directives.html" hreflang="ko" rel="alternate" title="Korean">&nbsp;ko&nbsp;</a> |
 <a href="../tr/mod/directives.html" hreflang="tr" rel="alternate" title="Türkçe">&nbsp;tr&nbsp;</a> |
@@ -149,6 +150,7 @@
 <li><a href="mod_authz_core.html#authzsendforbiddenonfailure">AuthzSendForbiddenOnFailure</a></li>
 <li><a href="mod_proxy.html#balancergrowth" id="B" name="B">BalancerGrowth</a></li>
 <li><a href="mod_proxy.html#balancermember">BalancerMember</a></li>
+<li><a href="mod_proxy.html#balancerpersist">BalancerPersist</a></li>
 <li><a href="mod_setenvif.html#browsermatch">BrowserMatch</a></li>
 <li><a href="mod_setenvif.html#browsermatchnocase">BrowserMatchNoCase</a></li>
 <li><a href="mod_log_config.html#bufferedlogs">BufferedLogs</a></li>
@@ -335,6 +337,7 @@
 <li><a href="mod_log_config.html#logformat">LogFormat</a></li>
 <li><a href="core.html#loglevel">LogLevel</a></li>
 <li><a href="mod_log_debug.html#logmessage">LogMessage</a></li>
+<li><a href="mod_lua.html#luaauthzprovider">LuaAuthzProvider</a></li>
 <li><a href="mod_lua.html#luahookaccesschecker">LuaHookAccessChecker</a></li>
 <li><a href="mod_lua.html#luahookauthchecker">LuaHookAuthChecker</a></li>
 <li><a href="mod_lua.html#luahookcheckuserid">LuaHookCheckUserID</a></li>
@@ -344,7 +347,6 @@
 <li><a href="mod_lua.html#luahooktranslatename">LuaHookTranslateName</a></li>
 <li><a href="mod_lua.html#luahooktypechecker">LuaHookTypeChecker</a></li>
 <li><a href="mod_lua.html#luainherit">LuaInherit</a></li>
-<li><a href="mod_lua.html#luamaphandler">LuaMapHandler</a></li>
 <li><a href="mod_lua.html#luapackagecpath">LuaPackageCPath</a></li>
 <li><a href="mod_lua.html#luapackagepath">LuaPackagePath</a></li>
 <li><a href="mod_lua.html#luaquickhandler">LuaQuickHandler</a></li>
@@ -568,6 +570,8 @@
 <li><a href="mod_ssl.html#sslsessioncache">SSLSessionCache</a></li>
 <li><a href="mod_ssl.html#sslsessioncachetimeout">SSLSessionCacheTimeout</a></li>
 <li><a href="mod_ssl.html#sslsessionticketkeyfile">SSLSessionTicketKeyFile</a></li>
+<li><a href="mod_ssl.html#sslsrpunknownuserseed">SSLSRPUnknownUserSeed</a></li>
+<li><a href="mod_ssl.html#sslsrpverifierfile">SSLSRPVerifierFile</a></li>
 <li><a href="mod_ssl.html#sslstaplingcache">SSLStaplingCache</a></li>
 <li><a href="mod_ssl.html#sslstaplingerrorcachetimeout">SSLStaplingErrorCacheTimeout</a></li>
 <li><a href="mod_ssl.html#sslstaplingfaketrylater">SSLStaplingFakeTryLater</a></li>
@@ -621,6 +625,7 @@
 <p><span>Idiomas disponibles: </span><a href="../de/mod/directives.html" hreflang="de" rel="alternate" title="Deutsch">&nbsp;de&nbsp;</a> |
 <a href="../en/mod/directives.html" hreflang="en" rel="alternate" title="English">&nbsp;en&nbsp;</a> |
 <a href="../es/mod/directives.html" title="Español">&nbsp;es&nbsp;</a> |
+<a href="../fr/mod/directives.html" hreflang="fr" rel="alternate" title="Français">&nbsp;fr&nbsp;</a> |
 <a href="../ja/mod/directives.html" hreflang="ja" rel="alternate" title="Japanese">&nbsp;ja&nbsp;</a> |
 <a href="../ko/mod/directives.html" hreflang="ko" rel="alternate" title="Korean">&nbsp;ko&nbsp;</a> |
 <a href="../tr/mod/directives.html" hreflang="tr" rel="alternate" title="Türkçe">&nbsp;tr&nbsp;</a> |
@@ -643,7 +648,7 @@ var comments_identifier = 'http://httpd.apache.org/docs/2.4/mod/directives.html'
     }
 })(window, document);
 //--><!]]></script></div><div id="footer">
-<p class="apache">Copyright 2012 The Apache Software Foundation.<br />Licencia bajo los términos de la <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
+<p class="apache">Copyright 2013 The Apache Software Foundation.<br />Licencia bajo los términos de la <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
 <p class="menu"><a href="../mod/">Módulos</a> | <a href="../mod/directives.html">Directivas</a> | <a href="http://wiki.apache.org/httpd/FAQ">Preguntas Frecuentes</a> | <a href="../glossary.html">Glosario</a> | <a href="../sitemap.html">Mapa de este sitio web</a></p></div><script type="text/javascript"><!--//--><![CDATA[//><!--
 if (typeof(prettyPrint) !== 'undefined') {
     prettyPrint();

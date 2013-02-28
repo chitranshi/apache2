@@ -1797,6 +1797,8 @@ static apr_status_t handle_include(include_ctx_t *ctx, ap_filter_t *f,
         request_rec *rr = NULL;
         char *error_fmt = NULL;
         char *parsed_string;
+        apr_status_t rv = APR_SUCCESS;
+        int status = 0;
 
         ap_ssi_get_tag_and_value(ctx, &tag, &tag_val, SSI_VALUE_DECODED);
         if (!tag || !tag_val) {
@@ -1815,7 +1817,6 @@ static apr_status_t handle_include(include_ctx_t *ctx, ap_filter_t *f,
                                             SSI_EXPAND_DROP_NAME);
         if (tag[0] == 'f') {
             char *newpath;
-            apr_status_t rv;
 
             /* be safe; only files in this directory or below allowed */
             rv = apr_filepath_merge(&newpath, NULL, parsed_string,
@@ -1843,14 +1844,14 @@ static apr_status_t handle_include(include_ctx_t *ctx, ap_filter_t *f,
         }
 
         if (!error_fmt && rr->status != HTTP_OK) {
-            error_fmt = "unable to include \"%s\" in parsed file %s";
+            error_fmt = "unable to include \"%s\" in parsed file %s, subrequest setup returned %d";
         }
 
         if (!error_fmt && (ctx->flags & SSI_FLAG_NO_EXEC) &&
             rr->content_type && strncmp(rr->content_type, "text/", 5)) {
 
             error_fmt = "unable to include potential exec \"%s\" in parsed "
-                        "file %s";
+                        "file %s, content type not text/*";
         }
 
         /* See the Kludge in includes_filter for why.
@@ -1861,13 +1862,13 @@ static apr_status_t handle_include(include_ctx_t *ctx, ap_filter_t *f,
             ap_set_module_config(rr->request_config, &include_module, r);
         }
 
-        if (!error_fmt && ap_run_sub_req(rr)) {
-            error_fmt = "unable to include \"%s\" in parsed file %s";
+        if (!error_fmt && ((status = ap_run_sub_req(rr)))) {
+            error_fmt = "unable to include \"%s\" in parsed file %s, subrequest returned %d";
         }
 
         if (error_fmt) {
-            ap_log_rerror(APLOG_MARK, APLOG_ERR, 0, r, error_fmt, tag_val,
-                    r->filename);
+            ap_log_rerror(APLOG_MARK, APLOG_ERR, rv, r, error_fmt, tag_val,
+                    r->filename, status ? status : rr ? rr->status : 0);
             if (last_error) {
                 /* onerror threw an error, give up completely */
                 break;
@@ -3819,7 +3820,7 @@ static apr_status_t includes_filter(ap_filter_t *f, apr_bucket_brigade *b)
     if (!(ap_allow_options(r) & OPT_INCLUDES)) {
         ap_log_rerror(APLOG_MARK, APLOG_WARNING, 0, r, APLOGNO(01374)
                       "mod_include: Options +Includes (or IncludesNoExec) "
-                      "wasn't set, INCLUDES filter removed");
+                      "wasn't set, INCLUDES filter removed: %s", r->uri);
         ap_remove_output_filter(f);
         return ap_pass_brigade(f->next, b);
     }

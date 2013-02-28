@@ -272,7 +272,6 @@ BrowserMatch \bMSIE             !no-gzip !gzip-only-text/html
 <tr><th><a href="directive-dict.html#Context">Context:</a></th><td>server config, virtual host</td></tr>
 <tr><th><a href="directive-dict.html#Status">Status:</a></th><td>Extension</td></tr>
 <tr><th><a href="directive-dict.html#Module">Module:</a></th><td>mod_deflate</td></tr>
-<tr><th><a href="directive-dict.html#Compatibility">Compatibility:</a></th><td>This directive is available since Apache 2.0.45</td></tr>
 </table>
     <p>The <code class="directive">DeflateCompressionLevel</code> directive specifies
         what level of compression should be used, the higher the value,
@@ -289,7 +288,6 @@ BrowserMatch \bMSIE             !no-gzip !gzip-only-text/html
 <tr><th><a href="directive-dict.html#Context">Context:</a></th><td>server config, virtual host</td></tr>
 <tr><th><a href="directive-dict.html#Status">Status:</a></th><td>Extension</td></tr>
 <tr><th><a href="directive-dict.html#Module">Module:</a></th><td>mod_deflate</td></tr>
-<tr><th><a href="directive-dict.html#Compatibility">Compatibility:</a></th><td><var>type</var> is available since Apache 2.0.45</td></tr>
 </table>
     <p>The <code class="directive">DeflateFilterNote</code> directive
     specifies that a note about compression ratios should be attached
@@ -393,7 +391,7 @@ var comments_identifier = 'http://httpd.apache.org/docs/2.4/mod/mod_deflate.html
     }
 })(window, document);
 //--><!]]></script></div><div id="footer">
-<p class="apache">Copyright 2012 The Apache Software Foundation.<br />Licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
+<p class="apache">Copyright 2013 The Apache Software Foundation.<br />Licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
 <p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="http://wiki.apache.org/httpd/FAQ">FAQ</a> | <a href="../glossary.html">Glossary</a> | <a href="../sitemap.html">Sitemap</a></p></div><script type="text/javascript"><!--//--><![CDATA[//><!--
 if (typeof(prettyPrint) !== 'undefined') {
     prettyPrint();

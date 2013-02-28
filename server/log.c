@@ -1015,6 +1015,7 @@ static int do_errorlog_format(apr_array_header_t *fmt, ap_errorlog_info *info,
     int skipping = 0;
     ap_errorlog_format_item *items = (ap_errorlog_format_item *)fmt->elts;
 
+    AP_DEBUG_ASSERT(fmt->nelts > 0);
     for (i = 0; i < fmt->nelts; ++i) {
         ap_errorlog_format_item *item = &items[i];
         if (item->flags & AP_ERRORLOG_FLAG_FIELD_SEP) {
@@ -1087,7 +1088,8 @@ static void write_logline(char *errstr, apr_size_t len, apr_file_t *logf,
     }
 #ifdef HAVE_SYSLOG
     else {
-        syslog(level < LOG_PRIMASK ? level : APLOG_DEBUG, "%s", errstr);
+        syslog(level < LOG_PRIMASK ? level : APLOG_DEBUG, "%.*s",
+               (int)len, errstr);
     }
 #endif
 }
@@ -1112,7 +1114,8 @@ static void log_error_core(const char *file, int line, int module_index,
     int done = 0;
     int line_number = 0;
 
-    if (r && r->connection) {
+    if (r) {
+        AP_DEBUG_ASSERT(r->connection != NULL);
         c = r->connection;
     }
 
@@ -1262,8 +1265,7 @@ static void log_error_core(const char *file, int line, int module_index,
                                        &errstr_start, &errstr_end, fmt, args);
         }
 
-        if (!*errstr)
-        {
+        if (!*errstr) {
             /*
              * Don't log empty lines. This can happen with once-per-conn/req
              * info if an item with AP_ERRORLOG_FLAG_REQUIRED is NULL.

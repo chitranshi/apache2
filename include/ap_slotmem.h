@@ -62,10 +62,14 @@ typedef unsigned int ap_slotmem_type_t;
  * AP_SLOTMEM_TYPE_NOTMPSAFE:
  *
  * AP_SLOTMEM_TYPE_PREALLOC: Access to slots require they be grabbed 1st
+ *
+ * AP_SLOTMEM_TYPE_CLEARINUSE: If persisting, clear 'inuse' array before
+ *    storing
  */
-#define AP_SLOTMEM_TYPE_PERSIST   (1 << 0)
-#define AP_SLOTMEM_TYPE_NOTMPSAFE (1 << 1)
-#define AP_SLOTMEM_TYPE_PREGRAB   (1 << 2)
+#define AP_SLOTMEM_TYPE_PERSIST      (1 << 0)
+#define AP_SLOTMEM_TYPE_NOTMPSAFE    (1 << 1)
+#define AP_SLOTMEM_TYPE_PREGRAB      (1 << 2)
+#define AP_SLOTMEM_TYPE_CLEARINUSE   (1 << 3)
 
 typedef struct ap_slotmem_instance_t ap_slotmem_instance_t;
 
@@ -175,6 +179,13 @@ struct ap_slotmem_provider_t {
      * @return APR_SUCCESS if all went well
      */
     apr_status_t (* release)(ap_slotmem_instance_t *s, unsigned int item_id);
+    /**
+     * forced grab (or alloc) a slot associated with this item_id
+     * @param s ap_slotmem_instance_t to use.
+     * @param item_id to the specified slot id and marked as in-use
+     * @return APR_SUCCESS if all went well
+     */
+    apr_status_t (* fgrab)(ap_slotmem_instance_t *s, unsigned int item_id);
 };
 
 typedef struct ap_slotmem_provider_t ap_slotmem_provider_t;

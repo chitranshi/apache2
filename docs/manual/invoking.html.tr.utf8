@@ -30,11 +30,10 @@
 <a href="./tr/invoking.html" title="Türkçe">&nbsp;tr&nbsp;</a></p>
 </div>
 
-    <p>Apache normal olarak, Windows NT, 2000 ve XP'de bir hizmet olarak,
-      Windows 9x ve ME’de ise bir konsol uygulaması olarak çalışır. Ayrıntılı
-      bilgi için <a href="platform/windows.html#winsvc">Apache HTTPd’nin bir
-      hizmet olarak çalıştırılması</a> ve <a href="platform/windows.html#wincons">Apache HTTPd’nin bir konsol
-      uygulaması olarak çalıştırılması</a> bölümlerine bakınız.</p>
+    <p>Apache normal olarak, Windows NT, 2000 ve XP, Vista ve 7'de bir hizmet
+      olarak çalışır. Ayrıntılı bilgi için
+      <a href="platform/windows.html#winsvc">Apache HTTPD’nin bir hizmet olarak
+      çalıştırılması</a> bölümüne bakınız.</p>
 
     <p>Unix’te ise artalanda isteklere yanıt vermek için sürekli çalışan bir
       artalan sürecidir. Bu belgede <code class="program"><a href="./programs/httpd.html">httpd</a></code>’nin nasıl
@@ -163,7 +162,7 @@ var comments_identifier = 'http://httpd.apache.org/docs/2.4/invoking.html';
     }
 })(window, document);
 //--><!]]></script></div><div id="footer">
-<p class="apache">Copyright 2012 The Apache Software Foundation.<br /><a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a> altında lisanslıdır.</p>
+<p class="apache">Copyright 2013 The Apache Software Foundation.<br /><a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a> altında lisanslıdır.</p>
 <p class="menu"><a href="./mod/">Modüller</a> | <a href="./mod/directives.html">Yönergeler</a> | <a href="http://wiki.apache.org/httpd/FAQ">SSS</a> | <a href="./glossary.html">Terimler</a> | <a href="./sitemap.html">Site Haritası</a></p></div><script type="text/javascript"><!--//--><![CDATA[//><!--
 if (typeof(prettyPrint) !== 'undefined') {
     prettyPrint();

@@ -24,7 +24,8 @@
 <div id="page-content">
 <div id="preamble"><h1>Apache Module mod_auth_form</h1>
 <div class="toplang">
-<p><span>Available Languages: </span><a href="../en/mod/mod_auth_form.html" title="English">&nbsp;en&nbsp;</a></p>
+<p><span>Available Languages: </span><a href="../en/mod/mod_auth_form.html" title="English">&nbsp;en&nbsp;</a> |
+<a href="../fr/mod/mod_auth_form.html" hreflang="fr" rel="alternate" title="Français">&nbsp;fr&nbsp;</a></p>
 </div>
 <table class="module"><tr><th><a href="module-dict.html#Description">Description:</a></th><td>Form authentication</td></tr>
 <tr><th><a href="module-dict.html#Status">Status:</a></th><td>Base</td></tr>
@@ -426,7 +427,7 @@ lower level modules</td></tr>
     <p>The <code class="directive"><a href="#authformdisablenostore">AuthFormDisableNoStore</a></code> flag
     disables the sending of a <code>Cache-Control no-store</code> header with the
     error 401 page returned when the user is not yet logged in. The purpose of the header
-    is to make it difficult for an ecmascript application to attempt to resubmit the
+    is to make it difficult for an <code>ecmascript</code> application to attempt to resubmit the
     login form, and reveal the username and password to the backend application. Disable
     at your own risk.</p>
 
@@ -476,12 +477,14 @@ lower level modules</td></tr>
 <tr><th><a href="directive-dict.html#Context">Context:</a></th><td>directory</td></tr>
 <tr><th><a href="directive-dict.html#Status">Status:</a></th><td>Base</td></tr>
 <tr><th><a href="directive-dict.html#Module">Module:</a></th><td>mod_auth_form</td></tr>
-<tr><th><a href="directive-dict.html#Compatibility">Compatibility:</a></th><td>Available in Apache HTTP Server 2.3.0 and later</td></tr>
+<tr><th><a href="directive-dict.html#Compatibility">Compatibility:</a></th><td>Available in Apache HTTP Server 2.3.0 and later. The use of the expression
+parser hass been added in 2.4.4.</td></tr>
 </table>
     <p>The <code class="directive"><a href="#authformloginrequiredlocation">AuthFormLoginRequiredLocation</a></code> directive
-    specifies the URL to redirect to should the user not be authorised to view a page. By default,
-    if a user is not authorised to view a page, the HTTP response code <code>HTTP_UNAUTHORIZED</code>
-    will be returned with the page specified by the
+    specifies the URL to redirect to should the user not be authorised to view a page. The value
+    is parsed using the <a href="../expr.html">ap_expr</a> parser before being sent to the client.
+    By default, if a user is not authorised to view a page, the HTTP response code
+    <code>HTTP_UNAUTHORIZED</code> will be returned with the page specified by the
     <code class="directive"><a href="../mod/core.html#errordocument">ErrorDocument</a></code> directive. This directive overrides this
     default.</p>
 
@@ -498,12 +501,14 @@ lower level modules</td></tr>
 <tr><th><a href="directive-dict.html#Context">Context:</a></th><td>directory</td></tr>
 <tr><th><a href="directive-dict.html#Status">Status:</a></th><td>Base</td></tr>
 <tr><th><a href="directive-dict.html#Module">Module:</a></th><td>mod_auth_form</td></tr>
-<tr><th><a href="directive-dict.html#Compatibility">Compatibility:</a></th><td>Available in Apache HTTP Server 2.3.0 and later</td></tr>
+<tr><th><a href="directive-dict.html#Compatibility">Compatibility:</a></th><td>Available in Apache HTTP Server 2.3.0 and later. The use of the expression
+parser hass been added in 2.4.4.</td></tr>
 </table>
     <p>The <code class="directive"><a href="#authformloginsuccesslocation">AuthFormLoginSuccessLocation</a></code> directive
-    specifies the URL to redirect to should the user have logged in successfully. This directive
-    can be overridden if a form field has been defined containing another URL using the
-    <code class="directive"><a href="#authformlocation">AuthFormLocation</a></code> directive.</p>
+    specifies the URL to redirect to should the user have logged in successfully. The value is
+    parsed using the <a href="../expr.html">ap_expr</a> parser before being sent to the client.
+    This directive can be overridden if a form field has been defined containing another URL
+    using the <code class="directive"><a href="#authformlocation">AuthFormLocation</a></code> directive.</p>
 
     <p>Use this directive if you have a dedicated login URL, and you have not embedded the
     destination page in the login form.</p>
@@ -519,10 +524,13 @@ lower level modules</td></tr>
 <tr><th><a href="directive-dict.html#Context">Context:</a></th><td>directory</td></tr>
 <tr><th><a href="directive-dict.html#Status">Status:</a></th><td>Base</td></tr>
 <tr><th><a href="directive-dict.html#Module">Module:</a></th><td>mod_auth_form</td></tr>
-<tr><th><a href="directive-dict.html#Compatibility">Compatibility:</a></th><td>Available in Apache HTTP Server 2.3.0 and later</td></tr>
+<tr><th><a href="directive-dict.html#Compatibility">Compatibility:</a></th><td>Available in Apache HTTP Server 2.3.0 and later. The use of the expression
+parser hass been added in 2.4.4.</td></tr>
 </table>
     <p>The <code class="directive"><a href="#authformlogoutlocation">AuthFormLogoutLocation</a></code> directive
-    specifies the URL of a page on the server to redirect to should the user attempt to log out.</p>
+    specifies the URL of a page on the server to redirect to should the user attempt to log
+    out. The value is parsed using the <a href="../expr.html">ap_expr</a> parser before
+    being sent to the client.</p>
 
     <p>When a URI is accessed that is served by the handler <code>form-logout-handler</code>,
     the page specified by this directive will be shown to the end user. For example:</p>
@@ -678,7 +686,7 @@ lower level modules</td></tr>
 <div class="directive-section"><h2><a name="AuthFormSize" id="AuthFormSize">AuthFormSize</a> <a name="authformsize" id="authformsize">Directive</a></h2>
 <table class="directive">
 <tr><th><a href="directive-dict.html#Description">Description:</a></th><td>The largest size of the form in bytes that will be parsed for the login details</td></tr>
-<tr><th><a href="directive-dict.html#Syntax">Syntax:</a></th><td><code>AuthFormBody <var>size</var></code></td></tr>
+<tr><th><a href="directive-dict.html#Syntax">Syntax:</a></th><td><code>AuthFormSize <var>size</var></code></td></tr>
 <tr><th><a href="directive-dict.html#Default">Default:</a></th><td><code>8192</code></td></tr>
 <tr><th><a href="directive-dict.html#Context">Context:</a></th><td>directory</td></tr>
 <tr><th><a href="directive-dict.html#Status">Status:</a></th><td>Base</td></tr>
@@ -718,7 +726,8 @@ lower level modules</td></tr>
 </div>
 </div>
 <div class="bottomlang">
-<p><span>Available Languages: </span><a href="../en/mod/mod_auth_form.html" title="English">&nbsp;en&nbsp;</a></p>
+<p><span>Available Languages: </span><a href="../en/mod/mod_auth_form.html" title="English">&nbsp;en&nbsp;</a> |
+<a href="../fr/mod/mod_auth_form.html" hreflang="fr" rel="alternate" title="Français">&nbsp;fr&nbsp;</a></p>
 </div><div class="top"><a href="#page-header"><img src="../images/up.gif" alt="top" /></a></div><div class="section"><h2><a id="comments_section" name="comments_section">Comments</a></h2><div class="warning"><strong>Notice:</strong><br />This is not a Q&amp;A section. Comments placed here should be pointed towards suggestions on improving the documentation or server, and may be removed again by our moderators if they are either implemented or considered invalid/off-topic. Questions on how to manage the Apache HTTP Server should be directed at either our IRC channel, #httpd, on Freenode, or sent to our <a href="http://httpd.apache.org/lists.html">mailing lists</a>.</div>
 <script type="text/javascript"><!--//--><![CDATA[//><!--
 var comments_shortname = 'httpd';
@@ -737,7 +746,7 @@ var comments_identifier = 'http://httpd.apache.org/docs/2.4/mod/mod_auth_form.ht
     }
 })(window, document);
 //--><!]]></script></div><div id="footer">
-<p class="apache">Copyright 2012 The Apache Software Foundation.<br />Licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
+<p class="apache">Copyright 2013 The Apache Software Foundation.<br />Licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
 <p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="http://wiki.apache.org/httpd/FAQ">FAQ</a> | <a href="../glossary.html">Glossary</a> | <a href="../sitemap.html">Sitemap</a></p></div><script type="text/javascript"><!--//--><![CDATA[//><!--
 if (typeof(prettyPrint) !== 'undefined') {
     prettyPrint();

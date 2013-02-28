@@ -62,14 +62,12 @@ by commas.</p>
 <pre class="prettyprint lang-config">RewriteRule pattern target [Flag1,Flag2,Flag3]</pre>
 
 
-<p>The flags all have a short form, such as <code>CO</code>, as well as
-a longer form, such as <code>cookie</code>. Some flags take one or more
-arguments. Flags are not case sensitive.</p>
-
-<p>Each flag (with a few exceptions)
-has a long and short form. While it is most common to use
+<p>Each flag (with a few exceptions) has a short form, such as
+<code>CO</code>, as well as a longer form, such as <code>cookie</code>. 
+While it is most common to use
 the short form, it is recommended that you familiarize yourself with the
-long form, so that you remember what each flag is supposed to do.</p>
+long form, so that you remember what each flag is supposed to do.
+Some flags take one or more arguments. Flags are not case sensitive.</p>
 
 <p>Flags that alter metadata associated with the request (T=, H=, E=)
 have no affect in per-directory and htaccess context, when a substitution
@@ -640,7 +638,8 @@ URI in request' warnings.
 <h2><a name="flag_s" id="flag_s">S|skip</a></h2>
 <p>The [S] flag is used to skip rules that you don't want to run. The
 syntax of the skip flag is [S=<em>N</em>], where <em>N</em> signifies
-the number of rules to skip. This can be thought of as a <code>goto</code>
+the number of rules to skip (provided the <code class="directive"><a href="../mod/mod_rewrite.html#&#10;rewriterule">
+RewriteRule</a></code> matches). This can be thought of as a <code>goto</code>
 statement in your rewrite ruleset. In the following example, we only want
 to run the <code class="directive"><a href="../mod/mod_rewrite.html#rewriterule">RewriteRule</a></code> if the
 requested URI doesn't correspond with an actual file.</p>
@@ -747,7 +746,7 @@ var comments_identifier = 'http://httpd.apache.org/docs/2.4/rewrite/flags.html';
     }
 })(window, document);
 //--><!]]></script></div><div id="footer">
-<p class="apache">Copyright 2012 The Apache Software Foundation.<br />Licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
+<p class="apache">Copyright 2013 The Apache Software Foundation.<br />Licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
 <p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="http://wiki.apache.org/httpd/FAQ">FAQ</a> | <a href="../glossary.html">Glossary</a> | <a href="../sitemap.html">Sitemap</a></p></div><script type="text/javascript"><!--//--><![CDATA[//><!--
 if (typeof(prettyPrint) !== 'undefined') {
     prettyPrint();

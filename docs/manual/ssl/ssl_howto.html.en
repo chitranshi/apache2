@@ -45,6 +45,8 @@ before progressing to the advanced techniques.</p>
 following directives.</p>
 
 <pre class="prettyprint lang-config">
+LoadModule ssl_module modules/mod_ssl.so
+
 Listen 443
 &lt;VirtualHost *:443&gt;
     ServerName www.example.com
@@ -242,9 +244,7 @@ SSLCACertificateFile conf/ssl.crt/company-ca.crt
 
 &lt;Directory /usr/local/apache2/htdocs&gt;
     #   Outside the subarea only Intranet access is granted
-    Order                deny,allow
-    Deny                 from all
-    Allow                from 192.168.1.0/24
+    Require              ip 192.168.1.0/24
 &lt;/Directory&gt;
 
 &lt;Directory /usr/local/apache2/htdocs/subarea&gt;
@@ -269,9 +269,7 @@ SSLCACertificateFile conf/ssl.crt/company-ca.crt
     Satisfy              any
     
     #   Network Access Control
-    Order                deny,allow
-    Deny                 from all
-    Allow                192.168.1.0/24
+    Require              ip 192.168.1.0/24
     
     #   HTTP Basic Authentication
     AuthType             basic
@@ -316,7 +314,7 @@ var comments_identifier = 'http://httpd.apache.org/docs/2.4/ssl/ssl_howto.html';
     }
 })(window, document);
 //--><!]]></script></div><div id="footer">
-<p class="apache">Copyright 2012 The Apache Software Foundation.<br />Licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
+<p class="apache">Copyright 2013 The Apache Software Foundation.<br />Licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
 <p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="http://wiki.apache.org/httpd/FAQ">FAQ</a> | <a href="../glossary.html">Glossary</a> | <a href="../sitemap.html">Sitemap</a></p></div><script type="text/javascript"><!--//--><![CDATA[//><!--
 if (typeof(prettyPrint) !== 'undefined') {
     prettyPrint();

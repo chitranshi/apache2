@@ -421,7 +421,7 @@ static int list_urls(char *path, apr_pool_t *pool, apr_off_t round)
         return 1;
     }
 
-    while (apr_dir_read(&info, 0, dir) == APR_SUCCESS && !interrupted) {
+    while (apr_dir_read(&info, APR_FINFO_TYPE, dir) == APR_SUCCESS && !interrupted) {
 
         if (info.filetype == APR_DIR) {
             if (!strcmp(info.name, ".") || !strcmp(info.name, "..")) {
@@ -1620,6 +1620,10 @@ int main(int argc, const char * const argv[])
         usage(NULL);
     }
 
+    if (!proxypath) {
+         usage("Option -p must be specified");
+    }
+
     if (o->ind < argc) {
         int deleted = 0;
         int error = 0;
@@ -1669,10 +1673,6 @@ int main(int argc, const char * const argv[])
 
     if (!isdaemon && intelligent) {
          usage("Option -i cannot be used without -d");
-    }
-
-    if (!proxypath) {
-         usage("Option -p must be specified");
     }
 
     if (!listurls && max <= 0 && inodes <= 0) {

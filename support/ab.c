@@ -183,6 +183,9 @@ typedef STACK_OF(X509) X509_STACK_TYPE;
 #else
 #define AB_SSL_CIPHER_CONST
 #endif
+#ifdef SSL_OP_NO_TLSv1_2
+#define HAVE_TLSV1_X
+#endif
 #endif
 
 #include <math.h>
@@ -525,6 +528,8 @@ static int ssl_print_connection_info(BIO *bio, SSL *ssl)
     AB_SSL_CIPHER_CONST SSL_CIPHER *c;
     int alg_bits,bits;
 
+    BIO_printf(bio,"Transport Protocol      :%s\n", SSL_get_version(ssl));
+
     c = SSL_get_current_cipher(ssl);
     BIO_printf(bio,"Cipher Suite Protocol   :%s\n", SSL_CIPHER_get_version(c));
     BIO_printf(bio,"Cipher Suite Name       :%s\n",SSL_CIPHER_get_name(c));
@@ -623,7 +628,7 @@ static void ssl_proceed_handshake(struct connection *c)
 
                 ssl_info = malloc(128);
                 apr_snprintf(ssl_info, 128, "%s,%s,%d,%d",
-                             SSL_CIPHER_get_version(ci),
+                             SSL_get_version(c->ssl),
                              SSL_CIPHER_get_name(ci),
                              pk_bits, sk_bits);
             }
@@ -1841,14 +1846,14 @@ static void test(void)
 static void copyright(void)
 {
     if (!use_html) {
-        printf("This is ApacheBench, Version %s\n", AP_AB_BASEREVISION " <$Revision: 1373084 $>");
+        printf("This is ApacheBench, Version %s\n", AP_AB_BASEREVISION " <$Revision: 1430300 $>");
         printf("Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/\n");
         printf("Licensed to The Apache Software Foundation, http://www.apache.org/\n");
         printf("\n");
     }
     else {
         printf("<p>\n");
-        printf(" This is ApacheBench, Version %s <i>&lt;%s&gt;</i><br>\n", AP_AB_BASEREVISION, "$Revision: 1373084 $");
+        printf(" This is ApacheBench, Version %s <i>&lt;%s&gt;</i><br>\n", AP_AB_BASEREVISION, "$Revision: 1430300 $");
         printf(" Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/<br>\n");
         printf(" Licensed to The Apache Software Foundation, http://www.apache.org/<br>\n");
         printf("</p>\n<p>\n");
@@ -1867,13 +1872,16 @@ static void usage(const char *progname)
  */
     fprintf(stderr, "Options are:\n");
     fprintf(stderr, "    -n requests     Number of requests to perform\n");
-    fprintf(stderr, "    -c concurrency  Number of multiple requests to make\n");
-    fprintf(stderr, "    -t timelimit    Seconds to max. wait for responses\n");
+    fprintf(stderr, "    -c concurrency  Number of multiple requests to make at a time\n");
+    fprintf(stderr, "    -t timelimit    Seconds to max. to spend on benchmarking\n");
+    fprintf(stderr, "                    This implies -n 50000\n");
+    fprintf(stderr, "    -s timeout      Seconds to max. wait for each response\n");
+    fprintf(stderr, "                    Default is 30 seconds\n");
     fprintf(stderr, "    -b windowsize   Size of TCP send/receive buffer, in bytes\n");
     fprintf(stderr, "    -B address      Address to bind to when making outgoing connections\n");
     fprintf(stderr, "    -p postfile     File containing data to POST. Remember also to set -T\n");
     fprintf(stderr, "    -u putfile      File containing data to PUT. Remember also to set -T\n");
-    fprintf(stderr, "    -T content-type Content-type header for POSTing, eg.\n");
+    fprintf(stderr, "    -T content-type Content-type header to use for POST/PUT data, eg.\n");
     fprintf(stderr, "                    'application/x-www-form-urlencoded'\n");
     fprintf(stderr, "                    Default is 'text/plain'\n");
     fprintf(stderr, "    -v verbosity    How much troubleshooting info to print\n");
@@ -1894,17 +1902,28 @@ static void usage(const char *progname)
     fprintf(stderr, "    -k              Use HTTP KeepAlive feature\n");
     fprintf(stderr, "    -d              Do not show percentiles served table.\n");
     fprintf(stderr, "    -S              Do not show confidence estimators and warnings.\n");
+    fprintf(stderr, "    -q              Do not show progress when doing more than 150 requests\n");
     fprintf(stderr, "    -g filename     Output collected data to gnuplot format file.\n");
     fprintf(stderr, "    -e filename     Output CSV file with percentages served\n");
     fprintf(stderr, "    -r              Don't exit on socket receive errors.\n");
     fprintf(stderr, "    -h              Display usage information (this message)\n");
 #ifdef USE_SSL
-    fprintf(stderr, "    -Z ciphersuite  Specify SSL/TLS cipher suite (See openssl ciphers)\n");
+
 #ifndef OPENSSL_NO_SSL2
-    fprintf(stderr, "    -f protocol     Specify SSL/TLS protocol (SSL2, SSL3, TLS1, or ALL)\n");
+#define SSL2_HELP_MSG "SSL2, "
 #else
-    fprintf(stderr, "    -f protocol     Specify SSL/TLS protocol (SSL3, TLS1, or ALL)\n");
+#define SSL2_HELP_MSG ""
 #endif
+
+#ifdef HAVE_TLSV1_X
+#define TLS1_X_HELP_MSG ", TLS1.1, TLS1.2"
+#else
+#define TLS1_X_HELP_MSG ""
+#endif
+
+    fprintf(stderr, "    -Z ciphersuite  Specify SSL/TLS cipher suite (See openssl ciphers)\n");
+    fprintf(stderr, "    -f protocol     Specify SSL/TLS protocol\n"); 
+    fprintf(stderr, "                    (" SSL2_HELP_MSG "SSL3, TLS1" TLS1_X_HELP_MSG " or ALL)\n");
 #endif
     exit(EINVAL);
 }
@@ -2068,7 +2087,7 @@ int main(int argc, const char * const argv[])
     myhost = NULL; /* 0.0.0.0 or :: */
 
     apr_getopt_init(&opt, cntxt, argc, argv);
-    while ((status = apr_getopt(opt, "n:c:t:b:T:p:u:v:rkVhwix:y:z:C:H:P:A:g:X:de:SqB:"
+    while ((status = apr_getopt(opt, "n:c:t:s:b:T:p:u:v:rkVhwix:y:z:C:H:P:A:g:X:de:SqB:"
 #ifdef USE_SSL
             "Z:f:"
 #endif
@@ -2108,6 +2127,9 @@ int main(int argc, const char * const argv[])
                 break;
             case 'S':
                 confidence = 0;
+                break;
+            case 's':
+                aprtimeout = apr_time_from_sec(atoi(opt_arg)); /* timeout value */
                 break;
             case 'p':
                 if (method != NO_METH)
@@ -2244,6 +2266,12 @@ int main(int argc, const char * const argv[])
 #endif
                 } else if (strncasecmp(opt_arg, "SSL3", 4) == 0) {
                     meth = SSLv3_client_method();
+#ifdef HAVE_TLSV1_X
+                } else if (strncasecmp(opt_arg, "TLS1.1", 6) == 0) {
+                    meth = TLSv1_1_client_method();
+                } else if (strncasecmp(opt_arg, "TLS1.2", 6) == 0) {
+                    meth = TLSv1_2_client_method();
+#endif
                 } else if (strncasecmp(opt_arg, "TLS1", 4) == 0) {
                     meth = TLSv1_client_method();
                 }

@@ -87,6 +87,7 @@
 <ul id="toc">
 <li><img alt="" src="../images/down.gif" /> <a href="#balancergrowth">BalancerGrowth</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#balancermember">BalancerMember</a></li>
+<li><img alt="" src="../images/down.gif" /> <a href="#balancerpersist">BalancerPersist</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#noproxy">NoProxy</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#proxy">&lt;Proxy&gt;</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#proxyaddheaders">ProxyAddHeaders</a></li>
@@ -511,6 +512,24 @@ ProxyPass /examples http://backend.example.com/examples timeout=10
     
 </div>
 <div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
+<div class="directive-section"><h2><a name="BalancerPersist" id="BalancerPersist">BalancerPersist</a> <a name="balancerpersist" id="balancerpersist">Directive</a></h2>
+<table class="directive">
+<tr><th><a href="directive-dict.html#Description">Description:</a></th><td>Attempt to persist changes made by the Balancer Manager across restarts.</td></tr>
+<tr><th><a href="directive-dict.html#Syntax">Syntax:</a></th><td><code>BalancerPersist On|Off</code></td></tr>
+<tr><th><a href="directive-dict.html#Default">Default:</a></th><td><code>BalancerPersist Off</code></td></tr>
+<tr><th><a href="directive-dict.html#Context">Context:</a></th><td>server config, virtual host</td></tr>
+<tr><th><a href="directive-dict.html#Status">Status:</a></th><td>Extension</td></tr>
+<tr><th><a href="directive-dict.html#Module">Module:</a></th><td>mod_proxy</td></tr>
+<tr><th><a href="directive-dict.html#Compatibility">Compatibility:</a></th><td>BalancerPersist is only available in Apache HTTP Server 2.4.4 and later.
+        and later.</td></tr>
+</table>
+        <p>This directive will cause the shared memory storage associated
+        with the balancers and balancer members to be persisted across
+        restarts. This allows these local changes to not be lost during the
+        normal restart/graceful state transitions.</p>
+    
+</div>
+<div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
 <div class="directive-section"><h2><a name="NoProxy" id="NoProxy">NoProxy</a> <a name="noproxy" id="noproxy">Directive</a></h2>
 <table class="directive">
 <tr><th><a href="directive-dict.html#Description">Description:</a></th><td>Hosts, domains, or networks that will be connected to
@@ -705,7 +724,6 @@ response</td></tr>
 <tr><th><a href="directive-dict.html#Context">Context:</a></th><td>server config, virtual host</td></tr>
 <tr><th><a href="directive-dict.html#Status">Status:</a></th><td>Extension</td></tr>
 <tr><th><a href="directive-dict.html#Module">Module:</a></th><td>mod_proxy</td></tr>
-<tr><th><a href="directive-dict.html#Compatibility">Compatibility:</a></th><td>Available in Apache HTTP Server 2.0.44 and later</td></tr>
 </table>
     <p>The <code class="directive">ProxyBadHeader</code> directive determines the
     behaviour of <code class="module"><a href="../mod/mod_proxy.html">mod_proxy</a></code> if it receives syntactically invalid
@@ -799,7 +817,6 @@ proxied</td></tr>
 <tr><th><a href="directive-dict.html#Context">Context:</a></th><td>server config, virtual host, directory</td></tr>
 <tr><th><a href="directive-dict.html#Status">Status:</a></th><td>Extension</td></tr>
 <tr><th><a href="directive-dict.html#Module">Module:</a></th><td>mod_proxy</td></tr>
-<tr><th><a href="directive-dict.html#Compatibility">Compatibility:</a></th><td>Available in version 2.0 and later</td></tr>
 </table>
     <p>This directive is useful for reverse-proxy setups, where you want to
     have a common look and feel on the error pages seen by the end user.
@@ -868,8 +885,7 @@ through</td></tr>
 <tr><th><a href="directive-dict.html#Context">Context:</a></th><td>server config, virtual host</td></tr>
 <tr><th><a href="directive-dict.html#Status">Status:</a></th><td>Extension</td></tr>
 <tr><th><a href="directive-dict.html#Module">Module:</a></th><td>mod_proxy</td></tr>
-<tr><th><a href="directive-dict.html#Compatibility">Compatibility:</a></th><td>Available in Apache HTTP Server 2.0 and later;
-	default behaviour changed in 2.2.7/2.3</td></tr>
+<tr><th><a href="directive-dict.html#Compatibility">Compatibility:</a></th><td>Default behaviour changed in 2.2.7</td></tr>
 </table>
     <p>The <code class="directive">ProxyMaxForwards</code> directive specifies the
     maximum number of proxies through which a request may pass, if there's no
@@ -1226,6 +1242,13 @@ ProxyPass /mirror/foo http://backend.example.com
         and url encoded id (like servlet containers) use | to to separate them.
         The first part is for the cookie the second for the path.
     </td></tr>
+    <tr><td>stickysessionsep</td>
+        <td>"."</td>
+        <td>Sets the separation symbol in the session cookie. Some backend application servers
+        do not use the '.' as the symbol. For example the Oracle Weblogic server uses 
+        '!'. The correct symbol can be set using this option. The setting of 'Off'
+        signifies that no symbol is used.
+    </td></tr>
     <tr><td>scolonpathdelim</td>
         <td>Off</td>
         <td>If set to <code>On</code> the semi-colon character ';' will be
@@ -1277,10 +1300,10 @@ ProxyPass /mirror/foo http://backend.example.com
 ProxyPass /special-area http://special.example.com smax=5 max=10
 ProxyPass / balancer://mycluster/ stickysession=JSESSIONID|jsessionid nofailover=On
 &lt;Proxy balancer://mycluster&gt;
-    BalancerMember ajp://1.2.3.4:8009
-    BalancerMember ajp://1.2.3.5:8009 loadfactor=20
+    BalancerMember ajp://1.2.3.4:8009/
+    BalancerMember ajp://1.2.3.5:8009/ loadfactor=20
     # Less powerful server, don't send as many requests there,
-    BalancerMember ajp://1.2.3.6:8009 loadfactor=5
+    BalancerMember ajp://1.2.3.6:8009/ loadfactor=5
 &lt;/Proxy&gt;
     </pre>
 
@@ -1290,10 +1313,10 @@ ProxyPass / balancer://mycluster/ stickysession=JSESSIONID|jsessionid nofailover
     <pre class="prettyprint lang-config">
 ProxyPass / balancer://hotcluster/ 
 &lt;Proxy balancer://hotcluster&gt;
-    BalancerMember ajp://1.2.3.4:8009 loadfactor=1
-    BalancerMember ajp://1.2.3.5:8009 loadfactor=2
+    BalancerMember ajp://1.2.3.4:8009/ loadfactor=1
+    BalancerMember ajp://1.2.3.5:8009/ loadfactor=2
     # The server below is on hot standby
-    BalancerMember ajp://1.2.3.6:8009 status=+H
+    BalancerMember ajp://1.2.3.6:8009/ status=+H
     ProxySet lbmethod=bytraffic
 &lt;/Proxy&gt;
     </pre>
@@ -1558,7 +1581,7 @@ request</td></tr>
 <tr><th><a href="directive-dict.html#Context">Context:</a></th><td>server config, virtual host, directory</td></tr>
 <tr><th><a href="directive-dict.html#Status">Status:</a></th><td>Extension</td></tr>
 <tr><th><a href="directive-dict.html#Module">Module:</a></th><td>mod_proxy</td></tr>
-<tr><th><a href="directive-dict.html#Compatibility">Compatibility:</a></th><td>Available in Apache HTTP Server 2.0.31 and later. Usable in directory
+<tr><th><a href="directive-dict.html#Compatibility">Compatibility:</a></th><td>Usable in directory
 context in 2.3.3 and later.</td></tr>
 </table>
     <p>When enabled, this option will pass the Host: line from the incoming
@@ -1709,8 +1732,8 @@ expressions</td></tr>
 
     <div class="example"><pre class="prettyprint lang-config">
 &lt;Proxy balancer://hotcluster&gt;
-    BalancerMember http://www2.example.com:8080 loadfactor=1
-    BalancerMember http://www3.example.com:8080 loadfactor=2
+    BalancerMember http://www2.example.com:8080/ loadfactor=1
+    BalancerMember http://www3.example.com:8080/ loadfactor=2
     ProxySet lbmethod=bytraffic
 &lt;/Proxy&gt;
       </pre>
@@ -1784,7 +1807,6 @@ expressions</td></tr>
 <tr><th><a href="directive-dict.html#Context">Context:</a></th><td>server config, virtual host</td></tr>
 <tr><th><a href="directive-dict.html#Status">Status:</a></th><td>Extension</td></tr>
 <tr><th><a href="directive-dict.html#Module">Module:</a></th><td>mod_proxy</td></tr>
-<tr><th><a href="directive-dict.html#Compatibility">Compatibility:</a></th><td>Available in Apache HTTP Server 2.0.31 and later</td></tr>
 </table>
     <p>This directive allows a user to specifiy a timeout on proxy requests.
     This is useful when you have a slow/buggy appserver which hangs, and you
@@ -1849,7 +1871,7 @@ var comments_identifier = 'http://httpd.apache.org/docs/2.4/mod/mod_proxy.html';
     }
 })(window, document);
 //--><!]]></script></div><div id="footer">
-<p class="apache">Copyright 2012 The Apache Software Foundation.<br />Licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
+<p class="apache">Copyright 2013 The Apache Software Foundation.<br />Licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
 <p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="http://wiki.apache.org/httpd/FAQ">FAQ</a> | <a href="../glossary.html">Glossary</a> | <a href="../sitemap.html">Sitemap</a></p></div><script type="text/javascript"><!--//--><![CDATA[//><!--
 if (typeof(prettyPrint) !== 'undefined') {
     prettyPrint();

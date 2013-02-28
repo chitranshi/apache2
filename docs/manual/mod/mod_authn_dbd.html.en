@@ -24,7 +24,8 @@
 <div id="page-content">
 <div id="preamble"><h1>Apache Module mod_authn_dbd</h1>
 <div class="toplang">
-<p><span>Available Languages: </span><a href="../en/mod/mod_authn_dbd.html" title="English">&nbsp;en&nbsp;</a></p>
+<p><span>Available Languages: </span><a href="../en/mod/mod_authn_dbd.html" title="English">&nbsp;en&nbsp;</a> |
+<a href="../fr/mod/mod_authn_dbd.html" hreflang="fr" rel="alternate" title="Français">&nbsp;fr&nbsp;</a></p>
 </div>
 <table class="module"><tr><th><a href="module-dict.html#Description">Description:</a></th><td>User authentication using an SQL database</td></tr>
 <tr><th><a href="module-dict.html#Status">Status:</a></th><td>Extension</td></tr>
@@ -76,7 +77,7 @@
 <div class="section">
 <h2><a name="socache" id="socache">Performance and Cacheing</a></h2>
 
-<p>Some users of DBD authentication in HTTPD 2.2 have reported that it
+<p>Some users of DBD authentication in HTTPD 2.2/2.4 have reported that it
 imposes a problematic load on the database.  This is most likely where
 an HTML page contains hundreds of objects (e.g. images, scripts, etc)
 each of which requires authentication.  Users affected (or concerned)
@@ -182,7 +183,8 @@ AuthDBDUserPWQuery "SELECT password FROM authn WHERE user = %s"
 <tr><th><a href="directive-dict.html#Module">Module:</a></th><td>mod_authn_dbd</td></tr>
 </table>
     <p>The <code class="directive">AuthDBDUserRealmQuery</code> specifies an
-    SQL query to look up a password for a specified user and realm.
+    SQL query to look up a password for a specified user and realm in a 
+    digest authentication process.
     The user's ID and the realm, in that order, will be passed as string
     parameters when the SQL query is executed.  They may be referenced
     within the query statement using <code>%s</code> format specifiers.</p>
@@ -207,7 +209,8 @@ AuthDBDUserRealmQuery "SELECT password FROM authn WHERE user = %s AND realm = %s
 </div>
 </div>
 <div class="bottomlang">
-<p><span>Available Languages: </span><a href="../en/mod/mod_authn_dbd.html" title="English">&nbsp;en&nbsp;</a></p>
+<p><span>Available Languages: </span><a href="../en/mod/mod_authn_dbd.html" title="English">&nbsp;en&nbsp;</a> |
+<a href="../fr/mod/mod_authn_dbd.html" hreflang="fr" rel="alternate" title="Français">&nbsp;fr&nbsp;</a></p>
 </div><div class="top"><a href="#page-header"><img src="../images/up.gif" alt="top" /></a></div><div class="section"><h2><a id="comments_section" name="comments_section">Comments</a></h2><div class="warning"><strong>Notice:</strong><br />This is not a Q&amp;A section. Comments placed here should be pointed towards suggestions on improving the documentation or server, and may be removed again by our moderators if they are either implemented or considered invalid/off-topic. Questions on how to manage the Apache HTTP Server should be directed at either our IRC channel, #httpd, on Freenode, or sent to our <a href="http://httpd.apache.org/lists.html">mailing lists</a>.</div>
 <script type="text/javascript"><!--//--><![CDATA[//><!--
 var comments_shortname = 'httpd';
@@ -226,7 +229,7 @@ var comments_identifier = 'http://httpd.apache.org/docs/2.4/mod/mod_authn_dbd.ht
     }
 })(window, document);
 //--><!]]></script></div><div id="footer">
-<p class="apache">Copyright 2012 The Apache Software Foundation.<br />Licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
+<p class="apache">Copyright 2013 The Apache Software Foundation.<br />Licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
 <p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="http://wiki.apache.org/httpd/FAQ">FAQ</a> | <a href="../glossary.html">Glossary</a> | <a href="../sitemap.html">Sitemap</a></p></div><script type="text/javascript"><!--//--><![CDATA[//><!--
 if (typeof(prettyPrint) !== 'undefined') {
     prettyPrint();

@@ -976,12 +976,20 @@ static const char *invoke_cmd(const command_rec *cmd, cmd_parms *parms,
         return cmd->AP_TAKE3(parms, mconfig, w, w2, w3);
 
     case ITERATE:
-        while (*(w = ap_getword_conf(parms->pool, &args)) != '\0') {
+        w = ap_getword_conf(parms->pool, &args);
+        
+        if (*w == '\0')
+            return apr_pstrcat(parms->pool, cmd->name,
+                               " requires at least one argument",
+                               cmd->errmsg ? ", " : NULL, cmd->errmsg, NULL);
 
+        while (*w != '\0') {
             errmsg = cmd->AP_TAKE1(parms, mconfig, w);
 
             if (errmsg && strcmp(errmsg, DECLINE_CMD) != 0)
                 return errmsg;
+
+            w = ap_getword_conf(parms->pool, &args);
         }
 
         return errmsg;
@@ -2013,7 +2021,7 @@ AP_DECLARE(const char *) ap_process_fnmatch_configs(server_rec *s,
     }
 
     if (!apr_fnmatch_test(fname)) {
-        return ap_process_resource_config(s, fname, conftree, p, ptemp);
+        return process_resource_config_nofnmatch(s, fname, conftree, p, ptemp, 0, optional);
     }
     else {
         apr_status_t status;

@@ -53,6 +53,7 @@ Be sure to check the CHANGES file before upgrading.</div>
 </div>
 <div id="quickview"><h3 class="directives">Directives</h3>
 <ul id="toc">
+<li><img alt="" src="../images/down.gif" /> <a href="#luaauthzprovider">LuaAuthzProvider</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#luahookaccesschecker">LuaHookAccessChecker</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#luahookauthchecker">LuaHookAuthChecker</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#luahookcheckuserid">LuaHookCheckUserID</a></li>
@@ -62,7 +63,6 @@ Be sure to check the CHANGES file before upgrading.</div>
 <li><img alt="" src="../images/down.gif" /> <a href="#luahooktranslatename">LuaHookTranslateName</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#luahooktypechecker">LuaHookTypeChecker</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#luainherit">LuaInherit</a></li>
-<li><img alt="" src="../images/down.gif" /> <a href="#luamaphandler">LuaMapHandler</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#luapackagecpath">LuaPackageCPath</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#luapackagepath">LuaPackagePath</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#luaquickhandler">LuaQuickHandler</a></li>
@@ -73,10 +73,12 @@ Be sure to check the CHANGES file before upgrading.</div>
 <ul id="topics">
 <li><img alt="" src="../images/down.gif" /> <a href="#basicconf">Basic Configuration</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#writinghandlers">Writing Handlers</a></li>
+<li><img alt="" src="../images/down.gif" /> <a href="#writingauthzproviders">Writing Authorization Providers</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#writinghooks">Writing Hooks</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#datastructures">Data Structures</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#logging">Logging Functions</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#apache2">apache2 Package</a></li>
+<li><img alt="" src="../images/down.gif" /> <a href="#databases">Database connectivity</a></li>
 </ul><ul class="seealso"><li><a href="#comments_section">Comments</a></li></ul></div>
 <div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
 <div class="section">
@@ -102,9 +104,6 @@ AddHandler lua-script .lua
 This will cause <code>mod_lua</code> to handle requests for files
 ending in <code>.lua</code> by invoking that file's
 <code>handle</code> function.
-</p>
-
-<p>For more flexibility, see <code class="directive">LuaMapHandler</code>.
 </p>
 
 </div><div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
@@ -139,6 +138,10 @@ function handle(r)
         for k, v in pairs( r:parseargs() ) do
             r:puts( string.format("%s: %s\n", k, v) )
         end
+    elseif r.method == 'POST' then
+        for k, v in pairs( r:parsebody() ) do
+            r:puts( string.format("%s: %s\n", k, v) )
+        end
     else
         r:puts("Unsupported HTTP method " .. r.method)
     end
@@ -155,6 +158,62 @@ arguments to a plaintext page.
 This means (and in fact encourages) that you can have multiple
 handlers (or hooks, or filters) in the same script.
 </p>
+
+</div><div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
+<div class="section">
+<h2><a name="writingauthzproviders" id="writingauthzproviders">Writing Authorization Providers</a></h2>
+
+
+<p><code class="module"><a href="../mod/mod_authz_core.html">mod_authz_core</a></code> provides a high-level interface to
+authorization that is much easier to use than using into the relevant
+hooks directly. The first argument to the
+<code class="directive"><a href="../mod/mod_authz_core.html#require">Require</a></code> directive gives
+the name of the responsible authorization provider. For any
+<code class="directive"><a href="../mod/mod_authz_core.html#require">Require</a></code> line,
+<code class="module"><a href="../mod/mod_authz_core.html">mod_authz_core</a></code> will call the authorization provider
+of the given name, passing the rest of the line as parameters. The
+provider will then check authorization and pass the result as return
+value.</p>
+
+<p>The authz provider is normally called before authentication. If it needs to
+know the authenticated user name (or if the user will be authenticated at
+all), the provider must return <code>apache2.AUTHZ_DENIED_NO_USER</code>.
+This will cause authentication to proceed and the authz provider to be
+called a second time.</p>
+
+<p>The following authz provider function takes two arguments, one ip
+address and one user name. It will allow access from the given ip address
+without authentication, or if the authenticated user matches the second
+argument:</p>
+
+<pre class="prettyprint lang-lua">
+<strong>authz_provider.lua</strong>
+
+require 'apache2'
+
+function authz_check_foo(r, ip, user)
+    if r.useragent_ip == ip then
+        return apache2.AUTHZ_GRANTED
+    elseif r.user == nil then
+        return apache2.AUTHZ_DENIED_NO_USER
+    elseif r.user == user then
+        return apache2.AUTHZ_GRANTED
+    else
+        return apache2.AUTHZ_DENIED
+    end
+end
+</pre>
+
+
+<p>The following configuration registers this function as provider
+<code>foo</code> and configures it for URL <code>/</code>:</p>
+<pre class="prettyprint lang-config">
+LuaAuthzProvider foo authz_provider.lua authz_check_foo
+&lt;Location /&gt;
+  Require foo 10.1.2.3 john_doe
+&lt;/Location&gt;
+</pre>
+
 
 </div><div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
 <div class="section">
@@ -393,6 +452,11 @@ end
         r:parseargs() -- returns a lua table containing the request's query string arguments
         </pre>
 
+        <pre class="prettyprint lang-lua">
+r:parsebody([sizeLimit]) -- parse the request body as a POST and return  a lua table.
+                         -- An optional number may be passed to specify the maximum number 
+                         -- of bytes to parse. Default is 8192 bytes.
+        </pre>
 
         <pre class="prettyprint lang-lua">
         r:puts("hello", " world", "!") -- print to response body
@@ -401,6 +465,12 @@ end
 
         <pre class="prettyprint lang-lua">
         r:write("a single string") -- print to response body
+        </pre>
+
+        
+        <pre class="prettyprint lang-lua">
+r:dbacquire(dbType[, dbParams]) -- Acquires a connection to a database and returns a database class.
+                                -- See '<a href="#databases">Database connectivity</a>' for details.
         </pre>
 
         </dd>
@@ -445,6 +515,199 @@ end
   <dd>internal constants used by <code class="module"><a href="../mod/mod_proxy.html">mod_proxy</a></code></dd>
 </dl>
 <p>(Other HTTP status codes are not yet implemented.)</p>
+</div><div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
+<div class="section">
+<h2><a name="databases" id="databases">Database connectivity</a></h2>
+    
+    <p>
+    Mod_lua implements a simple database feature for querying and running commands
+    on the most popular database engines (mySQL, PostgreSQL, FreeTDS, ODBC, SQLite, Oracle)
+    as well as mod_dbd.
+    </p>
+    <p>Connecting and firing off queries is as easy as:</p>
+    <pre class="prettyprint lang-lua">
+function handler(r)
+    local database, err = r:dbacquire("mysql", "server=localhost&amp;user=root&amp;database=mydb")
+    if not err then
+        local results, err = database:select(r, "SELECT `name`, `age` FROM `people` WHERE 1")
+        if not err then
+            local rows = results(0) -- fetch all rows synchronously
+            for k, row in pairs(rows) do
+                r:puts( string.format("Name: %s, Age: %s&lt;br/&gt;", row[1], row[2]) )
+            end
+        else
+            r:puts("Database query error: " .. err)
+        end
+        database:close()
+    else
+        r:puts("Could not connect to the database: " .. err)
+    end
+end
+    </pre>
+
+    <p>
+    To utilize <code class="module"><a href="../mod/mod_dbd.html">mod_dbd</a></code>, simply specify <code>mod_dbd</code>
+    as the database type, or leave the field blank:
+    </p>
+    <pre class="prettyprint lang-lua">
+    local database = r:dbacquire("mod_dbd")
+    </pre>
+
+    <h3><a name="database_object" id="database_object">Database object and contained functions</a></h3>
+        
+        <p>The database object returned by <code>dbacquire</code> has the following methods:</p>
+        <p><strong>Normal select and query from a database:</strong></p>
+    <pre class="prettyprint lang-lua">
+-- Run a statement and return the number of rows affected:
+local affected, errmsg = database:query(r, "DELETE FROM `tbl` WHERE 1")
+
+-- Run a statement and return a result set that can be used synchronously or async:
+local result, errmsg = database:select(r, "SELECT * FROM `people` WHERE 1")
+    </pre>
+
+        <p><strong>Using prepared statements (recommended):</strong></p>
+    <pre class="prettyprint lang-lua">
+-- Create and run a prepared statement:
+local statement, errmsg = database:prepare(r, "DELETE FROM `tbl` WHERE `age` &gt; %u")
+if not errmsg then
+    local result, errmsg = statement:query(20) -- run the statement with age &gt;20
+end
+
+-- Fetch a prepared statement from a DBDPrepareSQL directive:
+local statement, errmsg = database:prepared(r, "someTag")
+if not errmsg then
+    local result, errmsg = statement:select("John Doe", 123) -- inject the values "John Doe" and 123 into the statement
+end
+
+</pre>
+
+        <p><strong>Escaping values, closing databases etc:</strong></p>
+    <pre class="prettyprint lang-lua">
+-- Escape a value for use in a statement:
+local escaped = database:escape(r, [["'|blabla]])
+
+-- Close a database connection and free up handles:
+database:close()
+
+-- Check whether a database connection is up and running:
+local connected = database:active()
+    </pre>
+
+    
+    <h3><a name="result_sets" id="result_sets">Working with result sets</a></h3>
+    
+    <p>The result set returned by <code>db:select</code> or by the prepared statement functions 
+    created through <code>db:prepare</code> can be used to
+    fetch rows synchronously or asynchronously, depending on the row number specified:<br />
+    <code>result(0)</code> fetches all rows in a synchronous manner, returning a table of rows.<br />
+    <code>result(-1)</code> fetches the next available row in the set, asynchronously.<br />
+    <code>result(N)</code> fetches row number <code>N</code>, asynchronously:
+    </p>
+    <pre class="prettyprint lang-lua">
+-- fetch a result set using a regular query:
+local result, err = db:select(r, "SELECT * FROM `tbl` WHERE 1")
+
+local rows = result(0) -- Fetch ALL rows synchronously
+local row = result(-1) -- Fetch the next available row, asynchronously
+local row = result(1234) -- Fetch row number 1234, asynchronously
+    </pre>
+
+    <p>One can construct a function that returns an iterative function to iterate over all rows 
+    in a synchronous or asynchronous way, depending on the async argument:
+    </p>
+    <pre class="prettyprint lang-lua">
+function rows(resultset, async)
+    local a = 0
+    local function getnext()
+        a = a + 1
+        local row = resultset(-1)
+        return row and a or nil, row
+    end
+    if not async then
+        return pairs(resultset(0))
+    else
+        return getnext, self
+    end
+end
+
+local statement, err = db:prepare(r, "SELECT * FROM `tbl` WHERE `age` &gt; %u")
+if not err then
+     -- fetch rows asynchronously:
+    local result, err = statement:select(20)
+    if not err then
+        for index, row in rows(result, true) do
+            ....
+        end
+    end
+
+     -- fetch rows synchronously:
+    local result, err = statement:select(20)
+    if not err then
+        for index, row in rows(result, false) do
+            ....
+        end
+    end
+end
+    </pre>
+
+    
+    <h3><a name="closing_databases" id="closing_databases">Closing a database connection</a></h3>
+        
+
+    <p>Database handles should be closed using <code>database:close()</code> when they are no longer
+    needed. If you do not close them manually, they will eventually be garbage collected and 
+    closed by mod_lua, but you may end up having too many unused connections to the database 
+    if you leave the closing up to mod_lua. Essentially, the following two measures are
+    the same:
+    </p>
+    <pre class="prettyprint lang-lua">
+-- Method 1: Manually close a handle
+local database = r:dbacquire("mod_dbd")
+database:close() -- All done
+
+-- Method 2: Letting the garbage collector close it
+local database = r:dbacquire("mod_dbd")
+database = nil -- throw away the reference
+collectgarbage() -- close the handle via GC
+</pre>
+
+    
+    <h3><a name="database_caveat" id="database_caveat">Precautions when working with databases</a></h3>
+    
+    <p>Although the standard <code>query</code> and <code>run</code> functions are freely 
+    available, it is recommended that you use prepared statements whenever possible, to 
+    both optimize performance (if your db handle lives on for a long time) and to minimize 
+    the risk of SQL injection attacks. <code>run</code> and <code>query</code> should only
+    be used when there are no variables inserted into a statement (a static statement). 
+    When using dynamic statements, use <code>db:prepare</code> or <code>db:prepared</code>.
+    </p>
+    
+
+</div>
+<div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
+<div class="directive-section"><h2><a name="LuaAuthzProvider" id="LuaAuthzProvider">LuaAuthzProvider</a> <a name="luaauthzprovider" id="luaauthzprovider">Directive</a></h2>
+<table class="directive">
+<tr><th><a href="directive-dict.html#Description">Description:</a></th><td>Plug an authorization provider function into <code class="module"><a href="../mod/mod_authz_core.html">mod_authz_core</a></code>
+</td></tr>
+<tr><th><a href="directive-dict.html#Syntax">Syntax:</a></th><td><code>LuaAuthzProvider provider_name /path/to/lua/script.lua function_name</code></td></tr>
+<tr><th><a href="directive-dict.html#Context">Context:</a></th><td>server config</td></tr>
+<tr><th><a href="directive-dict.html#Status">Status:</a></th><td>Experimental</td></tr>
+<tr><th><a href="directive-dict.html#Module">Module:</a></th><td>mod_lua</td></tr>
+<tr><th><a href="directive-dict.html#Compatibility">Compatibility:</a></th><td>2.4.3 and later</td></tr>
+</table>
+<p>After a lua function has been registered as authorization provider, it can be used
+with the <code class="directive"><a href="../mod/mod_authz_core.html#require">Require</a></code> directive:</p>
+
+<div class="example"><pre class="prettyprint lang-config">
+LuaRoot /usr/local/apache2/lua
+LuaAuthzProvider foo authz.lua authz_check_foo
+&lt;Location /&gt;
+  Require foo bar
+&lt;/Location&gt;
+</pre>
+</div>
+
+
 </div>
 <div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
 <div class="directive-section"><h2><a name="LuaHookAccessChecker" id="LuaHookAccessChecker">LuaHookAccessChecker</a> <a name="luahookaccesschecker" id="luahookaccesschecker">Directive</a></h2>
@@ -654,40 +917,6 @@ end
     directives from parent configuration sections.</p>
 </div>
 <div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
-<div class="directive-section"><h2><a name="LuaMapHandler" id="LuaMapHandler">LuaMapHandler</a> <a name="luamaphandler" id="luamaphandler">Directive</a></h2>
-<table class="directive">
-<tr><th><a href="directive-dict.html#Description">Description:</a></th><td>Map a path to a lua handler</td></tr>
-<tr><th><a href="directive-dict.html#Syntax">Syntax:</a></th><td><code>LuaMapHandler uri-pattern /path/to/lua/script.lua [function-name]</code></td></tr>
-<tr><th><a href="directive-dict.html#Context">Context:</a></th><td>server config, virtual host, directory, .htaccess</td></tr>
-<tr><th><a href="directive-dict.html#Override">Override:</a></th><td>All</td></tr>
-<tr><th><a href="directive-dict.html#Status">Status:</a></th><td>Experimental</td></tr>
-<tr><th><a href="directive-dict.html#Module">Module:</a></th><td>mod_lua</td></tr>
-</table>
-    <p>This directive matches a uri pattern to invoke a specific
-    handler function in a specific file. It uses PCRE regular
-    expressions to match the uri, and supports interpolating
-    match groups into both the file path and the function name
-    be careful writing your regular expressions to avoid security
-    issues.</p>
-   <div class="example"><h3>Examples:</h3><pre class="prettyprint lang-config">
-    LuaMapHandler /(\w+)/(\w+) /scripts/$1.lua handle_$2
-    </pre>
-</div>
-        <p>This would match uri's such as /photos/show?id=9
-        to the file /scripts/photos.lua and invoke the
-        handler function handle_show on the lua vm after
-        loading that file.</p>
-
-<pre class="prettyprint lang-config">
-    LuaMapHandler /bingo /scripts/wombat.lua
-</pre>
-
-        <p>This would invoke the "handle" function, which
-        is the default if no specific function name is
-        provided.</p>
-
-</div>
-<div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
 <div class="directive-section"><h2><a name="LuaPackageCPath" id="LuaPackageCPath">LuaPackageCPath</a> <a name="luapackagecpath" id="luapackagecpath">Directive</a></h2>
 <table class="directive">
 <tr><th><a href="directive-dict.html#Description">Description:</a></th><td>Add a directory to lua's package.cpath</td></tr>
@@ -803,7 +1032,7 @@ var comments_identifier = 'http://httpd.apache.org/docs/2.4/mod/mod_lua.html';
     }
 })(window, document);
 //--><!]]></script></div><div id="footer">
-<p class="apache">Copyright 2012 The Apache Software Foundation.<br />Licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
+<p class="apache">Copyright 2013 The Apache Software Foundation.<br />Licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
 <p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="http://wiki.apache.org/httpd/FAQ">FAQ</a> | <a href="../glossary.html">Glossary</a> | <a href="../sitemap.html">Sitemap</a></p></div><script type="text/javascript"><!--//--><![CDATA[//><!--
 if (typeof(prettyPrint) !== 'undefined') {
     prettyPrint();

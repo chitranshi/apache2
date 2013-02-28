@@ -4,10 +4,8 @@ This would particularly hit people with reverse proxies, since these
 have a higher tendency of accessing things from different vhosts in
 the same connection.
 
-Index: apache2/server/config.c
-===================================================================
---- apache2.orig/server/config.c	2013-01-27 22:24:26.815647076 +0100
-+++ apache2/server/config.c	2013-01-27 22:24:26.799646996 +0100
+--- a/server/config.c
++++ b/server/config.c
 @@ -69,6 +69,8 @@
  
  AP_DECLARE_DATA ap_directive_t *ap_conftree = NULL;
@@ -17,7 +15,7 @@ Index: apache2/server/config.c
  APR_HOOK_STRUCT(
             APR_HOOK_LINK(header_parser)
             APR_HOOK_LINK(pre_config)
-@@ -2131,6 +2133,32 @@
+@@ -2139,6 +2141,32 @@
          else {
              if (!APR_STATUS_IS_ENOENT(status)
                  && !APR_STATUS_IS_ENOTDIR(status)) {

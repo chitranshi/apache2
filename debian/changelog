@@ -1,4 +1,4 @@
-apache2 (2.4.4-1) UNRELEASED; urgency=low
+apache2 (2.4.4-1) experimentalD; urgency=low
 
   * New upstream release
 
@@ -44,7 +44,7 @@ apache2 (2.4.4-1) UNRELEASED; urgency=low
     heaps, it makes both more visible what changes happen to the general code (and
     thus are also done to the other servers generated)
 
- -- Arno Töll <arno@debian.org>  Thu, 28 Feb 2013 21:57:30 +0100
+ -- Arno Töll <arno@debian.org>  Thu, 28 Feb 2013 23:37:56 +0100
 
 apache2 (2.4.2-2) experimental; urgency=low
 

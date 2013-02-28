@@ -362,7 +362,7 @@ $ tar xvf httpd-<em>NN</em>.tar
     <p>The first step in upgrading is to read the release announcement
     and the file <code>CHANGES</code> in the source distribution to
     find any changes that may affect your site.  When changing between
-    major releases (for example, from 2.0 to 2.2 or from 2.2 to 2.3),
+    major releases (for example, from 2.0 to 2.2 or from 2.2 to 2.4),
     there will likely be major differences in the compile-time and
     run-time configuration that will require manual adjustments.  All
     modules will also need to be upgraded to accommodate changes in the
@@ -462,7 +462,7 @@ var comments_identifier = 'http://httpd.apache.org/docs/2.4/install.html';
     }
 })(window, document);
 //--><!]]></script></div><div id="footer">
-<p class="apache">Copyright 2012 The Apache Software Foundation.<br />Licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
+<p class="apache">Copyright 2013 The Apache Software Foundation.<br />Licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
 <p class="menu"><a href="./mod/">Modules</a> | <a href="./mod/directives.html">Directives</a> | <a href="http://wiki.apache.org/httpd/FAQ">FAQ</a> | <a href="./glossary.html">Glossary</a> | <a href="./sitemap.html">Sitemap</a></p></div><script type="text/javascript"><!--//--><![CDATA[//><!--
 if (typeof(prettyPrint) !== 'undefined') {
     prettyPrint();

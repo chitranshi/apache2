@@ -31,8 +31,6 @@
 <a href="../ja/mod/core.html" hreflang="ja" rel="alternate" title="Japanese">&nbsp;ja&nbsp;</a> |
 <a href="../tr/mod/core.html" hreflang="tr" rel="alternate" title="Türkçe">&nbsp;tr&nbsp;</a></p>
 </div>
-<div class="outofdate">Cette traduction peut être périmée. Vérifiez la version
-            anglaise pour les changements récents.</div>
 <table class="module"><tr><th><a href="module-dict.html#Description">Description:</a></th><td>Fonctionnalités de base du serveur HTTP Apache toujours
 disponibles</td></tr>
 <tr><th><a href="module-dict.html#Status">Statut:</a></th><td>Core</td></tr></table>
@@ -224,8 +222,6 @@ nom de chemin en fin de requête.</td></tr>
 <tr><th><a href="directive-dict.html#Override">AllowOverride:</a></th><td>FileInfo</td></tr>
 <tr><th><a href="directive-dict.html#Status">Statut:</a></th><td>Core</td></tr>
 <tr><th><a href="directive-dict.html#Module">Module:</a></th><td>core</td></tr>
-<tr><th><a href="directive-dict.html#Compatibility">Compatibilité:</a></th><td>Disponible dans Apache httpd version 2.0.30 et
-supérieures</td></tr>
 </table>
 
     <p>Cette directive permet de définir si les requêtes contenant des
@@ -387,8 +383,7 @@ autorisés à transiter dans les URLs tels quels</td></tr>
 <tr><th><a href="directive-dict.html#Context">Contexte:</a></th><td>configuration du serveur, serveur virtuel</td></tr>
 <tr><th><a href="directive-dict.html#Status">Statut:</a></th><td>Core</td></tr>
 <tr><th><a href="directive-dict.html#Module">Module:</a></th><td>core</td></tr>
-<tr><th><a href="directive-dict.html#Compatibility">Compatibilité:</a></th><td>Disponible dans Apache httpd version 2.0.46 et
-supérieures. L'option NoDecode est disponible depuis la version
+<tr><th><a href="directive-dict.html#Compatibility">Compatibilité:</a></th><td>L'option NoDecode est disponible depuis la version
 2.3.12.</td></tr>
 </table>
     <p>La directive <code class="directive">AllowEncodedSlashes</code> permet
@@ -481,7 +476,8 @@ All pour les versions antérieures</code></td></tr>
       <code class="directive"><a href="#sethandler">SetHandler</a></code>, <code class="directive"><a href="#setinputfilter">SetInputFilter</a></code>, <code class="directive"><a href="#setoutputfilter">SetOutputFilter</a></code>, et directives du
       module <code class="module"><a href="../mod/mod_mime.html">mod_mime</a></code> Add* et Remove*), des metadonnées
       des documents (<code class="directive"><a href="../mod/mod_headers.html#header">Header</a></code>, <code class="directive"><a href="../mod/mod_headers.html#requestheader">RequestHeader</a></code>, <code class="directive"><a href="../mod/mod_setenvif.html#setenvif">SetEnvIf</a></code>, <code class="directive"><a href="../mod/mod_setenvif.html#setenvifnocase">SetEnvIfNoCase</a></code>, <code class="directive"><a href="../mod/mod_setenvif.html#browsermatch">BrowserMatch</a></code>, <code class="directive"><a href="../mod/mod_usertrack.html#cookieexpires">CookieExpires</a></code>, <code class="directive"><a href="../mod/mod_usertrack.html#cookiedomain">CookieDomain</a></code>, <code class="directive"><a href="../mod/mod_usertrack.html#cookiestyle">CookieStyle</a></code>, <code class="directive"><a href="../mod/mod_usertrack.html#cookietracking">CookieTracking</a></code>, <code class="directive"><a href="../mod/mod_usertrack.html#cookiename">CookieName</a></code>), des directives du
-      module <code class="module"><a href="../mod/mod_rewrite.html">mod_rewrite</a></code> <code class="directive"><a href="../mod/mod_rewrite.html#rewriteengine">RewriteEngine</a></code>, <code class="directive"><a href="../mod/mod_rewrite.html#rewriteoptions">RewriteOptions</a></code>, <code class="directive"><a href="../mod/mod_rewrite.html#rewritebase">RewriteBase</a></code>, <code class="directive"><a href="../mod/mod_rewrite.html#rewritecond">RewriteCond</a></code>, <code class="directive"><a href="../mod/mod_rewrite.html#rewriterule">RewriteRule</a></code>) et de la directive
+      module <code class="module"><a href="../mod/mod_rewrite.html">mod_rewrite</a></code> directives (<code class="directive"><a href="../mod/mod_rewrite.html#rewriteengine">RewriteEngine</a></code>, <code class="directive"><a href="../mod/mod_rewrite.html#rewriteoptions">RewriteOptions</a></code>, <code class="directive"><a href="../mod/mod_rewrite.html#rewritebase">RewriteBase</a></code>, <code class="directive"><a href="../mod/mod_rewrite.html#rewritecond">RewriteCond</a></code>, <code class="directive"><a href="../mod/mod_rewrite.html#rewriterule">RewriteRule</a></code>), des directives du
+      module <code class="module"><a href="../mod/mod_alias.html">mod_alias</a></code> directives (<code class="directive"><a href="../mod/mod_alias.html#redirect">Redirect</a></code>, <code class="directive"><a href="../mod/mod_alias.html#redirecttemp">RedirectTemp</a></code>, <code class="directive"><a href="../mod/mod_alias.html#redirectpermanent">RedirectPermanent</a></code>, <code class="directive"><a href="../mod/mod_alias.html#redirectmatch">RedirectMatch</a></code>), et de la directive
       <code class="directive"><a href="../mod/mod_actions.html#action">Action</a></code> du module
       <code class="module"><a href="../mod/mod_actions.html">mod_actions</a></code>.
       </dd>
@@ -550,6 +546,10 @@ All pour les versions antérieures</code></td></tr>
       <em>activée</em> tout en permettant à toute autre option d'être
       activée.
       </p></div>
+
+      <div class="example"><p><code>
+      AllowOverride Options=Indexes,MultiViews
+      </code></p></div>
       
       </dd>
     </dl>
@@ -717,7 +717,7 @@ dans la réponse HTTP</td></tr>
     fichiers relatifs à son exécution (mémoire partagée, verrous,
     etc...). Si le chemin spécifié est relatif, le chemin absolu sera
     généré relativement à la valeur de la directive
-    <code class="directive">ServerRoot</code>.</p>
+    <code class="directive">ServerRoot</code></p>
 
     <p><strong>Example</strong></p>
    <pre class="prettyprint lang-config">
@@ -812,6 +812,8 @@ DESACTIVÉS à partir des version 2.3.x.</td></tr>
   Define servername www.example.com
   Define SSL
 &lt;/IfDefine&gt;
+
+DocumentRoot /var/www/${servername}/htdocs
     </pre>
 
 
@@ -871,7 +873,7 @@ sous-répertoires, et à leur contenu.</td></tr>
     <code>~</code>. Par exemple :</p>
 
     <pre class="prettyprint lang-config">
-&lt;Directory ~ "^/www/.*/[0-9]{3}"&gt;
+&lt;Directory ~ "^/www/[0-9]{3}"&gt;
 
 &lt;/Directory&gt;
 </pre>
@@ -1213,8 +1215,7 @@ fichiers aux clients</td></tr>
 <tr><th><a href="directive-dict.html#Override">AllowOverride:</a></th><td>FileInfo</td></tr>
 <tr><th><a href="directive-dict.html#Status">Statut:</a></th><td>Core</td></tr>
 <tr><th><a href="directive-dict.html#Module">Module:</a></th><td>core</td></tr>
-<tr><th><a href="directive-dict.html#Compatibility">Compatibilité:</a></th><td>Disponible dans les versions 2.0.44 et
-supérieures. Par défaut à Off depuis la version 2.3.9.</td></tr>
+<tr><th><a href="directive-dict.html#Compatibility">Compatibilité:</a></th><td>Par défaut à Off depuis la version 2.3.9.</td></tr>
 </table>
     <p>Cette directive définit si le programme <code class="program"><a href="../programs/httpd.html">httpd</a></code>
     peut utiliser le support sendfile du noyau pour transmettre le
@@ -1332,7 +1333,7 @@ d'erreur</td></tr>
 
       <li>afficher un message personnalisé</li>
 
-      <li>rediriger vers un <var>chemin d'URL</var> local pour traiter
+      <li>rediriger en interne vers un <var>chemin d'URL</var> local pour traiter
       le problème ou l'erreur</li>
 
       <li>rediriger vers une <var>URL</var> externe pour traiter
@@ -1654,7 +1655,7 @@ ErrorLogFormat "[%t] [%l] [pid %P] %F: %E: [client %a] %M"
     journal pour les requêtes.</p>
 
     <pre class="prettyprint lang-config">
-# Exemple (format par défaut)
+# Exemple (format par défaut pour les MPMs threadés)
 ErrorLogFormat "[%{u}t] [%-m:%l] [pid %P:tid %T] %7F: %E: [client\ %a] %M%&nbsp;,\&nbsp;referer\&nbsp;%{Referer}i"
     </pre>
 
@@ -1924,8 +1925,6 @@ HTTP Content-Type pour les fichiers correspondants</td></tr>
 <tr><th><a href="directive-dict.html#Override">AllowOverride:</a></th><td>FileInfo</td></tr>
 <tr><th><a href="directive-dict.html#Status">Statut:</a></th><td>Core</td></tr>
 <tr><th><a href="directive-dict.html#Module">Module:</a></th><td>core</td></tr>
-<tr><th><a href="directive-dict.html#Compatibility">Compatibilité:</a></th><td>Intégré dans le coeur d'Apache httpd depuis la version
-2.0</td></tr>
 </table>
     <p>Lorsqu'elle est placée dans un fichier <code>.htaccess</code> ou
     une section <code class="directive"><a href="#directory">&lt;Directory&gt;</a></code>, <code class="directive"><a href="#location">&lt;Location&gt;</a></code>, ou <code class="directive"><a href="#files">&lt;Files&gt;</a></code>, cette directive force
@@ -2219,8 +2218,7 @@ fichiers de configuration du serveur</td></tr>
 <tr><th><a href="directive-dict.html#Context">Contexte:</a></th><td>configuration du serveur, serveur virtuel, répertoire</td></tr>
 <tr><th><a href="directive-dict.html#Status">Statut:</a></th><td>Core</td></tr>
 <tr><th><a href="directive-dict.html#Module">Module:</a></th><td>core</td></tr>
-<tr><th><a href="directive-dict.html#Compatibility">Compatibilité:</a></th><td>Utilisation des caractères génériques dans la partie nom
-de fichier depuis la version 2.0.41, et dans la partie chemin depuis la
+<tr><th><a href="directive-dict.html#Compatibility">Compatibilité:</a></th><td>Utilisation des caractères génériques dans la partie chemin depuis la
 version 2.3.6</td></tr>
 </table>
     <p>Cette directive permet l'inclusion d'autres fichiers de
@@ -2508,7 +2506,6 @@ sous-requêtes imbriquées</td></tr>
 <tr><th><a href="directive-dict.html#Context">Contexte:</a></th><td>configuration du serveur, serveur virtuel</td></tr>
 <tr><th><a href="directive-dict.html#Status">Statut:</a></th><td>Core</td></tr>
 <tr><th><a href="directive-dict.html#Module">Module:</a></th><td>core</td></tr>
-<tr><th><a href="directive-dict.html#Compatibility">Compatibilité:</a></th><td>Disponible à partir de la version 2.0.47 d'Apache httpd</td></tr>
 </table>
     <p>Une redirection interne survient, par exemple, quand on utilise
     la directive <code class="directive"><a href="../mod/mod_actions.html#action">Action</a></code> qui
@@ -3158,6 +3155,12 @@ LogLevel info
 	pas affectés.
     </div>
 
+<h3>Voir aussi</h3>
+<ul>
+<li><code class="directive"><a href="#errorlog">ErrorLog</a></code></li>
+<li><code class="directive"><a href="#errorlogformat">ErrorLogFormat</a></code></li>
+<li><a href="../logs.html">Journaux du serveur HTTP Apache</a></li>
+</ul>
 </div>
 <div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
 <div class="directive-section"><h2><a name="MaxKeepAliveRequests" id="MaxKeepAliveRequests">MaxKeepAliveRequests</a> <a name="maxkeepaliverequests" id="maxkeepaliverequests">Directive</a></h2>
@@ -3438,8 +3441,10 @@ verrou pour tous les mutex ou seulement les mutex spécifiés</td></tr>
 
     <p>Avec les mécanismes à base de fichier <em>fcntl</em> et
     <em>flock</em>, le chemin, s'il est fourni, est un répertoire dans
-    lequel le fichier verrou sera créé. Le répertoire par défaut est le
-    répertoire httpd défini par la directive <code class="directive"><a href="#serverroot">ServerRoot</a></code>. Utilisez toujours un système
+    lequel le fichier verrou sera créé. Le répertoire par
+    défaut est le répertoire d'exécution de httpd relatif à la
+    directive <code class="directive"><a href="#serverroot">ServerRoot</a></code>.
+    Utilisez toujours un système
     de fichiers local sur disque pour <code>/chemin/vers/mutex</code> et
     jamais un répertoire se trouvant dans un système de fichiers NFS ou
     AFS. Le nom de base du fichier se composera du type de mutex, d'une
@@ -3606,8 +3611,12 @@ particulier</td></tr>
       <p>Bien que le serveur suive les liens symboliques, il ne modifie
       <em>pas</em> le nom de chemin concerné défini par la section
       <code class="directive"><a href="#directory">&lt;Directory&gt;</a></code>.</p>
-      <p>Notez aussi que cette option <strong>est ignorée</strong> si
-      elle est définie dans une section <code class="directive"><a href="#location">&lt;Location&gt;</a></code>.</p>
+      
+      <p>Les options <code>FollowSymLinks</code> et
+      <code>SymLinksIfOwnerMatch</code> ne fonctionnent que dans les
+      sections <code class="directive"><a href="#directory">&lt;Directory&gt;</a></code> ou les fichiers
+      <code>.htaccess</code>.</p>
+
       <p>Le fait d'omettre cette option ne doit pas être considéré comme
       une mesure de sécurité efficace, car il existe toujours une
       situation de compétition (race condition) entre l'instant où l'on
@@ -3658,14 +3667,18 @@ particulier</td></tr>
       vers un fichier ou un répertoire dont le propriétaire est le même
       que celui du lien.
 
-      <div class="note"><h3>Note</h3> <p>Cette option est ignorée si elle est
-      définie dans une section <code class="directive"><a href="#location">&lt;Location&gt;</a></code>.</p>
+      <div class="note"><h3>Note</h3>
+      <p>Les options <code>FollowSymLinks</code> et
+      <code>SymLinksIfOwnerMatch</code> ne fonctionnent que dans les
+      sections <code class="directive"><a href="#directory">&lt;Directory&gt;</a></code> ou les fichiers
+      <code>.htaccess</code>.</p>
+
       <p>Le fait d'omettre cette option ne doit pas être considéré comme
       une mesure de sécurité efficace, car il existe toujours une
       situation de compétition (race condition) entre l'instant où l'on
       vérifie qu'un chemin n'est pas un lien symbolique, et l'instant où
-      l'on utilise effectivement ce chemin.</p></div>
-      </dd>
+      l'on utilise effectivement ce chemin.</p>
+      </div> </dd>
     </dl>
 
     <p>Normalement, si plusieurs directives
@@ -3906,9 +3919,7 @@ CGI</td></tr>
 <tr><th><a href="directive-dict.html#Override">AllowOverride:</a></th><td>FileInfo</td></tr>
 <tr><th><a href="directive-dict.html#Status">Statut:</a></th><td>Core</td></tr>
 <tr><th><a href="directive-dict.html#Module">Module:</a></th><td>core</td></tr>
-<tr><th><a href="directive-dict.html#Compatibility">Compatibilité:</a></th><td>Win32 seulement ;
-l'option <code>Registry-Strict</code> est disponible dans les versions
-2.0 et supérieures du serveur HTTP Apache</td></tr>
+<tr><th><a href="directive-dict.html#Compatibility">Compatibilité:</a></th><td>Win32 seulement.</td></tr>
 </table>
     <p>Cette directive permet de contrôler la méthode qu'utilise Apache
     httpd pour trouver l'interpréteur destiné à exécuter les scripts CGI. La
@@ -4351,8 +4362,6 @@ gestionnaire particulier</td></tr>
 <tr><th><a href="directive-dict.html#Override">AllowOverride:</a></th><td>FileInfo</td></tr>
 <tr><th><a href="directive-dict.html#Status">Statut:</a></th><td>Core</td></tr>
 <tr><th><a href="directive-dict.html#Module">Module:</a></th><td>core</td></tr>
-<tr><th><a href="directive-dict.html#Compatibility">Compatibilité:</a></th><td>Intégré dans le noyau d'Apache httpd depuis la version
-2.0</td></tr>
 </table>
     <p>Lorsqu'elle se situe à l'intérieur d'un fichier
     <code>.htaccess</code>, ou d'une section <code class="directive"><a href="#directory">&lt;Directory&gt;</a></code> ou <code class="directive"><a href="#location">&lt;Location&gt;</a></code>, cette directive force le
@@ -4514,8 +4523,6 @@ du serveur</td></tr>
 <tr><th><a href="directive-dict.html#Context">Contexte:</a></th><td>configuration du serveur, serveur virtuel</td></tr>
 <tr><th><a href="directive-dict.html#Status">Statut:</a></th><td>Core</td></tr>
 <tr><th><a href="directive-dict.html#Module">Module:</a></th><td>core</td></tr>
-<tr><th><a href="directive-dict.html#Compatibility">Compatibilité:</a></th><td>Disponible dans les versions 1.3.34, 2.0.55 et
-supérieures du serveur HTTP Apache</td></tr>
 </table>
     <p>Cette directive l'emporte sur le comportement de
     <code>TRACE</code> pour le noyau du serveur et
@@ -4842,7 +4849,7 @@ var comments_identifier = 'http://httpd.apache.org/docs/2.4/mod/core.html';
     }
 })(window, document);
 //--><!]]></script></div><div id="footer">
-<p class="apache">Copyright 2012 The Apache Software Foundation.<br />Autorisé sous <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
+<p class="apache">Copyright 2013 The Apache Software Foundation.<br />Autorisé sous <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
 <p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="http://wiki.apache.org/httpd/FAQ">FAQ</a> | <a href="../glossary.html">Glossaire</a> | <a href="../sitemap.html">Plan du site</a></p></div><script type="text/javascript"><!--//--><![CDATA[//><!--
 if (typeof(prettyPrint) !== 'undefined') {
     prettyPrint();

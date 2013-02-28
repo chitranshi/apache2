@@ -73,6 +73,9 @@
 /* Define to 1 if you have the `getgrnam' function. */
 #undef HAVE_GETGRNAM
 
+/* Define to 1 if you have the `getloadavg' function. */
+#undef HAVE_GETLOADAVG
+
 /* Define to 1 if you have the `getpgid' function. */
 #undef HAVE_GETPGID
 
@@ -153,6 +156,9 @@
 
 /* Define to 1 if you have the <sys/ipc.h> header file. */
 #undef HAVE_SYS_IPC_H
+
+/* Define to 1 if you have the <sys/loadavg.h> header file. */
+#undef HAVE_SYS_LOADAVG_H
 
 /* Define to 1 if you have the <sys/prctl.h> header file. */
 #undef HAVE_SYS_PRCTL_H

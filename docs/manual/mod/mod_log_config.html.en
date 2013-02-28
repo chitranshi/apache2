@@ -345,7 +345,6 @@
 <tr><th><a href="directive-dict.html#Context">Context:</a></th><td>server config</td></tr>
 <tr><th><a href="directive-dict.html#Status">Status:</a></th><td>Base</td></tr>
 <tr><th><a href="directive-dict.html#Module">Module:</a></th><td>mod_log_config</td></tr>
-<tr><th><a href="directive-dict.html#Compatibility">Compatibility:</a></th><td>Available in versions 2.0.41 and later.</td></tr>
 </table>
     <p>The <code class="directive">BufferedLogs</code> directive causes
     <code class="module"><a href="../mod/mod_log_config.html">mod_log_config</a></code> to store several log entries in
@@ -428,7 +427,8 @@ CustomLog logs/access_log "%h %l %u %t \"%r\" %&gt;s %b"
     clause) of a particular variable in the server
     <a href="../env.html">environment</a>. Alternatively, the condition
     can be expressed as arbitrary boolean <a href="../expr.html">expression</a>. If the condition is not satisfied, the request
-    will not be logged.</p>
+    will not be logged. References to HTTP headers  in the expression
+    will not cause the header names to be added to the Vary header.</p>
 
     <p>Environment variables can be set on a per-request
     basis using the <code class="module"><a href="../mod/mod_setenvif.html">mod_setenvif</a></code>
@@ -550,7 +550,7 @@ var comments_identifier = 'http://httpd.apache.org/docs/2.4/mod/mod_log_config.h
     }
 })(window, document);
 //--><!]]></script></div><div id="footer">
-<p class="apache">Copyright 2012 The Apache Software Foundation.<br />Licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
+<p class="apache">Copyright 2013 The Apache Software Foundation.<br />Licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
 <p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="http://wiki.apache.org/httpd/FAQ">FAQ</a> | <a href="../glossary.html">Glossary</a> | <a href="../sitemap.html">Sitemap</a></p></div><script type="text/javascript"><!--//--><![CDATA[//><!--
 if (typeof(prettyPrint) !== 'undefined') {
     prettyPrint();

@@ -62,15 +62,14 @@ de crochets, et séparés le cas échéant par des virgules.</p>
 <pre class="prettyprint lang-config">RewriteRule pattern target [Flag1,Flag2,Flag3]</pre>
 
 
-<p>Les drapeaux ont tous une forme courte, comme <code>CO</code>, ainsi
-qu'une forme longue, comme <code>cookie</code>. Certains drapeaux
-peuvent avoir un ou plusieurs arguments. Les drapeaux sont insensibles à
-la casse.</p>
-
-<p>Chaque drapeau (à quelques exceptions près) possède une forme longue et une forme courte. Bien que
+<p>Chaque drapeau (à quelques exceptions près)
+possède une forme courte, comme <code>CO</code>, ainsi qu'une forme longue,
+comme <code>cookie</code>. Bien que
 la forme courte soit la plus couramment utilisée, nous vous recommandons
 de vous familiariser avec les drapeaux sous leur forme longue, afin de
-bien mémoriser ce que chaque drapeau est supposé faire.</p>
+bien mémoriser ce que chaque drapeau est supposé faire.
+Certains drapeaux acceptent un ou plusieurs arguments. Les drapeaux ne
+sont pas sensibles Ã&nbsp; la casse.</p>
 
 <p>Les drapeaux qui modifient les métadonnées associées à la requête
 (T=, H=, E=) n'ont aucun effet dans un contexte de répertoire ou de
@@ -683,7 +682,8 @@ avertissements 'Invalid URI in request'.
 <h2><a name="flag_s" id="flag_s">S|skip</a></h2>
 <p>Le drapeau [S] sert à sauter des règles que vous ne voulez pas voir
 exécuter. La syntaxe du drapeau [S] est [S=<em>N</em>], où
-<em>N</em> correspond au nombre de règles à sauter.
+<em>N</em> correspond au nombre de règles à sauter (sous
+réserve que la règle <code class="directive"><a href="../mod/mod_rewrite.html#rewriterule">RewriteRule</a></code> corresponde).
 Ceci peut s'interpréter comme une instruction
 <code>goto</code>  dans votre jeu de règles de réécriture. Dans
 l'exemple suivant, nous ne voulons exécuter la règle <code class="directive"><a href="../mod/mod_rewrite.html#rewriterule">RewriteRule</a></code> que si l'URI demandé ne
@@ -795,7 +795,7 @@ var comments_identifier = 'http://httpd.apache.org/docs/2.4/rewrite/flags.html';
     }
 })(window, document);
 //--><!]]></script></div><div id="footer">
-<p class="apache">Copyright 2012 The Apache Software Foundation.<br />Autorisé sous <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
+<p class="apache">Copyright 2013 The Apache Software Foundation.<br />Autorisé sous <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
 <p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="http://wiki.apache.org/httpd/FAQ">FAQ</a> | <a href="../glossary.html">Glossaire</a> | <a href="../sitemap.html">Plan du site</a></p></div><script type="text/javascript"><!--//--><![CDATA[//><!--
 if (typeof(prettyPrint) !== 'undefined') {
     prettyPrint();

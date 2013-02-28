@@ -31,8 +31,7 @@
 by other LDAP modules</td></tr>
 <tr><th><a href="module-dict.html#Status">Status:</a></th><td>Extension</td></tr>
 <tr><th><a href="module-dict.html#ModuleIdentifier">Module Identifier:</a></th><td>ldap_module</td></tr>
-<tr><th><a href="module-dict.html#SourceFile">Source File:</a></th><td>util_ldap.c</td></tr>
-<tr><th><a href="module-dict.html#Compatibility">Compatibility:</a></th><td>Available in version 2.0.41 and later</td></tr></table>
+<tr><th><a href="module-dict.html#SourceFile">Source File:</a></th><td>util_ldap.c</td></tr></table>
 <h3>Summary</h3>
 
     <p>This module was created to improve the performance of
@@ -46,7 +45,7 @@ by other LDAP modules</td></tr>
     flag to the <code class="program"><a href="../programs/configure.html">configure</a></code> script when building
     Apache.</p>
 
-    <p>SSL/TLS support is dependant on which LDAP toolkit has been
+    <p>SSL/TLS support is dependent on which LDAP toolkit has been
     linked to <a class="glossarylink" href="../glossary.html#apr" title="see glossary">APR</a>. As of this writing, APR-util supports:
     <a href="http://www.openldap.org/">OpenLDAP SDK</a> (2.x or later),
     <a href="http://developer.novell.com/ndk/cldap.htm">Novell LDAP
@@ -724,7 +723,7 @@ connection client certificates.</td></tr>
     <p>It specifies the directory path, file name or nickname of a
     per connection client certificate used when establishing an SSL
     or TLS connection to an LDAP server. Different locations or
-    directories may have their own independant client certificate
+    directories may have their own independent client certificate
     settings. Some LDAP toolkits (notably Novell)
     do not support per connection client certificates, and will throw an
     error on LDAP server connection if you try to use this directive
@@ -844,7 +843,7 @@ var comments_identifier = 'http://httpd.apache.org/docs/2.4/mod/mod_ldap.html';
     }
 })(window, document);
 //--><!]]></script></div><div id="footer">
-<p class="apache">Copyright 2012 The Apache Software Foundation.<br />Licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
+<p class="apache">Copyright 2013 The Apache Software Foundation.<br />Licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
 <p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="http://wiki.apache.org/httpd/FAQ">FAQ</a> | <a href="../glossary.html">Glossary</a> | <a href="../sitemap.html">Sitemap</a></p></div><script type="text/javascript"><!--//--><![CDATA[//><!--
 if (typeof(prettyPrint) !== 'undefined') {
     prettyPrint();

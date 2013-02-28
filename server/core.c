@@ -1144,7 +1144,10 @@ AP_DECLARE(const char *) ap_check_cmd_context(cmd_parms *cmd,
                 || (found = find_parent(cmd->directive, "<LocationMatch"))))
         || ((forbidden & NOT_IN_FILES)
             && ((found = find_parent(cmd->directive, "<Files"))
-                || (found = find_parent(cmd->directive, "<FilesMatch"))))) {
+                || (found = find_parent(cmd->directive, "<FilesMatch"))
+                || (found = find_parent(cmd->directive, "<If"))
+                || (found = find_parent(cmd->directive, "<ElseIf"))
+                || (found = find_parent(cmd->directive, "<Else"))))) {
         return apr_pstrcat(cmd->pool, cmd->cmd->name, gt,
                            " cannot occur within ", found->directive,
                            "> section", NULL);
@@ -2354,7 +2357,11 @@ static const char *ifsection(cmd_parms *cmd, void *mconfig, const char *arg)
 
     arg = apr_pstrndup(cmd->temp_pool, arg, endp - arg);
 
-
+    /*
+     * Set a dummy value so that other directives notice that they are inside
+     * a config section.
+     */
+    cmd->path = "*If";
     /* Only if not an .htaccess file */
     if (!old_path) {
         cmd->override = OR_ALL|ACCESS_CONF;
@@ -3222,8 +3229,11 @@ static const char *set_serv_tokens(cmd_parms *cmd, void *dummy,
     else if (!strcasecmp(arg1, "Prod") || !strcasecmp(arg1, "ProductOnly")) {
         ap_server_tokens = SrvTk_PRODUCT_ONLY;
     }
-    else {
+    else if (!strcasecmp(arg1, "Full")) {
         ap_server_tokens = SrvTk_FULL;
+    }
+    else {
+        return "ServerTokens takes 1 argument, 'Prod', 'Major', 'Minor', 'Min', 'OS', or 'Full'";
     }
 
     return NULL;
@@ -4255,7 +4265,8 @@ static int default_handler(request_rec *r)
     if (r->method_number == M_GET || r->method_number == M_POST) {
         if (r->finfo.filetype == APR_NOFILE) {
             ap_log_rerror(APLOG_MARK, APLOG_INFO, 0, r, APLOGNO(00128)
-                          "File does not exist: %s", r->filename);
+                          "File does not exist: %s",
+                          apr_pstrcat(r->pool, r->filename, r->path_info, NULL));
             return HTTP_NOT_FOUND;
         }
 

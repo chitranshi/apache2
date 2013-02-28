@@ -43,8 +43,9 @@
 #endif
 #endif
 
-#define AP_SLOTMEM_IS_PREGRAB(t) (t->desc.type & AP_SLOTMEM_TYPE_PREGRAB)
-#define AP_SLOTMEM_IS_PERSIST(t) (t->desc.type & AP_SLOTMEM_TYPE_PERSIST)
+#define AP_SLOTMEM_IS_PREGRAB(t)    (t->desc.type & AP_SLOTMEM_TYPE_PREGRAB)
+#define AP_SLOTMEM_IS_PERSIST(t)    (t->desc.type & AP_SLOTMEM_TYPE_PERSIST)
+#define AP_SLOTMEM_IS_CLEARINUSE(t) (t->desc.type & AP_SLOTMEM_TYPE_CLEARINUSE)
 
 /* The description of the slots to reuse the slotmem */
 typedef struct {
@@ -83,6 +84,7 @@ static apr_pool_t *gpool = NULL;
 
 #define DEFAULT_SLOTMEM_PREFIX "slotmem-shm-"
 #define DEFAULT_SLOTMEM_SUFFIX ".shm"
+#define DEFAULT_SLOTMEM_PERSIST_SUFFIX ".persist"
 
 /* apr:shmem/unix/shm.c */
 static apr_status_t unixd_set_shm_perms(const char *fname)
@@ -127,7 +129,8 @@ static apr_status_t unixd_set_shm_perms(const char *fname)
  *
  */
 
-static const char *slotmem_filename(apr_pool_t *pool, const char *slotmemname)
+static const char *slotmem_filename(apr_pool_t *pool, const char *slotmemname,
+                                    int persist)
 {
     const char *fname;
     if (!slotmemname || strcasecmp(slotmemname, "none") == 0) {
@@ -135,13 +138,38 @@ static const char *slotmem_filename(apr_pool_t *pool, const char *slotmemname)
     }
     else if (slotmemname[0] != '/') {
         const char *filenm = apr_pstrcat(pool, DEFAULT_SLOTMEM_PREFIX,
-                                       slotmemname, DEFAULT_SLOTMEM_SUFFIX, NULL);
+                                         slotmemname, DEFAULT_SLOTMEM_SUFFIX,
+                                         NULL);
         fname = ap_runtime_dir_relative(pool, filenm);
     }
     else {
         fname = slotmemname;
     }
+
+    if (persist) {
+        return apr_pstrcat(pool, fname, DEFAULT_SLOTMEM_PERSIST_SUFFIX,
+                           NULL);
+    }
     return fname;
+}
+
+static void slotmem_clearinuse(ap_slotmem_instance_t *slot)
+{
+    unsigned int i;
+    char *inuse;
+    
+    if (!slot) {
+        return;
+    }
+    
+    inuse = slot->inuse;
+    
+    for (i = 0; i < slot->desc.num; i++, inuse++) {
+        if (*inuse) {
+            *inuse = 0;
+            (*slot->num_free)++;
+        }
+    }
 }
 
 static void store_slotmem(ap_slotmem_instance_t *slotmem)
@@ -151,7 +179,10 @@ static void store_slotmem(ap_slotmem_instance_t *slotmem)
     apr_size_t nbytes;
     const char *storename;
 
-    storename = slotmem_filename(slotmem->gpool, slotmem->name);
+    storename = slotmem_filename(slotmem->gpool, slotmem->name, 1);
+
+    ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, ap_server_conf, APLOGNO(02334)
+                 "storing %s", storename);
 
     if (storename) {
         rv = apr_file_open(&fp, storename, APR_CREATE | APR_READ | APR_WRITE,
@@ -164,9 +195,13 @@ static void store_slotmem(ap_slotmem_instance_t *slotmem)
         if (rv != APR_SUCCESS) {
             return;
         }
+        if (AP_SLOTMEM_IS_CLEARINUSE(slotmem)) {
+            slotmem_clearinuse(slotmem);
+        }
         nbytes = (slotmem->desc.size * slotmem->desc.num) +
                  (slotmem->desc.num * sizeof(char)) + AP_UNSIGNEDINT_OFFSET;
-        apr_file_write(fp, slotmem->persist, &nbytes);
+        /* XXX: Error handling */
+        apr_file_write_full(fp, slotmem->persist, nbytes, NULL);
         apr_file_close(fp);
     }
 }
@@ -180,7 +215,10 @@ static void restore_slotmem(void *ptr, const char *name, apr_size_t size,
     apr_size_t nbytes = size;
     apr_status_t rv;
 
-    storename = slotmem_filename(pool, name);
+    storename = slotmem_filename(pool, name, 1);
+
+    ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, ap_server_conf, APLOGNO(02335)
+                 "restoring %s", storename);
 
     if (storename) {
         rv = apr_file_open(&fp, storename, APR_READ | APR_WRITE, APR_OS_DEFAULT,
@@ -258,6 +296,7 @@ static apr_status_t slotmem_create(ap_slotmem_instance_t **new,
 {
 /*    void *slotmem = NULL; */
     int fbased = 1;
+    int restored = 0;
     char *ptr;
     sharedslotdesc_t desc;
     ap_slotmem_instance_t *res;
@@ -272,7 +311,7 @@ static apr_status_t slotmem_create(ap_slotmem_instance_t **new,
     if (gpool == NULL) {
         return APR_ENOSHMAVAIL;
     }
-    fname = slotmem_filename(pool, name);
+    fname = slotmem_filename(pool, name, 0);
     if (fname) {
         /* first try to attach to existing slotmem */
         if (next) {
@@ -352,6 +391,7 @@ static apr_status_t slotmem_create(ap_slotmem_instance_t **new,
          */
         if (type & AP_SLOTMEM_TYPE_PERSIST) {
             restore_slotmem(ptr, fname, dsize, pool);
+            restored = 1;
         }
     }
 
@@ -362,7 +402,9 @@ static apr_status_t slotmem_create(ap_slotmem_instance_t **new,
     res->fbased = fbased;
     res->shm = shm;
     res->num_free = (unsigned int *)ptr;
-    *res->num_free = item_num;
+    if (!restored) {
+        *res->num_free = item_num;
+    }
     res->persist = (void *)ptr;
     ptr += AP_UNSIGNEDINT_OFFSET;
     res->base = (void *)ptr;
@@ -397,7 +439,7 @@ static apr_status_t slotmem_attach(ap_slotmem_instance_t **new,
     if (gpool == NULL) {
         return APR_ENOSHMAVAIL;
     }
-    fname = slotmem_filename(pool, name);
+    fname = slotmem_filename(pool, name, 0);
     if (!fname) {
         return APR_ENOSHMAVAIL;
     }
@@ -477,7 +519,7 @@ static apr_status_t slotmem_dptr(ap_slotmem_instance_t *slot,
         return APR_ENOSHMAVAIL;
     }
     if (id >= slot->desc.num) {
-        return APR_ENOSHMAVAIL;
+        return APR_EINVAL;
     }
 
     ptr = (char *)slot->base + slot->desc.size * id;
@@ -500,7 +542,10 @@ static apr_status_t slotmem_get(ap_slotmem_instance_t *slot, unsigned int id,
     }
 
     inuse = slot->inuse + id;
-    if (id >= slot->desc.num || (AP_SLOTMEM_IS_PREGRAB(slot) && !*inuse)) {
+    if (id >= slot->desc.num) {
+        return APR_EINVAL;
+    }
+    if (AP_SLOTMEM_IS_PREGRAB(slot) && !*inuse) {
         return APR_NOTFOUND;
     }
     ret = slotmem_dptr(slot, id, &ptr);
@@ -524,7 +569,10 @@ static apr_status_t slotmem_put(ap_slotmem_instance_t *slot, unsigned int id,
     }
 
     inuse = slot->inuse + id;
-    if (id >= slot->desc.num || (AP_SLOTMEM_IS_PREGRAB(slot) && !*inuse)) {
+    if (id >= slot->desc.num) {
+        return APR_EINVAL;
+    }
+    if (AP_SLOTMEM_IS_PREGRAB(slot) && !*inuse) {
         return APR_NOTFOUND;
     }
     ret = slotmem_dptr(slot, id, &ptr);
@@ -590,6 +638,30 @@ static apr_status_t slotmem_grab(ap_slotmem_instance_t *slot, unsigned int *id)
     return APR_SUCCESS;
 }
 
+static apr_status_t slotmem_fgrab(ap_slotmem_instance_t *slot, unsigned int id)
+{
+    char *inuse;
+    
+    if (!slot) {
+        return APR_ENOSHMAVAIL;
+    }
+
+    if (id >= slot->desc.num) {
+        ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, ap_server_conf, APLOGNO(02236)
+                     "slotmem(%s) fgrab failed. Num %u/num_free %u",
+                     slot->name, slotmem_num_slots(slot),
+                     slotmem_num_free_slots(slot));
+        return APR_EINVAL;
+    }
+    inuse = slot->inuse + id;
+
+    if (!*inuse) {
+        *inuse = 1;
+        (*slot->num_free)--;
+    }
+    return APR_SUCCESS;
+}
+
 static apr_status_t slotmem_release(ap_slotmem_instance_t *slot,
                                     unsigned int id)
 {
@@ -606,7 +678,11 @@ static apr_status_t slotmem_release(ap_slotmem_instance_t *slot,
                      "slotmem(%s) release failed. Num %u/inuse[%u] %d",
                      slot->name, slotmem_num_slots(slot),
                      id, (int)inuse[id]);
-        return APR_NOTFOUND;
+        if (id >= slot->desc.num) {
+            return APR_EINVAL;
+        } else {
+            return APR_NOTFOUND;
+        }
     }
     inuse[id] = 0;
     (*slot->num_free)++;
@@ -625,7 +701,8 @@ static const ap_slotmem_provider_t storage = {
     &slotmem_num_free_slots,
     &slotmem_slot_size,
     &slotmem_grab,
-    &slotmem_release
+    &slotmem_release,
+    &slotmem_fgrab
 };
 
 /* make the storage usuable from outside */
@@ -682,4 +759,3 @@ AP_DECLARE_MODULE(slotmem_shm) = {
     NULL,                       /* command apr_table_t */
     ap_slotmem_shm_register_hook  /* register hooks */
 };
-

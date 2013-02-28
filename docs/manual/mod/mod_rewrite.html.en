@@ -353,9 +353,11 @@ Alias /myapp /opt/myapp-1.2.3
         </li>
       </ul>
 
-      <p>If the <em>TestString</em> has the special value <code>expr</code>, the
-      <em>CondPattern</em> will be treated as an
-      <a href="../expr.html">ap_expr</a>.</p>
+      <p>If the <em>TestString</em> has the special value <code>expr</code>,
+      the <em>CondPattern</em> will be treated as an
+      <a href="../expr.html">ap_expr</a>. HTTP headers referenced in the
+      expression will be added to the Vary header if the <code>novary</code>
+      flag is not given.</p>
 
       <p>Other things you should be aware of:</p>
 
@@ -747,8 +749,6 @@ RewriteRule  ^/$                 /homepage.std.html  [L]
 <tr><th><a href="directive-dict.html#Context">Context:</a></th><td>server config, virtual host</td></tr>
 <tr><th><a href="directive-dict.html#Status">Status:</a></th><td>Extension</td></tr>
 <tr><th><a href="directive-dict.html#Module">Module:</a></th><td>mod_rewrite</td></tr>
-<tr><th><a href="directive-dict.html#Compatibility">Compatibility:</a></th><td>The choice of different dbm types is available in
-Apache HTTP Server 2.0.41 and later</td></tr>
 </table>
       <p>The <code class="directive">RewriteMap</code> directive defines a
       <em>Rewriting Map</em> which can be used inside rule
@@ -924,6 +924,15 @@ later</td></tr>
       </div>
       </dd>
 
+      <dt><code>MergeBase</code></dt>
+      <dd>
+
+      <p>With this option, the value of <code class="directive"><a href="#rewritebase">RewriteBase</a></code> is copied from where it's explicitly defined
+      into any sub-directory or sub-location that doesn't define its own
+      <code class="directive"><a href="#rewritebase">RewriteBase</a></code>. This was the
+      default behavior in 2.4.0 through 2.4.3, and the flag to restore it is
+      available Apache HTTP Server 2.4.4 and later.</p>
+      </dd>
       </dl>
 
 
@@ -1051,7 +1060,9 @@ cannot use <code>$N</code> in the substitution string!
         you specify a <em>Substitution</em> string of
         <code>/www/file.html</code>, then this will be treated as a
         URL-path <em>unless</em> a directory named <code>www</code>
-        exists at the root or your file-system, in which case it will
+        exists at the root or your file-system (or, in the case of 
+        using rewrites in a <code>.htaccess</code> file, relative to
+        your document root), in which case it will
         be treated as a file-system path. If you wish other
         URL-mapping directives (such as <code class="directive"><a href="../mod/mod_alias.html#alias">Alias</a></code>) to be applied to the
         resulting URL-path, use the <code>[PT]</code> flag as
@@ -1344,7 +1355,7 @@ directive.</p>
 
       <p><strong>Inside per-directory configuration for
       <code>/somepath</code><br />
-       (<code>/physical/path/to/somepath/.htacccess</code>, with
+       (<code>/physical/path/to/somepath/.htaccess</code>, with
       <code>RewriteBase /somepath</code>)<br />
        for request ``<code>GET
       /somepath/localpath/pathinfo</code>'':</strong><br />
@@ -1444,7 +1455,7 @@ var comments_identifier = 'http://httpd.apache.org/docs/2.4/mod/mod_rewrite.html
     }
 })(window, document);
 //--><!]]></script></div><div id="footer">
-<p class="apache">Copyright 2012 The Apache Software Foundation.<br />Licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
+<p class="apache">Copyright 2013 The Apache Software Foundation.<br />Licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
 <p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="http://wiki.apache.org/httpd/FAQ">FAQ</a> | <a href="../glossary.html">Glossary</a> | <a href="../sitemap.html">Sitemap</a></p></div><script type="text/javascript"><!--//--><![CDATA[//><!--
 if (typeof(prettyPrint) !== 'undefined') {
     prettyPrint();

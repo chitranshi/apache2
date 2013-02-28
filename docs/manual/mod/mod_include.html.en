@@ -30,9 +30,7 @@
 <table class="module"><tr><th><a href="module-dict.html#Description">Description:</a></th><td>Server-parsed html documents (Server Side Includes)</td></tr>
 <tr><th><a href="module-dict.html#Status">Status:</a></th><td>Base</td></tr>
 <tr><th><a href="module-dict.html#ModuleIdentifier">Module Identifier:</a></th><td>include_module</td></tr>
-<tr><th><a href="module-dict.html#SourceFile">Source File:</a></th><td>mod_include.c</td></tr>
-<tr><th><a href="module-dict.html#Compatibility">Compatibility:</a></th><td>Implemented as an output filter since Apache
-2.0</td></tr></table>
+<tr><th><a href="module-dict.html#SourceFile">Source File:</a></th><td>mod_include.c</td></tr></table>
 <h3>Summary</h3>
 
     <p>This module provides a filter which will process files
@@ -58,7 +56,7 @@
 <ul id="topics">
 <li><img alt="" src="../images/down.gif" /> <a href="#enabling">Enabling Server-Side Includes</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#pathinfo">PATH_INFO with Server Side Includes</a></li>
-<li><img alt="" src="../images/down.gif" /> <a href="#elements">Basic Elements</a></li>
+<li><img alt="" src="../images/down.gif" /> <a href="#elements">Available Elements</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#includevars">Include Variables</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#substitution">Variable Substitution</a></li>
 <li><img alt="" src="../images/down.gif" /> <a href="#flowctrl">Flow Control Elements</a></li>
@@ -120,7 +118,7 @@ AddOutputFilter INCLUDES .shtml
     configure the server to accept requests with <code>PATH_INFO</code>.</p>
 </div><div class="top"><a href="#page-header"><img alt="top" src="../images/up.gif" /></a></div>
 <div class="section">
-<h2><a name="elements" id="elements">Basic Elements</a></h2>
+<h2><a name="elements" id="elements">Available Elements</a></h2>
     <p>The document is parsed as an HTML document, with special
     commands embedded as SGML comments. A command has the syntax: </p>
 
@@ -170,26 +168,49 @@ AddOutputFilter INCLUDES .shtml
 
       <dl>
       <dt><code>echomsg</code> (<em>Apache 2.1 and later</em>)</dt>
-      <dd>The value is a message that is sent back to the
+      <dd>
+      <p>The value is a message that is sent back to the
       client if the <code><a href="#element.echo">echo</a></code> element
-      attempts to echo an undefined variable. This overrides any <code class="directive"><a href="#ssiundefinedecho">SSIUndefinedEcho</a></code> directives.</dd>
+      attempts to echo an undefined variable. This overrides any <code class="directive"><a href="#ssiundefinedecho">SSIUndefinedEcho</a></code> directives.</p>
+
+      <div class="example"><p><code>
+        &lt;!--#config errmsg="[Value Undefined]" --&gt;
+      </code></p></div>
+      </dd>
 
       <dt><code>errmsg</code></dt>
-      <dd>The value is a message that is sent back to the
+      <dd><p>The value is a message that is sent back to the
       client if an error occurs while parsing the
-      document. This overrides any <code class="directive"><a href="#ssierrormsg">SSIErrorMsg</a></code> directives.</dd>
+      document. This overrides any <code class="directive"><a href="#ssierrormsg">SSIErrorMsg</a></code> directives.</p>
+      
+      <div class="example"><p><code>
+       &lt;!--#config errmsg="[Oops, something broke.]" --&gt;
+      </code></p></div>
+      </dd>
 
       <dt><code>sizefmt</code></dt>
-      <dd>The value sets the format to be used when displaying
+      <dd><p>The value sets the format to be used when displaying
       the size of a file. Valid values are <code>bytes</code>
       for a count in bytes, or <code>abbrev</code> for a count
       in Kb or Mb as appropriate, for example a size of 1024 bytes
-      will be printed as "1K".</dd>
+      will be printed as "1K".</p>
+
+      <div class="example"><p><code>
+      &lt;!--#config sizefmt="abbrev" --&gt;
+      </code></p></div>
+      </dd>
 
       <dt><code>timefmt</code></dt>
-      <dd>The value is a string to be used by the
+      <dd><p>The value is a string to be used by the
       <code>strftime(3)</code> library routine when printing
-      dates.</dd>
+      dates.</p>
+      
+      <div class="example"><p><code>
+      &lt;!--#config timefmt=""%R, %B %d, %Y"" --&gt;
+      </code></p></div>
+
+      </dd>
+      
       </dl>
      
 
@@ -250,6 +271,10 @@ AddOutputFilter INCLUDES .shtml
         In order to avoid cross-site scripting issues, you should
         <em>always</em> encode user supplied data.
       </div>
+
+      <div class="example"><h3>Example</h3><p><code>
+        &lt;!--#echo encoding="entity" var="QUERY_STRING" --&gt;
+      </code></p></div>
       </dd>
       </dl>
      
@@ -331,7 +356,18 @@ AddOutputFilter INCLUDES .shtml
       <dl>
       <dt><code>file</code></dt>
       <dd>The value is a path relative to the directory
-      containing the current document being parsed.</dd>
+      containing the current document being parsed.
+
+    <div class="example"><p><code>
+        This file is &lt;!--#fsize file="mod_include.html" --&gt; bytes.
+    </code></p></div>
+
+    The value of <code>file</code> cannot start with a slash
+    (<code>/</code>), nor can it contain <code>../</code> so as to 
+    refer to a file above the current directory or outside of the
+    document root. Attempting to so will result in the error message:
+    <code>The given path was above the root path</code>.
+      </dd>
 
       <dt><code>virtual</code></dt>
       <dd>The value is a (%-encoded) URL-path. If it does not begin with
@@ -339,6 +375,14 @@ AddOutputFilter INCLUDES .shtml
       Note, that this does <em>not</em> print the size of any CGI output,
       but the size of the CGI script itself.</dd>
       </dl>
+
+    <div class="example"><p><code>
+        This file is &lt;!--#fsize virtual="/docs/mod/mod_include.html" --&gt; bytes.
+    </code></p></div>
+
+      <p>Note that in many cases these two are exactly the same thing.
+      However, the <code>file</code> attribute doesn't respect URL-space
+      aliases.</p>
      
 
     <h3><a name="element.flastmod" id="element.flastmod">The flastmod Element</a></h3>
@@ -428,12 +472,14 @@ AddOutputFilter INCLUDES .shtml
      
 
     <h3><a name="element.printenv" id="element.printenv">The printenv Element</a></h3>
-      <p>This prints out a listing of all existing variables and
+      <p>This prints out a plain text listing of all existing variables and
       their values. Special characters are entity encoded (see the <code><a href="#element.echo">echo</a></code> element for details)
       before being output. There are no attributes.</p>
 
       <div class="example"><h3>Example</h3><p><code>
-        &lt;!--#printenv --&gt;
+        &lt;pre&gt;
+          &lt;!--#printenv --&gt;
+        &lt;/pre&gt;
       </code></p></div>
      
 
@@ -532,7 +578,7 @@ AddOutputFilter INCLUDES .shtml
     <code>exec</code>, <code>flastmod</code>, <code>fsize</code>,
     <code>include</code>, <code>echo</code>, and <code>set</code>
     directives. If <code class="directive"><a href="#ssilegacyexprparser">SSILegacyExprParser</a></code> is set to <code>on</code>,
-    substitution also occures in the arguments to conditional operators.
+    substitution also occurs in the arguments to conditional operators.
     You can insert a literal dollar sign into the string using backslash
     quoting:</p>
 
@@ -581,7 +627,7 @@ AddOutputFilter INCLUDES .shtml
     <p>The <code>endif</code> element ends the <code>if</code> element
     and is required.</p>
 
-    <p><var>test_condition</var> is a boolean expression tha follows the
+    <p><var>test_condition</var> is a boolean expression which follows the
     <a href="../expr.html">ap_expr</a> syntax. The syntax can be changed
     to be compatible with Apache HTTPD 2.2.x using <code class="directive"><a href="#ssilegacyexprparser">SSILegacyExprParser</a></code>.</p>
 
@@ -770,7 +816,6 @@ AddOutputFilter INCLUDES .shtml
 <tr><th><a href="directive-dict.html#Context">Context:</a></th><td>server config, virtual host</td></tr>
 <tr><th><a href="directive-dict.html#Status">Status:</a></th><td>Base</td></tr>
 <tr><th><a href="directive-dict.html#Module">Module:</a></th><td>mod_include</td></tr>
-<tr><th><a href="directive-dict.html#Compatibility">Compatibility:</a></th><td>Available in version 2.0.30 and later.</td></tr>
 </table>
     <p>This directive changes the string that <code class="module"><a href="../mod/mod_include.html">mod_include</a></code>
     looks for to mark the end of an include element.</p>
@@ -798,7 +843,6 @@ directive]"</code></td></tr>
 <tr><th><a href="directive-dict.html#Override">Override:</a></th><td>All</td></tr>
 <tr><th><a href="directive-dict.html#Status">Status:</a></th><td>Base</td></tr>
 <tr><th><a href="directive-dict.html#Module">Module:</a></th><td>mod_include</td></tr>
-<tr><th><a href="directive-dict.html#Compatibility">Compatibility:</a></th><td>Available in version 2.0.30 and later.</td></tr>
 </table>
     <p>The <code class="directive">SSIErrorMsg</code> directive changes the error
     message displayed when <code class="module"><a href="../mod/mod_include.html">mod_include</a></code> encounters an
@@ -925,7 +969,6 @@ server.</td></tr>
 <tr><th><a href="directive-dict.html#Context">Context:</a></th><td>server config, virtual host</td></tr>
 <tr><th><a href="directive-dict.html#Status">Status:</a></th><td>Base</td></tr>
 <tr><th><a href="directive-dict.html#Module">Module:</a></th><td>mod_include</td></tr>
-<tr><th><a href="directive-dict.html#Compatibility">Compatibility:</a></th><td>Available in version 2.0.30 and later.</td></tr>
 </table>
     <p>This directive changes the string that <code class="module"><a href="../mod/mod_include.html">mod_include</a></code>
     looks for to mark an include element to process.</p>
@@ -965,7 +1008,6 @@ displayed</td></tr>
 <tr><th><a href="directive-dict.html#Override">Override:</a></th><td>All</td></tr>
 <tr><th><a href="directive-dict.html#Status">Status:</a></th><td>Base</td></tr>
 <tr><th><a href="directive-dict.html#Module">Module:</a></th><td>mod_include</td></tr>
-<tr><th><a href="directive-dict.html#Compatibility">Compatibility:</a></th><td>Available in version 2.0.30 and later.</td></tr>
 </table>
 <p>This directive changes the format in which date strings are displayed
     when echoing <code>DATE</code> environment variables. The
@@ -994,7 +1036,6 @@ displayed</td></tr>
 <tr><th><a href="directive-dict.html#Override">Override:</a></th><td>All</td></tr>
 <tr><th><a href="directive-dict.html#Status">Status:</a></th><td>Base</td></tr>
 <tr><th><a href="directive-dict.html#Module">Module:</a></th><td>mod_include</td></tr>
-<tr><th><a href="directive-dict.html#Compatibility">Compatibility:</a></th><td>Available in version 2.0.34 and later.</td></tr>
 </table>
     <p>This directive changes the string that <code class="module"><a href="../mod/mod_include.html">mod_include</a></code>
     displays when a variable is not set and "echoed".</p>
@@ -1076,7 +1117,7 @@ var comments_identifier = 'http://httpd.apache.org/docs/2.4/mod/mod_include.html
     }
 })(window, document);
 //--><!]]></script></div><div id="footer">
-<p class="apache">Copyright 2012 The Apache Software Foundation.<br />Licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
+<p class="apache">Copyright 2013 The Apache Software Foundation.<br />Licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
 <p class="menu"><a href="../mod/">Modules</a> | <a href="../mod/directives.html">Directives</a> | <a href="http://wiki.apache.org/httpd/FAQ">FAQ</a> | <a href="../glossary.html">Glossary</a> | <a href="../sitemap.html">Sitemap</a></p></div><script type="text/javascript"><!--//--><![CDATA[//><!--
 if (typeof(prettyPrint) !== 'undefined') {
     prettyPrint();

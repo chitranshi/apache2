@@ -62,6 +62,11 @@
 #ifdef HAVE_GRP_H
 #include <grp.h>
 #endif
+#ifdef HAVE_SYS_LOADAVG_H
+#include <sys/loadavg.h>
+#endif
+
+#include "ap_mpm.h"
 
 /* A bunch of functions in util.c scan strings looking for certain characters.
  * To make that more efficient we encode a lookup table.  The test_char_table
@@ -273,8 +278,10 @@ AP_DECLARE(ap_regex_t *) ap_pregcomp(apr_pool_t *p, const char *pattern,
                                      int cflags)
 {
     ap_regex_t *preg = apr_palloc(p, sizeof *preg);
-
-    if (ap_regcomp(preg, pattern, cflags)) {
+    int err = ap_regcomp(preg, pattern, cflags);
+    if (err) {
+        if (err == AP_REG_ESPACE)
+            ap_abort_on_oom();
         return NULL;
     }
 
@@ -425,7 +432,7 @@ static apr_status_t regsub_core(apr_pool_t *p, char **result,
         *result = dst = apr_palloc(p, len + 1);
     }
     else {
-        if (vb->buf && vb->strlen == AP_VARBUF_UNKNOWN)
+        if (vb->strlen == AP_VARBUF_UNKNOWN)
             vb->strlen = strlen(vb->buf);
         ap_varbuf_grow(vb, vb->strlen + len);
         dst = vb->buf + vb->strlen;
@@ -1093,11 +1100,22 @@ AP_DECLARE(apr_status_t) ap_varbuf_cfg_getline(struct ap_varbuf *vb,
                                                apr_size_t max_len)
 {
     apr_status_t rc;
+    apr_size_t new_len;
     vb->strlen = 0;
     *vb->buf = '\0';
 
+    if (vb->strlen == AP_VARBUF_UNKNOWN)
+        vb->strlen = strlen(vb->buf);
+    if (vb->avail - vb->strlen < 3) {
+        new_len = vb->avail * 2;
+        if (new_len > max_len)
+            new_len = max_len;
+        else if (new_len < 3)
+            new_len = 3;
+        ap_varbuf_grow(vb, new_len);
+    }
+
     for (;;) {
-        apr_size_t new_len;
         rc = ap_cfg_getline_core(vb->buf + vb->strlen, vb->avail - vb->strlen, cfp);
         if (rc == APR_ENOSPC || rc == APR_SUCCESS)
             vb->strlen += strlen(vb->buf + vb->strlen);
@@ -1940,6 +1958,18 @@ AP_DECLARE(apr_size_t) ap_escape_errorlog_item(char *dest, const char *source,
     return (d - (unsigned char *)dest);
 }
 
+AP_DECLARE(void) ap_bin2hex(const void *src, apr_size_t srclen, char *dest)
+{
+    const unsigned char *in = src;
+    apr_size_t i;
+
+    for (i = 0; i < srclen; i++) {
+        *dest++ = c2x_table[in[i] >> 4];
+        *dest++ = c2x_table[in[i] & 0xf];
+    }
+    *dest = '\0';
+}
+
 AP_DECLARE(int) ap_is_directory(apr_pool_t *p, const char *path)
 {
     apr_finfo_t finfo;
@@ -2583,6 +2613,8 @@ AP_DECLARE(void) ap_varbuf_grow(struct ap_varbuf *vb, apr_size_t new_len)
     struct ap_varbuf_info *new_info;
     char *new;
 
+    AP_DEBUG_ASSERT(vb->strlen == AP_VARBUF_UNKNOWN || vb->avail >= vb->strlen);
+
     if (new_len <= vb->avail)
         return;
 
@@ -2702,9 +2734,10 @@ AP_DECLARE(char *) ap_varbuf_pdup(apr_pool_t *p, struct ap_varbuf *buf,
         i++;
     }
     if (buf->avail && buf->strlen) {
+        if (buf->strlen == AP_VARBUF_UNKNOWN)
+            buf->strlen = strlen(buf->buf);
         vec[i].iov_base = (void *)buf->buf;
-        vec[i].iov_len = (buf->strlen == AP_VARBUF_UNKNOWN) ? buf->avail
-                                                            : buf->strlen;
+        vec[i].iov_len = buf->strlen;
         i++;
     }
     if (append) {
@@ -2771,4 +2804,85 @@ AP_DECLARE(void *) ap_realloc(void *ptr, size_t size)
     if (p == NULL && size != 0)
         ap_abort_on_oom();
     return p;
+}
+
+AP_DECLARE(void) ap_get_sload(ap_sload_t *ld)
+{
+    int i, j, server_limit, thread_limit;
+    int ready = 0;
+    int busy = 0;
+    int total;
+    ap_generation_t mpm_generation;
+
+    /* preload errored fields, we overwrite */
+    ld->idle = -1;
+    ld->busy = -1;
+    ld->bytes_served = 0;
+    ld->access_count = 0;
+
+    ap_mpm_query(AP_MPMQ_GENERATION, &mpm_generation);
+    ap_mpm_query(AP_MPMQ_HARD_LIMIT_THREADS, &thread_limit);
+    ap_mpm_query(AP_MPMQ_HARD_LIMIT_DAEMONS, &server_limit);
+
+    for (i = 0; i < server_limit; i++) {
+        process_score *ps;
+        ps = ap_get_scoreboard_process(i);
+
+        for (j = 0; j < thread_limit; j++) {
+            int res;
+            worker_score *ws = NULL;
+            ws = &ap_scoreboard_image->servers[i][j];
+            res = ws->status;
+
+            if (!ps->quiescing && ps->pid) {
+                if (res == SERVER_READY && ps->generation == mpm_generation) {
+                    ready++;
+                }
+                else if (res != SERVER_DEAD &&
+                         res != SERVER_STARTING && res != SERVER_IDLE_KILL &&
+                         ps->generation == mpm_generation) {
+                    busy++;
+                }   
+            }
+
+            if (ap_extended_status && !ps->quiescing && ps->pid) {
+                if (ws->access_count != 0 
+                    || (res != SERVER_READY && res != SERVER_DEAD)) {
+                    ld->access_count += ws->access_count;
+                    ld->bytes_served += ws->bytes_served;
+                }
+            }
+        }
+    }
+    total = busy + ready;
+    if (total) {
+        ld->idle = ready * 100 / total;
+        ld->busy = busy * 100 / total;
+    }
+}
+
+AP_DECLARE(void) ap_get_loadavg(ap_loadavg_t *ld)
+{
+    /* preload errored fields, we overwrite */
+    ld->loadavg = -1.0;
+    ld->loadavg5 = -1.0;
+    ld->loadavg15 = -1.0;
+
+#if HAVE_GETLOADAVG
+    {
+        double la[3];
+        int num;
+
+        num = getloadavg(la, 3);
+        if (num > 0) {
+            ld->loadavg = (float)la[0];
+        }
+        if (num > 1) {
+            ld->loadavg5 = (float)la[1];
+        }
+        if (num > 2) {
+            ld->loadavg15 = (float)la[2];
+        }
+    }
+#endif
 }

@@ -67,7 +67,7 @@ directorios</a></li>
 <li><img alt="" src="./images/down.gif" /> <a href="#test">Comprobar que la instalación
 funciona</a></li>
 <li><img alt="" src="./images/down.gif" /> <a href="#upgrading">Actualizar una instalación
-prrevia</a></li>
+previa</a></li>
 </ul><h3>Consulte también</h3><ul class="seealso"><li><a href="programs/configure.html">Configuración de la
 estructura de directorios</a></li><li><a href="invoking.html">Iniciar Apache</a></li><li><a href="stopping.html">Parar y reiniciar Apache</a></li></ul><ul class="seealso"><li><a href="#comments_section">Comentarios</a></li></ul></div>
 <div class="top"><a href="#page-header"><img alt="top" src="./images/up.gif" /></a></div>
@@ -370,7 +370,7 @@ funciona</a></h2>
 </div><div class="top"><a href="#page-header"><img alt="top" src="./images/up.gif" /></a></div>
 <div class="section">
 <h2><a name="upgrading" id="upgrading">Actualizar una instalación
-prrevia</a></h2>
+previa</a></h2>
 
     <p>El primer paso para actualizar una instalación anterior es
     leer las especificaciones de la versión y el fichero
@@ -455,7 +455,7 @@ var comments_identifier = 'http://httpd.apache.org/docs/2.4/install.html';
     }
 })(window, document);
 //--><!]]></script></div><div id="footer">
-<p class="apache">Copyright 2012 The Apache Software Foundation.<br />Licencia bajo los términos de la <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
+<p class="apache">Copyright 2013 The Apache Software Foundation.<br />Licencia bajo los términos de la <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
 <p class="menu"><a href="./mod/">Módulos</a> | <a href="./mod/directives.html">Directivas</a> | <a href="http://wiki.apache.org/httpd/FAQ">Preguntas Frecuentes</a> | <a href="./glossary.html">Glosario</a> | <a href="./sitemap.html">Mapa de este sitio web</a></p></div><script type="text/javascript"><!--//--><![CDATA[//><!--
 if (typeof(prettyPrint) !== 'undefined') {
     prettyPrint();

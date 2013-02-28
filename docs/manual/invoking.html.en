@@ -31,10 +31,8 @@
 </div>
 
     <p>On Windows, Apache is normally run as a service on Windows
-    NT, 2000 and XP, or as a console application on Windows 9x and
-    ME. For details, see <a href="platform/windows.html#winsvc">Running Apache as a Service</a>
-    and <a href="platform/windows.html#wincons">Running Apache as a
-    Console Application</a>.</p>
+    NT, 2000 and XP, Vista and 7. For details, see <a href="platform/windows.html#winsvc">Running Apache as a Service</a>.
+    </p>
 
     <p>On Unix, the <code class="program"><a href="./programs/httpd.html">httpd</a></code> program
     is run as a daemon that executes continuously in the
@@ -166,7 +164,7 @@ var comments_identifier = 'http://httpd.apache.org/docs/2.4/invoking.html';
     }
 })(window, document);
 //--><!]]></script></div><div id="footer">
-<p class="apache">Copyright 2012 The Apache Software Foundation.<br />Licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
+<p class="apache">Copyright 2013 The Apache Software Foundation.<br />Licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
 <p class="menu"><a href="./mod/">Modules</a> | <a href="./mod/directives.html">Directives</a> | <a href="http://wiki.apache.org/httpd/FAQ">FAQ</a> | <a href="./glossary.html">Glossary</a> | <a href="./sitemap.html">Sitemap</a></p></div><script type="text/javascript"><!--//--><![CDATA[//><!--
 if (typeof(prettyPrint) !== 'undefined') {
     prettyPrint();

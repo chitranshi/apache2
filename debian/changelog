@@ -1,6 +1,8 @@
 apache2 (2.4.4-1) experimental; urgency=low
 
   * New upstream release
+    - Fixes mod_log_forensic logging spurious '-' characters. Closes: #693292
+    - Responds with HTTP/1.0 when talking http to https port. Closes: #701117
 
   [ Stefan Fritsch ]
   * Add examples for X-Content-Type-Options and X-Frame-Options to

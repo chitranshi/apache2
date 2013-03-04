@@ -1,4 +1,4 @@
-apache2 (2.2.22-13) UNRELEASED; urgency=medium
+apache2 (2.2.22-13) unstable; urgency=medium
 
   [ Stefan Fritsch ]
   * Urgency medium for security fixes.
@@ -10,7 +10,7 @@ apache2 (2.2.22-13) UNRELEASED; urgency=medium
   [ Arno Töll ]
   * Document APACHE_ARGUMENTS in envvars (Closes: #693299)
 
- -- Arno Töll <arno@debian.org>  Fri, 16 Nov 2012 01:07:59 +0100
+ -- Stefan Fritsch <sf@debian.org>  Mon, 04 Mar 2013 22:21:05 +0100
 
 apache2 (2.2.22-12) unstable; urgency=low
 

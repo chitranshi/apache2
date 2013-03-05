@@ -3,6 +3,7 @@ apache2 (2.4.4-1) experimental; urgency=low
   * New upstream release
     - Fixes mod_log_forensic logging spurious '-' characters. Closes: #693292
     - Responds with HTTP/1.0 when talking http to https port. Closes: #701117
+    - Fix various XSS flaws in modules (CVE-2012-3499, CVE-2012-4558)
 
   [ Stefan Fritsch ]
   * Add examples for X-Content-Type-Options and X-Frame-Options to
@@ -46,7 +47,7 @@ apache2 (2.4.4-1) experimental; urgency=low
     heaps, it makes both more visible what changes happen to the general code (and
     thus are also done to the other servers generated)
 
- -- Arno Töll <arno@debian.org>  Thu, 28 Feb 2013 23:37:56 +0100
+ -- Arno Töll <arno@debian.org>  Wed, 06 Mar 2013 00:06:20 +0100
 
 apache2 (2.4.2-2) experimental; urgency=low
 

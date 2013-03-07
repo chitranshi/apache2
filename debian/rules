@@ -147,5 +147,9 @@ override_dh_auto_clean:
 	dh_auto_clean
 	if test -d server/mpm/itk ; then rm -r server/mpm/itk ; fi
 
+override_dh_gencontrol:
+	dh_gencontrol  -p libapache2-mod-proxy-html -- -v1:2.4+transitional1
+	dh_gencontrol --remaining-packages
+
 .PHONY: generate-maintainer-scripts clean-config-vars prepare-scripts prebuild-checks
 .PHONY: clean build build-arch build-indep binary binary-arch binary-indep

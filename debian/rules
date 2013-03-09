@@ -7,6 +7,7 @@
 
 LSB_RELEASE := $(shell lsb_release -i -s)
 SERVER_VERSION := $(shell dpkg-parsechangelog | perl -ne 'print $$1 if m/Version:\s*([\d\.]+)/')
+DEBIAN_VERSION := $(shell dpkg-parsechangelog | perl -ne 'print $$1 if m/Version:\s*([\d\.\-]+)/')
 MODULE_DIR := /usr/lib/apache2/modules/
 API = $(shell perl -ne 'print $$1 if m/define\s+MODULE_MAGIC_NUMBER_MAJOR\s+?(.*)$$/' < include/ap_mmn.h)
 AP2_CFLAGS = -pipe $(shell dpkg-buildflags --get CFLAGS)
@@ -148,7 +149,7 @@ override_dh_auto_clean:
 	if test -d server/mpm/itk ; then rm -r server/mpm/itk ; fi
 
 override_dh_gencontrol:
-	dh_gencontrol  -p libapache2-mod-proxy-html -- -v1:2.4+transitional1
+	dh_gencontrol  -p libapache2-mod-proxy-html -- -v1:$(DEBIAN_VERSION)
 	dh_gencontrol --remaining-packages
 
 .PHONY: generate-maintainer-scripts clean-config-vars prepare-scripts prebuild-checks

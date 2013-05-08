@@ -46,13 +46,13 @@ MOVED_CONFFILES="/etc/bash_completion.d/apache2.2-common:/etc/bash_completion.d/
 # the functions below need to be idempotent, however we guess the upgrade based
 # on obsolete conffiles which might be removed anytime. Thus, remember we were
 # already in there once.
-SQUEEZE_UPGRADE=0
+WHEEZY_UPGRADE=0
 
 #      n.b you can't rely on $2 (the last installed version)  for upgrades, as
 #      the user might have been using apache2.2-common only. Let's pretend we're
 #      upgrading if there is either a /etc/apache2/.apache2_mpm_selected file
 #      around or an /etc/apache2/.apache2_upgrade file exists.
-we_are_upgrading_from_squeeze()
+we_are_upgrading_from_wheezy()
 {
 	if [ -n "$2" ] && dpkg --compare-versions "$2" le-nl "2.3"; then
 		SQUEEZE_UPGRADE=1
@@ -110,7 +110,7 @@ remove_conffiles()
 	# apache2.2-common package to apache2, too. The tool can cope with
 	# that, but additionally we didn't require apache2 to be installed. This
 	# yields the wrong result when upgrading such an installation
-	if we_are_upgrading_from_squeeze $@ ; then
+	if we_are_upgrading_from_wheezy $@ ; then
 		for CONFFILE in $OBSOLETE_CONFFILES ; do
 			if [ -e "$CONFFILE.dpkg-backup" ]; then
 				mv -f "$CONFFILE.dpkg-backup" "$CONFFILE.dpkg-bak"
@@ -126,7 +126,7 @@ remove_conffiles()
 mv_conffiles()
 {
 	# same rationale as above
-	if we_are_upgrading_from_squeeze $@ ; then
+	if we_are_upgrading_from_wheezy $@ ; then
 		for CONFFILE in $MOVED_CONFFILES ; do
 			OLDCONFFILE=$( echo "$CONFFILE" | cut -d: -f1 )
 			NEWCONFFILE=$( echo "$CONFFILE" | cut -d: -f2 )
@@ -157,7 +157,7 @@ mv_conffiles()
 enable_default_mpm()
 {
 	mpm="mpm_event"
-	if we_are_upgrading_from_squeeze $@ && [ -e /etc/apache2/.apache2_mpm_selected  ]; then
+	if we_are_upgrading_from_wheezy $@ && [ -e /etc/apache2/.apache2_mpm_selected  ]; then
 		tmpmpm=$(grep -v "^#" /etc/apache2/.apache2_mpm_selected | head -n1)
 		case "$tmpmpm" in
 			apache2-mpm-worker)
@@ -205,7 +205,7 @@ enable_default_modules()
 				status ; do
 			a2enmod -m -q $module
 		done
-	elif we_are_upgrading_from_squeeze $@; then
+	elif we_are_upgrading_from_wheezy $@; then
 		for module in authz_core filter access_compat ; do
 			a2enmod -m -q $module
 		done
@@ -214,12 +214,12 @@ enable_default_modules()
 
 enable_default_conf()
 {
-	if is_fresh_install $@ || we_are_upgrading_from_squeeze $@ ; then
+	if is_fresh_install $@ || we_are_upgrading_from_wheezy $@ ; then
 		for conf in charset localized-error-pages other-vhosts-access-log security ; do
 			a2enconf -m -q $conf
 		done
 	fi
-	# This line must catch upgrades, upgrades from Squeeze und fresh
+	# This line must catch upgrades, upgrades from Wheezy und fresh
 	# installs
 	if dpkg --compare-versions "$2" "le" "2.4.1-4" ; then
 		a2enconf -m -q serve-cgi-bin
@@ -228,7 +228,7 @@ enable_default_conf()
 
 install_default_site()
 {
-	if we_are_upgrading_from_squeeze $@ ; then
+	if we_are_upgrading_from_wheezy $@ ; then
 		# by here, the old default sites were already renamed. Thus, the links
 		# are dangling
 		for SITE in /etc/apache2/sites-enabled/000-default /etc/apache2/sites-enabled/default-ssl ; do
@@ -277,7 +277,7 @@ install_default_files()
 # XXX: Find out whether I am on crack removing stale modules that way
 refresh_modules()
 {
-	if we_are_upgrading_from_squeeze $@ && [ -d /etc/apache2/mods-enabled/ ] ; then
+	if we_are_upgrading_from_wheezy $@ && [ -d /etc/apache2/mods-enabled/ ] ; then
 		shopt -s nullglob
 		for link in /etc/apache2/mods-enabled/*.load ; do
 			target=$(readlink "$link") || true
@@ -302,7 +302,7 @@ refresh_modules()
 			# dependencies could have changed hence re-call
 			# a2enmod again.
 			# Example: the deflate module when upgraded from
-			# Squeeze
+			# Wheezy
 			if [ -e "/etc/apache2/mods-enabled/$target" ] ; then
 				a2enmod -m -q "$module"
 			fi
@@ -312,7 +312,7 @@ refresh_modules()
 
 move_httpd_conf()
 {
-	if we_are_upgrading_from_squeeze $@ ; then
+	if we_are_upgrading_from_wheezy $@ ; then
 		if [ -e /etc/apache2/httpd.conf ] && [ -f /etc/apache2/httpd.conf ] ; then
 			local md5sum="$(md5sum /etc/apache2/httpd.conf | sed -e 's/ .*//')"
 			if [ $md5sum = "d41d8cd98f00b204e9800998ecf8427e" ] ||
@@ -335,7 +335,7 @@ migrate_data()
 {
 	#XXX: jimjag recommends purging the cache albeit it is probably not
 	#     technically required.
-	#if we_are_upgrading_from_squeeze $@ ; then
+	#if we_are_upgrading_from_wheezy $@ ; then
 	#	# /var/cache/apache2/mod_disk_cache -> /var/cache/apache2/mod_cache_disk
 	#	if [ -d /var/cache/apache2/mod_disk_cache ] && [ "$(ls -A /var/cache/apache2/mod_disk_cache)" ] ; then
 	#		echo "Migrate mod_disk_cache cache data to /var/cache/apache2/mod_cache_disk/"
@@ -343,7 +343,7 @@ migrate_data()
 	#		rmdir /var/cache/apache2/mod_disk_cache
 	#	fi
 	#fi
-	if we_are_upgrading_from_squeeze $@ ; then
+	if we_are_upgrading_from_wheezy $@ ; then
 		if [ -d /var/cache/apache2/mod_disk_cache ] ; then
 			echo "Purge obsolete mod_disk_cache cache data in /var/cache/apache2/mod_cache_disk/"
 			rm -rf /var/cache/apache2/mod_disk_cache
@@ -390,7 +390,7 @@ esac
 # And now the traditional insanity of apache2 upgrades (see #390823):
 # If everything went well, we need to purge apache2.2-common's postrm, or
 # purging that package will remove our logs, caches, ...
-if [ "$1" = configure ] && we_are_upgrading_from_squeeze $@ ; then
+if [ "$1" = configure ] && we_are_upgrading_from_wheezy $@ ; then
 	oldpostrm=$(dpkg-query -c apache2.2-common postrm  2>/dev/null || true)
 	if [ -n "$oldpostrm" ] ; then
 		rm -f "$oldpostrm"

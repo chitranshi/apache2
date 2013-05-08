@@ -3,8 +3,9 @@ apache2 (2.4.4-3) UNRELEASED; urgency=low
   * Fix "typo in mpm_event.load" by applying the patch provided by Bastian
     Triller. Thanks (Closes: #704639)
   * Replace some occurrences of "Squeeze" in our scripts. It's Wheezy time.
+  * Add -e|--noenable option to dh_apache2 (Closes: #681544)
 
- -- Arno Töll <arno@debian.org>  Wed, 08 May 2013 16:55:11 +0200
+ -- Arno Töll <arno@debian.org>  Wed, 08 May 2013 17:28:22 +0200
 
 apache2 (2.4.4-2) experimental; urgency=low
 

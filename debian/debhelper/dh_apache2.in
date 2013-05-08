@@ -52,6 +52,7 @@ our $MODULE_DIR = "__MODULE_DIR__";
 our $SERVER_VERSION = "__SERVER_VERSION__";
 
 
+
 sub apache_api_version
 {
 	return "apache2-api-$API";
@@ -238,6 +239,11 @@ In maintainer scripts, do not try to reload the web server, but restart it.
 Otherwise the default action is used, which means global configuration and
 sites make the web server to be reloaded on success, modules are restarted.
 
+=item B<-e>, B<--noenable>
+
+Install maintainer scripts accordingly, but do not enable the scripts or
+configuration by default.
+
 =item B<-n>, B<--noscripts>
 
 Do not modify F<postinst>/F<postrm>/F<prerm> maintainer scripts.
@@ -295,6 +301,7 @@ This manual and L<dh_apache2> was written by Arno Toell <debian@toell.net>.
 init(options => {
 	"conditional=s" => \$dh{CONDITIONAL},
 	"r|restart" => \$dh{RESTART},
+	"e|noenable" => \$dh{NOENABLE},
 });
 
 if (!$dh{CONDITIONAL})
@@ -493,6 +500,11 @@ foreach my $package ((@{$dh{DOPACKAGES}}))
 		{
 			for my $script_type (qw/postinst postrm/)
 			{
+				if ($script_type eq "postinst" &&  $dh{NOENABLE})
+				{
+					next
+				}
+
 				my %replacements = (
 					HELPER => $ref->[0],
 					NAMES  => $ref->[1],

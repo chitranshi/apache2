@@ -411,20 +411,7 @@ execution for that directory. For example:
 
 Use apache2ctl (it accepts all the same options as apache2).
 
-9) Apache is using a lot of memory and is not freeing it even when idle
-
-By default, Apache will not give back unused memory but keep it around for
-later use.
-
-  * Tune StartServers, MaxConnectionsPerChild, MinSpareThreads/MinSpareServers,
-    MaxSpareThreads/MaxSpareServers in '/etc/apache2/mods-enabled/mpm_*.conf'
-
-  * If you are really starved for memory, try adding 'MaxMemFree 4' to your
-    Apache configuration. This will reduce Apache's performance.
-    Because of the way Apache's memory allocator interacts with glibc's malloc,
-    higher values of MaxMemFree don't have much effect.
-
-10) A PUT with mod_dav_fs fails with "Unable to PUT new contents for /...
+9) A PUT with mod_dav_fs fails with "Unable to PUT new contents for /...
 [403, #0]" even if Apache has permission to write the file.
 
 Apache also needs write permission to the directory containing the file, in

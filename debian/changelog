@@ -1,3 +1,10 @@
+apache2 (2.2.22-14) UNRELEASED; urgency=low
+
+  * Adjust paragraph in README.Debian about MaxMemFree not working properly.
+    The issue has been fixed with apr 1.4.5-1.
+
+ -- Stefan Fritsch <sf@debian.org>  Sat, 11 May 2013 13:33:21 +0200
+
 apache2 (2.2.22-13) unstable; urgency=medium
 
   [ Stefan Fritsch ]

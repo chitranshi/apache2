@@ -392,10 +392,10 @@ later use.
   * Tune StartServers, MaxRequestsPerChild, MinSpareThreads/MinSpareServers,
     MaxSpareThreads/MaxSpareServers in /etc/apache2/apache2.conf
 
-  * If you are really starved for memory, try adding 'MaxMemFree 4' to your
-    Apache configuration. This will reduce Apache's performance.
-    Because of the way Apache's memory allocator interacts with glibc's malloc,
-    higher values of MaxMemFree don't have much effect.
+  * To make Apache actually release free memory, try setting the 'MaxMemFree'
+    directive in your Apache configuration. A value of 2048 may be good as a
+    first try. If it does not help enough, you may try decreasing the value
+    down to 4, though this will reduce Apache's performance.
 
 11) A PUT with mod_dav_fs fails with "Unable to PUT new contents for /...
 [403, #0]" even if Apache has permission to write the file.

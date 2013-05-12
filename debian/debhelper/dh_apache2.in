@@ -82,7 +82,7 @@ B<dh_apache2> [S<I<debhelper options>>] [S<B<--conditional>>=I<expression>] [B<-
 =head1 DESCRIPTION
 
 B<dh_apache2> is a debhelper program that is responsible for correctly installing
-Apache2 configuration snippets and setting postinst, postrm and dependencies in
+Apache2 configuration snippets and setting postinst, prerm and dependencies in
 Apache2 web server modules and web applications.
 
 It supports the following configuration types
@@ -498,7 +498,7 @@ foreach my $package ((@{$dh{DOPACKAGES}}))
 	{
 		foreach my $ref (@postinst_autoscripts)
 		{
-			for my $script_type (qw/postinst postrm/)
+			for my $script_type (qw/postinst prerm/)
 			{
 				if ($script_type eq "postinst" &&  $dh{NOENABLE})
 				{
@@ -513,7 +513,7 @@ foreach my $package ((@{$dh{DOPACKAGES}}))
 					ACTION => $dh{RESTART},
 				);
 
-				if ($script_type eq "postrm")
+				if ($script_type eq "prerm")
 				{
 					$replacements{'HELPER'} =~ s/en/dis/;
 				}

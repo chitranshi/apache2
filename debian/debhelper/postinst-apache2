@@ -1,4 +1,4 @@
-if [ "$1" = "configure" ] && #CONDITIONAL_VARIABLE#; then
+if #CONDITIONAL_VARIABLE#; then
 	if [ -e /usr/share/apache2/apache2-maintscript-helper ] ; then
 		. /usr/share/apache2/apache2-maintscript-helper
 		for conf in #NAMES# ; do

@@ -7,7 +7,11 @@ apache2 (2.4.4-3) UNRELEASED; urgency=low
   * Fix "typo in mpm_event.load" by applying the patch provided by Bastian
     Triller. Thanks (Closes: #704639)
   * Replace some occurrences of "Squeeze" in our scripts. It's Wheezy time.
-  * Add -e|--noenable option to dh_apache2 (Closes: #681544)
+  * Changes in dh_apache2:
+    + Add -e|--noenable option to dh_apache2 (Closes: #681544)
+    + Disable scripts in prerm, not postrm (Closes: #681546)
+    + Call the postinst code always, not only during configure
+      (Closes: #681545)
   * Fix "don't assume apache2 is running 24 hours a day when rotating
     logs": Only restart the webserver when it was previously running
     (Closes: #707892)
@@ -24,7 +28,7 @@ apache2 (2.4.4-3) UNRELEASED; urgency=low
     fixed in 2.4.
   * Enable mod_authn_core when upgrading from wheezy (Closes: #702866)
 
- -- Arno Töll <arno@debian.org>  Sun, 12 May 2013 15:50:15 +0200
+ -- Arno Töll <arno@debian.org>  Sun, 12 May 2013 17:06:18 +0200
 
 apache2 (2.4.4-2) experimental; urgency=low
 

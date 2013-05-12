@@ -1,17 +1,23 @@
 apache2 (2.4.4-3) UNRELEASED; urgency=low
 
   [ Arno Töll ]
+  * libapache2-mod-proxy-html is included in Apache 2.4 and not packaged
+    separately anymore. Thus, we are using the most recent version available
+    now (Closes: #695482).
   * Fix "typo in mpm_event.load" by applying the patch provided by Bastian
     Triller. Thanks (Closes: #704639)
   * Replace some occurrences of "Squeeze" in our scripts. It's Wheezy time.
   * Add -e|--noenable option to dh_apache2 (Closes: #681544)
+  * Fix "don't assume apache2 is running 24 hours a day when rotating
+    logs": Only restart the webserver when it was previously running
+    (Closes: #707892)
 
   [ Stefan Fritsch ]
   * Remove paragraph about MaxMemFree in README.Debian. The issue should be
     fixed in 2.4.
   * Enable mod_authn_core when upgrading from wheezy (Closes: #702866)
 
- -- Arno Töll <arno@debian.org>  Wed, 08 May 2013 17:28:22 +0200
+ -- Arno Töll <arno@debian.org>  Sun, 12 May 2013 13:19:28 +0200
 
 apache2 (2.4.4-2) experimental; urgency=low
 

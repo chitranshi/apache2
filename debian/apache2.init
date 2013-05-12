@@ -76,6 +76,26 @@ PIDFILE=$(. $APACHE_ENVVARS && echo $APACHE_PID_FILE)
 APACHE2_INIT_MESSAGE=""
 
 
+apache_wait_start() {
+        local STATUS=$1
+        local i=0
+        while : ; do
+                PIDTMP=$(pidofproc -p $PIDFILE $DAEMON)
+                if [ -n "${PIDTMP:-}" ] && kill -0 "${PIDTMP:-}" 2> /dev/null; then
+                        return $STATUS
+                fi
+
+                if [ $i = "5" ] ; then
+                        APACHE2_INIT_MESSAGE="The apache2$DIR_SUFFIX instance did not start within 5 seconds. Please read the log files to discover problems"
+                        return 2
+                fi
+
+                [ "$VERBOSE" != no ] && log_progress_msg "."
+                sleep 1
+                i=$(($i+1))
+        done
+}
+
 apache_wait_stop() {
         local STATUS=$1
 
@@ -87,7 +107,7 @@ apache_wait_stop() {
                                 break
                                 STATUS=2
                         fi
-                        log_progress_msg "."
+                        [ "$VERBOSE" != no ] && log_progress_msg "."
                         sleep 1
                         i=$(($i+1))
                 done
@@ -114,6 +134,7 @@ do_start()
 
         if $APACHE2CTL configtest > /dev/null 2>&1; then
                 $APACHE2CTL start
+                apache_wait_start $?
                 return $?
         else
                 APACHE2_INIT_MESSAGE="The apache2$DIR_SUFFIX configtest failed. Please run '$APACHE2CTL configtest' manually and read the log file to discover problems"

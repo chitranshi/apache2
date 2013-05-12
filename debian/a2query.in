@@ -235,6 +235,7 @@ sub load_conf
 	{
 		my $file = $_;
 		next if $file !~ m/\.conf$/;
+		$file =~ s/\.conf$//;
 		push @CONFS, $file;
 	}
 	closedir(DIR);
@@ -253,6 +254,7 @@ sub load_sites
 	{
 		my $file = $_;
 		next if $file !~ m/\.conf$/;
+		$file =~ s/\.conf$//;
 		push @SITES, $file;
 	}
 	closedir(DIR);

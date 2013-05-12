@@ -15,13 +15,16 @@ apache2 (2.4.4-3) UNRELEASED; urgency=low
     when queried from a2query (Closes: #683212)
   * Fix "/etc/init.d/apache2 start and restart need to wait until really
     started" (Closes: #645460)
+  * Fix "apxs2 outputs "uninitialized value" warnings" by removing the double
+    declaration of variables in apxs. This problem was harmless, but noisy
+    (Closes: #707109)
 
   [ Stefan Fritsch ]
   * Remove paragraph about MaxMemFree in README.Debian. The issue should be
     fixed in 2.4.
   * Enable mod_authn_core when upgrading from wheezy (Closes: #702866)
 
- -- Arno Töll <arno@debian.org>  Sun, 12 May 2013 15:17:07 +0200
+ -- Arno Töll <arno@debian.org>  Sun, 12 May 2013 15:50:15 +0200
 
 apache2 (2.4.4-2) experimental; urgency=low
 

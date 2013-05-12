@@ -8,18 +8,16 @@ Last-Update: 2012-03-17
 
 --- a/support/apxs.in
 +++ b/support/apxs.in
-@@ -38,7 +38,9 @@
+@@ -38,7 +38,7 @@
  my $CFG_TARGET     = get_vars("progname");
  my $CFG_SYSCONFDIR = get_vars("sysconfdir");
  my $CFG_CFLAGS     = join ' ', map { get_vars($_) }
 -  qw(SHLTCFLAGS CFLAGS NOTEST_CPPFLAGS EXTRA_CPPFLAGS EXTRA_CFLAGS);
 +  qw(SHLTCFLAGS CFLAGS CPPFLAGS NOTEST_CPPFLAGS EXTRA_CPPFLAGS EXTRA_CFLAGS);
-+my $CFG_LDFLAGS    = join ' ', map { get_vars($_) }
-+  qw(LDFLAGS NOTEST_LDFLAGS SH_LDFLAGS);
  my $CFG_LDFLAGS    = join ' ', map { get_vars($_) }
    qw(LDFLAGS NOTEST_LDFLAGS SH_LDFLAGS);
  my $includedir     = get_vars("includedir");
-@@ -276,6 +278,7 @@
+@@ -276,6 +276,7 @@
      $data =~ s|%TARGET%|$CFG_TARGET|sg;
      $data =~ s|%PREFIX%|$prefix|sg;
      $data =~ s|%INSTALLBUILDDIR%|$installbuilddir|sg;
@@ -27,7 +25,7 @@ Last-Update: 2012-03-17
  
      my ($mkf, $mods, $src) = ($data =~ m|^(.+)-=#=-\n(.+)-=#=-\n(.+)|s);
  
-@@ -428,7 +431,7 @@
+@@ -428,7 +429,7 @@
          $la =~ s|\.c$|.la|;
          my $o = $s;
          $o =~ s|\.c$|.o|;
@@ -36,7 +34,7 @@ Last-Update: 2012-03-17
          unshift(@objs, $lo);
      }
  
-@@ -469,7 +472,7 @@
+@@ -469,7 +470,7 @@
          $opt .= " -rpath $CFG_LIBEXECDIR -module -avoid-version $apr_ldflags";
      }
  
@@ -45,7 +43,7 @@ Last-Update: 2012-03-17
  
      #   execute the commands
      &execute_cmds(@cmds);
-@@ -503,7 +506,7 @@
+@@ -503,7 +504,7 @@
          if ($opt_i) {
  	    push(@cmds, "$installbuilddir/instdso.sh SH_LIBTOOL='" .
                   "$libtool' $f $CFG_LIBEXECDIR");
@@ -54,7 +52,7 @@ Last-Update: 2012-03-17
          }
  
          #   determine module symbolname and filename
-@@ -539,10 +542,11 @@
+@@ -539,10 +540,11 @@
              $filename = "mod_${name}.c";
          }
          my $dir = $CFG_LIBEXECDIR;
@@ -68,7 +66,7 @@ Last-Update: 2012-03-17
      }
  
      #   execute the commands
-@@ -550,108 +554,35 @@
+@@ -550,108 +552,35 @@
  
      #   activate module via LoadModule/AddModule directive
      if ($opt_a or $opt_A) {
@@ -112,11 +110,6 @@ Last-Update: 2012-03-17
 -                if ($cntopen == $cntclose) {
 -                    # fine. Last LoadModule is contextless.
 -                    $content =~ s|^(.*\n#?\s*LoadModule\s+[^\n]+\n)|$1$c$lmd\n|s;
--                }
--                elsif ($cntopen < $cntclose) {
--                    error('Configuration file is not valid. There are sections'
--                          . ' closed before opened.');
--                    exit(1);
 +        my $entry;
 +        foreach $entry (@lmd) {
 +            my ($name, $lmd) = @{$entry};
@@ -126,6 +119,11 @@ Last-Update: 2012-03-17
 +                if (system($cmd) != 0) {
 +                    die "'$cmd' failed\n";
                  }
+-                elsif ($cntopen < $cntclose) {
+-                    error('Configuration file is not valid. There are sections'
+-                          . ' closed before opened.');
+-                    exit(1);
+-                }
 -                else {
 -                    # put our cmd after the section containing the last
 -                    # LoadModule.
@@ -200,7 +198,7 @@ Last-Update: 2012-03-17
      }
  }
  
-@@ -671,8 +602,8 @@
+@@ -671,8 +600,8 @@
  ##
  
  builddir=.

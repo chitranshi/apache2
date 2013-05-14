@@ -7,7 +7,7 @@
 
 LSB_RELEASE := $(shell lsb_release -i -s)
 SERVER_VERSION := $(shell dpkg-parsechangelog | perl -ne 'print $$1 if m/Version:\s*([\d\.]+)/')
-DEBIAN_VERSION := $(shell dpkg-parsechangelog | perl -ne 'print $$1 if m/Version:\s*([\d\.\-]+)/')
+DEBIAN_VERSION := $(shell dpkg-parsechangelog | perl -ne 'print $$1 if m/Version:\s*(.+)/')
 MODULE_DIR := /usr/lib/apache2/modules/
 API = $(shell perl -ne 'print $$1 if m/define\s+MODULE_MAGIC_NUMBER_MAJOR\s+?(.*)$$/' < include/ap_mmn.h)
 AP2_CFLAGS = -pipe $(shell dpkg-buildflags --get CFLAGS)

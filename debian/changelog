@@ -33,6 +33,7 @@ apache2 (2.4.4-3) UNRELEASED; urgency=low
     apache2 doc-dir when upgrading (Closes: #707795)
 
   [ Stefan Fritsch ]
+  * Backport various fixes from upstream svn branch '2.4.x'. 
   * Remove paragraph about MaxMemFree in README.Debian. The issue should be
     fixed in 2.4.
   * Enable mod_authn_core when upgrading from wheezy (Closes: #702866)

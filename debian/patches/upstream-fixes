@@ -1,0 +1,1465 @@
+Description: Pull various fixes from upstream branch 2.4.x
+
+# ------------------------------------------------------------------------
+# r1449999 | tdonovan | 2013-02-26 03:18:04 +0100 (Tue, 26 Feb 2013) | 3 lines
+# 
+# Backport r1449479 from trunk.
+# mod_include: Use new ap_expr for 'elif'. [PR 54548]
+# 
+# ------------------------------------------------------------------------
+# r1455219 | jim | 2013-03-11 17:32:28 +0100 (Mon, 11 Mar 2013) | 8 lines
+# 
+# Merge r1439623 from trunk:
+# 
+# Fix error because of negative rate-limit
+# PR : 52964
+# Submitted by: Tianyin Xu <tixu cs ucsd edu>
+# Submitted by: jailletc36
+# Reviewed/backported by: jim
+# 
+# ------------------------------------------------------------------------
+# r1465986 | jim | 2013-04-09 14:15:44 +0200 (Tue, 09 Apr 2013) | 8 lines
+# 
+# Merge r1453604 from trunk:
+# 
+# fix merge of min/max file size by setting corresponding _set
+# 
+# 
+# Submitted by: covener
+# Reviewed/backported by: jim
+# 
+# ------------------------------------------------------------------------
+# r1467981 | jim | 2013-04-15 14:42:29 +0200 (Mon, 15 Apr 2013) | 14 lines
+# 
+# Merge r1467765 from trunk:
+# 
+# Fix crash in mod_log_config when logging
+# request end time for a failed request
+# (LogFormat contains %{end}t).
+# 
+# The request_config for mod_log_config might
+# not be initialized.
+# 
+# PR 54828.
+# 
+# Submitted by: rjung
+# Reviewed/backported by: jim
+# 
+# ------------------------------------------------------------------------
+# r1476089 | rjung | 2013-04-26 09:42:01 +0200 (Fri, 26 Apr 2013) | 10 lines
+# 
+# htdigest: Fix buffer overflow when reading digest
+# password file with very long lines.
+# 
+# PR 54893.
+# 
+# Backport of r1475878 from trunk.
+# 
+# Proposed/Backported by: rjung
+# Reviewed by: humbedooh, covener
+# 
+# ------------------------------------------------------------------------
+# r1455225 | jim | 2013-03-11 17:38:39 +0100 (Mon, 11 Mar 2013) | 41 lines
+# 
+# Merge r1442865, r1442759, r1442326, r1442309, r1448171, r1418556, r1448453, r1425771, r1425772, r1425775 from trunk:
+# 
+# Change bzero/bcopy into memset/memcpy
+# 
+# PR 54346
+# 
+# Can't figure out why we allocate len+2 bytes here. Len+1 should be enough.
+# 
+# Fix valgrind warning about uninitialized memory in argument to semctl
+# 
+# PR: 53690
+# Submitted by: Mikhail T. <mi+apache aldan algebra com>
+# 
+# 
+# fix valgrind warnings about uninitialized memory in syscall arguments
+# 
+# 
+# This is useful info for mod_status ;)
+# 
+# Add some __attribute__ for automatic format checking.
+# Correct one catch in sed0.c.
+# 
+# Correct some spelling.
+# 
+# 
+# Replace strdup by ap_malloc to ensure a proper error message if out-of-memory.
+# While there, only allocate memory for the string part we actually use.
+# 
+# PR: 54345
+# 
+# 
+# Exit with error message if out of mem
+# 
+# 
+# htdbm, htpasswd: print error message if out of memory
+# 
+# PR: 54345
+# 
+# Submitted by: jailletc36, sf, sf, jim, jailletc36, minfrin, sf, sf, sf
+# Reviewed/backported by: jim
+# 
+# ------------------------------------------------------------------------
+# r1467978 | jim | 2013-04-15 14:39:55 +0200 (Mon, 15 Apr 2013) | 11 lines
+# 
+# Merge r1463750, r1463754, r1464675 from trunk:
+# 
+# Use apr_file_printf(... "%pm"...) instead of explicit call to apr_strerror
+# 
+# Use apr_psprintf(... "%pm"...) instead of explicit call to apr_strerror
+# 
+# Use apr_file_printf(... "%pm"...) instead of explicit call to apr_strerror
+# + add some spaces to improve formatting
+# Submitted by: jailletc36
+# Reviewed/backported by: jim
+# 
+# ------------------------------------------------------------------------
+# r1467980 | jim | 2013-04-15 14:42:00 +0200 (Mon, 15 Apr 2013) | 11 lines
+# 
+# Merge r1452128 from trunk:
+# 
+# Remove useless tests.
+# 
+# Turn
+#    if (*x && apr_isspace(*x))
+# into
+#    if (apr_isspace(*x))
+# Submitted by: jailletc36
+# Reviewed/backported by: jim
+# 
+# ------------------------------------------------------------------------
+# r1476674 | minfrin | 2013-04-27 23:27:43 +0200 (Sat, 27 Apr 2013) | 7 lines
+# 
+# htpasswd/htdbm: Fix hash generation bug. PR 54735
+# 
+# trunk patch: https://svn.apache.org/r1465115
+# 
+# Submitted by: MadMaverick9 <asfbugzilla meinkino.ch>
+# Reviewed by: sf, covener, minfrin
+# 
+# ------------------------------------------------------------------------
+# r1476143 | rpluem | 2013-04-26 13:31:59 +0200 (Fri, 26 Apr 2013) | 10 lines
+# 
+# Merge r1471449 from trunk:
+# 
+# * Fix null pointer dereference in case SetEnvif and SetEnvIfExpr are used
+#   together.
+# 
+# PR: 54881
+# 
+# Submitted by: rpluem
+# Reviewed by: rpluem, covener, humbedooh
+# 
+# ------------------------------------------------------------------------
+# r1476676 | minfrin | 2013-04-27 23:32:55 +0200 (Sat, 27 Apr 2013) | 6 lines
+# 
+# mod_auth_digest: avoid crash if shm init fails.
+# 
+# trunk patch: https://svn.apache.org/r1463047
+# Submitted by: sf
+# Reviewed by: humbedooh, covener
+# 
+# ------------------------------------------------------------------------
+# r1476685 | minfrin | 2013-04-28 00:18:02 +0200 (Sun, 28 Apr 2013) | 13 lines
+# 
+# mod_ssl: Catch missing, mismatched or encrypted client cert/key pairs
+# with SSLProxyMachineCertificateFile/Path directives. PR 52212, PR 54698.
+# (check at startup, to prevent segfaults at proxy request time)
+# 
+# trunk patches: https://svn.apache.org/r1374214
+#                https://svn.apache.org/r1374216
+#                https://svn.apache.org/r1375445
+#                https://svn.apache.org/r1467593
+# 2.4.x patch: https://people.apache.org/~kbrand/PR52212_54698_2.4.x.patch
+# 
+# Submitted by: kbrand
+# Reviewed by: jorton, minfrin
+# 
+# ------------------------------------------------------------------------
+# r1477651 | jim | 2013-04-30 16:19:43 +0200 (Tue, 30 Apr 2013) | 9 lines
+# 
+# Merge r1465116 from trunk:
+# 
+# htpasswd: Add -v option to verify a password
+# 
+# htpasswd and htdbm could use some more refactoring...
+# 
+# Submitted by: sf
+# Reviewed/backported by: jim
+# 
+# ------------------------------------------------------------------------
+# r1481512 | minfrin | 2013-05-12 12:21:18 +0200 (Sun, 12 May 2013) | 7 lines
+# 
+# core: Improve error message where client's request-line exceeds LimitRequestLine
+# PR 54384
+# 
+# trunk patch: http://svn.apache.org/r1433613
+# Submitted by: jailletc36
+# Reviewed by: minfrin, jim
+# 
+# ------------------------------------------------------------------------
+# r1481513 | minfrin | 2013-05-12 12:26:22 +0200 (Sun, 12 May 2013) | 6 lines
+# 
+# mod_dav: Do not segfault on PROPFIND with a zero length DBM. PR 52559
+# 
+# trunk patch: http://svn.apache.org/r1476645
+# Submitted by: Diego Santa Cruz <diego.santaCruz spinetix.com>
+# Reviewed by: minfrin, covener, sf
+# 
+# ------------------------------------------------------------------------
+Index: apache2/CHANGES
+===================================================================
+--- apache2.orig/CHANGES
++++ apache2/CHANGES
+@@ -1,4 +1,38 @@
+                                                          -*- coding: utf-8 -*-
++ 
++Changes backported from unreleased 2.4.x branch
++
++  *) mod_dav: Do not segfault on PROPFIND with a zero length DBM.
++     PR 52559 [Diego Santa Cruz <diego.santaCruz spinetix.com>]
++
++  *) core: Improve error message where client's request-line exceeds
++     LimitRequestLine. PR 54384 [Christophe Jaillet]
++
++  *) htpasswd: Add -v option to verify a password. [Stefan Fritsch]
++
++  *) mod_auth_digest: Fix crashes if shm initialization failed. [Stefan
++     Fritsch]
++
++  *) htpasswd, htdbm: Fix password generation. PR 54735. [Stefan Fritsch]
++
++  *) mod_setenvif: Fix crash in case SetEnvif and SetEnvIfExpr are used
++     together. PR 54881. [Ruediger Pluem]
++
++  *) htdigest: Fix buffer overflow when reading digest password file
++     with very long lines. PR 54893. [Rainer Jung]
++
++  *) mod_log_config: Fix crash when logging request end time for a failed
++     request.  PR 54828 [Rainer Jung]
++
++  *) mod_ssl: Catch missing, mismatched or encrypted client cert/key pairs
++     with SSLProxyMachineCertificateFile/Path directives. PR 52212, PR 54698.
++     [Keith Burdis <keith burdis.org>, Joe Orton, Kaspar Brand]
++
++  *) mod_cache_disk: CacheMinFileSize and CacheMaxFileSize were always
++     using compiled in defaults of 1000000/1 respectively. [Eric Covener]
++
++  * mod_include: Use new ap_expr for 'elif', like 'if', 
++    if legacy parser is not specified.  PR 54548 [Tom Donovan]
+ 
+ Changes with Apache 2.4.4
+ 
+Index: apache2/include/httpd.h
+===================================================================
+--- apache2.orig/include/httpd.h
++++ apache2/include/httpd.h
+@@ -1388,7 +1388,7 @@
+    char **) */
+ 
+ /**
+- * Get the characters until the first occurance of a specified character
++ * Get the characters until the first occurrence of a specified character
+  * @param p The pool to allocate memory from
+  * @param line The string to get the characters from
+  * @param stop The character to stop at
+@@ -1397,7 +1397,7 @@
+ AP_DECLARE(char *) ap_getword(apr_pool_t *p, const char **line, char stop);
+ 
+ /**
+- * Get the characters until the first occurance of a specified character
++ * Get the characters until the first occurrence of a specified character
+  * @param p The pool to allocate memory from
+  * @param line The string to get the characters from
+  * @param stop The character to stop at
+@@ -1426,22 +1426,22 @@
+ AP_DECLARE(char *) ap_getword_white_nc(apr_pool_t *p, char **line);
+ 
+ /**
+- * Get all characters from the first occurance of @a stop to the first "\0"
++ * Get all characters from the first occurrence of @a stop to the first "\0"
+  * @param p The pool to allocate memory from
+  * @param line The line to traverse
+  * @param stop The character to start at
+- * @return A copy of all caracters after the first occurance of the specified
++ * @return A copy of all characters after the first occurrence of the specified
+  *         character
+  */
+ AP_DECLARE(char *) ap_getword_nulls(apr_pool_t *p, const char **line,
+                                     char stop);
+ 
+ /**
+- * Get all characters from the first occurance of @a stop to the first "\0"
++ * Get all characters from the first occurrence of @a stop to the first "\0"
+  * @param p The pool to allocate memory from
+  * @param line The line to traverse
+  * @param stop The character to start at
+- * @return A copy of all caracters after the first occurance of the specified
++ * @return A copy of all characters after the first occurrence of the specified
+  *         character
+  * @note The same as ap_getword_nulls(), except it doesn't use const char **.
+  */
+Index: apache2/include/util_filter.h
+===================================================================
+--- apache2.orig/include/util_filter.h
++++ apache2/include/util_filter.h
+@@ -332,8 +332,8 @@
+ AP_DECLARE(apr_status_t) ap_pass_brigade_fchk(request_rec *r,
+                                               apr_bucket_brigade *bucket,
+                                               const char *fmt,
+-                                              ...);
+-
++                                              ...)
++                                              __attribute__((format(printf,3,4)));
+ 
+ /**
+  * This function is used to register an input filter with the system.
+Index: apache2/modules/aaa/mod_auth_digest.c
+===================================================================
+--- apache2.orig/modules/aaa/mod_auth_digest.c
++++ apache2/modules/aaa/mod_auth_digest.c
+@@ -223,6 +223,8 @@
+         opaque_lock = NULL;
+     }
+ 
++    client_list = NULL;
++
+     return APR_SUCCESS;
+ }
+ 
+Index: apache2/modules/aaa/mod_authz_host.c
+===================================================================
+--- apache2.orig/modules/aaa/mod_authz_host.c
++++ apache2/modules/aaa/mod_authz_host.c
+@@ -131,10 +131,8 @@
+             return apr_psprintf(p, "ip address '%s' appears to be invalid", w);
+         }
+         else if (rv != APR_SUCCESS) {
+-            char msgbuf[120];
+-            apr_strerror(rv, msgbuf, sizeof msgbuf);
+-            return apr_psprintf(p, "ip address '%s' appears to be invalid: %s",
+-                                w, msgbuf);
++            return apr_psprintf(p, "ip address '%s' appears to be invalid: %pm",
++                                w, &rv);
+         }
+ 
+         if (parsed_subnets)
+Index: apache2/modules/cache/mod_cache_disk.c
+===================================================================
+--- apache2.orig/modules/cache/mod_cache_disk.c
++++ apache2/modules/cache/mod_cache_disk.c
+@@ -841,7 +841,7 @@
+         }
+ 
+         *l++ = '\0';
+-        while (*l && apr_isspace(*l)) {
++        while (apr_isspace(*l)) {
+             ++l;
+         }
+ 
+@@ -1447,6 +1447,7 @@
+     {
+         return "CacheMinFileSize argument must be a non-negative integer representing the min size of a file to cache in bytes.";
+     }
++    dconf->minfs_set = 1;
+     return NULL;
+ }
+ 
+@@ -1460,6 +1461,7 @@
+     {
+         return "CacheMaxFileSize argument must be a non-negative integer representing the max size of a file to cache in bytes.";
+     }
++    dconf->maxfs_set = 1;
+     return NULL;
+ }
+ 
+Index: apache2/modules/dav/main/props.c
+===================================================================
+--- apache2.orig/modules/dav/main/props.c
++++ apache2/modules/dav/main/props.c
+@@ -594,13 +594,14 @@
+         if (propdb->db != NULL) {
+             dav_xmlns_info *xi = dav_xmlns_create(propdb->p);
+             dav_prop_name name;
++            dav_error *err;
+ 
+             /* define (up front) any namespaces the db might need */
+             (void) (*db_hooks->define_namespaces)(propdb->db, xi);
+ 
+             /* get the first property name, beginning the scan */
+-            (void) (*db_hooks->first_name)(propdb->db, &name);
+-            while (name.ns != NULL) {
++            err = (*db_hooks->first_name)(propdb->db, &name);
++            while (!err && name.ns) {
+ 
+                 /*
+                 ** We also look for <DAV:getcontenttype> and
+@@ -619,7 +620,6 @@
+                 }
+ 
+                 if (what == DAV_PROP_INSERT_VALUE) {
+-                    dav_error *err;
+                     int found;
+ 
+                     if ((err = (*db_hooks->output_value)(propdb->db, &name,
+@@ -638,7 +638,7 @@
+                 }
+ 
+               next_key:
+-                (void) (*db_hooks->next_name)(propdb->db, &name);
++                err = (*db_hooks->next_name)(propdb->db, &name);
+             }
+ 
+             /* all namespaces have been entered into xi. generate them into
+Index: apache2/modules/filters/mod_include.c
+===================================================================
+--- apache2.orig/modules/filters/mod_include.c
++++ apache2/modules/filters/mod_include.c
+@@ -2411,7 +2411,10 @@
+         return APR_SUCCESS;
+     }
+ 
+-    expr_ret = parse_expr(ctx, expr, &was_error);
++    if (ctx->intern->legacy_expr)
++        expr_ret = parse_expr(ctx, expr, &was_error);
++    else
++        expr_ret = parse_ap_expr(ctx, expr, &was_error);
+ 
+     if (was_error) {
+         SSI_CREATE_ERROR_BUCKET(ctx, f, bb);
+Index: apache2/modules/filters/mod_proxy_html.c
+===================================================================
+--- apache2.orig/modules/filters/mod_proxy_html.c
++++ apache2/modules/filters/mod_proxy_html.c
+@@ -668,7 +668,7 @@
+             if (p != NULL) {
+                 while (*p) {
+                     p += 7;
+-                    while (*p && apr_isspace(*p))
++                    while (apr_isspace(*p))
+                         ++p;
+                     if (*p != '=')
+                         continue;
+Index: apache2/modules/filters/mod_ratelimit.c
+===================================================================
+--- apache2.orig/modules/filters/mod_ratelimit.c
++++ apache2/modules/filters/mod_ratelimit.c
+@@ -74,6 +74,7 @@
+     if (ctx == NULL) {
+ 
+         const char *rl = NULL;
++        int ratelimit;
+ 
+         /* no subrequests. */
+         if (f->r->main != NULL) {
+@@ -87,22 +88,21 @@
+             ap_remove_output_filter(f);
+             return ap_pass_brigade(f->next, bb);
+         }
+-
+-        /* first run, init stuff */
+-        ctx = apr_palloc(f->r->pool, sizeof(rl_ctx_t));
+-        f->ctx = ctx;
+-        ctx->speed = 0;
+-        ctx->state = RATE_LIMIT;
+-
++        
+         /* rl is in kilo bytes / second  */
+-        ctx->speed = atoi(rl) * 1024;
+-
+-        if (ctx->speed == 0) {
++        ratelimit = atoi(rl) * 1024;
++        if (ratelimit <= 0) {
+             /* remove ourselves */
+             ap_remove_output_filter(f);
+             return ap_pass_brigade(f->next, bb);
+         }
+ 
++        /* first run, init stuff */
++        ctx = apr_palloc(f->r->pool, sizeof(rl_ctx_t));
++        f->ctx = ctx;
++        ctx->state = RATE_LIMIT;
++        ctx->speed = ratelimit;
++
+         /* calculate how many bytes / interval we want to send */
+         /* speed is bytes / second, so, how many  (speed / 1000 % interval) */
+         ctx->chunk_size = (ctx->speed / (1000 / RATE_INTERVAL_MS));
+Index: apache2/modules/filters/regexp.h
+===================================================================
+--- apache2.orig/modules/filters/regexp.h
++++ apache2/modules/filters/regexp.h
+@@ -69,7 +69,8 @@
+ 
+ extern char *sed_compile(sed_commands_t *commands, sed_comp_args *compargs,
+                          char *ep, char *endbuf, int seof);
+-extern void command_errf(sed_commands_t *commands, const char *fmt, ...);
++extern void command_errf(sed_commands_t *commands, const char *fmt, ...)
++                         __attribute__((format(printf,2,3)));
+ 
+ #define SEDERR_CGMES "command garbled: %s"
+ #define SEDERR_SMMES "Space missing before filename: %s"
+Index: apache2/modules/filters/sed0.c
+===================================================================
+--- apache2.orig/modules/filters/sed0.c
++++ apache2/modules/filters/sed0.c
+@@ -275,7 +275,7 @@
+         }
+ 
+         if(p > &commands->respace[RESIZE-1]) {
+-            command_errf(commands, SEDERR_TMMES);
++            command_errf(commands, SEDERR_TMMES, commands->linebuf);
+             return -1;
+         }
+ 
+Index: apache2/modules/generators/mod_status.c
+===================================================================
+--- apache2.orig/modules/generators/mod_status.c
++++ apache2/modules/generators/mod_status.c
+@@ -405,6 +405,8 @@
+                   ")</h1>\n\n", NULL);
+         ap_rvputs(r, "<dl><dt>Server Version: ",
+                   ap_get_server_description(), "</dt>\n", NULL);
++        ap_rvputs(r, "<dt>Server MPM: ",
++                  ap_show_mpm(), "</dt>\n", NULL);
+         ap_rvputs(r, "<dt>Server Built: ",
+                   ap_get_server_built(), "\n</dt></dl><hr /><dl>\n", NULL);
+         ap_rvputs(r, "<dt>Current Time: ",
+@@ -981,4 +983,3 @@
+     NULL,                       /* command table */
+     register_hooks              /* register_hooks */
+ };
+-
+Index: apache2/modules/loggers/mod_log_config.c
+===================================================================
+--- apache2.orig/modules/loggers/mod_log_config.c
++++ apache2/modules/loggers/mod_log_config.c
+@@ -597,6 +597,10 @@
+ {
+     log_request_state *state = (log_request_state *)ap_get_module_config(r->request_config,
+                                                                          &log_config_module);
++    if (!state) {
++        state = apr_pcalloc(r->pool, sizeof(log_request_state));
++        ap_set_module_config(r->request_config, &log_config_module, state);
++    }
+     if (state->request_end_time == 0) {
+         state->request_end_time = apr_time_now();
+     }
+Index: apache2/modules/mappers/mod_imagemap.c
+===================================================================
+--- apache2.orig/modules/mappers/mod_imagemap.c
++++ apache2/modules/mappers/mod_imagemap.c
+@@ -686,7 +686,7 @@
+         if (!*string_pos) {   /* need at least two fields */
+             goto need_2_fields;
+         }
+-        while(*string_pos && apr_isspace(*string_pos)) { /* past whitespace */
++        while (apr_isspace(*string_pos)) { /* past whitespace */
+             ++string_pos;
+         }
+ 
+Index: apache2/modules/mappers/mod_negotiation.c
+===================================================================
+--- apache2.orig/modules/mappers/mod_negotiation.c
++++ apache2/modules/mappers/mod_negotiation.c
+@@ -366,7 +366,7 @@
+         return  1.0f;
+     }
+ 
+-    while (*string && apr_isspace(*string)) {
++    while (apr_isspace(*string)) {
+         ++string;
+     }
+ 
+@@ -464,7 +464,7 @@
+         }
+ 
+         *cp++ = '\0';           /* Delimit var */
+-        while (*cp && (apr_isspace(*cp) || *cp == '=')) {
++        while (apr_isspace(*cp) || *cp == '=') {
+             ++cp;
+         }
+ 
+@@ -757,7 +757,7 @@
+ 
+     /* If blank, just return it --- this ends information on this variant */
+ 
+-    for (cp = buffer; (*cp && apr_isspace(*cp)); ++cp) {
++    for (cp = buffer; apr_isspace(*cp); ++cp) {
+         continue;
+     }
+ 
+@@ -924,7 +924,7 @@
+ 
+     do {
+         ++cp;
+-    } while (*cp && apr_isspace(*cp));
++    } while (apr_isspace(*cp));
+ 
+     if (!*cp) {
+         ap_log_rerror(APLOG_MARK, APLOG_ERR, 0, r, APLOGNO(00682)
+Index: apache2/modules/mappers/mod_rewrite.c
+===================================================================
+--- apache2.orig/modules/mappers/mod_rewrite.c
++++ apache2/modules/mappers/mod_rewrite.c
+@@ -1255,7 +1255,7 @@
+         }
+ 
+         /* jump to the value */
+-        while (*p && apr_isspace(*p)) {
++        while (apr_isspace(*p)) {
+             ++p;
+         }
+ 
+Index: apache2/modules/metadata/mod_cern_meta.c
+===================================================================
+--- apache2.orig/modules/metadata/mod_cern_meta.c
++++ apache2/modules/metadata/mod_cern_meta.c
+@@ -237,7 +237,7 @@
+         }
+ 
+         *l++ = '\0';
+-        while (*l && apr_isspace(*l))
++        while (apr_isspace(*l))
+             ++l;
+ 
+         if (!strcasecmp(w, "Content-type")) {
+Index: apache2/modules/metadata/mod_headers.c
+===================================================================
+--- apache2.orig/modules/metadata/mod_headers.c
++++ apache2/modules/metadata/mod_headers.c
+@@ -722,7 +722,7 @@
+                 while (*val) {
+                     const char *tok_start;
+ 
+-                    while (*val && apr_isspace(*val))
++                    while (apr_isspace(*val))
+                         ++val;
+ 
+                     tok_start = val;
+Index: apache2/modules/metadata/mod_setenvif.c
+===================================================================
+--- apache2.orig/modules/metadata/mod_setenvif.c
++++ apache2/modules/metadata/mod_setenvif.c
+@@ -314,7 +314,7 @@
+      */
+     for (i = 0; i < sconf->conditionals->nelts; ++i) {
+         new = &entries[i];
+-        if (!strcasecmp(new->name, fname)) {
++        if (new->name && !strcasecmp(new->name, fname)) {
+             fname = new->name;
+             break;
+         }
+Index: apache2/modules/slotmem/mod_slotmem_shm.c
+===================================================================
+--- apache2.orig/modules/slotmem/mod_slotmem_shm.c
++++ apache2/modules/slotmem/mod_slotmem_shm.c
+@@ -91,7 +91,7 @@
+ {
+ #ifdef AP_NEED_SET_MUTEX_PERMS
+ #if APR_USE_SHMEM_SHMGET || APR_USE_SHMEM_SHMGET_ANON
+-    struct shmid_ds shmbuf;
++    struct shmid_ds shmbuf = { { 0 } };
+     key_t shmkey;
+     int shmid;
+ 
+Index: apache2/modules/ssl/ssl_engine_init.c
+===================================================================
+--- apache2.orig/modules/ssl/ssl_engine_init.c
++++ apache2/modules/ssl/ssl_engine_init.c
+@@ -1354,7 +1354,8 @@
+     for (n = 0; n < ncerts; n++) {
+         X509_INFO *inf = sk_X509_INFO_value(sk, n);
+ 
+-        if (!inf->x509 || !inf->x_pkey) {
++        if (!inf->x509 || !inf->x_pkey || !inf->x_pkey->dec_pkey ||
++            inf->enc_data) {
+             sk_X509_INFO_free(sk);
+             ap_log_error(APLOG_MARK, APLOG_STARTUP, 0, s, APLOGNO(02252)
+                          "incomplete client cert configured for SSL proxy "
+@@ -1362,6 +1363,15 @@
+             ssl_die(s);
+             return;
+         }
++        
++        if (X509_check_private_key(inf->x509, inf->x_pkey->dec_pkey) != 1) {
++            ssl_log_xerror(SSLLOG_MARK, APLOG_STARTUP, 0, ptemp, s, inf->x509,
++                           APLOGNO(02326) "proxy client certificate and "
++                           "private key do not match");
++            ssl_log_ssl_error(SSLLOG_MARK, APLOG_ERR, s);
++            ssl_die(s);
++            return;
++        }
+     }
+ 
+     ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, s, APLOGNO(02207)
+@@ -1374,7 +1384,11 @@
+         return;
+     }
+ 
+-    /* Load all of the CA certs and construct a chain */
++    /* If SSLProxyMachineCertificateChainFile is configured, load all
++     * the CA certs and have OpenSSL attempt to construct a full chain
++     * from each configured end-entity cert up to a root.  This will
++     * allow selection of the correct cert given a list of root CA
++     * names in the certificate request from the server.  */
+     pkp->ca_certs = (STACK_OF(X509) **) apr_pcalloc(p, ncerts * sizeof(sk));
+     sctx = X509_STORE_CTX_new();
+ 
+Index: apache2/os/unix/unixd.c
+===================================================================
+--- apache2.orig/os/unix/unixd.c
++++ apache2/os/unix/unixd.c
+@@ -241,7 +241,7 @@
+             };
+ #endif
+             union semun ick;
+-            struct semid_ds buf;
++            struct semid_ds buf = { { 0 } };
+ 
+             apr_os_proc_mutex_get(&ospmutex, pmutex);
+             buf.sem_perm.uid = ap_unixd_config.user_id;
+Index: apache2/server/config.c
+===================================================================
+--- apache2.orig/server/config.c
++++ apache2/server/config.c
+@@ -599,7 +599,8 @@
+             len -= slen;
+         }
+ 
+-        ap_module_short_names[m->module_index] = strdup(sym_name);
++        ap_module_short_names[m->module_index] = ap_malloc(len + 1);
++        memcpy(ap_module_short_names[m->module_index], sym_name, len);
+         ap_module_short_names[m->module_index][len] = '\0';
+         merger_func_cache[m->module_index] = m->merge_dir_config;
+     }
+@@ -623,8 +624,9 @@
+ 
+     /* We cannot fix the string in-place, because it's const */
+     if (m->name[strlen(m->name)-1] == ')') {
+-        char *tmp = strdup(m->name); /* FIXME: memory leak, albeit a small one */
+-        tmp[strlen(tmp)-1] = '\0';
++        char *tmp = ap_malloc(strlen(m->name)); /* FIXME: memory leak, albeit a small one */
++        memcpy(tmp, m->name, strlen(m->name)-1);
++        tmp[strlen(m->name)-1] = '\0';
+         m->name = tmp;
+     }
+ #endif /*_OSD_POSIX*/
+Index: apache2/server/protocol.c
+===================================================================
+--- apache2.orig/server/protocol.c
++++ apache2/server/protocol.c
+@@ -964,7 +964,7 @@
+             || r->status == HTTP_BAD_REQUEST) {
+             if (r->status == HTTP_REQUEST_URI_TOO_LARGE) {
+                 ap_log_rerror(APLOG_MARK, APLOG_INFO, 0, r, APLOGNO(00565)
+-                              "request failed: URI too long (longer than %d)",
++                              "request failed: client's request-line exceeds LimitRequestLine (longer than %d)",
+                               r->server->limit_req_line);
+             }
+             else if (r->method == NULL) {
+Index: apache2/server/util.c
+===================================================================
+--- apache2.orig/server/util.c
++++ apache2/server/util.c
+@@ -752,7 +752,7 @@
+ static char *substring_conf(apr_pool_t *p, const char *start, int len,
+                             char quote)
+ {
+-    char *result = apr_palloc(p, len + 2);
++    char *result = apr_palloc(p, len + 1);
+     char *resp = result;
+     int i;
+ 
+@@ -783,7 +783,7 @@
+     char *res;
+     char quote;
+ 
+-    while (*str && apr_isspace(*str))
++    while (apr_isspace(*str))
+         ++str;
+ 
+     if (!*str) {
+@@ -815,7 +815,7 @@
+         res = substring_conf(p, str, strend - str, 0);
+     }
+ 
+-    while (*strend && apr_isspace(*strend))
++    while (apr_isspace(*strend))
+         ++strend;
+     *line = strend;
+     return res;
+@@ -1405,7 +1405,7 @@
+ 
+     /* Find first non-white byte */
+ 
+-    while (*ptr && apr_isspace(*ptr))
++    while (apr_isspace(*ptr))
+         ++ptr;
+ 
+     tok_start = ptr;
+@@ -1427,7 +1427,7 @@
+ 
+     /* Advance accept_line pointer to the next non-white byte */
+ 
+-    while (*ptr && apr_isspace(*ptr))
++    while (apr_isspace(*ptr))
+         ++ptr;
+ 
+     *accept_line = ptr;
+Index: apache2/server/util_script.c
+===================================================================
+--- apache2.orig/server/util_script.c
++++ apache2/server/util_script.c
+@@ -565,7 +565,7 @@
+         }
+ 
+         *l++ = '\0';
+-        while (*l && apr_isspace(*l)) {
++        while (apr_isspace(*l)) {
+             ++l;
+         }
+ 
+Index: apache2/support/htdbm.c
+===================================================================
+--- apache2.orig/support/htdbm.c
++++ apache2/support/htdbm.c
+@@ -110,6 +110,7 @@
+ #endif
+ 
+     apr_pool_create( pool, NULL);
++    apr_pool_abort_set(abort_on_oom, *pool);
+     apr_file_open_stderr(&errfile, *pool);
+     apr_signal(SIGINT, (void (*)(int)) htdbm_interrupted);
+ 
+Index: apache2/support/htdigest.c
+===================================================================
+--- apache2.orig/support/htdigest.c
++++ apache2/support/htdigest.c
+@@ -96,12 +96,15 @@
+     char ch;
+     apr_status_t rv = APR_EINVAL;
+ 
+-    while (i < (n - 1) &&
++    /* we need 2 remaining bytes in buffer */
++    while (i < (n - 2) &&
+            ((rv = apr_file_getc(&ch, f)) == APR_SUCCESS) && (ch != '\n')) {
+         s[i++] = ch;
+     }
++    /* First remaining byte potentially used here */
+     if (ch == '\n')
+         s[i++] = ch;
++    /* Second remaining byte used here */
+     s[i] = '\0';
+ 
+     if (rv != APR_SUCCESS)
+@@ -202,8 +205,8 @@
+ #if APR_CHARSET_EBCDIC
+     rv = apr_xlate_open(&to_ascii, "ISO-8859-1", APR_DEFAULT_CHARSET, cntxt);
+     if (rv) {
+-        apr_file_printf(errfile, "apr_xlate_open(): %s (%d)\n",
+-                apr_strerror(rv, line, sizeof(line)), rv);
++        apr_file_printf(errfile, "apr_xlate_open(): %pm (%d)\n",
++                &rv, rv);
+         exit(1);
+     }
+ #endif
+@@ -215,11 +218,8 @@
+         rv = apr_file_open(&f, argv[2], APR_WRITE | APR_CREATE,
+                            APR_OS_DEFAULT, cntxt);
+         if (rv != APR_SUCCESS) {
+-            char errmsg[120];
+-
+-            apr_file_printf(errfile, "Could not open passwd file %s for writing: %s\n",
+-                    argv[2],
+-                    apr_strerror(rv, errmsg, sizeof errmsg));
++            apr_file_printf(errfile, "Could not open passwd file %s for writing: %pm\n",
++                    argv[2], &rv);
+             exit(1);
+         }
+         apr_cpystrn(user, argv[4], sizeof(user));
+Index: apache2/support/htpasswd.c
+===================================================================
+--- apache2.orig/support/htpasswd.c
++++ apache2/support/htpasswd.c
+@@ -67,6 +67,7 @@
+ #define APHTP_NEWFILE        1
+ #define APHTP_NOFILE         2
+ #define APHTP_DELUSER        4
++#define APHTP_VERIFY         8
+ 
+ apr_file_t *ftemp = NULL;
+ 
+@@ -92,8 +93,8 @@
+ static void usage(void)
+ {
+     apr_file_printf(errfile, "Usage:" NL
+-        "\thtpasswd [-cimBdpsD] [-C cost] passwordfile username" NL
+-        "\thtpasswd -b[cmBdpsD] [-C cost] passwordfile username password" NL
++        "\thtpasswd [-cimBdpsDv] [-C cost] passwordfile username" NL
++        "\thtpasswd -b[cmBdpsDv] [-C cost] passwordfile username password" NL
+         NL
+         "\thtpasswd -n[imBdps] [-C cost] username" NL
+         "\thtpasswd -nb[mBdps] [-C cost] username password" NL
+@@ -110,6 +111,7 @@
+         " -s  Force SHA encryption of the password (insecure)." NL
+         " -p  Do not encrypt the password (plaintext, insecure)." NL
+         " -D  Delete the specified user." NL
++        " -v  Verify password for the specified user." NL
+         "On other systems than Windows and NetWare the '-p' flag will "
+             "probably not work." NL
+         "The SHA algorithm does not use a salt and is less secure than the "
+@@ -155,7 +157,7 @@
+ }
+ 
+ static void check_args(int argc, const char *const argv[],
+-                       struct passwd_ctx *ctx, int *mask, char **user,
++                       struct passwd_ctx *ctx, unsigned *mask, char **user,
+                        char **pwfilename)
+ {
+     const char *arg;
+@@ -171,7 +173,7 @@
+     if (rv != APR_SUCCESS)
+         exit(ERR_SYNTAX);
+ 
+-    while ((rv = apr_getopt(state, "cnmspdBbDiC:", &opt, &opt_arg)) == APR_SUCCESS) {
++    while ((rv = apr_getopt(state, "cnmspdBbDiC:v", &opt, &opt_arg)) == APR_SUCCESS) {
+         switch (opt) {
+         case 'c':
+             *mask |= APHTP_NEWFILE;
+@@ -183,6 +185,9 @@
+         case 'D':
+             *mask |= APHTP_DELUSER;
+             break;
++        case 'v':
++            *mask |= APHTP_VERIFY;
++            break;
+         default:
+             ret = parse_common_options(ctx, opt, opt_arg);
+             if (ret) {
+@@ -196,18 +201,15 @@
+     if (rv != APR_EOF)
+         usage();
+ 
+-    if ((*mask & APHTP_NEWFILE) && (*mask & APHTP_NOFILE)) {
+-        apr_file_printf(errfile, "%s: -c and -n options conflict" NL, argv[0]);
+-        exit(ERR_SYNTAX);
+-    }
+-    if ((*mask & APHTP_NEWFILE) && (*mask & APHTP_DELUSER)) {
+-        apr_file_printf(errfile, "%s: -c and -D options conflict" NL, argv[0]);
+-        exit(ERR_SYNTAX);
+-    }
+-    if ((*mask & APHTP_NOFILE) && (*mask & APHTP_DELUSER)) {
+-        apr_file_printf(errfile, "%s: -n and -D options conflict" NL, argv[0]);
++    if ((*mask) & (*mask - 1)) {
++        /* not a power of two, i.e. more than one flag specified */
++        apr_file_printf(errfile, "%s: only one of -c -n -v -D may be specified" NL,
++            argv[0]);
+         exit(ERR_SYNTAX);
+     }
++    if ((*mask & APHTP_VERIFY) && ctx->passwd_src == PW_PROMPT)
++        ctx->passwd_src = PW_PROMPT_VERIFY;
++
+     /*
+      * Make sure we still have exactly the right number of arguments left
+      * (the filename, the username, and possibly the password if -b was
+@@ -246,6 +248,25 @@
+     }
+ }
+ 
++static int verify(struct passwd_ctx *ctx, const char *hash)
++{
++    apr_status_t rv;
++    int ret;
++
++    if (ctx->passwd == NULL && (ret = get_password(ctx)) != 0)
++       return ret;
++    rv = apr_password_validate(ctx->passwd, hash);
++    if (rv == APR_SUCCESS)
++        return 0;
++    if (APR_STATUS_IS_EMISMATCH(rv)) {
++        ctx->errstr = "password verification failed";
++        return ERR_PWMISMATCH;
++    }
++    ctx->errstr = apr_psprintf(ctx->pool, "Could not verify password: %pm",
++                               &rv);
++    return ERR_GENERAL;
++}
++
+ /*
+  * Let's do it.  We end up doing a lot of file opening and closing,
+  * but what do we care?  This application isn't run constantly.
+@@ -253,7 +274,6 @@
+ int main(int argc, const char * const argv[])
+ {
+     apr_file_t *fpw = NULL;
+-    const char *errstr = NULL;
+     char line[MAX_STRING_LEN];
+     char *pwfilename = NULL;
+     char *user = NULL;
+@@ -262,7 +282,7 @@
+     char *scratch, cp[MAX_STRING_LEN];
+     int found = 0;
+     int i;
+-    int mask = 0;
++    unsigned mask = 0;
+     apr_pool_t *pool;
+     int existing_file = 0;
+     struct passwd_ctx ctx = { 0 };
+@@ -274,6 +294,7 @@
+     apr_app_initialize(&argc, &argv, NULL);
+     atexit(terminate);
+     apr_pool_create(&pool, NULL);
++    apr_pool_abort_set(abort_on_oom, pool);
+     apr_file_open_stderr(&errfile, pool);
+     ctx.pool = pool;
+     ctx.alg = ALG_APMD5;
+@@ -341,10 +362,10 @@
+      * Any error message text is returned in the record buffer, since
+      * the mkrecord() routine doesn't have access to argv[].
+      */
+-    if (!(mask & APHTP_DELUSER)) {
++    if ((mask & (APHTP_DELUSER|APHTP_VERIFY)) == 0) {
+         i = mkrecord(&ctx, user);
+         if (i != 0) {
+-            apr_file_printf(errfile, "%s: %s" NL, argv[0], errstr);
++            apr_file_printf(errfile, "%s: %s" NL, argv[0], ctx.errstr);
+             exit(i);
+         }
+         if (mask & APHTP_NOFILE) {
+@@ -353,21 +374,23 @@
+         }
+     }
+ 
+-    /*
+-     * We can access the files the right way, and we have a record
+-     * to add or update.  Let's do it..
+-     */
+-    if (apr_temp_dir_get((const char**)&dirname, pool) != APR_SUCCESS) {
+-        apr_file_printf(errfile, "%s: could not determine temp dir" NL,
+-                        argv[0]);
+-        exit(ERR_FILEPERM);
+-    }
+-    dirname = apr_psprintf(pool, "%s/%s", dirname, tn);
+-
+-    if (apr_file_mktemp(&ftemp, dirname, 0, pool) != APR_SUCCESS) {
+-        apr_file_printf(errfile, "%s: unable to create temporary file %s" NL,
+-                        argv[0], dirname);
+-        exit(ERR_FILEPERM);
++    if ((mask & APHTP_VERIFY) == 0) {
++        /*
++         * We can access the files the right way, and we have a record
++         * to add or update.  Let's do it..
++         */
++        if (apr_temp_dir_get((const char**)&dirname, pool) != APR_SUCCESS) {
++            apr_file_printf(errfile, "%s: could not determine temp dir" NL,
++                            argv[0]);
++            exit(ERR_FILEPERM);
++        }
++        dirname = apr_psprintf(pool, "%s/%s", dirname, tn);
++
++        if (apr_file_mktemp(&ftemp, dirname, 0, pool) != APR_SUCCESS) {
++            apr_file_printf(errfile, "%s: unable to create temporary file %s" NL,
++                            argv[0], dirname);
++            exit(ERR_FILEPERM);
++        }
+     }
+ 
+     /*
+@@ -418,33 +441,59 @@
+                 continue;
+             }
+             else {
+-                if (!(mask & APHTP_DELUSER)) {
+-                    /* We found the user we were looking for.
+-                     * Add him to the file.
+-                    */
+-                    apr_file_printf(errfile, "Updating ");
+-                    putline(ftemp, ctx.out);
+-                    found++;
++                /* We found the user we were looking for */
++                found++;
++                if ((mask & APHTP_DELUSER)) {
++                    /* Delete entry from the file */
++                    apr_file_printf(errfile, "Deleting ");
++                }
++                else if ((mask & APHTP_VERIFY)) {
++                    /* Verify */
++                    char *hash = colon + 1;
++                    size_t len;
++
++                    len = strcspn(hash, "\r\n");
++                    if (len == 0) {
++                        apr_file_printf(errfile, "Empty hash for user %s" NL,
++                                        user);
++                        exit(ERR_INVALID);
++                    }
++                    hash[len] = '\0';
++
++                    i = verify(&ctx, hash);
++                    if (i != 0) {
++                        apr_file_printf(errfile, "%s" NL, ctx.errstr);
++                        exit(i);
++                    }
+                 }
+                 else {
+-                    /* We found the user we were looking for.
+-                     * Delete them from the file.
+-                     */
+-                    apr_file_printf(errfile, "Deleting ");
+-                    found++;
++                    /* Update entry */
++                    apr_file_printf(errfile, "Updating ");
++                    putline(ftemp, ctx.out);
+                 }
+             }
+         }
+         apr_file_close(fpw);
+     }
+-    if (!found && !(mask & APHTP_DELUSER)) {
+-        apr_file_printf(errfile, "Adding ");
+-        putline(ftemp, ctx.out);
++    if (!found) {
++        if (mask & APHTP_DELUSER) {
++            apr_file_printf(errfile, "User %s not found" NL, user);
++            exit(0);
++        }
++        else if (mask & APHTP_VERIFY) {
++            apr_file_printf(errfile, "User %s not found" NL, user);
++            exit(ERR_BADUSER);
++        }
++        else {
++            apr_file_printf(errfile, "Adding ");
++            putline(ftemp, ctx.out);
++        }
+     }
+-    else if (!found && (mask & APHTP_DELUSER)) {
+-        apr_file_printf(errfile, "User %s not found" NL, user);
++    if (mask & APHTP_VERIFY) {
++        apr_file_printf(errfile, "Password for user %s correct." NL, user);
+         exit(0);
+     }
++
+     apr_file_printf(errfile, "password for user %s" NL, user);
+ 
+     /* The temporary file has all the data, just copy it to the new location.
+Index: apache2/support/httxt2dbm.c
+===================================================================
+--- apache2.orig/support/httxt2dbm.c
++++ apache2/support/httxt2dbm.c
+@@ -39,7 +39,6 @@
+ static const char *format;
+ static const char *shortname;
+ static apr_file_t *errfile;
+-static char errbuf[120];
+ static int verbose;
+ 
+ /* From mod_rewrite.c */
+@@ -85,11 +84,11 @@
+     "Usage: %s [-v] [-f format] -i SOURCE_TXT -o OUTPUT_DBM" NL
+     NL
+     "Options: " NL
+-    " -v    More verbose output"NL
++    " -v    More verbose output" NL
+     NL
+-    " -i    Source Text File. If '-', use stdin."NL
++    " -i    Source Text File. If '-', use stdin." NL
+     NL
+-    " -o    Output DBM."NL
++    " -o    Output DBM." NL
+     NL
+     " -f    DBM Format.  If not specified, will use the APR Default." NL
+     "           GDBM for GDBM files (%s)" NL
+@@ -138,7 +137,7 @@
+         dbmkey.dptr = apr_pstrmemdup(p, line,  c - line);
+         dbmkey.dsize = (c - line);
+ 
+-        while (*c && apr_isspace(*c)) {
++        while (apr_isspace(*c)) {
+             ++c;
+         }
+ 
+@@ -157,7 +156,7 @@
+         dbmval.dsize = (c - value);
+ 
+         if (verbose) {
+-            apr_file_printf(errfile, "    '%s' -> '%s'"NL,
++            apr_file_printf(errfile, "    '%s' -> '%s'" NL,
+                             dbmkey.dptr, dbmval.dptr);
+         }
+ 
+@@ -204,7 +203,7 @@
+     rv = apr_getopt_init(&opt, pool, argc, argv);
+ 
+     if (rv != APR_SUCCESS) {
+-        apr_file_printf(errfile, "Error: apr_getopt_init failed."NL NL);
++        apr_file_printf(errfile, "Error: apr_getopt_init failed." NL NL);
+         return 1;
+     }
+ 
+@@ -273,7 +272,7 @@
+     }
+ 
+     if (verbose) {
+-        apr_file_printf(errfile, "DBM Format: %s"NL, format);
++        apr_file_printf(errfile, "DBM Format: %s" NL, format);
+     }
+ 
+     if (!strcmp(input, "-")) {
+@@ -286,13 +285,13 @@
+ 
+     if (rv != APR_SUCCESS) {
+         apr_file_printf(errfile,
+-                        "Error: Cannot open input file '%s': (%d) %s" NL NL,
+-                         input, rv, apr_strerror(rv, errbuf, sizeof(errbuf)));
++                        "Error: Cannot open input file '%s': (%d) %pm" NL NL,
++                         input, rv, &rv);
+         return 1;
+     }
+ 
+     if (verbose) {
+-        apr_file_printf(errfile, "Input File: %s"NL, input);
++        apr_file_printf(errfile, "Input File: %s" NL, input);
+     }
+ 
+     rv = apr_dbm_open_ex(&outdbm, format, output, APR_DBM_RWCREATE,
+@@ -307,21 +306,21 @@
+ 
+     if (rv != APR_SUCCESS) {
+         apr_file_printf(errfile,
+-                        "Error: Cannot open output DBM '%s': (%d) %s" NL NL,
+-                         output, rv, apr_strerror(rv, errbuf, sizeof(errbuf)));
++                        "Error: Cannot open output DBM '%s': (%d) %pm" NL NL,
++                         output, rv, &rv);
+         return 1;
+     }
+ 
+     if (verbose) {
+-        apr_file_printf(errfile, "DBM File: %s"NL, output);
++        apr_file_printf(errfile, "DBM File: %s" NL, output);
+     }
+ 
+     rv = to_dbm(outdbm, infile, pool);
+ 
+     if (rv != APR_SUCCESS) {
+         apr_file_printf(errfile,
+-                        "Error: Converting to DBM: (%d) %s" NL NL,
+-                         rv, apr_strerror(rv, errbuf, sizeof(errbuf)));
++                        "Error: Converting to DBM: (%d) %pm" NL NL,
++                         rv, &rv);
+         return 1;
+     }
+ 
+Index: apache2/support/passwd_common.c
+===================================================================
+--- apache2.orig/support/passwd_common.c
++++ apache2/support/passwd_common.c
+@@ -46,6 +46,24 @@
+ 
+ apr_file_t *errfile;
+ 
++int abort_on_oom(int rc)
++{
++    const char *buf = "Error: out of memory\n";
++    int written, count = strlen(buf);
++    do {
++        written = write(STDERR_FILENO, buf, count);
++        if (written == count)
++            break;
++        if (written > 0) {
++            buf += written;
++            count -= written;
++        }
++    } while (written >= 0 || errno == EINTR);
++    abort();
++    /* NOTREACHED */
++    return 0;
++}
++
+ static int generate_salt(char *s, size_t size, const char **errstr,
+                          apr_pool_t *pool)
+ {
+@@ -85,6 +103,8 @@
+ void putline(apr_file_t *f, const char *l)
+ {
+     apr_status_t rv;
++    if (f == NULL)
++        return;
+     rv = apr_file_puts(l, f);
+     if (rv != APR_SUCCESS) {
+         apr_file_printf(errfile, "Error writing temp file: %pm", &rv);
+@@ -95,17 +115,17 @@
+ 
+ int get_password(struct passwd_ctx *ctx)
+ {
++    char buf[MAX_STRING_LEN + 1];
+     if (ctx->passwd_src == PW_STDIN) {
+-        char *buf = ctx->out;
+         apr_file_t *file_stdin;
+         apr_size_t nread;
+         if (apr_file_open_stdin(&file_stdin, ctx->pool) != APR_SUCCESS) {
+             ctx->errstr = "Unable to read from stdin.";
+             return ERR_GENERAL;
+         }
+-        if (apr_file_read_full(file_stdin, buf, ctx->out_len - 1,
++        if (apr_file_read_full(file_stdin, buf, sizeof(buf) - 1,
+                                &nread) != APR_EOF
+-            || nread == ctx->out_len - 1) {
++            || nread == sizeof(buf) - 1) {
+             goto err_too_long;
+         }
+         buf[nread] = '\0';
+@@ -115,21 +135,30 @@
+                 buf[nread-2] = '\0';
+         }
+         apr_file_close(file_stdin);
++        ctx->passwd = apr_pstrdup(ctx->pool, buf);
++    }
++    else if (ctx->passwd_src == PW_PROMPT_VERIFY) {
++        apr_size_t bufsize = sizeof(buf);
++        if (apr_password_get("Enter password: ", buf, &bufsize) != 0)
++            goto err_too_long;
++        ctx->passwd = apr_pstrdup(ctx->pool, buf);
+     }
+     else {
+-        char buf[MAX_STRING_LEN + 1];
+         apr_size_t bufsize = sizeof(buf);
+-        if (apr_password_get("New password: ", ctx->out, &ctx->out_len) != 0)
++        if (apr_password_get("New password: ", buf, &bufsize) != 0)
+             goto err_too_long;
++        ctx->passwd = apr_pstrdup(ctx->pool, buf);
++        bufsize = sizeof(buf);
++        buf[0] = '\0';
+         apr_password_get("Re-type new password: ", buf, &bufsize);
+-        if (strcmp(ctx->out, buf) != 0) {
++        if (strcmp(ctx->passwd, buf) != 0) {
+             ctx->errstr = "password verification error";
+-            memset(ctx->out, '\0', ctx->out_len);
++            memset(ctx->passwd, '\0', strlen(ctx->passwd));
+             memset(buf, '\0', sizeof(buf));
+             return ERR_PWMISMATCH;
+         }
+-        memset(buf, '\0', sizeof(buf));
+     }
++    memset(buf, '\0', sizeof(buf));
+     return 0;
+ 
+ err_too_long:
+@@ -146,7 +175,6 @@
+ int mkhash(struct passwd_ctx *ctx)
+ {
+     char *pw;
+-    char pwin[MAX_STRING_LEN];
+     char salt[16];
+     apr_status_t rv;
+     int ret = 0;
+@@ -159,14 +187,11 @@
+                         "Warning: Ignoring -C argument for this algorithm." NL);
+     }
+ 
+-    if (ctx->passwd != NULL) {
+-        pw = ctx->passwd;
+-    }
+-    else {
++    if (ctx->passwd == NULL) {
+         if ((ret = get_password(ctx)) != 0)
+             return ret;
+-        pw = pwin;
+     }
++    pw = ctx->passwd;
+ 
+     switch (ctx->alg) {
+     case ALG_APSHA:
+@@ -206,7 +231,7 @@
+ 
+         apr_cpystrn(ctx->out, cbuf, ctx->out_len - 1);
+         if (strlen(pw) > 8) {
+-            char *truncpw = strdup(pw);
++            char *truncpw = apr_pstrdup(ctx->pool, pw);
+             truncpw[8] = '\0';
+             if (!strcmp(ctx->out, crypt(truncpw, salt))) {
+                 apr_file_printf(errfile, "Warning: Password truncated to 8 "
+Index: apache2/support/passwd_common.h
+===================================================================
+--- apache2.orig/support/passwd_common.h
++++ apache2/support/passwd_common.h
+@@ -80,10 +80,17 @@
+     enum {
+         PW_PROMPT = 0,
+         PW_ARG,
+-        PW_STDIN
++        PW_STDIN,
++        PW_PROMPT_VERIFY,
+     } passwd_src;
+ };
+ 
++
++/*
++ * To be used as apr_pool_abort_fn
++ */
++int abort_on_oom(int rc);
++
+ /*
+  * Write a line to the file. On error, print a message and exit
+  */
+Index: apache2/support/suexec.c
+===================================================================
+--- apache2.orig/support/suexec.c
++++ apache2/support/suexec.c
+@@ -217,11 +217,15 @@
+ 
+     if ((cleanenv = (char **) calloc(AP_ENVBUF, sizeof(char *))) == NULL) {
+         log_err("failed to malloc memory for environment\n");
+-        exit(120);
++        exit(123);
+     }
+ 
+     sprintf(pathbuf, "PATH=%s", AP_SAFE_PATH);
+     cleanenv[cidx] = strdup(pathbuf);
++    if (cleanenv[cidx] == NULL) {
++        log_err("failed to malloc memory for environment\n");
++        exit(124);
++    }
+     cidx++;
+ 
+     for (ep = envp; *ep && cidx < AP_ENVBUF-1; ep++) {
+@@ -396,7 +400,10 @@
+         }
+     }
+     gid = gr->gr_gid;
+-    actual_gname = strdup(gr->gr_name);
++    if ((actual_gname = strdup(gr->gr_name)) == NULL) {
++        log_err("failed to alloc memory\n");
++        exit(125);
++    }
+ 
+ #ifdef _OSD_POSIX
+     /*
+@@ -431,6 +438,10 @@
+     uid = pw->pw_uid;
+     actual_uname = strdup(pw->pw_name);
+     target_homedir = strdup(pw->pw_dir);
++    if (actual_uname == NULL || target_homedir == NULL) {
++        log_err("failed to alloc memory\n");
++        exit(126);
++    }
+ 
+     /*
+      * Log the transaction here to be sure we have an open log
+Index: apache2/test/test_limits.c
+===================================================================
+--- apache2.orig/test/test_limits.c
++++ apache2/test/test_limits.c
+@@ -124,8 +124,8 @@
+         perror("gethostbyname");
+         exit(1);
+     }
+-    bzero(&sin, sizeof(sin));
+-    bcopy(he->h_addr, (char *)&sin.sin_addr, he->h_length);
++    memset(&sin, sizeof(sin));
++    memcpy((char *)&sin.sin_addr, he->h_addr, he->h_length);
+     sin.sin_family = he->h_addrtype;
+     sin.sin_port = htons(port);
+ 

@@ -85,7 +85,7 @@ apache_wait_start() {
                         return $STATUS
                 fi
 
-                if [ $i = "5" ] ; then
+                if [ $i = "20" ] ; then
                         APACHE2_INIT_MESSAGE="The apache2$DIR_SUFFIX instance did not start within 5 seconds. Please read the log files to discover problems"
                         return 2
                 fi
@@ -274,7 +274,8 @@ case "$1" in
                 ;;
 		2)
                         [ "$VERBOSE" != no ] && log_end_msg 1
-                        [ "$VERBOSE" != no ] && [ "x$APACHE2_INIT_MESSAGE" != "x" ] && log_failure_msg "$APACHE2_INIT_MESSAGE"
+                        [ -n "$APACHE2_INIT_MESSAGE" ] && echo $APACHE2_INIT_MESSAGE >&2
+                        log_failure_msg
                ;;
 	esac
 	;;

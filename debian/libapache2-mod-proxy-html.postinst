@@ -1,5 +1,5 @@
 #! /bin/bash
-# postinst script for apache2
+# postinst script for libapache2-mod-proxy-html
 #
 # see: dh_installdeb(1)
 
@@ -20,12 +20,12 @@ set -e
 
 case "$1" in
     configure)
-        if [ -n "$2" ] && dpkg --compare-versions "$2" lt "2.4.3" ; then
-                if [ -d /usr/share/doc/apache2-suexec/ ] ; then
+        if [ -n "$2" ] && dpkg --compare-versions "$2" lt "1:2.4.4-2" ; then
+                if [ -d /usr/share/doc/libapache2-mod-proxy-html ] ; then
                         RET=0
-                        rmdir /usr/share/doc/apache2-suexec/ > /dev/null 2>&1|| RET=$?
+                        rmdir /usr/share/doc/libapache2-mod-proxy-html > /dev/null 2>&1|| RET=$?
                         if [ $RET = 0 ] ; then
-                                ln -s /usr/share/doc/apache2-suexec-pristine /usr/share/doc/apache2-suexec
+                                ln -s /usr/share/doc/apache2 /usr/share/doc/libapache2-mod-proxy-html
                         fi
                 fi
         fi
@@ -47,4 +47,3 @@ esac
 #DEBHELPER#
 
 exit 0
-

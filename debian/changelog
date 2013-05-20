@@ -29,13 +29,16 @@ apache2 (2.4.4-3) UNRELEASED; urgency=low
     (Closes: #707109)
   * Make the DEBIAN_VERSION parsing in debian/rules more robust. Thanks to
     Ondřej Surý for noticing and providing a patch.
+  * Fix "copyright file missing after upgrade (policy 12.5)" by linking to the
+    apache2 doc-dir when upgrading (Closes: #707795)
 
   [ Stefan Fritsch ]
   * Remove paragraph about MaxMemFree in README.Debian. The issue should be
     fixed in 2.4.
   * Enable mod_authn_core when upgrading from wheezy (Closes: #702866)
 
- -- Arno Töll <arno@debian.org>  Mon, 20 May 2013 14:19:22 +0200
+
+ -- Arno Töll <arno@debian.org>  Mon, 20 May 2013 15:52:20 +0200
 
 apache2 (2.4.4-2) experimental; urgency=low
 

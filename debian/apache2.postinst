@@ -70,7 +70,7 @@ we_are_upgrading_from_wheezy()
 		return 0
 	fi
 
-	if [ $SQUEEZE_UPGRADE -eq 1 ] ; then
+	if [ "$SQUEEZE_UPGRADE" -eq 1 ] ; then
 		return 0
 	fi
 

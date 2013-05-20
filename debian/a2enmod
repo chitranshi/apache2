@@ -155,11 +155,16 @@ sub doit {
                     info("removing dangling symlink $conflink\n");
                     unlink($conflink);
                 }
+
                 return 1;
             }
             else {
                 error("$link is a dangling symlink!\n");
             }
+        }
+
+        if ( $purge ) {
+            switch_marker( $obj, $act, $acton );
         }
 
         error("$name $acton does not exist!\n");

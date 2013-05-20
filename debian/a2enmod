@@ -280,6 +280,9 @@ sub doit {
         }
         else {
             info("$name $acton already disabled\n");
+            if ( $purge ) {
+                switch_marker( $obj, $act, $acton );
+            }
             return 1;
         }
     }

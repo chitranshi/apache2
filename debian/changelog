@@ -10,8 +10,11 @@ apache2 (2.4.4-3) UNRELEASED; urgency=low
   * Changes in dh_apache2:
     + Add -e|--noenable option to dh_apache2 (Closes: #681544)
     + Disable scripts in prerm, not postrm (Closes: #681546)
+    + However, still hook into postrm and purge state when required
     + Call the postinst code always, not only during configure
       (Closes: #681545)
+  * Let a2enmod purge state when calling -p for already disabled
+    configurations.
   * Fix "don't assume apache2 is running 24 hours a day when rotating
     logs": Only restart the webserver when it was previously running
     (Closes: #707892)
@@ -30,7 +33,7 @@ apache2 (2.4.4-3) UNRELEASED; urgency=low
     fixed in 2.4.
   * Enable mod_authn_core when upgrading from wheezy (Closes: #702866)
 
- -- Arno Töll <arno@debian.org>  Tue, 14 May 2013 19:15:12 +0200
+ -- Arno Töll <arno@debian.org>  Mon, 20 May 2013 13:14:12 +0200
 
 apache2 (2.4.4-2) experimental; urgency=low
 

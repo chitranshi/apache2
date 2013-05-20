@@ -498,7 +498,7 @@ foreach my $package ((@{$dh{DOPACKAGES}}))
 	{
 		foreach my $ref (@postinst_autoscripts)
 		{
-			for my $script_type (qw/postinst prerm/)
+			for my $script_type (qw/postinst prerm postrm/)
 			{
 				if ($script_type eq "postinst" &&  $dh{NOENABLE})
 				{
@@ -513,7 +513,7 @@ foreach my $package ((@{$dh{DOPACKAGES}}))
 					ACTION => $dh{RESTART},
 				);
 
-				if ($script_type eq "prerm")
+				if ($script_type eq "prerm" || $script_type eq "postrm")
 				{
 					$replacements{'HELPER'} =~ s/en/dis/;
 				}

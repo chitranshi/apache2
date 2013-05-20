@@ -39,6 +39,7 @@ apache2 (2.4.4-3) UNRELEASED; urgency=low
   * Enable mod_authn_core when upgrading from wheezy (Closes: #702866)
   * Bump libaprutil1-dev build dependency to get support for bcrypt password
     hashes.
+  * Fix mod_mpm_itk.so not being linked to libcap.so (Closes: #702475)
 
  -- Arno Töll <arno@debian.org>  Mon, 20 May 2013 15:52:20 +0200
 

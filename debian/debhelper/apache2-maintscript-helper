@@ -380,11 +380,13 @@ apache2_invoke()
 					apache2_msg "error" "apache2_invoke: $invoke_string $CONF not supported in $APACHE2_MAINTSCRIPT_NAME"
 					return 1
 				fi
-			elif [ "$a2query_ret" -eq 33 ] ; then
+			elif [ "$a2query_ret" -eq 32 ] || [ "$a2query_ret" -eq 33 ] ; then
 				if [ "$APACHE2_MAINTSCRIPT_NAME" = 'postrm' ] && [ "$APACHE2_MAINTSCRIPT_METHOD" = "purge" ] ; then
 					apache2_msg "info" "apache2_invoke $APACHE2_MAINTSCRIPT_NAME: Purging state for $CONF"
 					# this will return RC=1
 					( a2$CMD -p -f -q "$CONF" > /dev/null 2>&1 )
+				else
+					apache2_msg "info" "apache2_invoke $CONF $APACHE2_MAINTSCRIPT_NAME: No action required"
 				fi
 			else
 				apache2_msg "info" "apache2_invoke $CONF $APACHE2_MAINTSCRIPT_NAME: No action required"

@@ -40,6 +40,7 @@ apache2 (2.4.4-3) unstable; urgency=low
   * Bump libaprutil1-dev build dependency to get support for bcrypt password
     hashes.
   * Fix mod_mpm_itk.so not being linked to libcap.so (Closes: #702475)
+  * Make apache2-dev not depend on apache2.
 
  -- Arno Töll <arno@debian.org>  Thu, 23 May 2013 14:09:22 +0200
 

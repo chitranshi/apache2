@@ -1,4 +1,4 @@
-apache2 (2.4.4-3) unstable; urgency=low
+apache2 (2.4.4-3) experimental; urgency=low
 
   [ Arno Töll ]
   * libapache2-mod-proxy-html is included in Apache 2.4 and not packaged
@@ -42,7 +42,7 @@ apache2 (2.4.4-3) unstable; urgency=low
   * Fix mod_mpm_itk.so not being linked to libcap.so (Closes: #702475)
   * Make apache2-dev not depend on apache2.
 
- -- Arno Töll <arno@debian.org>  Thu, 23 May 2013 14:09:22 +0200
+ -- Stefan Fritsch <sf@debian.org>  Tue, 28 May 2013 22:47:26 +0200
 
 apache2 (2.4.4-2) experimental; urgency=low
 

@@ -201,7 +201,7 @@ apache2 (2.4.1-3) experimental; urgency=low
   * Install suexec(8) link to /usr/share/man/man8/...
   * Enable mod_version statically, drop associated module load file.
   * Update PACKAGING hints and cope several questions raised among the
-    discussions with packagers. Thus, invokation of apache2-maintscript-helper
+    discussions with packagers. Thus, invocation of apache2-maintscript-helper
     in maintainer scripts are covered now.
   * Changes in dh_apache2:
     + Invoke the maintscript helper postrm action for simple package removals,

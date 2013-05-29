@@ -340,7 +340,7 @@ my $help = 1;
 getopts('m:s:c:havMdq', \%opts);
 #foreach my $key (keys %opts) { print("$key=$opts{$key}\n");}
 
-push @HELP, ["q", "suppress any output. Useful for invokation from scripts"];
+push @HELP, ["q", "suppress any output. Useful for invocation from scripts"];
 if (exists $opts{'q'})
 {
 	--$help;

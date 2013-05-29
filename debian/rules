@@ -1,6 +1,7 @@
 #!/usr/bin/make -f
 # -*- makefile -*-
 
+DEB_BUILD_ARCH_OS    ?= $(shell dpkg-architecture -qDEB_BUILD_ARCH_OS)
 
 # Uncomment this to turn on verbose mode.
 # export DH_VERBOSE=1
@@ -85,9 +86,11 @@ override_dh_auto_configure: generate-maintainer-scripts prebuild-checks server/m
 		--enable-mods-static="unixd logio watchdog version" \
 		CFLAGS="$(AP2_CFLAGS)" CPPFLAGS="$(AP2_CPPFLAGS)" LDFLAGS="$(AP2_LDFLAGS)" \
 		$(AP2_EXTRAFLAGS)
+ifneq (hurd, $(DEB_BUILD_ARCH_OS))
 	# XXX Hack to make mod_mpm_itk.so link against libcap until we
 	# XXX move itk to a separate package
 	perl -p -i -e 's/(-avoid-version)/$$1 -lcap/' server/mpm/itk/modules.mk
+endif
 
 override_dh_install: clean-config-vars prepare-scripts
 	dh_install --list-missing

@@ -1,6 +1,9 @@
 apache2 (2.4.4-4) UNRELEASED; urgency=low
 
   * Fix FTBFS on hurd caused by mpm-itk linking fix.
+  * Fix some lintian warnings:
+    - fix pod error
+    - add overrides for hardening-no-fortify-functions
 
  -- Stefan Fritsch <sf@debian.org>  Wed, 29 May 2013 22:47:31 +0200
 

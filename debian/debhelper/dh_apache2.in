@@ -233,7 +233,7 @@ The defaults is to always execute the scripts. The named function should be
 provided in the F<prerm> and F<postinst> scripts, before the B<#DEBHELPER#>
 token.
 
-=item S<B<--restart>> S<B<-r>
+=item S<B<--restart>> S<B<-r>>
 
 In maintainer scripts, do not try to reload the web server, but restart it.
 Otherwise the default action is used, which means global configuration and

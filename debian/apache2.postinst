@@ -55,7 +55,7 @@ WHEEZY_UPGRADE=0
 we_are_upgrading_from_wheezy()
 {
 	if [ -n "$2" ] && dpkg --compare-versions "$2" le-nl "2.3"; then
-		SQUEEZE_UPGRADE=1
+		WHEEZY_UPGRADE=1
 		return 0
 	fi
 
@@ -66,17 +66,17 @@ we_are_upgrading_from_wheezy()
 	fi
 
 	if [ -e /etc/apache2/.apache2_mpm_selected ] ; then
-		SQUEEZE_UPGRADE=1
+		WHEEZY_UPGRADE=1
 		return 0
 	fi
 
-	if [ "$SQUEEZE_UPGRADE" -eq 1 ] ; then
+	if [ "$WHEEZY_UPGRADE" -eq 1 ] ; then
 		return 0
 	fi
 
 	for CONFFILE in $OBSOLETE_CONFFILES ; do
 		if [ -e "$CONFFILE.dpkg-backup" ] || [ -e "$CONFFILE.dpkg-remove" ] ; then
-			SQUEEZE_UPGRADE=1
+			WHEEZY_UPGRADE=1
 			return 0
 		fi
 	done
@@ -84,7 +84,7 @@ we_are_upgrading_from_wheezy()
 	for CONFFILE in $MOVED_CONFFILES ; do
 		OLDCONFFILE=$( echo "$CONFFILE" | cut -d: -f1 )
 		if [ -e "$OLDCONFFILE.dpkg-remove" ] ; then
-			SQUEEZE_UPGRADE=1
+			WHEEZY_UPGRADE=1
 			return 0
 		fi
 	done

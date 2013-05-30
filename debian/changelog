@@ -1,11 +1,16 @@
 apache2 (2.4.4-4) UNRELEASED; urgency=low
 
+  [ Stefan Fritsch ]
   * Fix FTBFS on hurd caused by mpm-itk linking fix.
   * Fix some lintian warnings:
     - fix pod error
     - add overrides for hardening-no-fortify-functions
 
- -- Stefan Fritsch <sf@debian.org>  Wed, 29 May 2013 22:47:31 +0200
+  [ Arno Töll ]
+  * Correct maintainer scripts by removing forgotten left-overs of our Squeeze
+    -> Wheezy renaming
+
+ -- Arno Töll <arno@debian.org>  Thu, 30 May 2013 10:34:17 +0200
 
 apache2 (2.4.4-3) experimental; urgency=low
 

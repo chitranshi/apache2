@@ -64,8 +64,10 @@ fi
 
 PIDFILE=$(. $APACHE_ENVVARS && echo $APACHE_PID_FILE)
 
-# Load the VERBOSE setting and other rcS variables
-. /lib/init/vars.sh
+VERBOSE=no
+if [ -f /etc/default/rcS ]; then
+        . /etc/default/rcS
+fi
 . /lib/lsb/init-functions
 
 

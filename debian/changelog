@@ -5,6 +5,7 @@ apache2 (2.4.4-4) UNRELEASED; urgency=low
   * Fix some lintian warnings:
     - fix pod error
     - add overrides for hardening-no-fortify-functions
+    - don't use /lib/init/vars.sh in init script
 
   [ Arno Töll ]
   * Correct maintainer scripts by removing forgotten left-overs of our Squeeze

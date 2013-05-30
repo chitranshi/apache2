@@ -6,6 +6,8 @@ apache2 (2.4.4-4) UNRELEASED; urgency=low
     - fix pod error
     - add overrides for hardening-no-fortify-functions
     - don't use /lib/init/vars.sh in init script
+  * Add note to README.Debian about CVE-2013-0966 if the document root is
+    on HFS+ or on ZFS with filename normalization.
 
   [ Arno Töll ]
   * Correct maintainer scripts by removing forgotten left-overs of our Squeeze

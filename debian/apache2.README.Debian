@@ -282,6 +282,17 @@ time and the default suexec mechanism can be picked by using the
 update-alternatives(8) system.
 
 
+Unicode File Name Normalization
+===============================
+
+Using Apache with the document root on a file system that does unicode
+normalization on the filenames can cause security issues. In Debian,
+this affects ZFS with the non-default option to enable filename normalization,
+and HFS+. It is strongly recommended not to use Apache with such file systems.
+More information about this issue can be found by searching the web for
+CVE-2013-0966.
+
+
 Documentation
 =============
 

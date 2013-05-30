@@ -27,9 +27,10 @@ function add_symbol(sym_name) {
 
 # List of functions that we don't support, yet??
 #/ap_some_name/{next}
+/ap_mpm_pod_/{next}
 
-/^[ \t]*(AP|DAV)([RU]|_CORE)?_DECLARE[^(]*[(][^)]*[)]([^ ]* )*[^(]+[(]/ {
-    sub("[ \t]*(AP|DAV)([RU]|_CORE)?_DECLARE[^(]*[(][^)]*[)][ \t]*", "")
+/^[ \t]*(AP|DAV|CACHE)([RU]|_CORE)?_DECLARE[^(]*[(][^)]*[)]([^ ]* )*[^(]+[(]/ {
+    sub("[ \t]*(AP|DAV|CACHE)([RU]|_CORE)?_DECLARE[^(]*[(][^)]*[)][ \t]*", "")
     sub("[(].*", "")
     sub("([^ ]* (^([ \t]*[(])))+", "")
     add_symbol($0)
@@ -82,8 +83,8 @@ function add_symbol(sym_name) {
 }
 
 /^[ \t]*(extern[ \t]+)?AP[RU]?_DECLARE_DATA .*;/ {
-    gsub(/[*;\n\r]/, "", $NF)
-    gsub(/\[.*\]/, "", $NF)
+    gsub(/[*;\n\r]/, "")
+    gsub(/\[.*\]/, "")
     add_symbol($NF)
 }
 

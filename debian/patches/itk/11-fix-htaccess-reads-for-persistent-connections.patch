@@ -1,0 +1,23 @@
+To work around an issue where users can sometimes get spurious 403s on
+persistent connections the server needs to know it is running itk:
+
+Index: httpd-2.4.1/server/mpm/itk/itk.c
+===================================================================
+--- httpd-2.4.1.orig/server/mpm/itk/itk.c
++++ httpd-2.4.1/server/mpm/itk/itk.c
+@@ -181,6 +181,7 @@ typedef struct
+ } itk_server_conf;
+ 
+ module AP_MODULE_DECLARE_DATA mpm_itk_module;
++extern AP_DECLARE_DATA int ap_running_under_mpm_itk;
+ 
+ #ifdef GPROF
+ /*
+@@ -543,6 +544,7 @@ static void child_main(int child_num_arg
+                                    * child initializes
+                                    */
+ 
++    ap_running_under_mpm_itk = 1;
+     my_child_num = child_num_arg;
+     ap_my_pid = getpid();
+     requests_this_child = 0;

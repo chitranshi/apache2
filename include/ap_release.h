@@ -25,7 +25,7 @@
 #include "apr_general.h" /* stringify */
 
 #define AP_SERVER_COPYRIGHT \
-    "Copyright 2012 The Apache Software Foundation."
+  "Copyright 2013 The Apache Software Foundation."
 
 /*
  * The below defines the base string of the Server: header. Additional
@@ -44,15 +44,15 @@
 #define AP_SERVER_BASEPRODUCT "Apache"
 
 #define AP_SERVER_MAJORVERSION_NUMBER 2
-#define AP_SERVER_MINORVERSION_NUMBER 2
-#define AP_SERVER_PATCHLEVEL_NUMBER   22
+#define AP_SERVER_MINORVERSION_NUMBER 4
+#define AP_SERVER_PATCHLEVEL_NUMBER   4
 #define AP_SERVER_DEVBUILD_BOOLEAN    0
-
-/* Synchronize the above with docs/manual/style/version.ent */ 
-
-#if AP_SERVER_DEVBUILD_BOOLEAN
 #define AP_SERVER_ADD_STRING          "-dev"
-#else
+
+/* Synchronize the above with docs/manual/style/version.ent */
+
+#if !AP_SERVER_DEVBUILD_BOOLEAN
+#undef AP_SERVER_ADD_STRING
 #define AP_SERVER_ADD_STRING          ""
 #endif
 
@@ -68,8 +68,8 @@
 #define AP_SERVER_VERSION       AP_SERVER_BASEVERSION
 
 /* macro for Win32 .rc files using numeric csv representation */
-#define AP_SERVER_PATCHLEVEL_CSV AP_SERVER_MAJORVERSION_NUMBER ##, \
-                               ##AP_SERVER_MINORVERSION_NUMBER ##, \
-                               ##AP_SERVER_PATCHLEVEL_NUMBER
+#define AP_SERVER_PATCHLEVEL_CSV AP_SERVER_MAJORVERSION_NUMBER, \
+                                 AP_SERVER_MINORVERSION_NUMBER, \
+                                 AP_SERVER_PATCHLEVEL_NUMBER
 
 #endif

@@ -1,11 +1,17 @@
-#!/bin/sh -e
+#! /bin/sh
 
-if [ -x "/etc/init.d/apache2" ]; then
-        if [ -x /usr/sbin/invoke-rc.d ]; then
-                invoke-rc.d apache2 reload ||true
-        else
-                /etc/init.d/apache2 reload ||true
-        fi
+set -e
+
+# conffiles must be moved before invoking rc.d
+#DEBHELPER#
+
+# This code should use dh_apache2 once it is available as build dependency
+
+if [ "$1" = "configure" ] ; then
+	if [ -e /usr/share/apache2/apache2-maintscript-helper ] ; then
+		. /usr/share/apache2/apache2-maintscript-helper
+		apache2_invoke enconf apache2-doc || true
+	fi
 fi
 
-#DEBHELPER#
+exit

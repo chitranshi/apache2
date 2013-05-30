@@ -1,0 +1,38 @@
+Add the new MPM to the build system as an alternative to the other MPMs
+and add itk's dependency to libcap.
+
+Index: httpd-2.4.1/server/mpm/config2.m4
+===================================================================
+--- httpd-2.4.1.orig/server/mpm/config2.m4
++++ httpd-2.4.1/server/mpm/config2.m4
+@@ -1,7 +1,7 @@
+ AC_MSG_CHECKING(which MPM to use by default)
+ AC_ARG_WITH(mpm,
+ APACHE_HELP_STRING(--with-mpm=MPM,Choose the process model for Apache to use by default.
+-                          MPM={event|worker|prefork|winnt}
++                          MPM={event|worker|prefork|winnt|itk}
+                           This will be statically linked as the only available MPM unless
+                           --enable-mpms-shared is also specified.
+ ),[
+@@ -66,6 +66,9 @@ for i in $ap_enabled_mpms; do
+     else
+         AC_MSG_ERROR([MPM $i is not supported on this platform.])
+     fi
++    if test "$i" = "itk" ; then
++        AC_CHECK_LIB(cap, cap_init)
++    fi
+ done
+ 
+ if test $mpm_build = "shared"; then
+Index: httpd-2.4.1/modules/arch/unix/config5.m4
+===================================================================
+--- httpd-2.4.1.orig/modules/arch/unix/config5.m4
++++ httpd-2.4.1/modules/arch/unix/config5.m4
+@@ -3,6 +3,7 @@ APACHE_MODPATH_INIT(arch/unix)
+ 
+ if ap_mpm_is_enabled "worker" \
+    || ap_mpm_is_enabled "event" \
++   || ap_mpm_is_enabled "itk" \
+    || ap_mpm_is_enabled "prefork"; then
+     unixd_mods_enable=yes
+ else

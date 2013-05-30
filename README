@@ -16,15 +16,15 @@
   ------------------
 
   Details of the latest version can be found on the Apache HTTP
-  server project page under <http://httpd.apache.org/>.
+  server project page under http://httpd.apache.org/.
 
   Documentation
   -------------
 
   The documentation available as of the date of this release is
   included in HTML format in the docs/manual/ directory.  The most
-  up-to-date documentation for the 2.2.x releases can be found at
-  <http://httpd.apache.org/docs/2.2/>.
+  up-to-date documentation can be found at
+  http://httpd.apache.org/docs/2.4/.
 
   Installation
   ------------
@@ -70,11 +70,14 @@
     SSL facilities.
 
     In addition, some versions of apr-util provide an abstract interface
-    for SSL encrypted network sockets in the files under the directory
-       srclib/apr-util/ssl/
-    that makes use of a general-purpose encryption library, such as
-    OpenSSL or the operating system's platform-specific SSL facilities.
-    Apache httpd currently does not use that apr-util interface.
+    for symmetrical cryptographic functions that make use of a
+    general-purpose encryption library, such as OpenSSL, NSS, or the
+    operating system's platform-specific facilities. This interface is
+    known as the apr_crypto interface, with implementation beneath the
+    /crypto directory. The apr_crypto interface is used by the
+    mod_session_crypto module available under
+      modules/session
+    for optional encryption of session information.
 
     Some object code distributions of Apache httpd, indicated with the
     word "crypto" in the package name, may include object code for the
@@ -116,25 +119,3 @@
        subscribe to the `dev@httpd.apache.org' mailing list as described at
        <http://httpd.apache.org/lists.html#http-dev>
 
-  Acknowledgments
-  ----------------
-
-  We wish to acknowledge the following copyrighted works that
-  make up portions of the Apache software:
-
-  Portions of this software were developed at the National Center
-  for Supercomputing Applications (NCSA) at the University of
-  Illinois at Urbana-Champaign.
-
-  This software contains code derived from the RSA Data Security
-  Inc. MD5 Message-Digest Algorithm, including various
-  modifications by Spyglass Inc., Carnegie Mellon University, and
-  Bell Communications Research, Inc (Bellcore).
-
-  Regular expression support is provided by the PCRE library package, which
-  is open source software, written by Philip Hazel, and copyright by the
-  University of Cambridge, England.  The original software is available from
-     ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/
-
-  Apache 2 relies heavily on the use of autoconf and libtool to provide
-  a build environment.

@@ -19,7 +19,7 @@
 .el .ne 3
 .IP "\\$1" \\$2
 ..
-.TH "AB" 1 "2012-01-10" "Apache HTTP Server" "ab"
+.TH "AB" 1 "2013-01-09" "Apache HTTP Server" "ab"
 
 .SH NAME
 ab \- Apache HTTP server benchmarking tool
@@ -27,7 +27,7 @@ ab \- Apache HTTP server benchmarking tool
 .SH "SYNOPSIS"
  
 .PP
-\fBab\fR [ -\fBA\fR \fIauth-username\fR:\fIpassword\fR ] [ -\fBb\fR \fIwindowsize\fR ] [ -\fBc\fR \fIconcurrency\fR ] [ -\fBC\fR \fIcookie-name\fR=\fIvalue\fR ] [ -\fBd\fR ] [ -\fBe\fR \fIcsv-file\fR ] [ -\fBf\fR \fIprotocol\fR ] [ -\fBg\fR \fIgnuplot-file\fR ] [ -\fBh\fR ] [ -\fBH\fR \fIcustom-header\fR ] [ -\fBi\fR ] [ -\fBk\fR ] [ -\fBn\fR \fIrequests\fR ] [ -\fBp\fR \fIPOST-file\fR ] [ -\fBP\fR \fIproxy-auth-username\fR:\fIpassword\fR ] [ -\fBq\fR ] [ -\fBr\fR ] [ -\fBs\fR ] [ -\fBS\fR ] [ -\fBt\fR \fItimelimit\fR ] [ -\fBT\fR \fIcontent-type\fR ] [ -\fBu\fR \fIPUT-file\fR ] [ -\fBv\fR \fIverbosity\fR] [ -\fBV\fR ] [ -\fBw\fR ] [ -\fBx\fR \fI<table>-attributes\fR ] [ -\fBX\fR \fIproxy\fR[:\fIport\fR] ] [ -\fBy\fR \fI<tr>-attributes\fR ] [ -\fBz\fR \fI<td>-attributes\fR ] [ -\fBZ\fR \fIciphersuite\fR ] [http[s]://]\fIhostname\fR[:\fIport\fR]/\fIpath\fR
+\fBab\fR [ -\fBA\fR \fIauth-username\fR:\fIpassword\fR ] [ -\fBb\fR \fIwindowsize\fR ] [ -\fBB\fR \fIlocal-address\fR ] [ -\fBc\fR \fIconcurrency\fR ] [ -\fBC\fR \fIcookie-name\fR=\fIvalue\fR ] [ -\fBd\fR ] [ -\fBe\fR \fIcsv-file\fR ] [ -\fBf\fR \fIprotocol\fR ] [ -\fBg\fR \fIgnuplot-file\fR ] [ -\fBh\fR ] [ -\fBH\fR \fIcustom-header\fR ] [ -\fBi\fR ] [ -\fBk\fR ] [ -\fBn\fR \fIrequests\fR ] [ -\fBp\fR \fIPOST-file\fR ] [ -\fBP\fR \fIproxy-auth-username\fR:\fIpassword\fR ] [ -\fBq\fR ] [ -\fBr\fR ] [ -\fBs\fR \fItimeout\fR ] [ -\fBS\fR ] [ -\fBt\fR \fItimelimit\fR ] [ -\fBT\fR \fIcontent-type\fR ] [ -\fBu\fR \fIPUT-file\fR ] [ -\fBv\fR \fIverbosity\fR] [ -\fBV\fR ] [ -\fBw\fR ] [ -\fBx\fR \fI<table>-attributes\fR ] [ -\fBX\fR \fIproxy\fR[:\fIport\fR] ] [ -\fBy\fR \fI<tr>-attributes\fR ] [ -\fBz\fR \fI<td>-attributes\fR ] [ -\fBZ\fR \fIciphersuite\fR ] [http[s]://]\fIhostname\fR[:\fIport\fR]/\fIpath\fR
  
 
 .SH "SUMMARY"
@@ -45,6 +45,9 @@ Supply BASIC Authentication credentials to the server\&. The username and passwo
 .TP
 -b \fIwindowsize\fR
 Size of TCP send/receive buffer, in bytes\&.  
+.TP
+-B \fIlocal-address\fR
+Address to bind to when making outgoing connections\&.  
 .TP
 -c \fIconcurrency\fR
 Number of multiple requests to perform at a time\&. Default is one request at a time\&.  
@@ -91,8 +94,8 @@ When processing more than 150 requests, ab outputs a progress count on stderr ev
 -r
 Don't exit on socket receive errors\&.  
 .TP
--s
-When compiled in (ab -h will show you) use the SSL protected https rather than the http protocol\&. This feature is experimental and \fIvery\fR rudimentary\&. You probably do not want to use it\&.  
+-s \fItimeout\fR
+Maximum number of seconds to wait before the socket times out\&. Default is 30 seconds\&.  
 .TP
 -S
 Do not display the median and standard deviation values, nor display the warning/error messages when the average and median are more than one or two times the standard deviation apart\&. And default to the min/avg/max values\&. (legacy support)\&.  
@@ -101,7 +104,7 @@ Do not display the median and standard deviation values, nor display the warning
 Maximum number of seconds to spend for benchmarking\&. This implies a -n 50000 internally\&. Use this to benchmark the server within a fixed total amount of time\&. Per default there is no timelimit\&.  
 .TP
 -T \fIcontent-type\fR
-Content-type header to use for POST/PUT data, eg\&. application/x-www-form-urlencoded\&. Default: text/plain\&.  
+Content-type header to use for POST/PUT data, eg\&. application/x-www-form-urlencoded\&. Default is text/plain\&.  
 .TP
 -u \fIPUT-file\fR
 File containing data to PUT\&. Remember to also set -T\&.  
@@ -128,7 +131,71 @@ String to use as attributes for <tr>\&.
 String to use as attributes for <td>\&.  
 .TP
 -Z \fIciphersuite\fR
-Specify SSL/TLS cipher suite (See openssl ciphers)\&.  
+Specify SSL/TLS cipher suite (See openssl ciphers)  
+ 
+.SH "OUTPUT"
+ 
+.PP
+The following list describes the values returned by ab:
+ 
+ 
+.TP
+Server Software
+The value, if any, returned in the \fIserver\fR HTTP header of the first successful response\&. This includes all characters in the header from beginning to the point a character with decimal value of 32 (most notably: a space or CR/LF) is detected\&.  
+.TP
+Server Hostname
+The DNS or IP address given on the command line  
+.TP
+Server Port
+The port to which ab is connecting\&. If no port is given on the command line, this will default to 80 for http and 443 for https\&.  
+.TP
+SSL/TLS Protocol
+The protocol parameters negotiated between the client and server\&. This will only be printed if SSL is used\&.  
+.TP
+Document Path
+The request URI parsed from the command line string\&.  
+.TP
+Document Length
+This is the size in bytes of the first successfully returned document\&. If the document length changes during testing, the response is considered an error\&.  
+.TP
+Concurrency Level
+The number of concurrent clients used during the test  
+.TP
+Time taken for tests
+This is the time taken from the moment the first socket connection is created to the moment the last response is received  
+.TP
+Complete requests
+The number of successful responses received  
+.TP
+Failed requests
+The number of requests that were considered a failure\&. If the number is greater than zero, another line will be printed showing the number of requests that failed due to connecting, reading, incorrect content length, or exceptions\&.  
+.TP
+Write errors
+The number of errors that failed during write (broken pipe)\&.  
+.TP
+Non-2xx responses
+The number of responses that were not in the 200 series of response codes\&. If all responses were 200, this field is not printed\&.  
+.TP
+Keep-Alive requests
+The number of connections that resulted in Keep-Alive requests  
+.TP
+Total body sent
+If configured to send data as part of the test, this is the total number of bytes sent during the tests\&. This field is omitted if the test did not include a body to send\&.  
+.TP
+Total transferred
+The total number of bytes received from the server\&. This number is essentially the number of bytes sent over the wire\&.  
+.TP
+HTML transferred
+The total number of document bytes received from the server\&. This number excludes bytes received in HTTP headers  
+.TP
+Requests per second
+This is the number of requests per second\&. This value is the result of dividing the number of requests by the total time taken  
+.TP
+Time per request
+The average time spent per request\&. The first value is calculated with the formula concurrency * timetaken * 1000 / done while the second value is calculated with the formula timetaken * 1000 / done  
+.TP
+Transfer rate
+The rate of transfer as calculated by the formula totalread / 1024 / timetaken  
  
 .SH "BUGS"
  

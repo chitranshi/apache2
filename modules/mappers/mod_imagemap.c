@@ -79,10 +79,6 @@
 #define IMAP_DEFAULT_DEFAULT "nocontent"
 #define IMAP_BASE_DEFAULT "map"
 
-#ifdef SUNOS4
-double strtod();                /* SunOS needed this */
-#endif
-
 module AP_MODULE_DECLARE_DATA imagemap_module;
 
 typedef struct {
@@ -105,7 +101,7 @@ static void *create_imap_dir_config(apr_pool_t *p, char *dummy)
 
 static void *merge_imap_dir_configs(apr_pool_t *p, void *basev, void *addv)
 {
-    imap_conf_rec *new = (imap_conf_rec *) apr_pcalloc(p, sizeof(imap_conf_rec));
+    imap_conf_rec *new = (imap_conf_rec *) apr_palloc(p, sizeof(imap_conf_rec));
     imap_conf_rec *base = (imap_conf_rec *) basev;
     imap_conf_rec *add = (imap_conf_rec *) addv;
 
@@ -180,7 +176,7 @@ static int pointinpoly(const double point[2], double pgon[MAXVERTS][2])
     int i, numverts, crossings = 0;
     double x = point[X], y = point[Y];
 
-    for (numverts = 0; pgon[numverts][X] != -1 && numverts < MAXVERTS;
+    for (numverts = 0; numverts < MAXVERTS && pgon[numverts][X] != -1;
         numverts++) {
         /* just counting the vertexes */
     }
@@ -320,7 +316,7 @@ static void read_quoted(char **string, char **quoted_part)
 /*
  * returns the mapped URL or NULL.
  */
-static char *imap_url(request_rec *r, const char *base, const char *value)
+static const char *imap_url(request_rec *r, const char *base, const char *value)
 {
 /* translates a value into a URL. */
     int slen, clen;
@@ -342,7 +338,7 @@ static char *imap_url(request_rec *r, const char *base, const char *value)
     if (!strcasecmp(value, "referer")) {
         referer = apr_table_get(r->headers_in, "Referer");
         if (referer && *referer) {
-            return ap_escape_html(r->pool, referer);
+            return referer;
         }
         else {
             /* XXX:  This used to do *value = '\0'; ... which is totally bogus
@@ -378,7 +374,7 @@ static char *imap_url(request_rec *r, const char *base, const char *value)
     /* must be a relative URL to be combined with base */
     if (ap_strchr_c(base, '/') == NULL && (!strncmp(value, "../", 3)
         || !strcmp(value, ".."))) {
-        ap_log_rerror(APLOG_MARK, APLOG_ERR, 0, r,
+        ap_log_rerror(APLOG_MARK, APLOG_ERR, 0, r, APLOGNO(00677)
                     "invalid base directive in map file: %s", r->uri);
         return NULL;
     }
@@ -438,7 +434,7 @@ static char *imap_url(request_rec *r, const char *base, const char *value)
                                    value */
         }
         else if (directory) {
-            ap_log_rerror(APLOG_MARK, APLOG_ERR, 0, r,
+            ap_log_rerror(APLOG_MARK, APLOG_ERR, 0, r, APLOGNO(00678)
                         "invalid directory name in map file: %s", r->uri);
             return NULL;
         }
@@ -459,7 +455,7 @@ static char *imap_url(request_rec *r, const char *base, const char *value)
     return my_base;
 }
 
-static int imap_reply(request_rec *r, char *redirect)
+static int imap_reply(request_rec *r, const char *redirect)
 {
     if (!strcasecmp(redirect, "error")) {
         /* they actually requested an error! */
@@ -481,12 +477,12 @@ static void menu_header(request_rec *r, char *menu)
 {
     ap_set_content_type(r, "text/html; charset=ISO-8859-1");
 
-    ap_rvputs(r, DOCTYPE_HTML_3_2, "<html><head>\n<title>Menu for ", 
+    ap_rvputs(r, DOCTYPE_HTML_3_2, "<html><head>\n<title>Menu for ",
               ap_escape_html(r->pool, r->uri),
               "</title>\n</head><body>\n", NULL);
 
     if (!strcasecmp(menu, "formatted")) {
-        ap_rvputs(r, "<h1>Menu for ", 
+        ap_rvputs(r, "<h1>Menu for ",
                   ap_escape_html(r->pool, r->uri),
                   "</h1>\n<hr />\n\n", NULL);
     }
@@ -499,10 +495,10 @@ static void menu_blank(request_rec *r, char *menu)
     if (!strcasecmp(menu, "formatted")) {
         ap_rputs("\n", r);
     }
-    if (!strcasecmp(menu, "semiformatted")) {
+    else if (!strcasecmp(menu, "semiformatted")) {
         ap_rputs("<br />\n", r);
     }
-    if (!strcasecmp(menu, "unformatted")) {
+    else if (!strcasecmp(menu, "unformatted")) {
         ap_rputs("\n", r);
     }
     return;
@@ -513,52 +509,62 @@ static void menu_comment(request_rec *r, char *menu, char *comment)
     if (!strcasecmp(menu, "formatted")) {
         ap_rputs("\n", r);         /* print just a newline if 'formatted' */
     }
-    if (!strcasecmp(menu, "semiformatted") && *comment) {
+    else if (!strcasecmp(menu, "semiformatted") && *comment) {
         ap_rvputs(r, comment, "\n", NULL);
     }
-    if (!strcasecmp(menu, "unformatted") && *comment) {
+    else if (!strcasecmp(menu, "unformatted") && *comment) {
         ap_rvputs(r, comment, "\n", NULL);
     }
     return;                     /* comments are ignored in the
                                    'formatted' form */
 }
 
-static void menu_default(request_rec *r, char *menu, char *href, char *text)
+static void menu_default(request_rec *r, const char *menu, const char *href, const char *text)
 {
+    char *ehref, *etext;
     if (!strcasecmp(href, "error") || !strcasecmp(href, "nocontent")) {
         return;                 /* don't print such lines, these aren't
                                    really href's */
     }
+
+    ehref = ap_escape_uri(r->pool, href);
+    etext = ap_escape_html(r->pool, text);
+
     if (!strcasecmp(menu, "formatted")) {
-        ap_rvputs(r, "<pre>(Default) <a href=\"", href, "\">", text,
+        ap_rvputs(r, "<pre>(Default) <a href=\"", ehref, "\">", etext,
+                     "</a></pre>\n", NULL);
+    }
+    else if (!strcasecmp(menu, "semiformatted")) {
+        ap_rvputs(r, "<pre>(Default) <a href=\"", ehref, "\">", etext,
                "</a></pre>\n", NULL);
     }
-    if (!strcasecmp(menu, "semiformatted")) {
-        ap_rvputs(r, "<pre>(Default) <a href=\"", href, "\">", text,
-               "</a></pre>\n", NULL);
-    }
-    if (!strcasecmp(menu, "unformatted")) {
-        ap_rvputs(r, "<a href=\"", href, "\">", text, "</a>", NULL);
+    else if (!strcasecmp(menu, "unformatted")) {
+        ap_rvputs(r, "<a href=\"", ehref, "\">", etext, "</a>", NULL);
     }
     return;
 }
 
-static void menu_directive(request_rec *r, char *menu, char *href, char *text)
+static void menu_directive(request_rec *r, const char *menu, const char *href, const char *text)
 {
+    char *ehref, *etext;
     if (!strcasecmp(href, "error") || !strcasecmp(href, "nocontent")) {
         return;                 /* don't print such lines, as this isn't
                                    really an href */
     }
+
+    ehref = ap_escape_uri(r->pool, href);
+    etext = ap_escape_html(r->pool, text);
+
     if (!strcasecmp(menu, "formatted")) {
-        ap_rvputs(r, "<pre>          <a href=\"", href, "\">", text,
+        ap_rvputs(r, "<pre>          <a href=\"", ehref, "\">", etext,
                "</a></pre>\n", NULL);
     }
-    if (!strcasecmp(menu, "semiformatted")) {
-        ap_rvputs(r, "<pre>          <a href=\"", href, "\">", text,
+    else if (!strcasecmp(menu, "semiformatted")) {
+        ap_rvputs(r, "<pre>          <a href=\"", ehref, "\">", etext,
                "</a></pre>\n", NULL);
     }
-    if (!strcasecmp(menu, "unformatted")) {
-        ap_rvputs(r, "<a href=\"", href, "\">", text, "</a>", NULL);
+    else if (!strcasecmp(menu, "unformatted")) {
+        ap_rvputs(r, "<a href=\"", ehref, "\">", etext, "</a>", NULL);
     }
     return;
 }
@@ -574,9 +580,9 @@ static int imap_handler_internal(request_rec *r)
     char *directive;
     char *value;
     char *href_text;
-    char *base;
-    char *redirect;
-    char *mapdflt;
+    const char *base;
+    const char *redirect;
+    const char *mapdflt;
     char *closest = NULL;
     double closest_yet = -1;
     apr_status_t status;
@@ -848,7 +854,7 @@ static int imap_handler_internal(request_rec *r)
                                                  we failed. They lose! */
 
 need_2_fields:
-    ap_log_rerror(APLOG_MARK, APLOG_ERR, 0, r,
+    ap_log_rerror(APLOG_MARK, APLOG_ERR, 0, r, APLOGNO(00679)
                 "map file %s, line %d syntax error: requires at "
                 "least two fields", r->uri, imap->line_number);
     /* fall through */
@@ -885,7 +891,7 @@ static void register_hooks(apr_pool_t *p)
     ap_hook_handler(imap_handler,NULL,NULL,APR_HOOK_MIDDLE);
 }
 
-module AP_MODULE_DECLARE_DATA imagemap_module =
+AP_DECLARE_MODULE(imagemap) =
 {
     STANDARD20_MODULE_STUFF,
     create_imap_dir_config,     /* dir config creater */

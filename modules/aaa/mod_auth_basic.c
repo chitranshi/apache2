@@ -56,11 +56,12 @@ static const char *add_authn_provider(cmd_parms *cmd, void *config,
     authn_provider_list *newp;
 
     newp = apr_pcalloc(cmd->pool, sizeof(authn_provider_list));
-    newp->provider_name = apr_pstrdup(cmd->pool, arg);
+    newp->provider_name = arg;
 
     /* lookup and cache the actual provider now */
     newp->provider = ap_lookup_provider(AUTHN_PROVIDER_GROUP,
-                                        newp->provider_name, "0");
+                                        newp->provider_name,
+                                        AUTHN_PROVIDER_VERSION);
 
     if (newp->provider == NULL) {
         /* by the time they use it, the provider should be loaded and
@@ -126,6 +127,15 @@ static void note_basic_auth_failure(request_rec *r)
                                "\"", NULL));
 }
 
+static int hook_note_basic_auth_failure(request_rec *r, const char *auth_type)
+{
+    if (strcasecmp(auth_type, "Basic"))
+        return DECLINED;
+
+    note_basic_auth_failure(r);
+    return OK;
+}
+
 static int get_basic_auth(request_rec *r, const char **user,
                           const char **pw)
 {
@@ -145,7 +155,7 @@ static int get_basic_auth(request_rec *r, const char **user,
 
     if (strcasecmp(ap_getword(r->pool, &auth_line, ' '), "Basic")) {
         /* Client tried to authenticate using wrong auth scheme */
-        ap_log_rerror(APLOG_MARK, APLOG_ERR, 0, r,
+        ap_log_rerror(APLOG_MARK, APLOG_ERR, 0, r, APLOGNO(01614)
                       "client used wrong authentication scheme: %s", r->uri);
         note_basic_auth_failure(r);
         return HTTP_UNAUTHORIZED;
@@ -191,11 +201,11 @@ static int authenticate_basic_user(request_rec *r)
     /* We need an authentication realm. */
     if (!ap_auth_name(r)) {
         ap_log_rerror(APLOG_MARK, APLOG_ERR,
-                      0, r, "need AuthName: %s", r->uri);
+                      0, r, APLOGNO(01615) "need AuthName: %s", r->uri);
         return HTTP_INTERNAL_SERVER_ERROR;
     }
 
-    r->ap_auth_type = "Basic";
+    r->ap_auth_type = (char*)current_auth;
 
     res = get_basic_auth(r, &sent_user, &sent_pw);
     if (res) {
@@ -211,10 +221,11 @@ static int authenticate_basic_user(request_rec *r)
          */
         if (!current_provider) {
             provider = ap_lookup_provider(AUTHN_PROVIDER_GROUP,
-                                          AUTHN_DEFAULT_PROVIDER, "0");
+                                          AUTHN_DEFAULT_PROVIDER,
+                                          AUTHN_PROVIDER_VERSION);
 
             if (!provider || !provider->check_password) {
-                ap_log_rerror(APLOG_MARK, APLOG_ERR, 0, r,
+                ap_log_rerror(APLOG_MARK, APLOG_ERR, 0, r, APLOGNO(01616)
                               "No Authn provider configured");
                 auth_result = AUTH_GENERAL_ERROR;
                 break;
@@ -254,14 +265,14 @@ static int authenticate_basic_user(request_rec *r)
 
         switch (auth_result) {
         case AUTH_DENIED:
-            ap_log_rerror(APLOG_MARK, APLOG_ERR, 0, r,
+            ap_log_rerror(APLOG_MARK, APLOG_ERR, 0, r, APLOGNO(01617)
                       "user %s: authentication failure for \"%s\": "
                       "Password Mismatch",
                       sent_user, r->uri);
             return_code = HTTP_UNAUTHORIZED;
             break;
         case AUTH_USER_NOT_FOUND:
-            ap_log_rerror(APLOG_MARK, APLOG_ERR, 0, r,
+            ap_log_rerror(APLOG_MARK, APLOG_ERR, 0, r, APLOGNO(01618)
                       "user %s not found: %s", sent_user, r->uri);
             return_code = HTTP_UNAUTHORIZED;
             break;
@@ -286,10 +297,13 @@ static int authenticate_basic_user(request_rec *r)
 
 static void register_hooks(apr_pool_t *p)
 {
-    ap_hook_check_user_id(authenticate_basic_user,NULL,NULL,APR_HOOK_MIDDLE);
+    ap_hook_check_authn(authenticate_basic_user, NULL, NULL, APR_HOOK_MIDDLE,
+                        AP_AUTH_INTERNAL_PER_CONF);
+    ap_hook_note_auth_failure(hook_note_basic_auth_failure, NULL, NULL,
+                              APR_HOOK_MIDDLE);
 }
 
-module AP_MODULE_DECLARE_DATA auth_basic_module =
+AP_DECLARE_MODULE(auth_basic) =
 {
     STANDARD20_MODULE_STUFF,
     create_auth_basic_dir_config,  /* dir config creater */

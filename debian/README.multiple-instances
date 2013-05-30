@@ -6,9 +6,9 @@ support for handling multiple instances of apache2 running on the same machine.
 
 The basic idea is to copy /etc/apache2 to /etc/apache2-xxx. An example script
 that demonstrates what else needs to be done can be found in
-/usr/share/doc/apache2.2-common/examples/setup-instance. Use with:
+/usr/share/doc/apache2/examples/setup-instance. Use with:
 
-	sh /usr/share/doc/apache2.2-common/examples/setup-instance xxx
+	sh /usr/share/doc/apache2/examples/setup-instance xxx
 
 Adjust the configuration in /etc/apache2-xxx, especially the listen ports in
 ports.conf and in the virtual host directives in
@@ -90,15 +90,3 @@ APACHE_SITES_ENABLED	$APACHE_CONFDIR/sites-enabled
 APACHE_LYNX		www-browser -dump
 APACHE_STATUSURL	http://localhost:80/server-status
 
-
-MPMs
-====
-
-You can use different MPMs for different instances by setting APACHE_HTTPD to
-one of /usr/lib/apache2/mpm-*/apache2. The MPM binaries are shipped in the
-apache2.2-bin package, it is not necessary to have the apache2-mpm-* pacakges
-installed for this to work. Those packages only provide the /usr/sbin/apache2
-symlink for the default MPM.
-
-Note that some modules like mod_php only work with the non-threaded MPMs
-(prefork, itk).

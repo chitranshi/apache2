@@ -1,37 +1,20 @@
-004_usr_bin_perl_0wnz_j00
-008_make_include_safe
-009_apache2_has_dso
-010_fhs_compliance
-032_suexec_is_shared
-033_dbm_read_hash_or_btree
-038_no_LD_LIBRARY_PATH
-045_suexec_log_cloexec
-047_fix_usage_message
-052_logresolve_linelength
-057_disablemods
-058_suexec-CVE-2007-1742
-067_fix_segfault_in_ab
-071_fix_cacheenable
-073_mod_dav_trunk_fixes
-074_link_support_progs_with_lcrypt
-075_mod_rewrite_literal_ipv6_redirect
-077_CacheIgnoreURLSessionIdentifiers
-079_polish_translation
-082_ab_num_requests
-083_dlopen_search_path
-084_customize_apxs.patch
-085_mod_cache_partial_content-2.2.x.patch
-086_upstream_trunk_bugfixes.patch
-087_mod_negotiation_CVE-2012-2687.patch
-201_build_suexec-custom
+#make_include_safe.patch # Probably to be droped in 2.4
+fhs_compliance.patch
+#suexec_is_shared.patch # Probably not needed in 2.4
+dbm_read_hash_or_btree.patch
+no_LD_LIBRARY_PATH.patch
+suexec-CVE-2007-1742.patch
+customize_apxs.patch
+build_suexec-custom.patch
 # The patch below must not be applied by quilt at extraction time.  It depends
 # on some script-fu to be executed before. Have a look
 # to debian/rules' prepare-custom-suexec target.
 # If you're aware of that you can uncomment it at any time later and work on it
-# as you wish.
-#202_suexec-custom
-dbmmanage-perl-510.patch
-SSLProtocol-tls11-12.2.patch
-disable-ssl-compression.patch
-CVE-2012-3499_CVE-2012-4558_XSS.patch
-mod_log_forensic_693292.patch
+# as you wish. However, it must be shipped commented out in the final package.
+#suexec-custom.patch
+# some changes to the core needed for itk:
+add-itk-to-build-system.patch
+itk-hook-just-after-merging-perdir-config.patch
+itk-fix-htaccess-reads-for-persistent-connections.patch
+itk-rerun-configure.patch
+upstream-fixes

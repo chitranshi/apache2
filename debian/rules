@@ -86,9 +86,12 @@ override_dh_auto_configure: generate-maintainer-scripts prebuild-checks server/m
 		--enable-mods-static="unixd logio watchdog version" \
 		CFLAGS="$(AP2_CFLAGS)" CPPFLAGS="$(AP2_CPPFLAGS)" LDFLAGS="$(AP2_LDFLAGS)" \
 		$(AP2_EXTRAFLAGS)
-ifneq (hurd, $(DEB_BUILD_ARCH_OS))
+
+
+ifneq ($(DEB_HOST_ARCH_OS),linux)
 	# XXX Hack to make mod_mpm_itk.so link against libcap until we
 	# XXX move itk to a separate package
+	echo "$(DEB_HOST_ARCH_OS): weird arch: removing -lcap"
 	perl -p -i -e 's/(-avoid-version)/$$1 -lcap/' server/mpm/itk/modules.mk
 endif
 

@@ -428,6 +428,15 @@ Use apache2ctl (it accepts all the same options as apache2).
 Apache also needs write permission to the directory containing the file, in
 order to replace it atomically.
 
+10) When starting/reloading Apache, there is the error message
+    "ulimit: open files: cannot modify limit: Operation not permitted"
+
+If you are running Apache in a vserver environment, the start script may not
+be allowed to set the maximum number of open files. You should adjust
+APACHE_ULIMIT_MAX_FILES in /etc/apache2/envvars to your setup. You can
+disable changing the limits by setting APACHE_ULIMIT_MAX_FILES=true .
+
+
 For Developers
 ==============
 

@@ -8,6 +8,9 @@ apache2 (2.4.4-4) UNRELEASED; urgency=low
     - don't use /lib/init/vars.sh in init script
   * Add note to README.Debian about CVE-2013-0966 if the document root is
     on HFS+ or on ZFS with filename normalization.
+  * Add a note to README.Debian about how to change the max file limit.
+    Make apache2ctl print a message pointing to README.Debian if setting
+    the limit fails. (Closes: #706822)
 
   [ Arno Töll ]
   * Correct maintainer scripts by removing forgotten left-overs of our Squeeze

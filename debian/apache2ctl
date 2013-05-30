@@ -84,7 +84,9 @@ ULIMIT_MAX_FILES="${APACHE_ULIMIT_MAX_FILES:-ulimit -n 8192}"
 
 # Set the maximum number of file descriptors allowed per child process.
 if [ "x$ULIMIT_MAX_FILES" != "x" ] && [ `id -u` -eq 0 ] ; then
-    $ULIMIT_MAX_FILES
+    if ! $ULIMIT_MAX_FILES ; then
+        echo Setting ulimit failed. See README.Debian for more information. >&2
+    fi
 fi
 
 ERROR=0

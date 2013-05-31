@@ -1,8 +1,6 @@
 apache2 (2.4.4-5) UNRELEASED; urgency=low
 
-  * Fix compile issue on kfreebsd. leaves itk still broken on kfreebsd on
-    hurd, but that's ok. There are alternative MPMs left. Moreover, we are
-    likely to split itk to a separate source soon
+  * Fix compile issue on kfreebsd.
 
  -- Arno Töll <arno@debian.org>  Fri, 31 May 2013 01:33:04 +0200
 

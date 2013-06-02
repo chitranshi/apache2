@@ -4,8 +4,12 @@ apache2 (2.4.4-6) UNRELEASED; urgency=low
     have a fixed version in the works. That makes Gnome installable again.
   * Update our gbp.conf for our big merge next -> master. The eagle has
     landed, 2.4 is here.
+  * Push Standards version to 3.9.4 - no changes needed.
+  * Fix spelling errors in man pages.
+  * Update the git VCS pointer to its canonical location for anonymous
+    checkouts.
 
- -- Arno Töll <arno@debian.org>  Sun, 02 Jun 2013 18:27:39 +0200
+ -- Arno Töll <arno@debian.org>  Sun, 02 Jun 2013 19:42:57 +0200
 
 apache2 (2.4.4-5) unstable; urgency=low
 

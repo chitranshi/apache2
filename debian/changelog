@@ -8,8 +8,9 @@ apache2 (2.4.4-6) UNRELEASED; urgency=low
   * Fix spelling errors in man pages.
   * Update the git VCS pointer to its canonical location for anonymous
     checkouts.
+  * Boost the description for the LSB init script to appease Lintian.
 
- -- Arno Töll <arno@debian.org>  Sun, 02 Jun 2013 19:42:57 +0200
+ -- Arno Töll <arno@debian.org>  Sun, 02 Jun 2013 19:51:27 +0200
 
 apache2 (2.4.4-5) unstable; urgency=low
 

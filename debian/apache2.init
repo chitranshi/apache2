@@ -7,6 +7,10 @@
 # Default-Stop:      0 1 6
 # X-Interactive:     true
 # Short-Description: Start/stop apache2 web server
+# Description:       Start the web server and associated helpers
+#  This script will start apache2, and possibly all associated instances.
+#  Moreover, it will set-up temporary directories and helper tools such as
+#  htcacheclean when required by the configuration.
 ### END INIT INFO
 
 DESC="web server"

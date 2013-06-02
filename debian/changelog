@@ -1,3 +1,10 @@
+apache2 (2.4.4-6) UNRELEASED; urgency=low
+
+  * Denote exact versions breaking gnome-user-share now that Gnome maintainers
+    have a fixed version in the works. That makes Gnome installable again.
+
+ -- Arno Töll <arno@debian.org>  Sun, 02 Jun 2013 18:03:48 +0200
+
 apache2 (2.4.4-5) unstable; urgency=low
 
   [ Arno Töll ]

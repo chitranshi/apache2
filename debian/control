@@ -102,8 +102,7 @@ Package: apache2.2-bin
 Architecture: any
 Section: oldlibs
 Priority: extra
-#XXX: Add a << version to these once there are fixed versions around
-Breaks: gnome-user-share, mod-dnssd
+Breaks: gnome-user-share (<< 3.8.0-2~), libapache2-mod-dnssd (<< 0.6-3.1~)
 Depends: ${misc:Depends}, apache2-bin (>= 2.3~)
 Description: Transitional package for apache2-bin
  This is a transitional package for apache2-bin, and can be safely removed

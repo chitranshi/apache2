@@ -71,7 +71,7 @@ else
 
 
 	if [ -z "$1" ] ; then
-		echo "You must invoke apache2-maintscript-helper with an unmodified environment when sourcing it"
+		echo "You must invoke apache2-maintscript-helper with an unmodified environment when sourcing it" >&2
 		return 1
 	fi
 
@@ -81,7 +81,7 @@ else
 			# yay - recognized script
 		;;
 		*)
-			echo "Invoked from an unrecognized maintainer script: exiting"
+			echo "apache2-maintscript-helper invoked from an unrecognized maintainer script: exiting" >&2
 			return 1
 		;;
 	esac
@@ -126,7 +126,7 @@ apache2_msg()
 {
 	local PRIORITY="$1"
 	local MSG="$2"
-	[ -z "$APACHE2_MAINTSCRIPT_HELPER_QUIET" ] && echo "$MSG"
+	[ -z "$APACHE2_MAINTSCRIPT_HELPER_QUIET" ] && echo "$MSG" >&2
 	[ -x /usr/bin/logger ] || return 0
 	case "$PRIORITY" in
 		debug|info|notice|warning|err|crit|alert|emerg)

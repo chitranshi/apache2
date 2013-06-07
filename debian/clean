@@ -10,6 +10,10 @@ debian/apache2-suexec-pristine.prerm
 debian/apache2-suexec-pristine.links
 debian/apache2-suexec-pristine.dirs
 debian/apache2-suexec-pristine.lintian-overrides
+debian/apache2-mpm-event.postinst
+debian/apache2-mpm-itk.postinst
+debian/apache2-mpm-prefork.postinst
+debian/apache2-mpm-worker.postinst
 debian/a2query
 debian/manpages/a2query.8
 debian/manpages/dh_apache2.1

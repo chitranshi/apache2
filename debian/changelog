@@ -23,8 +23,12 @@ apache2 (2.4.4-6) UNRELEASED; urgency=low
   * Fix indentation mess in the init script, and add modelines
   * Make sure /etc/init.d/apache2 reload does not always return. Thanks to
     Thorsten Glaser for suggesting a patch (Closes: #711117)
+  * Make apache2-maintscript-helper usable when sourced from weird
+    environments (e.g. Perl maintainer scripts). Thanks to Robert Luberda
+    for doing unexpected things, and providing patches for it, and to Axel
+    Beckert for demangling shell specifics (Closes: #711479)
 
- -- Arno Töll <arno@debian.org>  Fri, 07 Jun 2013 15:48:48 +0200
+ -- Arno Töll <arno@debian.org>  Fri, 07 Jun 2013 16:47:22 +0200
 
 apache2 (2.4.4-5) unstable; urgency=low
 

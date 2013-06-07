@@ -7,6 +7,7 @@ We are not sunos4, so we do have strtoul on all ports, especially since it's
 defined in C99.
 
 Bug-Debian: http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=711534
+Bug: https://issues.apache.org/bugzilla/show_bug.cgi?id=55077
 --- a/include/httpd.h
 +++ b/include/httpd.h
 @@ -2093,12 +2093,6 @@

@@ -18,3 +18,4 @@ itk-hook-just-after-merging-perdir-config.patch
 itk-fix-htaccess-reads-for-persistent-connections.patch
 itk-rerun-configure.patch
 upstream-fixes
+allow-strtoul.patch

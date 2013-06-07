@@ -1,0 +1,24 @@
+From: Arno Töll <arno@debian.org>
+Subject: Allow use of strtoul
+
+* include/httpd.h: allow usage of strtoul
+
+We are not sunos4, so we do have strtoul on all ports, especially since it's
+defined in C99.
+
+Bug-Debian: http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=711534
+--- a/include/httpd.h
++++ b/include/httpd.h
+@@ -2093,12 +2093,6 @@
+  */
+ AP_DECLARE(const char *) ap_psignature(const char *prefix, request_rec *r);
+ 
+-/** strtoul does not exist on sunos4. */
+-#ifdef strtoul
+-#undef strtoul
+-#endif
+-#define strtoul strtoul_is_not_a_portable_function_use_strtol_instead
+-
+   /* The C library has functions that allow const to be silently dropped ...
+      these macros detect the drop in maintainer mode, but use the native
+      methods for normal builds

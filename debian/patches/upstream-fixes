@@ -210,10 +210,8 @@ Description: Pull various fixes from upstream branch 2.4.x
 # Reviewed by: minfrin, covener, sf
 # 
 # ------------------------------------------------------------------------
-Index: apache2/CHANGES
-===================================================================
---- apache2.orig/CHANGES
-+++ apache2/CHANGES
+--- a/CHANGES
++++ b/CHANGES
 @@ -1,4 +1,38 @@
                                                           -*- coding: utf-8 -*-
 + 
@@ -253,10 +251,8 @@ Index: apache2/CHANGES
  
  Changes with Apache 2.4.4
  
-Index: apache2/include/httpd.h
-===================================================================
---- apache2.orig/include/httpd.h
-+++ apache2/include/httpd.h
+--- a/include/httpd.h
++++ b/include/httpd.h
 @@ -1388,7 +1388,7 @@
     char **) */
  
@@ -302,10 +298,8 @@ Index: apache2/include/httpd.h
   *         character
   * @note The same as ap_getword_nulls(), except it doesn't use const char **.
   */
-Index: apache2/include/util_filter.h
-===================================================================
---- apache2.orig/include/util_filter.h
-+++ apache2/include/util_filter.h
+--- a/include/util_filter.h
++++ b/include/util_filter.h
 @@ -332,8 +332,8 @@
  AP_DECLARE(apr_status_t) ap_pass_brigade_fchk(request_rec *r,
                                                apr_bucket_brigade *bucket,
@@ -317,10 +311,8 @@ Index: apache2/include/util_filter.h
  
  /**
   * This function is used to register an input filter with the system.
-Index: apache2/modules/aaa/mod_auth_digest.c
-===================================================================
---- apache2.orig/modules/aaa/mod_auth_digest.c
-+++ apache2/modules/aaa/mod_auth_digest.c
+--- a/modules/aaa/mod_auth_digest.c
++++ b/modules/aaa/mod_auth_digest.c
 @@ -223,6 +223,8 @@
          opaque_lock = NULL;
      }
@@ -330,10 +322,8 @@ Index: apache2/modules/aaa/mod_auth_digest.c
      return APR_SUCCESS;
  }
  
-Index: apache2/modules/aaa/mod_authz_host.c
-===================================================================
---- apache2.orig/modules/aaa/mod_authz_host.c
-+++ apache2/modules/aaa/mod_authz_host.c
+--- a/modules/aaa/mod_authz_host.c
++++ b/modules/aaa/mod_authz_host.c
 @@ -131,10 +131,8 @@
              return apr_psprintf(p, "ip address '%s' appears to be invalid", w);
          }
@@ -347,10 +337,8 @@ Index: apache2/modules/aaa/mod_authz_host.c
          }
  
          if (parsed_subnets)
-Index: apache2/modules/cache/mod_cache_disk.c
-===================================================================
---- apache2.orig/modules/cache/mod_cache_disk.c
-+++ apache2/modules/cache/mod_cache_disk.c
+--- a/modules/cache/mod_cache_disk.c
++++ b/modules/cache/mod_cache_disk.c
 @@ -841,7 +841,7 @@
          }
  
@@ -376,10 +364,8 @@ Index: apache2/modules/cache/mod_cache_disk.c
      return NULL;
  }
  
-Index: apache2/modules/dav/main/props.c
-===================================================================
---- apache2.orig/modules/dav/main/props.c
-+++ apache2/modules/dav/main/props.c
+--- a/modules/dav/main/props.c
++++ b/modules/dav/main/props.c
 @@ -594,13 +594,14 @@
          if (propdb->db != NULL) {
              dav_xmlns_info *xi = dav_xmlns_create(propdb->p);
@@ -414,10 +400,8 @@ Index: apache2/modules/dav/main/props.c
              }
  
              /* all namespaces have been entered into xi. generate them into
-Index: apache2/modules/filters/mod_include.c
-===================================================================
---- apache2.orig/modules/filters/mod_include.c
-+++ apache2/modules/filters/mod_include.c
+--- a/modules/filters/mod_include.c
++++ b/modules/filters/mod_include.c
 @@ -2411,7 +2411,10 @@
          return APR_SUCCESS;
      }
@@ -430,10 +414,8 @@ Index: apache2/modules/filters/mod_include.c
  
      if (was_error) {
          SSI_CREATE_ERROR_BUCKET(ctx, f, bb);
-Index: apache2/modules/filters/mod_proxy_html.c
-===================================================================
---- apache2.orig/modules/filters/mod_proxy_html.c
-+++ apache2/modules/filters/mod_proxy_html.c
+--- a/modules/filters/mod_proxy_html.c
++++ b/modules/filters/mod_proxy_html.c
 @@ -668,7 +668,7 @@
              if (p != NULL) {
                  while (*p) {
@@ -443,10 +425,8 @@ Index: apache2/modules/filters/mod_proxy_html.c
                          ++p;
                      if (*p != '=')
                          continue;
-Index: apache2/modules/filters/mod_ratelimit.c
-===================================================================
---- apache2.orig/modules/filters/mod_ratelimit.c
-+++ apache2/modules/filters/mod_ratelimit.c
+--- a/modules/filters/mod_ratelimit.c
++++ b/modules/filters/mod_ratelimit.c
 @@ -74,6 +74,7 @@
      if (ctx == NULL) {
  
@@ -487,10 +467,8 @@ Index: apache2/modules/filters/mod_ratelimit.c
          /* calculate how many bytes / interval we want to send */
          /* speed is bytes / second, so, how many  (speed / 1000 % interval) */
          ctx->chunk_size = (ctx->speed / (1000 / RATE_INTERVAL_MS));
-Index: apache2/modules/filters/regexp.h
-===================================================================
---- apache2.orig/modules/filters/regexp.h
-+++ apache2/modules/filters/regexp.h
+--- a/modules/filters/regexp.h
++++ b/modules/filters/regexp.h
 @@ -69,7 +69,8 @@
  
  extern char *sed_compile(sed_commands_t *commands, sed_comp_args *compargs,
@@ -501,10 +479,8 @@ Index: apache2/modules/filters/regexp.h
  
  #define SEDERR_CGMES "command garbled: %s"
  #define SEDERR_SMMES "Space missing before filename: %s"
-Index: apache2/modules/filters/sed0.c
-===================================================================
---- apache2.orig/modules/filters/sed0.c
-+++ apache2/modules/filters/sed0.c
+--- a/modules/filters/sed0.c
++++ b/modules/filters/sed0.c
 @@ -275,7 +275,7 @@
          }
  
@@ -514,10 +490,8 @@ Index: apache2/modules/filters/sed0.c
              return -1;
          }
  
-Index: apache2/modules/generators/mod_status.c
-===================================================================
---- apache2.orig/modules/generators/mod_status.c
-+++ apache2/modules/generators/mod_status.c
+--- a/modules/generators/mod_status.c
++++ b/modules/generators/mod_status.c
 @@ -405,6 +405,8 @@
                    ")</h1>\n\n", NULL);
          ap_rvputs(r, "<dl><dt>Server Version: ",
@@ -532,10 +506,8 @@ Index: apache2/modules/generators/mod_status.c
      register_hooks              /* register_hooks */
  };
 -
-Index: apache2/modules/loggers/mod_log_config.c
-===================================================================
---- apache2.orig/modules/loggers/mod_log_config.c
-+++ apache2/modules/loggers/mod_log_config.c
+--- a/modules/loggers/mod_log_config.c
++++ b/modules/loggers/mod_log_config.c
 @@ -597,6 +597,10 @@
  {
      log_request_state *state = (log_request_state *)ap_get_module_config(r->request_config,
@@ -547,10 +519,8 @@ Index: apache2/modules/loggers/mod_log_config.c
      if (state->request_end_time == 0) {
          state->request_end_time = apr_time_now();
      }
-Index: apache2/modules/mappers/mod_imagemap.c
-===================================================================
---- apache2.orig/modules/mappers/mod_imagemap.c
-+++ apache2/modules/mappers/mod_imagemap.c
+--- a/modules/mappers/mod_imagemap.c
++++ b/modules/mappers/mod_imagemap.c
 @@ -686,7 +686,7 @@
          if (!*string_pos) {   /* need at least two fields */
              goto need_2_fields;
@@ -560,10 +530,8 @@ Index: apache2/modules/mappers/mod_imagemap.c
              ++string_pos;
          }
  
-Index: apache2/modules/mappers/mod_negotiation.c
-===================================================================
---- apache2.orig/modules/mappers/mod_negotiation.c
-+++ apache2/modules/mappers/mod_negotiation.c
+--- a/modules/mappers/mod_negotiation.c
++++ b/modules/mappers/mod_negotiation.c
 @@ -366,7 +366,7 @@
          return  1.0f;
      }
@@ -600,10 +568,8 @@ Index: apache2/modules/mappers/mod_negotiation.c
  
      if (!*cp) {
          ap_log_rerror(APLOG_MARK, APLOG_ERR, 0, r, APLOGNO(00682)
-Index: apache2/modules/mappers/mod_rewrite.c
-===================================================================
---- apache2.orig/modules/mappers/mod_rewrite.c
-+++ apache2/modules/mappers/mod_rewrite.c
+--- a/modules/mappers/mod_rewrite.c
++++ b/modules/mappers/mod_rewrite.c
 @@ -1255,7 +1255,7 @@
          }
  
@@ -613,10 +579,8 @@ Index: apache2/modules/mappers/mod_rewrite.c
              ++p;
          }
  
-Index: apache2/modules/metadata/mod_cern_meta.c
-===================================================================
---- apache2.orig/modules/metadata/mod_cern_meta.c
-+++ apache2/modules/metadata/mod_cern_meta.c
+--- a/modules/metadata/mod_cern_meta.c
++++ b/modules/metadata/mod_cern_meta.c
 @@ -237,7 +237,7 @@
          }
  
@@ -626,10 +590,8 @@ Index: apache2/modules/metadata/mod_cern_meta.c
              ++l;
  
          if (!strcasecmp(w, "Content-type")) {
-Index: apache2/modules/metadata/mod_headers.c
-===================================================================
---- apache2.orig/modules/metadata/mod_headers.c
-+++ apache2/modules/metadata/mod_headers.c
+--- a/modules/metadata/mod_headers.c
++++ b/modules/metadata/mod_headers.c
 @@ -722,7 +722,7 @@
                  while (*val) {
                      const char *tok_start;
@@ -639,10 +601,8 @@ Index: apache2/modules/metadata/mod_headers.c
                          ++val;
  
                      tok_start = val;
-Index: apache2/modules/metadata/mod_setenvif.c
-===================================================================
---- apache2.orig/modules/metadata/mod_setenvif.c
-+++ apache2/modules/metadata/mod_setenvif.c
+--- a/modules/metadata/mod_setenvif.c
++++ b/modules/metadata/mod_setenvif.c
 @@ -314,7 +314,7 @@
       */
      for (i = 0; i < sconf->conditionals->nelts; ++i) {
@@ -652,10 +612,8 @@ Index: apache2/modules/metadata/mod_setenvif.c
              fname = new->name;
              break;
          }
-Index: apache2/modules/slotmem/mod_slotmem_shm.c
-===================================================================
---- apache2.orig/modules/slotmem/mod_slotmem_shm.c
-+++ apache2/modules/slotmem/mod_slotmem_shm.c
+--- a/modules/slotmem/mod_slotmem_shm.c
++++ b/modules/slotmem/mod_slotmem_shm.c
 @@ -91,7 +91,7 @@
  {
  #ifdef AP_NEED_SET_MUTEX_PERMS
@@ -665,10 +623,8 @@ Index: apache2/modules/slotmem/mod_slotmem_shm.c
      key_t shmkey;
      int shmid;
  
-Index: apache2/modules/ssl/ssl_engine_init.c
-===================================================================
---- apache2.orig/modules/ssl/ssl_engine_init.c
-+++ apache2/modules/ssl/ssl_engine_init.c
+--- a/modules/ssl/ssl_engine_init.c
++++ b/modules/ssl/ssl_engine_init.c
 @@ -1354,7 +1354,8 @@
      for (n = 0; n < ncerts; n++) {
          X509_INFO *inf = sk_X509_INFO_value(sk, n);
@@ -708,10 +664,8 @@ Index: apache2/modules/ssl/ssl_engine_init.c
      pkp->ca_certs = (STACK_OF(X509) **) apr_pcalloc(p, ncerts * sizeof(sk));
      sctx = X509_STORE_CTX_new();
  
-Index: apache2/os/unix/unixd.c
-===================================================================
---- apache2.orig/os/unix/unixd.c
-+++ apache2/os/unix/unixd.c
+--- a/os/unix/unixd.c
++++ b/os/unix/unixd.c
 @@ -241,7 +241,7 @@
              };
  #endif
@@ -721,11 +675,9 @@ Index: apache2/os/unix/unixd.c
  
              apr_os_proc_mutex_get(&ospmutex, pmutex);
              buf.sem_perm.uid = ap_unixd_config.user_id;
-Index: apache2/server/config.c
-===================================================================
---- apache2.orig/server/config.c
-+++ apache2/server/config.c
-@@ -599,7 +599,8 @@
+--- a/server/config.c
++++ b/server/config.c
+@@ -601,7 +601,8 @@
              len -= slen;
          }
  
@@ -735,7 +687,7 @@ Index: apache2/server/config.c
          ap_module_short_names[m->module_index][len] = '\0';
          merger_func_cache[m->module_index] = m->merge_dir_config;
      }
-@@ -623,8 +624,9 @@
+@@ -625,8 +626,9 @@
  
      /* We cannot fix the string in-place, because it's const */
      if (m->name[strlen(m->name)-1] == ')') {
@@ -747,10 +699,8 @@ Index: apache2/server/config.c
          m->name = tmp;
      }
  #endif /*_OSD_POSIX*/
-Index: apache2/server/protocol.c
-===================================================================
---- apache2.orig/server/protocol.c
-+++ apache2/server/protocol.c
+--- a/server/protocol.c
++++ b/server/protocol.c
 @@ -964,7 +964,7 @@
              || r->status == HTTP_BAD_REQUEST) {
              if (r->status == HTTP_REQUEST_URI_TOO_LARGE) {
@@ -760,10 +710,8 @@ Index: apache2/server/protocol.c
                                r->server->limit_req_line);
              }
              else if (r->method == NULL) {
-Index: apache2/server/util.c
-===================================================================
---- apache2.orig/server/util.c
-+++ apache2/server/util.c
+--- a/server/util.c
++++ b/server/util.c
 @@ -752,7 +752,7 @@
  static char *substring_conf(apr_pool_t *p, const char *start, int len,
                              char quote)
@@ -809,10 +757,8 @@ Index: apache2/server/util.c
          ++ptr;
  
      *accept_line = ptr;
-Index: apache2/server/util_script.c
-===================================================================
---- apache2.orig/server/util_script.c
-+++ apache2/server/util_script.c
+--- a/server/util_script.c
++++ b/server/util_script.c
 @@ -565,7 +565,7 @@
          }
  
@@ -822,10 +768,8 @@ Index: apache2/server/util_script.c
              ++l;
          }
  
-Index: apache2/support/htdbm.c
-===================================================================
---- apache2.orig/support/htdbm.c
-+++ apache2/support/htdbm.c
+--- a/support/htdbm.c
++++ b/support/htdbm.c
 @@ -110,6 +110,7 @@
  #endif
  
@@ -834,10 +778,8 @@ Index: apache2/support/htdbm.c
      apr_file_open_stderr(&errfile, *pool);
      apr_signal(SIGINT, (void (*)(int)) htdbm_interrupted);
  
-Index: apache2/support/htdigest.c
-===================================================================
---- apache2.orig/support/htdigest.c
-+++ apache2/support/htdigest.c
+--- a/support/htdigest.c
++++ b/support/htdigest.c
 @@ -96,12 +96,15 @@
      char ch;
      apr_status_t rv = APR_EINVAL;
@@ -880,10 +822,8 @@ Index: apache2/support/htdigest.c
              exit(1);
          }
          apr_cpystrn(user, argv[4], sizeof(user));
-Index: apache2/support/htpasswd.c
-===================================================================
---- apache2.orig/support/htpasswd.c
-+++ apache2/support/htpasswd.c
+--- a/support/htpasswd.c
++++ b/support/htpasswd.c
 @@ -67,6 +67,7 @@
  #define APHTP_NEWFILE        1
  #define APHTP_NOFILE         2
@@ -1145,10 +1085,8 @@ Index: apache2/support/htpasswd.c
      apr_file_printf(errfile, "password for user %s" NL, user);
  
      /* The temporary file has all the data, just copy it to the new location.
-Index: apache2/support/httxt2dbm.c
-===================================================================
---- apache2.orig/support/httxt2dbm.c
-+++ apache2/support/httxt2dbm.c
+--- a/support/httxt2dbm.c
++++ b/support/httxt2dbm.c
 @@ -39,7 +39,6 @@
  static const char *format;
  static const char *shortname;
@@ -1252,10 +1190,8 @@ Index: apache2/support/httxt2dbm.c
          return 1;
      }
  
-Index: apache2/support/passwd_common.c
-===================================================================
---- apache2.orig/support/passwd_common.c
-+++ apache2/support/passwd_common.c
+--- a/support/passwd_common.c
++++ b/support/passwd_common.c
 @@ -46,6 +46,24 @@
  
  apr_file_t *errfile;
@@ -1381,10 +1317,8 @@ Index: apache2/support/passwd_common.c
              truncpw[8] = '\0';
              if (!strcmp(ctx->out, crypt(truncpw, salt))) {
                  apr_file_printf(errfile, "Warning: Password truncated to 8 "
-Index: apache2/support/passwd_common.h
-===================================================================
---- apache2.orig/support/passwd_common.h
-+++ apache2/support/passwd_common.h
+--- a/support/passwd_common.h
++++ b/support/passwd_common.h
 @@ -80,10 +80,17 @@
      enum {
          PW_PROMPT = 0,
@@ -1404,11 +1338,9 @@ Index: apache2/support/passwd_common.h
  /*
   * Write a line to the file. On error, print a message and exit
   */
-Index: apache2/support/suexec.c
-===================================================================
---- apache2.orig/support/suexec.c
-+++ apache2/support/suexec.c
-@@ -217,11 +217,15 @@
+--- a/support/suexec.c
++++ b/support/suexec.c
+@@ -218,11 +218,15 @@
  
      if ((cleanenv = (char **) calloc(AP_ENVBUF, sizeof(char *))) == NULL) {
          log_err("failed to malloc memory for environment\n");
@@ -1425,7 +1357,7 @@ Index: apache2/support/suexec.c
      cidx++;
  
      for (ep = envp; *ep && cidx < AP_ENVBUF-1; ep++) {
-@@ -396,7 +400,10 @@
+@@ -398,7 +402,10 @@
          }
      }
      gid = gr->gr_gid;
@@ -1437,7 +1369,7 @@ Index: apache2/support/suexec.c
  
  #ifdef _OSD_POSIX
      /*
-@@ -431,6 +438,10 @@
+@@ -433,6 +440,10 @@
      uid = pw->pw_uid;
      actual_uname = strdup(pw->pw_name);
      target_homedir = strdup(pw->pw_dir);
@@ -1448,10 +1380,8 @@ Index: apache2/support/suexec.c
  
      /*
       * Log the transaction here to be sure we have an open log
-Index: apache2/test/test_limits.c
-===================================================================
---- apache2.orig/test/test_limits.c
-+++ apache2/test/test_limits.c
+--- a/test/test_limits.c
++++ b/test/test_limits.c
 @@ -124,8 +124,8 @@
          perror("gethostbyname");
          exit(1);

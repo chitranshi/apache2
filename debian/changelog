@@ -33,8 +33,9 @@ apache2 (2.4.4-6) UNRELEASED; urgency=low
     depend on apache2 package (which runs a system daemon)". This happened by
     accident added by debhelper since we are linking docs. We do to
     apache2-bin instead (Closes: #711127)
+  * Refresh "upstream-fixes" patch
 
- -- Arno Töll <arno@debian.org>  Fri, 07 Jun 2013 17:41:18 +0200
+ -- Arno Töll <arno@debian.org>  Fri, 07 Jun 2013 18:22:10 +0200
 
 apache2 (2.4.4-5) unstable; urgency=low
 

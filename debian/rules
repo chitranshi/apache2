@@ -135,8 +135,9 @@ override_dh_installdocs-indep:
 override_dh_installdocs-arch:
 	dh_installdocs --link-doc=apache2 -papache2 -papache2-dbg \
 		-papache2-mpm-worker -papache2-mpm-prefork -papache2-mpm-event \
-		-papache2-mpm-itk -plibapache2-mod-proxy-html -papache2.2-bin \
+		-papache2-mpm-itk -plibapache2-mod-proxy-html \
 		-plibapache2-mod-proxy-html
+	dh_installdocs --link-doc=apache2-bin -papache2.2-bin
 	dh_installdocs --link-doc=apache2-suexec-pristine -papache2-suexec
 	dh_installdocs -a
 

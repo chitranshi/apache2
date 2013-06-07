@@ -265,12 +265,12 @@ fi
 
 case "$1" in
   start)
-	[ "$VERBOSE" != no ] && log_daemon_msg "Starting $DESC" "$NAME"
+	log_daemon_msg "Starting $DESC" "$NAME"
 	do_start
         RET_STATUS=$?
 	case "$RET_STATUS" in
 		0|1)
-                        [ "$VERBOSE" != no ] && log_end_msg 0
+                        log_end_msg 0
                         [ "$VERBOSE" != no ] && [ $RET_STATUS = 1 ] && log_warning_msg "Server was already running"
                         if check_htcacheclean ; then
                                 [ "$VERBOSE" != no ] && log_daemon_msg "Starting HTTP cache cleaning daemon" "htcacheclean"
@@ -279,23 +279,23 @@ case "$1" in
                         fi
                 ;;
 		2)
-                        [ "$VERBOSE" != no ] && log_end_msg 1
+                        log_end_msg 1
                         [ -n "$APACHE2_INIT_MESSAGE" ] && echo $APACHE2_INIT_MESSAGE >&2
                         log_failure_msg
                ;;
 	esac
 	;;
   stop|graceful-stop)
-	[ "$VERBOSE" != no ] && log_daemon_msg "Stopping $DESC" "$NAME"
+	log_daemon_msg "Stopping $DESC" "$NAME"
 	do_stop "$1"
         RET_STATUS=$?
 	case "$RET_STATUS" in
 		0|1)
-                        [ "$VERBOSE" != no ] && log_end_msg 0
+                        log_end_msg 0
                         [ "$VERBOSE" != no ] && [ $RET_STATUS = 1 ] && log_warning_msg "Server was not running"
 
                 ;;
-		2) [ "$VERBOSE" != no ] && log_end_msg 1 ;;
+		2) log_end_msg 1 ;;
 	esac
         [ "$VERBOSE" != no ] && [ "x$APACHE2_INIT_MESSAGE" != "x" ] && log_warning_msg "$APACHE2_INIT_MESSAGE"
 

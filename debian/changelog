@@ -9,10 +9,13 @@ apache2 (2.4.4-6) UNRELEASED; urgency=low
   * Update the git VCS pointer to its canonical location for anonymous
     checkouts.
   * Boost the description for the LSB init script to appease Lintian.
-  * Fix spurious warnings in the Apache2 bug report script (Closes: 711121,
+  * Fix spurious warnings in the Apache2 bug report script (Closes: #711121,
     #711480)
+  * Strip off file extensions from arguments to a2(en|dis)(site|conf|mod) so
+    that "a2ensite 000-default.conf" works, as well as "a2ensite 000-default"
+    (Closes: #711494)
 
- -- Arno Töll <arno@debian.org>  Fri, 07 Jun 2013 12:24:43 +0200
+ -- Arno Töll <arno@debian.org>  Fri, 07 Jun 2013 12:40:11 +0200
 
 apache2 (2.4.4-5) unstable; urgency=low
 

@@ -88,6 +88,7 @@ if ( !scalar @ARGV ) {
 
 my @objs;
 foreach my $arg (@ARGV) {
+    $arg =~ s/${sffx}$//;
     my @glob = myglob($arg);
     if ( !@glob ) {
         error("No $obj found matching $arg!\n");

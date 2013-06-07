@@ -20,8 +20,11 @@ apache2 (2.4.4-6) UNRELEASED; urgency=low
   * Apply patch submitted by Robert Luberda and redirect all output of
     apache2-maintscript-helper to stderr (Closes: #711478)
   * Tell about essential operations in the init script (Closes: #711120)
+  * Fix indentation mess in the init script, and add modelines
+  * Make sure /etc/init.d/apache2 reload does not always return. Thanks to
+    Thorsten Glaser for suggesting a patch (Closes: #711117)
 
- -- Arno Töll <arno@debian.org>  Fri, 07 Jun 2013 15:07:48 +0200
+ -- Arno Töll <arno@debian.org>  Fri, 07 Jun 2013 15:48:48 +0200
 
 apache2 (2.4.4-5) unstable; urgency=low
 

@@ -423,21 +423,24 @@ foreach my $package ((@{$dh{DOPACKAGES}}))
 			wanted => sub
 			{
 				my ($dir, $file) = (dirname($File::Find::name), basename($File::Find::name));
+				# remove extension
+				my $conf_name = $file;
+				$conf_name =~ s/\.[^.]+$//;
 
 				if ($dir =~ m#etc/apache2/mods-available# and $file =~ m#.(load|conf)$#)
 				{
 					verbose_print("package $package appears	to be a web server module\n");
-					push @{$PACKAGE_TYPE{'has_a_module'}}, $file if $file =~ m/\.load/;
+					push @{$PACKAGE_TYPE{'has_a_module'}}, $conf_name if $file =~ m/\.load/;
 				}
 				if ($dir =~ m#etc/apache2/sites-available# and $file =~ m#.conf$#)
 				{
 					verbose_print("package $package appears	to contain a virtual host confoguration\n");
-					push @{$PACKAGE_TYPE{'has_a_site_conf'}}, $file;
+					push @{$PACKAGE_TYPE{'has_a_site_conf'}}, $conf_name;
 				}
 				if ($dir =~ m#etc/apache2/conf-available# and $file =~ m#.conf$#)
 				{
-					verbose_print("package $package appears	to contaqin a global configuration file \n");
-					push @{$PACKAGE_TYPE{'has_a_conf_file'}}, $file;
+					verbose_print("package $package appears	to contain a global configuration file \n");
+					push @{$PACKAGE_TYPE{'has_a_conf_file'}}, $conf_name;
 				}
 
 

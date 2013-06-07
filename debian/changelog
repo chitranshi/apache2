@@ -14,8 +14,11 @@ apache2 (2.4.4-6) UNRELEASED; urgency=low
   * Strip off file extensions from arguments to a2(en|dis)(site|conf|mod) so
     that "a2ensite 000-default.conf" works, as well as "a2ensite 000-default"
     (Closes: #711494)
+  * Fix "apache2-dev: dh-apache2 does not strip .conf extension" for modules
+    relying on the install heuristic, instead of writing an *.apache2 conf
+    file (Closes: #711483)
 
- -- Arno Töll <arno@debian.org>  Fri, 07 Jun 2013 12:40:11 +0200
+ -- Arno Töll <arno@debian.org>  Fri, 07 Jun 2013 14:02:14 +0200
 
 apache2 (2.4.4-5) unstable; urgency=low
 

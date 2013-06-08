@@ -20,6 +20,11 @@ apache2 (2.4.1-1) experimental; urgency=low
   a2dismod mpm_worker
   a2enmod mpm_prefork
 
+  We did change the security model for Apache in our default configuration. We
+  do not allow access to the file system outside /var/www, /srv and /usr/share.
+  If you are running virtual hosts or scripts outside these directories, you
+  need to whitelist them in your configuration to grant access through HTTP.
+
   Moreover, the configuration mechanism in Debian has changed. All
   configurations in sites-enabled and conf-enabled need a ".conf" suffix now.
   The latter replaces the deprecated /etc/apache2/conf.d/ directory (which is
